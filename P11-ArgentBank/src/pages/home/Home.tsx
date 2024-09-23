@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import "./Home.scss";
+// import "./Home.scss";
 
 const Home: React.FC = () => {
 	return (

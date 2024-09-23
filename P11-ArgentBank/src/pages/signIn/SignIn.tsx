@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import "./SignIn.scss";
+import "./SignIn.module.scss";
 
 const SignIn: React.FC = () => {
 	return (

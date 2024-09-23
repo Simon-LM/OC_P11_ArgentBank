@@ -1,0 +1,39 @@
+/** @format */
+
+// Styles par défaut (light)
+:root {
+	background-color: $light-bg;
+	color: $light-text;
+
+	// Préférences du système (dark mode)
+	@media (prefers-color-scheme: dark) {
+		background-color: $dark-bg;
+		color: $dark-text;
+	}
+}
+a:hover {
+	color: $light-text-hover;
+
+	// Préférences du système (dark mode)
+	@media (prefers-color-scheme: dark) {
+	}
+}
+
+button {
+	background-color: $light-button-bg;
+
+	// Préférences du système (dark mode)
+	@media (prefers-color-scheme: dark) {
+	}
+}
+
+// Classes pour basculer entre les thèmes
+.light-theme {
+	background-color: $light-bg;
+	color: $light-text;
+}
+
+.dark-theme {
+	background-color: $dark-bg;
+	color: $dark-text;
+}

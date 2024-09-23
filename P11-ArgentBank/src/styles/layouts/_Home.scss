@@ -1,19 +1,23 @@
 /** @format */
 
 .hero {
-	background-image: url("../img/bank-tree.jpeg");
-	background-position: 0 -50px;
+	background-image: url("@assets/img/bank-tree.jpeg");
+	background-position: 0 rem(-50);
 	background-size: cover;
 	background-repeat: no-repeat;
-	height: 300px;
+	height: rem(300);
 	position: relative;
+
+	@supports (background-image: url("@assets/img/bank-tree.avif")) {
+		background-image: url("@assets/img/bank-tree.avif");
+	}
 }
 
 .hero-content {
 	position: relative;
 	top: 2rem;
-	width: 200px;
-	background: white;
+	width: rem(200);
+	background: $light-bg;
 	padding: 2rem;
 	text-align: left;
 	margin: 0 auto;
@@ -32,15 +36,15 @@
 
 @media (min-width: 920px) {
 	.hero {
-		height: 400px;
+		height: rem(400);
 		background-position: 0% 33%;
 	}
 
 	.hero-content {
 		position: absolute;
-		top: 50px;
-		right: 50px;
-		width: 300px;
+		top: rem(50);
+		right: rem(50);
+		width: rem(300);
 		margin: 2rem;
 	}
 
@@ -65,8 +69,9 @@
 }
 
 .feature-icon {
-	width: 100px;
-	border: 10px solid #00bc77;
+	width: rem(100);
+	// border: 10px solid #00bc77;
+	border: rem(10) solid $light-icon-border;
 	border-radius: 50%;
 	padding: 1rem;
 }
@@ -77,7 +82,7 @@
 }
 
 .feature-item-title {
-	color: #222;
+	color: $light-title-footer;
 	font-size: 1.25rem;
 	font-weight: bold;
 	margin-bottom: 0.5rem;

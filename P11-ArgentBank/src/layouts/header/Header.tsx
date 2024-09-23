@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import "./Header.scss";
+// import "@styles/layouts/Header.scss";
 
 const Header: React.FC = () => {
 	return (

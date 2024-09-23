@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import "./User.scss";
+import "./User.module.scss";
 
 const User: React.FC = () => {
 	return (

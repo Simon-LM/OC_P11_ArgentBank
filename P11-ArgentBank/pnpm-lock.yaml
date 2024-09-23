@@ -60,6 +60,9 @@ importers:
       vite:
         specifier: ^5.4.1
         version: 5.4.5(sass-embedded@1.78.0)
+      vite-plugin-auto-alias:
+        specifier: ^1.0.7
+        version: 1.0.7(vite@5.4.5(sass-embedded@1.78.0))
 
 packages:
 
@@ -1102,6 +1105,11 @@ packages:
   varint@6.0.0:
     resolution: {integrity: sha512-cXEIW6cfr15lFv563k4GuVuW/fiwjknytD37jIOLSdSWuOI6WnO/oKwmP2FQTU2l01LP8/M5TSAJpzUaGe3uWg==}
 
+  vite-plugin-auto-alias@1.0.7:
+    resolution: {integrity: sha512-myk0mVwCx/hNoITe4OIy7Wf7o0mPGbcVX0kDycbxjnHS2eyl47L2U/Pzrq2Drd39KQzv1DwYL/OV2JXfBgA6BQ==}
+    peerDependencies:
+      vite: '*'
+
   vite@5.4.5:
     resolution: {integrity: sha512-pXqR0qtb2bTwLkev4SE3r4abCNioP3GkjvIDLlzziPpXtHgiJIjuKl+1GN6ESOT3wMjG3JTeARopj2SwYaHTOA==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -2048,6 +2056,10 @@ snapshots:
       react: 18.3.1
 
   varint@6.0.0: {}
+
+  vite-plugin-auto-alias@1.0.7(vite@5.4.5(sass-embedded@1.78.0)):
+    dependencies:
+      vite: 5.4.5(sass-embedded@1.78.0)
 
   vite@5.4.5(sass-embedded@1.78.0):
     dependencies:

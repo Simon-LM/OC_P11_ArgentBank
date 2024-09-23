@@ -1,91 +1,21 @@
 /** @format */
 
 @import "normalize.css"; /* Add */
+@import "abstracts/variables.scss";
+@import "abstracts/placeholders.scss";
+@import "abstracts/functions.scss";
+@import "abstracts/mixins.scss";
+@import "base/globale.scss";
+@import "base/typography.scss";
 
-:root {
-	font-family: Avenir, Helvetica, Arial, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	line-height: 1.5;
-	font-weight: 400;
+@import "accessibility/menu-accessibility.scss";
+@import "accessibility/dark-light-toggle.scss";
+@import "accessibility/screen-reader.scss";
+@import "accessibility/pointer.scss";
+@import "accessibility/motion.scss";
+@import "accessibility/contrast.scss";
+@import "accessibility/colorblind.scss";
 
-	text-align: center;
-	color: #2c3e50;
-
-	// color-scheme: light dark;
-	// color: rgba(255, 255, 255, 0.87);
-	// background-color: #242424;
-
-	// font-synthesis: none;
-	// text-rendering: optimizeLegibility;
-	// -webkit-font-smoothing: antialiased;
-	// -moz-osx-font-smoothing: grayscale;
-}
-
-// #root {
-// 	max-width: 1280px;
-// 	margin: 0 auto;
-// 	padding: 2rem;
-// 	text-align: center;
-// }
-
-/* a {
-	font-weight: 500;
-	color: #646cff;
-	text-decoration: inherit;
-}
-a:hover {
-	color: #535bf2;
-} */
-
-body {
-	margin: 0;
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
-}
-
-// h1 {
-// 	font-size: 3.2em;
-// 	line-height: 1.1;
-// }
-
-.main {
-	flex: 1;
-}
-
-.bg-dark {
-	background-color: #12002b;
-}
-
-.sr-only {
-	border: 0 !important;
-	clip: rect(1px, 1px, 1px, 1px) !important; /* 1 */
-	-webkit-clip-path: inset(50%) !important;
-	clip-path: inset(50%) !important; /* 2 */
-	height: 1px !important;
-	margin: -1px !important;
-	overflow: hidden !important;
-	padding: 0 !important;
-	position: absolute !important;
-	width: 1px !important;
-	white-space: nowrap !important; /* 3 */
-}
-
-@media (prefers-color-scheme: light) {
-	:root {
-		color: #213547;
-		background-color: #ffffff;
-	}
-	a:hover {
-		color: #747bff;
-	}
-	button {
-		background-color: #f9f9f9;
-	}
-}
-@media (prefers-reduced-motion: no-preference) {
-	a:nth-of-type(2) .logo {
-		animation: logo-spin infinite 20s linear;
-	}
-}
+@import "layouts/Header.scss";
+@import "layouts/Footer.scss";
+@import "layouts/Home.scss";

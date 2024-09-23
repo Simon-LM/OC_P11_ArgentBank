@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import "./Footer.scss";
+// import "@styles/layouts/Footer.scss";
 
 const Footer: React.FC = () => {
 	return (
