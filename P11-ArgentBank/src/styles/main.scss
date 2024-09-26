@@ -2,6 +2,7 @@
 
 @import "normalize.css"; /* Add */
 @import "abstracts/variables.scss";
+@import "accessibility/dark-light-toggle.scss";
 @import "abstracts/placeholders.scss";
 @import "abstracts/functions.scss";
 @import "abstracts/mixins.scss";
@@ -9,11 +10,10 @@
 @import "base/typography.scss";
 
 @import "accessibility/menu-accessibility.scss";
-@import "accessibility/dark-light-toggle.scss";
-@import "accessibility/screen-reader.scss";
 @import "accessibility/pointer.scss";
 @import "accessibility/motion.scss";
 @import "accessibility/contrast.scss";
+@import "accessibility/screen-reader.scss";
 @import "accessibility/colorblind.scss";
 
 @import "layouts/Header.scss";

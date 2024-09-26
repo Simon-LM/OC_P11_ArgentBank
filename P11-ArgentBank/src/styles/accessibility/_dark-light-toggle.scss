@@ -1,39 +1,60 @@
 /** @format */
 
 // Styles par défaut (light)
-:root {
-	background-color: $light-bg;
-	color: $light-text;
 
-	// Préférences du système (dark mode)
+// Préférences du système (dark mode)
+@media (prefers-color-scheme: dark) {
+}
+
+:root {
+	color: $light-text;
+	background: $light-bg;
 	@media (prefers-color-scheme: dark) {
-		background-color: $dark-bg;
 		color: $dark-text;
+		background: $dark-bg;
 	}
 }
-a:hover {
-	color: $light-text-hover;
 
-	// Préférences du système (dark mode)
+a:hover {
+	color: $light-text-link-hover !important;
 	@media (prefers-color-scheme: dark) {
+		color: $dark-text-link-hover !important;
+	}
+}
+.main-nav-item {
+	color: $light-text !important;
+	@media (prefers-color-scheme: dark) {
+		color: $dark-text !important;
 	}
 }
 
 button {
-	background-color: $light-button-bg;
-
-	// Préférences du système (dark mode)
+	background: $light-button-bg;
 	@media (prefers-color-scheme: dark) {
+		background: $dark-button-bg;
 	}
 }
 
-// Classes pour basculer entre les thèmes
-.light-theme {
-	background-color: $light-bg;
-	color: $light-text;
+.feature-item-title {
+	color: $light-title-footer;
+	@media (prefers-color-scheme: dark) {
+		color: $dark-title-footer;
+	}
+}
+.hero-content {
+	background: $light-bg;
+	@media (prefers-color-scheme: dark) {
+		background: $dark-bg;
+	}
 }
 
-.dark-theme {
-	background-color: $dark-bg;
-	color: $dark-text;
-}
+// // Classes pour basculer entre les thèmes
+// .light-theme {
+// 	background-color: $light-bg;
+// 	color: $light-text;
+// }
+
+// .dark-theme {
+// 	background-color: $dark-bg;
+// 	color: $dark-text;
+// }
