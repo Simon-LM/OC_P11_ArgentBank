@@ -1,7 +1,7 @@
 /** @format */
 
 import { Link } from "react-router-dom";
-// import "./error404.scss";
+import "./Error404.module.scss";
 
 function Error404() {
 	return (

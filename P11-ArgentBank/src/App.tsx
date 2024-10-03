@@ -15,24 +15,25 @@ import User from "./pages/user/User";
 import Error404 from "./pages/error404/Error404";
 
 function App() {
-	const [count, setCount] = useState(0);
+	// const [count, setCount] = useState(0);
 
 	return (
 		<Router>
 			<Header />
-			{/* <Home /> */}
-			<Routes>
-				<Route path="/" element={<Home />} />
-				<Route path="/SignIn" element={<SignIn />} />
-				<Route path="/User" element={<User />} />
-				<Route path="*" element={<Navigate to="/error404" />} />
-				<Route path="/Error404" element={<Error404 />} />
-			</Routes>
-			<div className="card">
-				<button onClick={() => setCount((count) => count + 1)}>
-					count is {count}
-				</button>
-			</div>
+			<main>
+				<Routes>
+					<Route path="/" element={<Home />} />
+					<Route path="/SignIn" element={<SignIn />} />
+					<Route path="/User" element={<User />} />
+					<Route path="*" element={<Navigate to="/error404" />} />
+					<Route path="/Error404" element={<Error404 />} />
+				</Routes>
+				{/* <div className="card">
+					<button onClick={() => setCount((count) => count + 1)}>
+						count is {count}
+					</button>
+				</div> */}
+			</main>
 			<Footer />
 		</Router>
 	);

@@ -48,20 +48,24 @@ $color-text-on-light: $color-black;
 
 // Couleurs pour le thème light
 $light-bg: $color-white; // #ffffff
+$light-bg-user: $tertiary-color; //#12002b
 $light-text: $primary-color; // #2c3e50
 $light-text-link: $primary-color; // #2c3e50
 $light-text-link-hover: $secondary-color; // #747bff
 $light-button-bg: $color-accent; // #42b983
+$light-button-border: $color-accent; // #42b983
 $light-icon-border: $color-accent; // #42b983
 $light-border-footer: $color-gray-light; // #cccccc
 $light-title-footer: $color-gray-dark; // #222222
 
 // Couleurs pour le thème dark
 $dark-bg: $color-black; // #000000
+$dark-bg-user: $tertiary-color; //#12002b
 $dark-text: $color-white; // #ffffff
 $dark-text-link: $primary-color; // #2c3e50
 $dark-text-link-hover: $secondary-color; // #747bff
 $dark-button-bg: $color-accent; // #42b983
+$dark-button-border: $color-accent; // #42b983
 $dark-icon-border: $color-accent; // #42b983
 $dark-border-footer: $color-gray-light; // #cccccc
 $dark-title-footer: $color-gray-light; // #cccccc

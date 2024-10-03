@@ -1,0 +1,56 @@
+/** @format */
+@import "@styles/abstracts/functions";
+@import "@styles/abstracts/variables";
+
+.bg-dark {
+	flex: 1;
+	height: 100%;
+	background: $light-bg-user;
+}
+.sign-in-content {
+	box-sizing: border-box;
+	background: $light-bg;
+	color: $light-text;
+	width: rem(300);
+	margin: 0 auto;
+	margin-top: 3rem;
+	padding: 2rem;
+}
+.sign-in-button {
+	display: block;
+	width: 100%;
+	padding: rem(8);
+	font-size: 1.1rem;
+	font-weight: bold;
+	margin-top: 1rem;
+	border-color: $light-button-border;
+	background-color: $light-button-bg;
+	color: $dark-text;
+}
+
+.sign-in-icon {
+	font-size: 5rem;
+}
+.input-remember {
+	display: flex;
+}
+
+.input-remember label {
+	margin-left: 0.25rem;
+}
+
+.input-wrapper {
+	display: flex;
+	flex-direction: column;
+	text-align: left;
+	margin-bottom: 1rem;
+}
+
+.input-wrapper label {
+	font-weight: bold;
+}
+
+.input-wrapper input {
+	padding: rem(5);
+	font-size: 1.2rem;
+}

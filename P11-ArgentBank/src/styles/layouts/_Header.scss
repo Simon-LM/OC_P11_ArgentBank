@@ -4,7 +4,8 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 5px 20px;
+	min-height: 4rem;
+	padding: 5px rem(20);
 }
 
 .main-nav a {
@@ -37,5 +38,5 @@
 
 .main-nav-logo-image {
 	max-width: 100%;
-	width: 200px;
+	width: rem(200);
 }
