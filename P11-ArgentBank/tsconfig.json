@@ -43,6 +43,9 @@
             ],
             "@utils/*": [
                 "src/utils/*"
+            ],
+            "@mockData/*": [
+                "src/mockData/*"
             ]
         }
     }

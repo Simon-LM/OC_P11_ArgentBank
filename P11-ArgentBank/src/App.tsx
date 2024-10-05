@@ -15,7 +15,7 @@ import User from "./pages/user/User";
 import Error404 from "./pages/error404/Error404";
 
 function App() {
-	// const [count, setCount] = useState(0);
+	const [count, setCount] = useState(0);
 
 	return (
 		<Router>
@@ -28,11 +28,11 @@ function App() {
 					<Route path="*" element={<Navigate to="/error404" />} />
 					<Route path="/Error404" element={<Error404 />} />
 				</Routes>
-				{/* <div className="card">
+				<div className="card">
 					<button onClick={() => setCount((count) => count + 1)}>
 						count is {count}
 					</button>
-				</div> */}
+				</div>
 			</main>
 			<Footer />
 		</Router>

@@ -1,9 +1,21 @@
 /** @format */
 
 import React from "react";
-// import "@styles/layouts/Header.scss";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store/Store";
+import { resetUsers } from "../../pages/user/usersSilice";
 
 const Header: React.FC = () => {
+	const isAuthenticated = useSelector(
+		(state: RootState) => state.users.isAuthenticated
+	);
+	const dispatch = useDispatch();
+
+	const handleSignOut = () => {
+		dispatch(resetUsers()); // Réinitialiser les utilisateurs et déconnecter l'utilisateur
+	};
+
 	return (
 		<nav className="main-nav">
 			<a className="main-nav-logo" href="./">
@@ -14,12 +26,21 @@ const Header: React.FC = () => {
 				/>
 				<h1 className="sr-only">Argent Bank</h1>
 			</a>
-			<div>
-				<a className="main-nav-item" href="./SignIn">
-					<i className="fa fa-user-circle"></i>
-					Sign In
-				</a>
-			</div>
+
+			{isAuthenticated ? (
+				<>
+					<Link to="/signin" onClick={handleSignOut}>
+						<i className="fa fa-user-circle"></i>USER
+					</Link>
+					<Link to="/signin" onClick={handleSignOut}>
+						<i className="fa fa-sign-out"></i>Sign Out
+					</Link>
+				</>
+			) : (
+				<Link to="/signin" className="main-nav-item">
+					<i className="fa fa-user-circle"></i>Sign In
+				</Link>
+			)}
 		</nav>
 	);
 };
