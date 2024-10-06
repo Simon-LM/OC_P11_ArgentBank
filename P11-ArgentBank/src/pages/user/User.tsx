@@ -6,11 +6,15 @@ import { RootState } from "../../store/Store";
 import user from "./user.module.scss";
 
 const User: React.FC = () => {
-	const userData = useSelector((state: RootState) => state.users.users[0]);
+	// const userData = useSelector((state: RootState) => state.users.users[0]);
 
-	console.log("User data from store:", userData);
+	const currentUser = useSelector(
+		(state: RootState) => state.users.currentUser
+	);
 
-	if (!userData) {
+	console.log("User data from store:", currentUser);
+
+	if (!currentUser) {
 		return <p>Loading user data...</p>;
 	}
 	return (
@@ -19,13 +23,13 @@ const User: React.FC = () => {
 				<h1>
 					Welcome back
 					<br />
-					{userData.firstName} {userData.lastName}!
+					{currentUser.firstName} {currentUser.lastName}!
 				</h1>
 				<button className={user["edit-button"]}>Edit Name</button>
 			</div>
 			<h2 className="sr-only">Accounts</h2>
 
-			{userData.accounts.map((account) => (
+			{currentUser.accounts.map((account) => (
 				<section className={user["account"]} key={account.accountNumber}>
 					<div className={user["account-content-wrapper"]}>
 						<h3 className={user["account-title"]}>

@@ -1,19 +1,25 @@
 /** @format */
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/Store";
-import { resetUsers } from "../../pages/user/usersSilice";
+import { resetUsers, setAuthentication } from "../../pages/user/usersSlice";
 
 const Header: React.FC = () => {
 	const isAuthenticated = useSelector(
 		(state: RootState) => state.users.isAuthenticated
 	);
+	const currentUser = useSelector(
+		(state: RootState) => state.users.currentUser
+	);
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	const handleSignOut = () => {
 		dispatch(resetUsers()); // Réinitialiser les utilisateurs et déconnecter l'utilisateur
+		dispatch(setAuthentication(false)); // Optionnel, car resetUsers gère déjà cet état
+		navigate("/signin"); // Rediriger vers la page de connexion après déconnexion
 	};
 
 	return (
@@ -27,15 +33,16 @@ const Header: React.FC = () => {
 				<h1 className="sr-only">Argent Bank</h1>
 			</a>
 
-			{isAuthenticated ? (
-				<>
+			{isAuthenticated && currentUser ? (
+				<div>
 					<Link to="/signin" onClick={handleSignOut}>
-						<i className="fa fa-user-circle"></i>USER
+						<i className="fa fa-user-circle"></i>
+						{currentUser.firstName}
 					</Link>
 					<Link to="/signin" onClick={handleSignOut}>
 						<i className="fa fa-sign-out"></i>Sign Out
 					</Link>
-				</>
+				</div>
 			) : (
 				<Link to="/signin" className="main-nav-item">
 					<i className="fa fa-user-circle"></i>Sign In

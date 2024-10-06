@@ -6,21 +6,33 @@ import { useNavigate } from "react-router-dom";
 import signin from "./signin.module.scss";
 import classNames from "classnames";
 import { loginUser } from "../../utils/authService";
-import { setAuthentication } from "../user/usersSilice";
+import { loginUserSuccess, setAuthentication } from "../user/usersSlice";
+import { AppDispatch } from "../../store/Store";
 
 const SignIn: React.FC = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>(); // Typage correct de dispatch
 	const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		try {
+			// Requête de login pour récupérer le token
 			const result = await loginUser({ email, password });
 			console.log("Login successful:", result);
+
+			// Récupérer le token
+			const token: string = result;
+
+			// Envoyer les informations à Redux via loginUserSuccess (en tant qu'objet)
+			await dispatch(loginUserSuccess({ email, token: token }));
+
+			// Mettre à jour l'authentification
 			dispatch(setAuthentication(true));
+
+			// Rediriger l'utilisateur vers la page User après connexion
 			navigate("/User");
 		} catch (err) {
 			if (err instanceof Error) {
