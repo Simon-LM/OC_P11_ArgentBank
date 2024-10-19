@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { increment, decrement } from "./counterSilice";
+import { increment, decrement } from "./counterSlice";
 import type { RootState } from "../../store/Store"; // Importez le type pour le state
 
 const Counter: React.FC = () => {

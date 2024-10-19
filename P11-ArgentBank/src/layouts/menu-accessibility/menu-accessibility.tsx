@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useEffect, useState } from "react";
-import "./styles/theme.scss"; // Assurez-vous que le chemin est correct
+// import "./styles/theme.scss";
 
 const ThemeToggle: React.FC = () => {
 	const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -26,7 +26,9 @@ const ThemeToggle: React.FC = () => {
 	}, []);
 
 	return (
-		<div className={theme === "dark" ? "dark-theme" : "light-theme"}>
+		<div
+			className={theme === "dark" ? "dark-theme" : "light-theme"}
+			data-testid={theme === "dark" ? "dark-theme" : "light-theme"}>
 			<h1>Bienvenue sur mon site !</h1>
 			<p>Le thème actuel est {theme}.</p>
 		</div>

@@ -10,6 +10,13 @@
     ],
     "compilerOptions": {
         "baseUrl": "src",
+        "types": [
+            "vitest/globals",
+            "@testing-library/jest-dom"
+        ],
+        "jsx": "react-jsx",
+        "module": "esnext",
+        "target": "esnext",
         "paths": {
             "@/*": [
                 "src/*"

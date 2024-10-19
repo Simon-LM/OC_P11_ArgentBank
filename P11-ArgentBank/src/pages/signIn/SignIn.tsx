@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import signin from "./signin.module.scss";
 import classNames from "classnames";
 import { loginUser } from "../../utils/authService";
-import { loginUserSuccess, setAuthentication } from "../user/usersSlice";
+import { loginUserSuccess } from "../user/usersSlice";
 import { AppDispatch } from "../../store/Store";
 
 const SignIn: React.FC = () => {
@@ -30,7 +30,7 @@ const SignIn: React.FC = () => {
 			await dispatch(loginUserSuccess({ email, token: token }));
 
 			// Mettre à jour l'authentification
-			dispatch(setAuthentication(true));
+			// dispatch(setAuthentication(true));
 
 			// Rediriger l'utilisateur vers la page User après connexion
 			navigate("/User");

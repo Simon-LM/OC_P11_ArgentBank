@@ -8,8 +8,8 @@ const Home: React.FC = () => {
 		<main>
 			<div
 				className="hero"
-				aria-label="A tree sprout in a verse filled with coins. 
-">
+				data-testid="hero"
+				aria-label="A tree sprout in a verse filled with coins.">
 				<div className="hero-image-description">
 					<span className="material-symbols-outlined">image</span> A tree sprout
 					in a verse filled with coins.

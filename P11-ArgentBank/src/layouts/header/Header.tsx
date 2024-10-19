@@ -4,7 +4,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/Store";
-import { resetUsers, setAuthentication } from "../../pages/user/usersSlice";
+import { logoutUser } from "../../pages/user/usersSlice";
 
 const Header: React.FC = () => {
 	const isAuthenticated = useSelector(
@@ -17,13 +17,12 @@ const Header: React.FC = () => {
 	const navigate = useNavigate();
 
 	const handleSignOut = () => {
-		dispatch(resetUsers()); // Réinitialiser les utilisateurs et déconnecter l'utilisateur
-		dispatch(setAuthentication(false)); // Optionnel, car resetUsers gère déjà cet état
+		dispatch(logoutUser()); // Utilise logoutUser pour déconnecter l'utilisateur
 		navigate("/signin"); // Rediriger vers la page de connexion après déconnexion
 	};
 
 	return (
-		<nav className="main-nav">
+		<nav className="main-nav" role="banner">
 			<a className="main-nav-logo" href="./">
 				<img
 					className="main-nav-logo-image"

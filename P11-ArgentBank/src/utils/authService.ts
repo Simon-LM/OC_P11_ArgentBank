@@ -27,6 +27,7 @@ const loginSchema = z.object({
 	email: z.string().email("Invalid email format"),
 	password: z.string().min(8, "Password must be at least 8 characters"),
 });
+export { loginSchema };
 
 type LoginCredentials = z.infer<typeof loginSchema>;
 
@@ -37,16 +38,6 @@ export const loginUser = async (credentials: LoginCredentials) => {
 		// Si la validation échoue, une erreur est lancée
 		throw new Error(parsedCredentials.error.message);
 	}
-
-	// const myHeaders = new Headers();
-	// myHeaders.append("Content-Type", "application/json");
-
-	// const requestOptions: RequestInit = {
-	// 	method: "POST",
-	// 	headers: myHeaders,
-	// 	body: JSON.stringify(credentials),
-	// 	redirect: "follow",
-	// };
 
 	const requestOptions: RequestInit = {
 		method: "POST",
@@ -105,7 +96,7 @@ export const fetchUserProfile = async (token: string) => {
 		}
 
 		// Retourne les données validées (profil utilisateur)
-		return parsedResponse.data;
+		return parsedResponse.data.body;
 	} catch (error) {
 		console.error("Error fetching user profile:", error);
 		throw error;

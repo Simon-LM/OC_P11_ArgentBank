@@ -8,10 +8,10 @@ function Error404() {
 		<div className="error404">
 			<h2 className="error404__title">404</h2>
 			<p className="error404__text">
-				Oups, La page que vous demandez n'existe pas.
+				Oops, the page you are requesting does not exist.
 			</p>
 			<Link className="error404__link links" to="/">
-				Retourner à la page d'accueil
+				Return to the homepage
 			</Link>
 		</div>
 	);

@@ -20,20 +20,20 @@ function App() {
 	return (
 		<Router>
 			<Header />
-			<main>
-				<Routes>
-					<Route path="/" element={<Home />} />
-					<Route path="/SignIn" element={<SignIn />} />
-					<Route path="/User" element={<User />} />
-					<Route path="*" element={<Navigate to="/error404" />} />
-					<Route path="/Error404" element={<Error404 />} />
-				</Routes>
-				<div className="card">
-					<button onClick={() => setCount((count) => count + 1)}>
-						count is {count}
-					</button>
-				</div>
-			</main>
+			{/* <main> */}
+			<Routes>
+				<Route path="/" element={<Home />} />
+				<Route path="/SignIn" element={<SignIn />} />
+				<Route path="/User" element={<User />} />
+				<Route path="*" element={<Navigate to="/error404" />} />
+				<Route path="/Error404" element={<Error404 />} />
+			</Routes>
+			<div className="card">
+				<button onClick={() => setCount((count) => count + 1)}>
+					count is {count}
+				</button>
+			</div>
+			{/* </main> */}
 			<Footer />
 		</Router>
 	);

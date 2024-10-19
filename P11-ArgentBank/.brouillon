@@ -1,2499 +1,285 @@
 <!-- @format -->
 
-Vérification
-Après avoir exécuté ces étapes, votre serveur devrait être en cours d'exécution à l'adresse http://localhost:3001 et deux utilisateurs devraient être ajoutés à votre base de données MongoDB.
+// Vérification
+// Après avoir exécuté ces étapes, votre serveur devrait être en cours d'exécution à l'adresse http://localhost:3001 et deux utilisateurs devraient être ajoutés à votre base de données MongoDB.
+
+// Utilisateurs Peuplés
+// Vous devriez avoir les utilisateurs suivants dans votre base de données :
+
+// Tony Stark
+// Prénom : Tony
+// Nom : Stark
+// Email : tony@stark.com
+// Mot de passe : password123
+
+// Steve Rogers
+// Prénom : Steve
+// Nom : Rogers
+// Email : steve@rogers.com
+// Mot de passe : password456
+
+// Documentation de l'API
+// Pour en savoir plus sur le fonctionnement de l'API, une fois que votre environnement local est démarré, vous pouvez visiter : http://localhost:3001/api-docs.
+
+// ---
+
+// CODESTRAL :
+
+// Organiser l'arborescence de vos dossiers et fichiers est une étape cruciale dans le développement de votre application. Voici une proposition d'organisation pour votre projet en React, TypeScript, Redux Toolkit, qui gère de nombreux logins de clients.
+
+// /bank-app
+// /src
+// /assets
+// /images
+// /fonts
+// /components
+// /Login
+// /ClientDashboard
+// /Transactions
+// /...
+// /features
+// /auth
+// authSlice.ts
+// /clients
+// clientsSlice.ts
+// /transactions
+// transactionsSlice.ts
+// /...
+// /pages
+// /LoginPage
+// /ClientPage
+// /TransactionsPage
+// /...
+// /services
+// /api
+// authApi.ts
+// clientsApi.ts
+// transactionsApi.ts
+// ...
+// /utils
+// /helpers
+// /constants
+// /styles
+// /global
+// /components
+// App.tsx
+// index.tsx
+// store.ts
+// /public
+// .gitignore
+// package.json
+// README.md
+// ...
+// Explication :
+
+// /src : Contient tous les fichiers sources de votre application.
+// /assets : Contient les ressources statiques telles que les images et les polices.
+// /components : Contient tous les composants React de votre application.
+// /features : Contient les fonctionnalités de votre application, chaque fonctionnalité a son propre dossier. Chaque dossier contient un fichier slice pour la gestion de l'état avec Redux Toolkit.
+// /pages : Contient les pages de votre application.
+// /services : Contient les services API pour communiquer avec le backend.
+// /utils : Contient des fichiers utilitaires tels que des fonctions d'aide et des constantes.
+// /styles : Contient les fichiers de style globaux et les fichiers de style spécifiques aux composants.
+// App.tsx : Le composant racine de votre application.
+// index.tsx : Le point d'entrée de votre application.
+// store.ts : Le fichier de configuration de votre store Redux.
+// /public : Contient les fichiers publics tels que le fichier index.html.
+// .gitignore : Spécifie les fichiers et dossiers à ignorer lors du commit dans Git.
+// package.json : Contient les métadonnées et les dépendances de votre projet.
+// README.md : Contient des informations sur votre projet.
+// Cette structure est une suggestion et peut être adaptée en fonction de vos besoins spécifiques. L'important est de maintenir une organisation logique et cohérente pour faciliter la maintenance et l'évolution de votre application.
+
+// ---
+
+// GPT4 :
+
+// Pour structurer ton projet React avec Vite, TypeScript et Redux Toolkit, il est essentiel de créer une arborescence claire et maintenable, surtout pour un projet de gestion de clients bancaires. Voici une organisation suggérée des dossiers et fichiers :
+
+// 1. Structure générale
+//    scss
+//    Copier le code
+//    /src
+//    │
+//    ├── /api
+//    │ └── apiClient.ts // Gestion des appels API
+//    │
+//    ├── /assets // Images, icônes, fichiers statiques
+//    │
+//    ├── /components // Composants réutilisables
+//    │ └── /LoginForm.tsx // Formulaire de login par exemple
+//    │
+//    ├── /features // Dossiers pour chaque feature principale
+//    │ └── /auth // Exemple de feature pour l'authentification
+//    │ ├── authSlice.ts // Reducer et actions pour l'auth
+//    │ ├── authThunks.ts // Thunks pour les appels asynchrones
+//    │ ├── AuthService.ts // Service pour appels API liés à l'auth
+//    │ └── index.ts // Export de tout ce qui concerne auth
+//    │
+//    ├── /hooks // Hooks personnalisés
+//    │ └── useAuth.ts // Exemple de hook d'authentification
+//    │
+//    ├── /pages // Pages principales de l'app
+//    │ └── /LoginPage.tsx // Page de login
+//    │
+//    ├── /store // Store global de Redux
+//    │ ├── index.ts // Configuration du store
+//    │ └── rootReducer.ts // Combine les slices
+//    │
+//    ├── /styles // Styles globaux ou spécifiques (CSS, SCSS)
+//    │
+//    ├── /types // Définitions des types TypeScript
+//    │ └── authTypes.ts // Types pour la feature auth par exemple
+//    │
+//    └── /utils // Fonctions utilitaires
+//    └── validation.ts // Validation de formulaires
+// 2. Détails spécifiques à Redux Toolkit
+//    /features : Chaque "feature" (comme l'authentification, les clients, etc.) a son propre dossier. Chaque dossier contient :
+
+// Slice : La logique de Redux Toolkit pour cette fonctionnalité (comme l'authSlice pour gérer le login/logout).
+// Thunks : Pour gérer les appels API asynchrones.
+// Services : Les appels API spécifiques à la feature (par exemple, AuthService pour les requêtes d'authentification).
+// /store/index.ts : Le store Redux centralisé où tu configures Redux et inclus le middleware (par exemple, redux-thunk pour les actions asynchrones).
+
+// /types : Centraliser les types pour chaque feature facilite la gestion du typage avec TypeScript.
+
+// 3. Login Management
+//    Étant donné que tu dois gérer de nombreux logins clients, séparer la logique d'authentification dans une feature dédiée (auth) est important. Tu pourrais aussi avoir une gestion spécifique des rôles utilisateurs (admin, client, etc.) directement dans ton slice d'authentification.
+
+// 4. Pages et Composants
+//    Organise tes pages (comme LoginPage, DashboardPage) dans un dossier /pages. Les composants réutilisables (boutons, formulaires) devraient aller dans /components.
+
+// Cette organisation permet une meilleure modularité et évolutivité, ce qui est crucial pour une application bancaire.
+
+// ---
+
+// Claude :
+
+// Voici une proposition d'organisation des dossiers et fichiers pour votre projet React Vite en TypeScript avec Redux Toolkit, dans le cadre d'une application bancaire avec de nombreux comptes clients à gérer :
+
+// Code
+
+// Copier le code
+// src/
+// ├── components/
+// │ ├── Header/
+// │ │ ├── Header.tsx
+// │ │ └── Header.styles.ts
+// │ ├── Footer/
+// │ │ ├── Footer.tsx
+// │ │ └── Footer.styles.ts
+// │ ├── LoginForm/
+// │ │ ├── LoginForm.tsx
+// │ │ └── LoginForm.styles.ts
+// │ └── AccountDetails/
+// │ ├── AccountDetails.tsx
+// │ └── AccountDetails.styles.ts
+// ├── pages/
+// │ ├── HomePage/
+// │ │ ├── HomePage.tsx
+// │ │ └── HomePage.styles.ts
+// │ ├── LoginPage/
+// │ │ ├── LoginPage.tsx
+// │ │ └── LoginPage.styles.ts
+// │ └── AccountPage/
+// │ ├── AccountPage.tsx
+// │ └── AccountPage.styles.ts
+// ├── store/
+// │ ├── store.ts
+// │ ├── rootReducer.ts
+// │ ├── auth/
+// │ │ ├── authSlice.ts
+// │ │ └── authActions.ts
+// │ └── accounts/
+// │ ├── accountsSlice.ts
+// │ └── accountsActions.ts
+// ├── types/
+// │ ├── auth.ts
+// │ └── accounts.ts
+// ├── utils/
+// │ ├── api.ts
+// │ └── helpers.ts
+// ├── App.tsx
+// └── main.tsx
+// Explications :
+
+// components/ : Contient tous les composants réutilisables de l'application, organisés par fonctionnalité (Header, Footer, LoginForm, AccountDetails).
+// pages/ : Contient les pages principales de l'application, chacune avec son propre composant et styles.
+// store/ : Contient la configuration de Redux Toolkit, avec le store principal, le reducer principal, et les slices/actions pour la gestion de l'authentification et des comptes clients.
+// types/ : Contient les définitions de types TypeScript pour l'authentification et les comptes clients.
+// utils/ : Contient des fonctions utilitaires, comme l'API pour communiquer avec le backend.
+// Cette structure permet de séparer clairement les responsabilités et de faciliter la maintenance et l'évolutivité de votre application bancaire. Vous pouvez bien sûr l'adapter en fonction de vos besoins spécifiques.
+
+// ---
+
+// ARIA :
+
+// Pour un projet de site web React Vite en TypeScript utilisant Redux Toolkit, surtout pour une application bancaire avec de nombreux logins clients, il est crucial d'avoir une arborescence de dossiers bien organisée. Voici une suggestion d'arborescence qui peut être adaptée en fonction de vos besoins spécifiques :
+
+// Arborescence suggérée
+// /mon-projet-banque
+// ├── /public
+// │ ├── index.html
+// │ └── favicon.ico
+// ├── /src
+// │ ├── /assets # Contient des images, des icônes, des styles (CSS/Sass)
+// │ ├── /components # Composants réutilisables
+// │ ├── /features # Fonctionnalités spécifiques, chaque fonctionnalité peut avoir son dossier
+// │ │ ├── /auth # Gestion de l'authentification (login, logout)
+// │ │ │ ├── authSlice.ts # Slice Redux pour l'authentification
+// │ │ │ ├── Login.tsx # Composant de login
+// │ │ │ └── Register.tsx # Composant d'inscription
+// │ │ ├── /clients # Gestion des clients
+// │ │ │ ├── clientsSlice.ts # Slice Redux pour les clients
+// │ │ │ ├── ClientList.tsx # Liste des clients
+// │ │ │ └── ClientDetail.tsx # Détails d'un client
+// │ │ └── /transactions # Gestion des transactions
+// │ │ ├── transactionsSlice.ts # Slice Redux pour les transactions
+// │ │ ├── TransactionList.tsx # Liste des transactions
+// │ │ └── TransactionDetail.tsx # Détails d'une transaction
+// │ ├── /hooks # Hooks personnalisés si besoin
+// │ ├── /layouts # Layouts de l'application (par exemple Header, Footer)
+// │ ├── /pages # Pages principales de l'application
+// │ │ ├── Home.tsx # Page d'accueil
+// │ │ ├── Dashboard.tsx # Tableau de bord
+// │ │ └── NotFound.tsx # Page 404
+// │ ├── /store # Configuration du store Redux
+// │ │ ├── store.ts # Fichier principal de configuration du store
+// │ │ └── rootReducer.ts # Combinaison des reducers
+// │ ├── /styles # Styles globaux (CSS ou SCSS)
+// │ ├── App.tsx # Composant principal de l'application
+// │ ├── main.tsx # Point d'entrée de l'application
+// │ └── vite-env.d.ts # Types pour Vite
+// ├── .env # Variables d'environnement
+// ├── tsconfig.json # Configuration TypeScript
+// ├── package.json # Dépendances et scripts
+// └── vite.config.ts # Configuration de Vite
+// Explications
+// /public : Contient les fichiers statiques, comme index.html.
+// /src : Dossier principal de votre code source.
+// /assets : Pour les fichiers media (images, icônes) et styles globaux.
+// /components : Composants réutilisables qui peuvent être utilisés dans plusieurs pages.
+// /features : Dossier pour les fonctionnalités spécifiques, chaque fonctionnalité a son propre dossier.
+// /auth : Gestion des fonctionnalités liées à l'authentification.
+// /clients : Gestion des clients et des opérations associées.
+// /transactions : Gestion des transactions financières.
+// /hooks : Pour les hooks personnalisés que vous pourriez créer.
+// /layouts : Composants de mise en page comme le header et le footer.
+// /pages : Pages principales de l'application, chaque page a son propre fichier.
+// /store : Configuration de Redux pour l'application.
+// store.ts : Fichier de configuration principal du store.
+// rootReducer.ts : Combinaison de tous les reducers.
+// /styles : Styles globaux de l'application.
+// App.tsx : Composant principal qui sert de point d'entrée pour l'application.
+// main.tsx : Fichier de démarrage de l'application où le store Redux est intégré.
+// Conclusion
+// Cette structure vous aidera à maintenir votre code organisé et facilement navigable, ce qui est essentiel pour un projet complexe comme une application bancaire. N'hésitez pas à personnaliser cette structure selon les besoins spécifiques de votre projet ! Si vous avez d'autres questions ou besoin de conseils supplémentaires, n'hésitez pas à demander.
 
-Utilisateurs Peuplés
-Vous devriez avoir les utilisateurs suivants dans votre base de données :
 
-Tony Stark
-Prénom : Tony
-Nom : Stark
-Email : tony@stark.com
-Mot de passe : password123
-
-Steve Rogers
-Prénom : Steve
-Nom : Rogers
-Email : steve@rogers.com
-Mot de passe : password456
-
-Documentation de l'API
-Pour en savoir plus sur le fonctionnement de l'API, une fois que votre environnement local est démarré, vous pouvez visiter : http://localhost:3001/api-docs.
-
----
-
-CODESTRAL :
-
-Organiser l'arborescence de vos dossiers et fichiers est une étape cruciale dans le développement de votre application. Voici une proposition d'organisation pour votre projet en React, TypeScript, Redux Toolkit, qui gère de nombreux logins de clients.
-
-/bank-app
-/src
-/assets
-/images
-/fonts
-/components
-/Login
-/ClientDashboard
-/Transactions
-/...
-/features
-/auth
-authSlice.ts
-/clients
-clientsSlice.ts
-/transactions
-transactionsSlice.ts
-/...
-/pages
-/LoginPage
-/ClientPage
-/TransactionsPage
-/...
-/services
-/api
-authApi.ts
-clientsApi.ts
-transactionsApi.ts
-...
-/utils
-/helpers
-/constants
-/styles
-/global
-/components
-App.tsx
-index.tsx
-store.ts
-/public
-.gitignore
-package.json
-README.md
-...
-Explication :
-
-/src : Contient tous les fichiers sources de votre application.
-/assets : Contient les ressources statiques telles que les images et les polices.
-/components : Contient tous les composants React de votre application.
-/features : Contient les fonctionnalités de votre application, chaque fonctionnalité a son propre dossier. Chaque dossier contient un fichier slice pour la gestion de l'état avec Redux Toolkit.
-/pages : Contient les pages de votre application.
-/services : Contient les services API pour communiquer avec le backend.
-/utils : Contient des fichiers utilitaires tels que des fonctions d'aide et des constantes.
-/styles : Contient les fichiers de style globaux et les fichiers de style spécifiques aux composants.
-App.tsx : Le composant racine de votre application.
-index.tsx : Le point d'entrée de votre application.
-store.ts : Le fichier de configuration de votre store Redux.
-/public : Contient les fichiers publics tels que le fichier index.html.
-.gitignore : Spécifie les fichiers et dossiers à ignorer lors du commit dans Git.
-package.json : Contient les métadonnées et les dépendances de votre projet.
-README.md : Contient des informations sur votre projet.
-Cette structure est une suggestion et peut être adaptée en fonction de vos besoins spécifiques. L'important est de maintenir une organisation logique et cohérente pour faciliter la maintenance et l'évolution de votre application.
-
----
-
-GPT4 :
-
-Pour structurer ton projet React avec Vite, TypeScript et Redux Toolkit, il est essentiel de créer une arborescence claire et maintenable, surtout pour un projet de gestion de clients bancaires. Voici une organisation suggérée des dossiers et fichiers :
-
-1. Structure générale
-   scss
-   Copier le code
-   /src
-   │
-   ├── /api
-   │ └── apiClient.ts // Gestion des appels API
-   │
-   ├── /assets // Images, icônes, fichiers statiques
-   │
-   ├── /components // Composants réutilisables
-   │ └── /LoginForm.tsx // Formulaire de login par exemple
-   │
-   ├── /features // Dossiers pour chaque feature principale
-   │ └── /auth // Exemple de feature pour l'authentification
-   │ ├── authSlice.ts // Reducer et actions pour l'auth
-   │ ├── authThunks.ts // Thunks pour les appels asynchrones
-   │ ├── AuthService.ts // Service pour appels API liés à l'auth
-   │ └── index.ts // Export de tout ce qui concerne auth
-   │
-   ├── /hooks // Hooks personnalisés
-   │ └── useAuth.ts // Exemple de hook d'authentification
-   │
-   ├── /pages // Pages principales de l'app
-   │ └── /LoginPage.tsx // Page de login
-   │
-   ├── /store // Store global de Redux
-   │ ├── index.ts // Configuration du store
-   │ └── rootReducer.ts // Combine les slices
-   │
-   ├── /styles // Styles globaux ou spécifiques (CSS, SCSS)
-   │
-   ├── /types // Définitions des types TypeScript
-   │ └── authTypes.ts // Types pour la feature auth par exemple
-   │
-   └── /utils // Fonctions utilitaires
-   └── validation.ts // Validation de formulaires
-2. Détails spécifiques à Redux Toolkit
-   /features : Chaque "feature" (comme l'authentification, les clients, etc.) a son propre dossier. Chaque dossier contient :
-
-Slice : La logique de Redux Toolkit pour cette fonctionnalité (comme l'authSlice pour gérer le login/logout).
-Thunks : Pour gérer les appels API asynchrones.
-Services : Les appels API spécifiques à la feature (par exemple, AuthService pour les requêtes d'authentification).
-/store/index.ts : Le store Redux centralisé où tu configures Redux et inclus le middleware (par exemple, redux-thunk pour les actions asynchrones).
-
-/types : Centraliser les types pour chaque feature facilite la gestion du typage avec TypeScript.
-
-3. Login Management
-   Étant donné que tu dois gérer de nombreux logins clients, séparer la logique d'authentification dans une feature dédiée (auth) est important. Tu pourrais aussi avoir une gestion spécifique des rôles utilisateurs (admin, client, etc.) directement dans ton slice d'authentification.
-
-4. Pages et Composants
-   Organise tes pages (comme LoginPage, DashboardPage) dans un dossier /pages. Les composants réutilisables (boutons, formulaires) devraient aller dans /components.
-
-Cette organisation permet une meilleure modularité et évolutivité, ce qui est crucial pour une application bancaire.
-
----
-
-Claude :
-
-Voici une proposition d'organisation des dossiers et fichiers pour votre projet React Vite en TypeScript avec Redux Toolkit, dans le cadre d'une application bancaire avec de nombreux comptes clients à gérer :
-
-Code
-
-Copier le code
-src/
-├── components/
-│ ├── Header/
-│ │ ├── Header.tsx
-│ │ └── Header.styles.ts
-│ ├── Footer/
-│ │ ├── Footer.tsx
-│ │ └── Footer.styles.ts
-│ ├── LoginForm/
-│ │ ├── LoginForm.tsx
-│ │ └── LoginForm.styles.ts
-│ └── AccountDetails/
-│ ├── AccountDetails.tsx
-│ └── AccountDetails.styles.ts
-├── pages/
-│ ├── HomePage/
-│ │ ├── HomePage.tsx
-│ │ └── HomePage.styles.ts
-│ ├── LoginPage/
-│ │ ├── LoginPage.tsx
-│ │ └── LoginPage.styles.ts
-│ └── AccountPage/
-│ ├── AccountPage.tsx
-│ └── AccountPage.styles.ts
-├── store/
-│ ├── store.ts
-│ ├── rootReducer.ts
-│ ├── auth/
-│ │ ├── authSlice.ts
-│ │ └── authActions.ts
-│ └── accounts/
-│ ├── accountsSlice.ts
-│ └── accountsActions.ts
-├── types/
-│ ├── auth.ts
-│ └── accounts.ts
-├── utils/
-│ ├── api.ts
-│ └── helpers.ts
-├── App.tsx
-└── main.tsx
-Explications :
-
-components/ : Contient tous les composants réutilisables de l'application, organisés par fonctionnalité (Header, Footer, LoginForm, AccountDetails).
-pages/ : Contient les pages principales de l'application, chacune avec son propre composant et styles.
-store/ : Contient la configuration de Redux Toolkit, avec le store principal, le reducer principal, et les slices/actions pour la gestion de l'authentification et des comptes clients.
-types/ : Contient les définitions de types TypeScript pour l'authentification et les comptes clients.
-utils/ : Contient des fonctions utilitaires, comme l'API pour communiquer avec le backend.
-Cette structure permet de séparer clairement les responsabilités et de faciliter la maintenance et l'évolutivité de votre application bancaire. Vous pouvez bien sûr l'adapter en fonction de vos besoins spécifiques.
-
----
-
-ARIA :
-
-Pour un projet de site web React Vite en TypeScript utilisant Redux Toolkit, surtout pour une application bancaire avec de nombreux logins clients, il est crucial d'avoir une arborescence de dossiers bien organisée. Voici une suggestion d'arborescence qui peut être adaptée en fonction de vos besoins spécifiques :
-
-Arborescence suggérée
-/mon-projet-banque
-├── /public
-│ ├── index.html
-│ └── favicon.ico
-├── /src
-│ ├── /assets # Contient des images, des icônes, des styles (CSS/Sass)
-│ ├── /components # Composants réutilisables
-│ ├── /features # Fonctionnalités spécifiques, chaque fonctionnalité peut avoir son dossier
-│ │ ├── /auth # Gestion de l'authentification (login, logout)
-│ │ │ ├── authSlice.ts # Slice Redux pour l'authentification
-│ │ │ ├── Login.tsx # Composant de login
-│ │ │ └── Register.tsx # Composant d'inscription
-│ │ ├── /clients # Gestion des clients
-│ │ │ ├── clientsSlice.ts # Slice Redux pour les clients
-│ │ │ ├── ClientList.tsx # Liste des clients
-│ │ │ └── ClientDetail.tsx # Détails d'un client
-│ │ └── /transactions # Gestion des transactions
-│ │ ├── transactionsSlice.ts # Slice Redux pour les transactions
-│ │ ├── TransactionList.tsx # Liste des transactions
-│ │ └── TransactionDetail.tsx # Détails d'une transaction
-│ ├── /hooks # Hooks personnalisés si besoin
-│ ├── /layouts # Layouts de l'application (par exemple Header, Footer)
-│ ├── /pages # Pages principales de l'application
-│ │ ├── Home.tsx # Page d'accueil
-│ │ ├── Dashboard.tsx # Tableau de bord
-│ │ └── NotFound.tsx # Page 404
-│ ├── /store # Configuration du store Redux
-│ │ ├── store.ts # Fichier principal de configuration du store
-│ │ └── rootReducer.ts # Combinaison des reducers
-│ ├── /styles # Styles globaux (CSS ou SCSS)
-│ ├── App.tsx # Composant principal de l'application
-│ ├── main.tsx # Point d'entrée de l'application
-│ └── vite-env.d.ts # Types pour Vite
-├── .env # Variables d'environnement
-├── tsconfig.json # Configuration TypeScript
-├── package.json # Dépendances et scripts
-└── vite.config.ts # Configuration de Vite
-Explications
-/public : Contient les fichiers statiques, comme index.html.
-/src : Dossier principal de votre code source.
-/assets : Pour les fichiers media (images, icônes) et styles globaux.
-/components : Composants réutilisables qui peuvent être utilisés dans plusieurs pages.
-/features : Dossier pour les fonctionnalités spécifiques, chaque fonctionnalité a son propre dossier.
-/auth : Gestion des fonctionnalités liées à l'authentification.
-/clients : Gestion des clients et des opérations associées.
-/transactions : Gestion des transactions financières.
-/hooks : Pour les hooks personnalisés que vous pourriez créer.
-/layouts : Composants de mise en page comme le header et le footer.
-/pages : Pages principales de l'application, chaque page a son propre fichier.
-/store : Configuration de Redux pour l'application.
-store.ts : Fichier de configuration principal du store.
-rootReducer.ts : Combinaison de tous les reducers.
-/styles : Styles globaux de l'application.
-App.tsx : Composant principal qui sert de point d'entrée pour l'application.
-main.tsx : Fichier de démarrage de l'application où le store Redux est intégré.
-Conclusion
-Cette structure vous aidera à maintenir votre code organisé et facilement navigable, ce qui est essentiel pour un projet complexe comme une application bancaire. N'hésitez pas à personnaliser cette structure selon les besoins spécifiques de votre projet ! Si vous avez d'autres questions ou besoin de conseils supplémentaires, n'hésitez pas à demander.
-
-,
-
-// // // // // // // // // // // // // // // // // // // 
-
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import signin from "./signin.module.scss";
-import { loginUser } from "../../utils/authService";
-
-const SignIn: React.FC = () => {
-  const navigate = useNavigate(); // Hook de navigation
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const credentials = {
-      email: (document.getElementById("username") as HTMLInputElement).value,
-      password: (document.getElementById("password") as HTMLInputElement).value,
-    };
-
-    try {
-      const data = await loginUser(credentials);
-      // Si la connexion réussit, redirection vers la page utilisateur
-      navigate("/User"); // Rediriger vers /User après connexion réussie
-    } catch (error) {
-      console.error("Error during login:", error);
-      // Gérer l'erreur, comme afficher un message à l'utilisateur
-    }
-  };
-
-  return (
-    <main className={signin["bg-dark"]}>
-      <section className={signin["sign-in-content"]}>
-        <i className="fa fa-user-circle"></i>
-        <h1>Sign In</h1>
-        <form onSubmit={handleSubmit}>
-          <div className={signin["input-wrapper"]}>
-            <label htmlFor="username">Username</label>
-            <input type="text" id="username" />
-          </div>
-          <div className={signin["input-wrapper"]}>
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" />
-          </div>
-          <div className={signin["input-remember"]}>
-            <input type="checkbox" id="remember-me" />
-            <label htmlFor="remember-me">Remember me</label>
-          </div>
-          <button className={signin["sign-in-button"]}>Sign In</button>
-        </form>
-      </section>
-    </main>
-  );
-};
-
-export default SignIn;
-
-// // // // // // // // // // // // // // // // // 
-
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // **Import du hook useNavigate pour la redirection**
-import signin from "./signin.module.scss";
-import classNames from "classnames";
-import { loginUser } from "../../utils/authService";
-
-const SignIn: React.FC = () => {
-	const [email, setEmail] = useState(""); // **Ajout de l'état pour email**
-	const [password, setPassword] = useState(""); // **Ajout de l'état pour password**
-	const [error, setError] = useState<string | null>(null); // **Ajout de l'état pour gérer les erreurs**
-	const navigate = useNavigate(); // **Hook pour la redirection**
-
-	const handleSubmit = async (event: React.FormEvent) => {
-		event.preventDefault();
-		try {
-			const result = await loginUser({ email, password }); // **Appel à la fonction loginUser**
-			console.log("Login successful:", result);
-			navigate("/User"); // **Redirection après login réussi**
-		} catch (err) {
-			if (err instanceof Error) {
-				setError(err.message); // Si err est bien une instance de Error, on affiche le message d'erreur
-			} else {
-				setError("An unknown error occurred"); // Sinon, on affiche un message d'erreur générique
-			}
-		}
-	};
-
-	return (
-		<main className={signin["bg-dark"]}>
-			<section className={signin["sign-in-content"]}>
-				<i
-					className={classNames(
-						"fa",
-						"fa-user-circle",
-						signin["sign-in-icon"]
-					)}></i>
-				<h1>Sign In</h1>
-				<form onSubmit={handleSubmit}>
-					<div className={signin["input-wrapper"]}>
-						<label htmlFor="username">Username</label>
-						<input
-							type="email"
-							id="username"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
-						/>
-					</div>
-					<div className={signin["input-wrapper"]}>
-						<label htmlFor="password">Password</label>
-						<input
-							type="password"
-							id="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
-					</div>
-					{error && <p className={signin["error-message"]}>{error}</p>}
-					<div className={signin["input-remember"]}>
-						<input type="checkbox" id="remember-me" />
-						<label htmlFor="remember-me">Remember me</label>
-					</div>
-					<button className={signin["sign-in-button"]}>Sign In</button>
-				</form>
-			</section>
-		</main>
-	);
-};
-
-export default SignIn;
-
-
-// // // // // // // // // // // // // // 
-
-// src/store.ts
-import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "../features/counter/counterSilice"; // Assurez-vous d'importer le bon reducer
-import usersReducer from "../features/users/usersSlice"; // Ajoutez cette ligne
-
-const store = configureStore({
-  reducer: {
-    counter: counterReducer, // Ajoutez le reducer ici
-    users: usersReducer, // Ajoutez le reducer des utilisateurs ici
-  },
-});
-
-export type RootState = ReturnType<typeof store.getState>; // Type pour le state
-export type AppDispatch = typeof store.dispatch; // Type pour le dispatch
-
-export default store;
-// // // // // // // // // // // // // // // // 
-
-
-// src/pages/User.tsx
-import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import user from "./user.module.scss";
-
-const User: React.FC = () => {
-  const users = useSelector((state: RootState) => state.user.users); // **Sélection des utilisateurs depuis le store**
-
-  return (
-    <main className={user["bg-dark"]}>
-      <div className="header">
-        <h1>
-          Welcome back
-          <br />
-          {users[0].firstName} {users[0].lastName}!
-        </h1>
-        <button className={user["edit-button"]}>Edit Name</button>
-      </div>
-      <h2 className="sr-only">Accounts</h2>
-      {/* Exemple d'affichage pour Tony Stark */}
-      <section className={user["account"]}>
-        <div className={user["account-content-wrapper"]}>
-          <h3 className={user["account-title"]}>
-            Argent Bank Checking (x8349)
-          </h3>
-          <p className={user["account-amount"]}>$2,082.79</p>
-          <p className={user["account-amount-description"]}>
-            Available Balance
-          </p>
-        </div>
-        <div className={user["account-content-wrapper cta"]}>
-          <button className={user["transaction-button"]}>
-            View transactions
-          </button>
-        </div>
-      </section>
-    </main>
-  );
-};
-
-export default User;
-
-// // // // // // // // // // // // // // 
-
-
-// src/pages/User/User.tsx
-import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store"; // Assurez-vous que le chemin vers le store est correct
-import user from "./user.module.scss";
-
-const User: React.FC = () => {
-  // Get the first user for the purpose of this example (Steve Rogers or Tony Stark)
-  const userData = useSelector((state: RootState) => state.users.users[0]);
-
-  if (!userData) {
-    return <p>Loading user data...</p>;
-  }
-
-  return (
-    <main className={user["bg-dark"]}>
-      <div className="header">
-        <h1>
-          Welcome back
-          <br />
-          {userData.firstName} {userData.lastName}!
-        </h1>
-        <button className={user["edit-button"]}>Edit Name</button>
-      </div>
-
-      <h2 className="sr-only">Accounts</h2>
-
-      {/* Display each account */}
-      {userData.accounts.map((account) => (
-        <section className={user["account"]} key={account.accountNumber}>
-          <div className={user["account-content-wrapper"]}>
-            <h3 className={user["account-title"]}>
-              {account.accountName} (x{account.accountNumber.slice(-4)})
-            </h3>
-            <p className={user["account-amount"]}>{account.balance}</p>
-            <p className={user["account-amount-description"]}>
-              {account.balanceType}
-            </p>
-          </div>
-          <div className={user["account-content-wrapper cta"]}>
-            <button className={user["transaction-button"]}>
-              View transactions
-            </button>
-          </div>
-        </section>
-      ))}
-    </main>
-  );
-};
-
-export default User;
-
-// // // // // // // // // // // // // // // // 
-
-import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
-import user from "./user.module.scss";
-
-const User: React.FC = () => {
-  // Get the first user for the purpose of this example (Steve Rogers or Tony Stark)
-  const userData = useSelector((state: RootState) => state.users.users[0]);
-
-  // Ajout d'un console.log pour vérifier le contenu de userData
-  console.log("User data from store:", userData);
-
-  if (!userData) {
-    return <p>Loading user data...</p>; // Si userData est null ou undefined, le message de chargement est affiché
-  }
-
-  return (
-    <main className={user["bg-dark"]}>
-      <div className="header">
-        <h1>
-          Welcome back
-          <br />
-          {userData.firstName} {userData.lastName}!
-        </h1>
-        <button className={user["edit-button"]}>Edit Name</button>
-      </div>
-
-      <h2 className="sr-only">Accounts</h2>
-
-      {userData.accounts.map((account) => (
-        <section className={user["account"]} key={account.accountNumber}>
-          <div className={user["account-content-wrapper"]}>
-            <h3 className={user["account-title"]}>
-              {account.accountName} (x{account.accountNumber.slice(-4)})
-            </h3>
-            <p className={user["account-amount"]}>{account.balance}</p>
-            <p className={user["account-amount-description"]}>
-              {account.balanceType}
-            </p>
-          </div>
-          <div className={user["account-content-wrapper cta"]}>
-            <button className={user["transaction-button"]}>
-              View transactions
-            </button>
-          </div>
-        </section>
-      ))}
-    </main>
-  );
-};
-
-export default User;
-
-
-// // // // // // // // // // // // // // // 
-
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { usersMockData } from "../mockData/users";
-
-interface Account {
-  accountName: string;
-  accountNumber: string;
-  balance: string;
-  balanceType: string;
-}
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  userName: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-  accounts: Account[];
-}
-
-interface UsersState {
-  users: User[];
-}
-
-const initialState: UsersState = {
-  users: usersMockData,
-};
-
-const usersSlice = createSlice({
-  name: "users",
-  initialState,
-  reducers: {
-    // Action pour ajouter un utilisateur
-    addUser: (state, action: PayloadAction<User>) => {
-      state.users.push(action.payload);
-    },
-    // Action pour réinitialiser les utilisateurs
-    resetUsers: (state) => {
-      state.users = initialState.users; // Remet le state à l'état initial
-    },
-    // Action pour mettre à jour les utilisateurs
-    setUsers: (state, action: PayloadAction<User[]>) => {
-      state.users = action.payload; // Met à jour les utilisateurs avec de nouvelles données
-    },
-  },
-});
-
-export const { addUser, resetUsers, setUsers } = usersSlice.actions;
-
-export default usersSlice.reducer;
- 
-// // // // // // // // // // // // // 
-
-
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { usersMockData } from "../mockData/users";
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  userName: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface UsersState {
-  users: User[];
-  isAuthenticated: boolean; // Nouvel état pour l'authentification
-}
-
-const initialState: UsersState = {
-  users: usersMockData,
-  isAuthenticated: false, // Par défaut, l'utilisateur n'est pas connecté
-};
-
-const usersSlice = createSlice({
-  name: "users",
-  initialState,
-  reducers: {
-    addUser: (state, action: PayloadAction<User>) => {
-      state.users.push(action.payload);
-    },
-    setAuthentication: (state, action: PayloadAction<boolean>) => {
-      state.isAuthenticated = action.payload; // Mise à jour de l'état d'authentification
-    },
-    resetUsers: (state) => {
-      state.users = initialState.users;
-      state.isAuthenticated = false; // Réinitialiser l'authentification lors d'un sign out
-    },
-  },
-});
-
-export const { addUser, setAuthentication, resetUsers } = usersSlice.actions;
-export default usersSlice.reducer;
-
-// // // // // // // // // // // // // // // // // // 
-
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import signin from "./signin.module.scss";
-import { loginUser } from "../../utils/authService";
-import { useNavigate } from "react-router-dom";
-import { setAuthentication } from "../../store/usersSlice"; // Import de l'action
-
-const SignIn: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    try {
-      const result = await loginUser({ email, password });
-      console.log("Login successful:", result);
-      dispatch(setAuthentication(true)); // Mise à jour de l'état d'authentification
-      navigate("/user"); // Redirection vers la page utilisateur après connexion réussie
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
-    }
-  };
-
-  return (
-    <main className={signin["bg-dark"]}>
-      <section className={signin["sign-in-content"]}>
-        {/* Le reste de votre formulaire */}
-      </section>
-    </main>
-  );
-};
-
-export default SignIn;
-
-// // // // // // // // // // // // 
-
-import React from "react";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store"; // Import du type RootState
-import { resetUsers } from "../../store/usersSlice"; // Import de l'action pour sign out
-
-const Header: React.FC = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.users.isAuthenticated);
-  const dispatch = useDispatch();
-
-  const handleSignOut = () => {
-    dispatch(resetUsers()); // Réinitialiser les utilisateurs et déconnecter l'utilisateur
-  };
-
-  return (
-    <header>
-      <nav>
-        <Link to="/">Home</Link>
-        {isAuthenticated ? (
-          <button onClick={handleSignOut}>Sign Out</button>
-        ) : (
-          <Link to="/signin">Sign In</Link>
-        )}
-      </nav>
-    </header>
-  );
-};
-
-export default Header;
 
 
 // // // // // // // // // // // // // // // // // // // 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store"; // Import du type RootState
-import { resetUsers, setAuthentication } from "../../store/usersSlice"; // Import des actions
-import header from "./header.module.scss";
-
-const Header: React.FC = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.users.isAuthenticated);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleSignOut = () => {
-    // Réinitialiser l'état des utilisateurs et marquer l'utilisateur comme déconnecté
-    dispatch(resetUsers());
-    dispatch(setAuthentication(false)); // Optionnel, car resetUsers gère déjà cet état
-    navigate("/signin"); // Rediriger vers la page de connexion après déconnexion
-  };
-
-  return (
-    <header className={header.header}>
-      <nav className={header.nav}>
-        <Link to="/" className={header["nav-link"]}>
-          Home
-        </Link>
-        {isAuthenticated ? (
-          <button className={header["nav-link"]} onClick={handleSignOut}>
-            Sign Out
-          </button>
-        ) : (
-          <Link to="/signin" className={header["nav-link"]}>
-            Sign In
-          </Link>
-        )}
-      </nav>
-    </header>
-  );
-};
-
-export default Header;
-
-// // // // // // // // // // // // // // // 
-
-
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import signin from "./signin.module.scss";
-import { useNavigate } from "react-router-dom";
-import { setAuthentication } from "../../store/usersSlice"; // Import de l'action
-
-const SignIn: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    // Logique de connexion ici...
-    dispatch(setAuthentication(true)); // Met l'état d'authentification à vrai
-    navigate("/user"); // Redirection vers la page utilisateur
-  };
-
-  return (
-    <main className={signin["bg-dark"]}>
-      <section className={signin["sign-in-content"]}>
-        {/* Ton formulaire de connexion ici */}
-      </section>
-    </main>
-  );
-};
-
-export default SignIn;
-
-// // // // // // // // // // // // // 
-
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { usersMockData } from "../mockData/users";
-
-interface Account {
-	accountName: string;
-	accountNumber: string;
-	balance: string;
-	balanceType: string;
-}
-
-interface User {
-	id: string;
-	firstName: string;
-	lastName: string;
-	userName: string;
-	email: string;
-	createdAt: string;
-	updatedAt: string;
-	accounts: Account[];
-}
-
-interface UsersState {
-	users: User[];
-	isAuthenticated: boolean;
-	currentUser: User | null;
-}
-
-const initialState: UsersState = {
-	users: usersMockData,
-	isAuthenticated: false,
-	currentUser: null,  // Pour stocker l'utilisateur connecté
-};
-
-const usersSlice = createSlice({
-	name: "users",
-	initialState,
-	reducers: {
-		// Ajout d'un reducer pour la connexion de l'utilisateur
-		loginUser: (state, action: PayloadAction<string>) => {
-			// Chercher l'utilisateur par email
-			const user = state.users.find((user) => user.email === action.payload);
-			if (user) {
-				state.currentUser = user;
-				state.isAuthenticated = true;
-			}
-		},
-		// Action pour déconnexion et réinitialisation des données
-		resetUsers: (state) => {
-			state.currentUser = null;
-			state.isAuthenticated = false;
-		},
-	},
-});
-
-export const { loginUser, resetUsers } = usersSlice.actions;
-
-export default usersSlice.reducer;
-
-// // // // // // // // // // // // // 
-
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store";
-import { resetUsers } from "../../store/usersSlice"; // Import de resetUsers
-import header from "./header.module.scss";
-
-const Header: React.FC = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.users.isAuthenticated);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleSignOut = () => {
-    // Réinitialiser l'état des utilisateurs et marquer l'utilisateur comme déconnecté
-    dispatch(resetUsers());
-    navigate("/signin"); // Redirection vers la page de connexion après déconnexion
-  };
-
-  return (
-    <header className={header.header}>
-      <nav className={header.nav}>
-        <Link to="/" className={header["nav-link"]}>
-          Home
-        </Link>
-        {isAuthenticated ? (
-          <button className={header["nav-link"]} onClick={handleSignOut}>
-            Sign Out
-          </button>
-        ) : (
-          <Link to="/signin" className={header["nav-link"]}>
-            Sign In
-          </Link>
-        )}
-      </nav>
-    </header>
-  );
-};
-
-export default Header;
-
-
-// // // // // // // // // // 
-
-import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
-import user from "./user.module.scss";
-
-const User: React.FC = () => {
-  const currentUser = useSelector((state: RootState) => state.users.currentUser);
-
-  if (!currentUser) {
-    return <p>Loading...</p>; // Gestion du cas où l'utilisateur n'est pas chargé
-  }
-
-  return (
-    <main className={user["bg-dark"]}>
-      <div className="header">
-        <h1>
-          Welcome back
-          <br />
-          {currentUser.firstName} {currentUser.lastName}!
-        </h1>
-        <button className={user["edit-button"]}>Edit Name</button>
-      </div>
-      <h2 className="sr-only">Accounts</h2>
-      {currentUser.accounts.map((account) => (
-        <section className={user["account"]} key={account.accountNumber}>
-          <div className={user["account-content-wrapper"]}>
-            <h3 className={user["account-title"]}>
-              {account.accountName} (x{account.accountNumber.slice(-4)})
-            </h3>
-            <p className={user["account-amount"]}>{account.balance}</p>
-            <p className={user["account-amount-description"]}>
-              {account.balanceType}
-            </p>
-          </div>
-          <div className={user["account-content-wrapper cta"]}>
-            <button className={user["transaction-button"]}>
-              View transactions
-            </button>
-          </div>
-        </section>
-      ))}
-    </main>
-  );
-};
-
-export default User;
-
-
-// // // // // // // // // // // // // 
-
-const usersSlice = createSlice({
-   name: "users",
-   initialState,
-   reducers: {
-     setCurrentUser: (state, action: PayloadAction<User>) => {
-       state.currentUser = action.payload;
-     },
-     resetCurrentUser: (state) => {
-       state.currentUser = null;
-     },
-     resetUsers: (state) => {
-       state.users = initialState.users;
-       state.isAuthenticated = false;
-       state.currentUser = null;  // Reset currentUser when logged out
-     },
-     // D'autres reducers...
-   },
- });
+// // // // // //
  
- export const { setCurrentUser, resetCurrentUser, resetUsers } = usersSlice.actions;
- 
-// // // // // // // // // // // //  
-
-
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { usersMockData } from "../../mockData/users";
-
-interface Account {
-	accountName: string;
-	accountNumber: string;
-	balance: string;
-	balanceType: string;
-}
-
-interface User {
-	id: string;
-	firstName: string;
-	lastName: string;
-	userName: string;
-	email: string;
-	createdAt: string;
-	updatedAt: string;
-	accounts: Account[];
-}
-
-interface UsersState {
-	users: User[];
-	isAuthenticated: boolean;
-	currentUser: User | null;
-}
-
-const initialState: UsersState = {
-	users: usersMockData,
-	isAuthenticated: false,
-	currentUser: null,
-};
-
-const usersSlice = createSlice({
-	name: "users",
-	initialState,
-	reducers: {
-		addUser: (state, action: PayloadAction<User>) => {
-			state.users.push(action.payload);
-		},
-
-		setAuthentication: (state, action: PayloadAction<boolean>) => {
-			state.isAuthenticated = action.payload;
-		},
-
-		// Reducer pour la connexion de l'utilisateur
-		loginUser: (state, action: PayloadAction<string>) => {
-			const user = state.users.find((user) => user.email === action.payload);
-			if (user) {
-				state.currentUser = user;
-				state.isAuthenticated = true;
-			}
-		},
-
-		// Reducer pour la déconnexion de l'utilisateur
-		logoutUser: (state) => {
-			state.currentUser = null;
-			state.isAuthenticated = false;
-		},
-
-		// Réinitialisation des utilisateurs et de l'état d'authentification
-		resetUsers: (state) => {
-			state.users = initialState.users;
-			state.isAuthenticated = false;
-			state.currentUser = null;  // Réinitialiser également l'utilisateur courant
-		},
-	},
-});
-
-export const { addUser, resetUsers, setAuthentication, loginUser, logoutUser } = usersSlice.actions;
-
-export default usersSlice.reducer;
-
-// // // // // // // // // // 
-
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/Store";
-import { resetUsers, setAuthentication } from "../../pages/user/usersSilice";
-
-const Header: React.FC = () => {
-	const isAuthenticated = useSelector(
-		(state: RootState) => state.users.isAuthenticated
-	);
-	const currentUser = useSelector((state: RootState) => state.users.currentUser);
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
-
-	const handleSignOut = () => {
-		dispatch(resetUsers()); // Réinitialiser les utilisateurs et déconnecter l'utilisateur
-		dispatch(setAuthentication(false)); // Déconnexion explicite (facultatif)
-		navigate("/signin"); // Rediriger vers la page de connexion
-	};
-
-	return (
-		<nav className="main-nav">
-			<a className="main-nav-logo" href="./">
-				<img
-					className="main-nav-logo-image"
-					src="./src/assets/img/argentBankLogo.svg"
-					alt="Argent Bank Logo"
-				/>
-				<h1 className="sr-only">Argent Bank</h1>
-			</a>
-
-			{isAuthenticated && currentUser ? (
-				<div>
-					<Link to="/profile">
-						<i className="fa fa-user-circle"></i> {currentUser.firstName}
-					</Link>
-					<Link to="/signin" onClick={handleSignOut}>
-						<i className="fa fa-sign-out"></i> Sign Out
-					</Link>
-				</div>
-			) : (
-				<Link to="/signin" className="main-nav-item">
-					<i className="fa fa-user-circle"></i> Sign In
-				</Link>
-			)}
-		</nav>
-	);
-};
-
-export default Header;
-
-// // // // // // // // // // // // // // 
-
-const handleLogin = async (e: React.FormEvent) => {
-   e.preventDefault();
- 
-   // Effectuer la requête de connexion
-   const response = await fetch("/user/login", {
-     method: "POST",
-     headers: { "Content-Type": "application/json" },
-     body: JSON.stringify({
-       email: loginData.email,
-       password: loginData.password,
-     }),
-   });
- 
-   const data = await response.json();
- 
-   if (data.status === 200) {
-     const token = data.body.token;
- 
-     // Requête pour obtenir les informations utilisateur après le login
-     const userResponse = await fetch("/user/profile", {
-       method: "GET",
-       headers: {
-         Authorization: `Bearer ${token}`,
-       },
-     });
- 
-     const userData = await userResponse.json();
- 
-     // Dispatch pour stocker les données utilisateur dans Redux
-     dispatch(loginUser(userData.body)); // Modifier selon ton API
-     
-     navigate("/user");
-   } else {
-     console.error("Login failed:", data.message);
-   }
- };
- 
-
-// // // // // // // // // // // //  
-
-const handleSubmit = async (event: React.FormEvent) => {
-	event.preventDefault();
-	try {
-		// Requête de login pour récupérer le token
-		const result = await loginUser({ email, password });
-		console.log("Login successful:", result);
-
-		// Récupérer le token
-		const token = result.body.token;
-
-		// Requête pour obtenir les informations de l'utilisateur
-		const userResponse = await fetch("/user/profile", {
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${token}`, // Utilise le token pour autoriser la requête
-			},
-		});
-
-		const userData = await userResponse.json();
-
-		// Vérification si les données sont bien reçues
-		if (userData) {
-			// Mettre à jour le currentUser dans Redux
-			dispatch(setAuthentication(true)); // Authentification
-			dispatch(loginUser(userData.body)); // Mettre à jour currentUser dans le store
-			navigate("/User"); // Redirection vers la page utilisateur
-		} else {
-			setError("Failed to retrieve user data.");
-		}
-	} catch (err) {
-		if (err instanceof Error) {
-			setError(err.message);
-		} else {
-			setError("An unknown error occurred");
-		}
-	}
-};
-
-// // // // // // // // // // // // 
-import { configureStore } from "@reduxjs/toolkit";
-import thunk from "redux-thunk";
-import usersReducer from "../features/user/usersSlice";
-
-const store = configureStore({
-	reducer: {
-		users: usersReducer,
-	},
-	middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
-});
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
-export default store;
-
-// // // // // // // // // // // // // 
-
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppDispatch } from "../../store/Store";
-import { usersMockData } from "../../mockData/users";
-
-interface Account {
-	accountName: string;
-	accountNumber: string;
-	balance: string;
-	balanceType: string;
-}
-
-interface User {
-	id: string;
-	firstName: string;
-	lastName: string;
-	userName: string;
-	email: string;
-	createdAt: string;
-	updatedAt: string;
-	accounts: Account[];
-}
-
-interface UsersState {
-	users: User[];
-	isAuthenticated: boolean;
-	currentUser: User | null;
-}
-
-const initialState: UsersState = {
-	users: usersMockData,
-	isAuthenticated: false,
-	currentUser: null,
-};
-
-const usersSlice = createSlice({
-	name: "users",
-	initialState,
-	reducers: {
-		setAuthentication: (state, action: PayloadAction<boolean>) => {
-			state.isAuthenticated = action.payload;
-		},
-		loginUserSuccess: (state, action: PayloadAction<User>) => {
-			state.currentUser = action.payload;
-			state.isAuthenticated = true;
-		},
-		resetUsers: (state) => {
-			state.users = initialState.users;
-			state.isAuthenticated = false;
-		},
-	},
-});
-
-export const { setAuthentication, loginUserSuccess, resetUsers } = usersSlice.actions;
-
-// Action asynchrone pour la connexion
-export const loginUser = (email: string, token: string) => async (dispatch: AppDispatch) => {
-	try {
-		const userResponse = await fetch("/user/profile", {
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${token}`, // Utilise le token pour l'autorisation
-			},
-		});
-
-		const userData = await userResponse.json();
-
-		if (userData) {
-			// Dispatch pour mettre à jour le currentUser
-			dispatch(loginUserSuccess(userData.body));
-		}
-	} catch (error) {
-		console.error("Failed to login user:", error);
-	}
-};
-
-export default usersSlice.reducer;
-
-
-// // // // // // // // // // // // // // // // // // // // 
-
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import signin from "./signin.module.scss";
-import classNames from "classnames";
-import { loginUser } from "../user/usersSilice"; // Maintenant importé depuis le slice
-import { setAuthentication } from "../user/usersSilice";
-
-const SignIn: React.FC = () => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState<string | null>(null);
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
-
-	const handleSubmit = async (event: React.FormEvent) => {
-		event.preventDefault();
-		try {
-			// Requête de login pour récupérer le token
-			const result = await loginUser({ email, password });
-			console.log("Login successful:", result);
-
-			// Récupérer le token
-			const token = result.body.token;
-
-			// Dispatch de l'action asynchrone pour récupérer les données utilisateur
-			dispatch(loginUser(email, token)); // Utilisation de l'action asynchrone
-
-			// Mettre à jour l'authentification
-			dispatch(setAuthentication(true));
-			navigate("/User");
-		} catch (err) {
-			if (err instanceof Error) {
-				setError(err.message);
-			} else {
-				setError("An unknown error occurred");
-			}
-		}
-	};
-
-	return (
-		<main className={signin["bg-dark"]}>
-			<section className={signin["sign-in-content"]}>
-				<i
-					className={classNames(
-						"fa",
-						"fa-user-circle",
-						signin["sign-in-icon"]
-					)}></i>
-				<h1>Sign In</h1>
-				<form onSubmit={handleSubmit}>
-					<div className={signin["input-wrapper"]}>
-						<label htmlFor="username">Username</label>
-						<input
-							type="email"
-							id="username"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
-						/>
-					</div>
-					<div className={signin["input-wrapper"]}>
-						<label htmlFor="password">Password</label>
-						<input
-							type="password"
-							id="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
-					</div>
-					{error && <p className={signin["error-message"]}>{error}</p>}
-					<div className={signin["input-remember"]}>
-						<input type="checkbox" id="remember-me" />
-						<label htmlFor="remember-me">Remember me</label>
-					</div>
-					<button className={signin["sign-in-button"]}>Sign In</button>
-				</form>
-			</section>
-		</main>
-	);
-};
-
-export default SignIn;
-
-// // // // // // // // 
-
-import { configureStore } from "@reduxjs/toolkit";
-import thunkMiddleware from "redux-thunk"; // Import du middleware thunk
-import counterReducer from "../features/counter/counterSilice";
-import usersReducer from "../pages/user/usersSilice";
-
-const store = configureStore({
-  reducer: {
-    counter: counterReducer,
-    users: usersReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(thunkMiddleware), // Ajout explicite de thunk
-});
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
-export default store;
-
-// // // // // // // // // // // // // 
-
-const handleSubmit = async (event: React.FormEvent) => {
-   event.preventDefault();
-   try {
-     // Requête de login pour récupérer le token
-     const result = await loginUser({ email, password });
-     console.log("Login successful:", result);
-     const token = result.body.token;
- 
-     // Fetch des données utilisateur avec le token et dispatch l'utilisateur
-     await dispatch<any>(loginUser(email, token)); // Assurer l'utilisation de thunk
-     dispatch(setAuthentication(true)); // Mettre à jour l'authentification
-     navigate("/User");
-   } catch (err) {
-     if (err instanceof Error) {
-       setError(err.message);
-     } else {
-       setError("An unknown error occurred");
-     }
-   }
- };
- 
-// // // // // // // // // // // // // // //  
-
-const handleSubmit = async (event: React.FormEvent) => {
-   event.preventDefault();
-   try {
-     // Requête de login pour récupérer le token
-     const result = await loginUser({ email, password });
-     console.log("Login successful:", result);
-     const token = result.body.token;
- 
-     // Utilisation de AppDispatch pour éviter `any`
-     await dispatch<AppDispatch>(loginUser(email, token)); // Dispatch asynchrone avec type
-    
-    
-    
-    
-    
-    
-    
-      dispatch(setAuthentication(true)); // Mettre à jour l'authentification
-     navigate("/User");
-   } catch (err) {
-     if (err instanceof Error) {
-       setError(err.message);
-     } else {
-       setError("An unknown error occurred");
-     }
-   }
- };
- 
-// // // // // // // // // // // // //  
-
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import signin from "./signin.module.scss";
-import classNames from "classnames";
-import { loginUser } from "../../utils/authService";
-import { loginUserSuccess, setAuthentication } from "../user/usersSilice";
-import { AppDispatch } from "../../store/Store"; // Assure-toi que le chemin est correct
-
-const SignIn: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    try {
-      // Requête de login pour récupérer le token
-      const result = await loginUser({ email, password });
-      console.log("Login successful:", result);
-
-      const token: string = result.body.token; // Typage explicite du token
-
-      // Utiliser AppDispatch pour typer dispatch
-      await dispatch<AppDispatch>(loginUser(email, token)); // Dispatch asynchrone typé
-      dispatch(setAuthentication(true));
-      navigate("/User");
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
-    }
-  };
-
-  return (
-    <main className={signin["bg-dark"]}>
-      <section className={signin["sign-in-content"]}>
-        <i className={classNames("fa", "fa-user-circle", signin["sign-in-icon"])}></i>
-        <h1>Sign In</h1>
-        <form onSubmit={handleSubmit}>
-          <div className={signin["input-wrapper"]}>
-            <label htmlFor="username">Username</label>
-            <input
-              type="email"
-              id="username"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className={signin["input-wrapper"]}>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {error && <p className={signin["error-message"]}>{error}</p>}
-          <div className={signin["input-remember"]}>
-            <input type="checkbox" id="remember-me" />
-            <label htmlFor="remember-me">Remember me</label>
-          </div>
-          <button className={signin["sign-in-button"]}>Sign In</button>
-        </form>
-      </section>
-    </main>
-  );
-};
-
-export default SignIn;
-
-// // // // // // // // // // // // // 
-
-interface LoginResponse {
-   body: {
-     token: string;
-   };
- }
- 
- export const loginUser = async (credentials: { email: string; password: string }): Promise<LoginResponse> => {
-   const response = await fetch("/api/login", {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-     },
-     body: JSON.stringify(credentials),
-   });
- 
-   if (!response.ok) {
-     throw new Error("Failed to login");
-   }
- 
-   return response.json();
- };
- 
-// // // // // // // // // //  
-
-export const loginUser =
-  (email: string, token: string) => async (dispatch: AppDispatch) => {
-    try {
-      const userResponse = await fetch("/user/profile", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const userData = await userResponse.json();
-
-      if (userData) {
-        dispatch(loginUserSuccess(userData.body));
-      }
-    } catch (error) {
-      console.error("Failed to login user:", error);
-    }
-  };
-
-// // // // // // // // // // // // //   
-
-const loginResponseSchema = z.object({
-   status: z.number(),
-   message: z.string(),
-   body: z.object({
-     token: z.string(),
-     user: z.object({
-       id: z.string(),
-       email: z.string(),
-       // autres champs si nécessaire
-     }),
-   }),
- });
- 
-// // // // // // // // // // // // //  
-
-import { z } from "zod";
-
-// Schéma pour la réponse de l'API
-const loginResponseSchema = z.object({
-  status: z.number(),
-  message: z.string(),
-  body: z.object({
-    token: z.string(),
-    user: z.object({
-      id: z.string(),
-      email: z.string(),
-      userName: z.string(),
-      // Autres champs si nécessaire
-    }),
-  }),
-});
-
-type LoginResponse = z.infer<typeof loginResponseSchema>;
-
-const loginSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-type LoginCredentials = z.infer<typeof loginSchema>;
-
-export const loginUser = async (credentials: LoginCredentials) => {
-  // Validation des credentials
-  const parsedCredentials = loginSchema.safeParse(credentials);
-  if (!parsedCredentials.success) {
-    throw new Error(parsedCredentials.error.message);
-  }
-
-  const requestOptions: RequestInit = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: credentials.email,
-      password: credentials.password,
-    }),
-    redirect: "follow",
-  };
-
-  try {
-    const response = await fetch(
-      "http://localhost:3001/api/v1/user/login",
-      requestOptions
-    );
-
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(`Login failed: ${response.status} - ${data.message}`);
-    }
-
-    const data = await response.json();
-
-    // Validation de la réponse API avec Zod
-    const parsedResponse = loginResponseSchema.safeParse(data);
-    if (!parsedResponse.success) {
-      throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
-    }
-
-    return parsedResponse.data; // Retourne la réponse validée (token, user, etc.)
-  } catch (error) {
-    console.error("Error during login:", error);
-    throw error;
-  }
-};
-// // // // // // // // // // // // 
-
-const loginResponseSchema = z.object({
-   status: z.number(),
-   message: z.string(),
-   body: z.object({
-     token: z.string(),
-     user: z.object({
-       id: z.string(),
-       firstName: z.string(),
-       lastName: z.string(),
-       email: z.string().email(),
-       userName: z.string(),
-       createdAt: z.string(),
-       updatedAt: z.string(),
-       accounts: z.array(
-         z.object({
-           accountName: z.string(),
-           accountNumber: z.string(),
-           balance: z.string(),
-           balanceType: z.string(),
-         })
-       ),
-     }),
-   }),
- });
- 
- // Dans loginUser
- export const loginUser = async (credentials: LoginCredentials) => {
-   // Validation des données avec Zod
-   const parsedCredentials = loginSchema.safeParse(credentials);
-   if (!parsedCredentials.success) {
-     throw new Error(parsedCredentials.error.message);
-   }
- 
-   const requestOptions: RequestInit = {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-     },
-     body: JSON.stringify({
-       email: credentials.email,
-       password: credentials.password,
-     }),
-     redirect: "follow",
-   };
- 
-   try {
-     const response = await fetch(
-       "http://localhost:3001/api/v1/user/login",
-       requestOptions
-     );
- 
-     const data = await response.json();
- 
-     // Valider la réponse avec Zod
-     const parsedResponse = loginResponseSchema.safeParse(data);
-     if (!parsedResponse.success) {
-       throw new Error(JSON.stringify(parsedResponse.error.issues));
-     }
- 
-     return parsedResponse.data; // Retourne les données validées
-   } catch (error) {
-     console.error("Error during login:", error);
-     throw error;
-   }
- };
- 
-// // // // // // // // // // // // // // // // // 
-
-
-type LoginResponse = {
-   status: number;
-   message: string;
-   body: {
-     token: string;
-     user: {
-       id: string;
-       firstName: string;
-       lastName: string;
-       email: string;
-       userName: string;
-       createdAt: string;
-       updatedAt: string;
-       accounts: Account[];
-     };
-   };
- };
- 
- export const loginUser = async (
-   credentials: LoginCredentials
- ): Promise<LoginResponse> => {
-   const response = await fetch("/api/login", {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-     },
-     body: JSON.stringify(credentials),
-   });
- 
-   if (!response.ok) {
-     throw new Error("Failed to login");
-   }
- 
-   // Utilise le type LoginResponse ici
-   const data: LoginResponse = await response.json();
-   return data;
- };
- 
-// // // // // // // // // // // //  
-
-try {
-   const response = await fetch(
-     "http://localhost:3001/api/v1/user/login",
-     requestOptions
-   );
- 
-   const data = await response.json();
-   console.log("Response data:", data); // Vérifie ce que l'API renvoie
- 
-   if (!response.ok) {
-     throw new Error(`Login failed: ${response.status} - ${data.message}`);
-   }
- 
-   // Retourner les données validées ici
-   return data; 
- } catch (error) {
-   console.error("Error during login:", error);
-   throw error;
- }
- 
-// // // // // // // // // // // // // // // //  
-
-import { z } from "zod";
-
-// Schéma pour la réponse de l'API de connexion (login)
-const loginResponseSchema = z.object({
-	status: z.number(),
-	message: z.string(),
-	body: z.object({
-		token: z.string(), // Token reçu après connexion réussie
-	}),
-});
-
-// Schéma pour la réponse de l'API de profil utilisateur (User Profile)
-const profileResponseSchema = z.object({
-	status: z.number(),
-	message: z.string(),
-	body: z.object({
-		id: z.string(),
-		email: z.string(),
-		userName: z.string().optional(), // Facultatif si non renvoyé dans tous les cas
-	}),
-});
-
-// Schéma pour les données de connexion (credentials)
-const loginSchema = z.object({
-	email: z.string().email("Invalid email format"),
-	password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-type LoginCredentials = z.infer<typeof loginSchema>;
-
-export const loginUser = async (credentials: LoginCredentials) => {
-	// Validation des données avec Zod
-	const parsedCredentials = loginSchema.safeParse(credentials);
-	if (!parsedCredentials.success) {
-		// Si la validation échoue, une erreur est lancée
-		throw new Error(parsedCredentials.error.message);
-	}
-
-	const requestOptions: RequestInit = {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			email: credentials.email,
-			password: credentials.password,
-		}),
-		redirect: "follow",
-	};
-
-	try {
-		// Appel de l'API pour la connexion
-		const response = await fetch(
-			"http://localhost:3001/api/v1/user/login",
-			requestOptions
-		);
-
-		const data = await response.json();
-
-		// Validation de la réponse API avec Zod
-		const parsedResponse = loginResponseSchema.safeParse(data);
-		if (!parsedResponse.success) {
-			throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
-		}
-
-		// Retourne les données validées (token)
-		return parsedResponse.data; 
-	} catch (error) {
-		console.error("Error during login:", error);
-		throw error;
-	}
-};
-
-// Fonction pour récupérer le profil utilisateur après connexion
-export const fetchUserProfile = async (token: string) => {
-	try {
-		const response = await fetch("/user/profile", {
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-
-		const data = await response.json();
-
-		// Validation de la réponse API avec Zod
-		const parsedResponse = profileResponseSchema.safeParse(data);
-		if (!parsedResponse.success) {
-			throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
-		}
-
-		// Retourne les données validées (profil utilisateur)
-		return parsedResponse.data;
-	} catch (error) {
-		console.error("Error fetching user profile:", error);
-		throw error;
-	}
-};
-
-// // // // // // // // // // // // // 
-
-import { z } from "zod";
-
-// Schéma pour la réponse de l'API
-const loginResponseSchema = z.object({
-	status: z.number(),
-	message: z.string(),
-	body: z.object({
-		token: z.string(), // Token de l'utilisateur
-	}),
-});
-
-// Schéma pour les credentials de connexion
-const loginSchema = z.object({
-	email: z.string().email("Invalid email format"),
-	password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-type LoginCredentials = z.infer<typeof loginSchema>;
-
-// Fonction pour se connecter
-export const loginUser = async (credentials: LoginCredentials) => {
-	// Validation des données avec Zod
-	const parsedCredentials = loginSchema.safeParse(credentials);
-	if (!parsedCredentials.success) {
-		// Si la validation échoue, une erreur est lancée
-		throw new Error(parsedCredentials.error.message);
-	}
-
-	const myHeaders = new Headers();
-	myHeaders.append("Content-Type", "application/json");
-
-	const requestOptions: RequestInit = {
-		method: 'POST',
-		headers: myHeaders,
-		body: JSON.stringify(credentials),
-		redirect: 'follow',
-	};
-
-	try {
-		const response = await fetch("http://localhost:3001/api/v1/user/login", requestOptions);
-
-		// Vérifier que la réponse est au format JSON
-		const data = await response.json();
-
-		// Valider la réponse avec Zod
-		const parsedResponse = loginResponseSchema.safeParse(data);
-		if (!parsedResponse.success) {
-			// En cas d'erreur de validation Zod, renvoyer l'erreur
-			throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
-		}
-
-		// Retourner le token si tout est valide
-		return parsedResponse.data.body.token;
-
-	} catch (error) {
-		// Gérer les erreurs et afficher les logs
-		console.error("Error during login:", error);
-		throw error;
-	}
-};
-
-// // // // // // // // // // // // // 
-
-import React, { useState } from 'react';
-import { loginUser } from './authService';
-
-const SignIn: React.FC = () => {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [error, setError] = useState<string | null>(null);
-	const [token, setToken] = useState<string | null>(null);
-
-	const handleSubmit = async (event: React.FormEvent) => {
-		event.preventDefault();
-		try {
-			const userToken = await loginUser({ email, password });
-			setToken(userToken); // Token reçu après connexion
-			setError(null);
-		} catch (err) {
-			setError((err as Error).message);
-		}
-	};
-
-	return (
-		<div>
-			<h1>Login</h1>
-			<form onSubmit={handleSubmit}>
-				<div>
-					<label>Email</label>
-					<input
-						type="email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						required
-					/>
-				</div>
-				<div>
-					<label>Password</label>
-					<input
-						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						required
-					/>
-				</div>
-				<button type="submit">Sign In</button>
-			</form>
-			{error && <p style={{ color: 'red' }}>{error}</p>}
-			{token && <p>Logged in successfully! Token: {token}</p>}
-		</div>
-	);
-};
-
-export default SignIn;
-
-
-// // // // // // // // // // // // // // // 
-
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import signin from "./signin.module.scss";
-import classNames from "classnames";
-import { loginUser } from "../../utils/authService"; // Import de la fonction loginUser
-import { loginUserSuccess, setAuthentication } from "../user/usersSilice"; // Action creators Redux
-import { AppDispatch } from "../../store/Store"; // Typage de dispatch
-
-const SignIn: React.FC = () => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState<string | null>(null);
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
-
-	const handleSubmit = async (event: React.FormEvent) => {
-		event.preventDefault();
-		try {
-			// Requête de login pour récupérer le token
-			const result = await loginUser({ email, password });
-			console.log("Login successful:", result);
-
-			// Récupérer le token
-			const token: string = result.body.token;
-
-			// Utiliser AppDispatch pour typer dispatch
-			await dispatch<AppDispatch>(loginUserSuccess({ email, token }));
-
-			// Mettre à jour l'authentification
-			dispatch(setAuthentication(true));
-
-			// Rediriger l'utilisateur vers la page User après connexion
-			navigate("/User");
-		} catch (err) {
-			if (err instanceof Error) {
-				setError(err.message);
-			} else {
-				setError("An unknown error occurred");
-			}
-		}
-	};
-
-	return (
-		<main className={signin["bg-dark"]}>
-			<section className={signin["sign-in-content"]}>
-				<i
-					className={classNames(
-						"fa",
-						"fa-user-circle",
-						signin["sign-in-icon"]
-					)}></i>
-				<h1>Sign In</h1>
-				<form onSubmit={handleSubmit}>
-					<div className={signin["input-wrapper"]}>
-						<label htmlFor="username">Username</label>
-						<input
-							type="email"
-							id="username"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
-						/>
-					</div>
-					<div className={signin["input-wrapper"]}>
-						<label htmlFor="password">Password</label>
-						<input
-							type="password"
-							id="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
-					</div>
-					{error && <p className={signin["error-message"]}>{error}</p>}
-					<div className={signin["input-remember"]}>
-						<input type="checkbox" id="remember-me" />
-						<label htmlFor="remember-me">Remember me</label>
-					</div>
-					<button className={signin["sign-in-button"]}>Sign In</button>
-				</form>
-			</section>
-		</main>
-	);
-};
-
-export default SignIn;
-
-// // // // // // // // // // // // // // // // // 
-
-
-
-const loginUser = async (credentials: LoginCredentials) => {
-	// Validation des données avec Zod
-	const parsedCredentials = loginSchema.safeParse(credentials);
-	if (!parsedCredentials.success) {
-		throw new Error(parsedCredentials.error.message);
-	}
-
-	const requestOptions: RequestInit = {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			email: credentials.email,
-			password: credentials.password,
-		}),
-		redirect: "follow",
-	};
-
-	try {
-		const response = await fetch(
-			"http://localhost:3001/api/v1/user/login",
-			requestOptions
-		);
-
-		if (!response.ok) {
-			const data = await response.json();
-			throw new Error(`Login failed: ${response.status} - ${data.message}`);
-		}
-
-		// Parse la réponse JSON avant de l'utiliser
-		const data = await response.json();
-
-		// Validation de la réponse API avec Zod
-		const parsedResponse = loginResponseSchema.safeParse(data);
-		if (!parsedResponse.success) {
-			throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
-		}
-
-		return parsedResponse.data; // Retourne l'objet validé
-	} catch (error) {
-		console.error("Error during login:", error);
-		throw error;
-	}
-};
-
-// // // // // // // // // // // // // // // // 
-
-
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import signin from "./signin.module.scss";
-import classNames from "classnames";
-import { loginUser } from "../../utils/authService"; // Import de la fonction loginUser
-import { loginUserSuccess, setAuthentication } from "../user/usersSilice"; // Action creators Redux
-import { AppDispatch } from "../../store/Store"; // Typage de dispatch
-
-const SignIn: React.FC = () => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState<string | null>(null);
-	const dispatch = useDispatch<AppDispatch>(); // Typage correct de dispatch
-	const navigate = useNavigate();
-
-	const handleSubmit = async (event: React.FormEvent) => {
-		event.preventDefault();
-		try {
-			// Requête de login pour récupérer le token
-			const result = await loginUser({ email, password });
-			console.log("Login successful:", result);
-
-			// Récupérer le token
-			const token: string = result.body.token;
-
-			// Envoyer les informations à Redux via loginUserSuccess (en tant qu'objet)
-			await dispatch(loginUserSuccess({ email, token }));
-
-			// Mettre à jour l'authentification
-			dispatch(setAuthentication(true));
-
-			// Rediriger l'utilisateur vers la page User après connexion
-			navigate("/User");
-		} catch (err) {
-			if (err instanceof Error) {
-				setError(err.message);
-			} else {
-				setError("An unknown error occurred");
-			}
-		}
-	};
-
-	return (
-		<main className={signin["bg-dark"]}>
-			<section className={signin["sign-in-content"]}>
-				<i
-					className={classNames(
-						"fa",
-						"fa-user-circle",
-						signin["sign-in-icon"]
-					)}></i>
-				<h1>Sign In</h1>
-				<form onSubmit={handleSubmit}>
-					<div className={signin["input-wrapper"]}>
-						<label htmlFor="username">Username</label>
-						<input
-							type="email"
-							id="username"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
-						/>
-					</div>
-					<div className={signin["input-wrapper"]}>
-						<label htmlFor="password">Password</label>
-						<input
-							type="password"
-							id="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
-					</div>
-					{error && <p className={signin["error-message"]}>{error}</p>}
-					<div className={signin["input-remember"]}>
-						<input type="checkbox" id="remember-me" />
-						<label htmlFor="remember-me">Remember me</label>
-					</div>
-					<button className={signin["sign-in-button"]}>Sign In</button>
-				</form>
-			</section>
-		</main>
-	);
-};
-
-export default SignIn;
-
-// // // // // // // // // // // // // 
-
-interface UserLoginPayload {
-	email: string;
-	token: string;
-}
-
-loginUserSuccess: (state, action: PayloadAction<UserLoginPayload>) => {
-	state.currentUser = state.users.find(user => user.email === action.payload.email) || null;
-	state.isAuthenticated = true;
-},
-
-// // // // // // // // // // // // // 
-
-loginUserSuccess: (state, action: PayloadAction<UserLoginPayload>) => {
-	// Recherche l'utilisateur par email
-	const user = state.users.find(user => user.email === action.payload.email);
-	if (user) {
-		state.currentUser = user;
-		state.isAuthenticated = true;
-		// Vous pourriez stocker le token séparément si besoin
-	}
-},
-
-
-// // // // // // // // // // // // // // // // 
-
-/** @format */
-
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { usersMockData } from "../../mockData/users";
-
-interface Account {
-	accountName: string;
-	accountNumber: string;
-	balance: string;
-	balanceType: string;
-}
-
-interface User {
-	id: string;
-	firstName: string;
-	lastName: string;
-	userName: string;
-	email: string;
-	createdAt: string;
-	updatedAt: string;
-	accounts: Account[];
-}
-
-interface UsersState {
-	users: User[];
-	isAuthenticated: boolean;
-}
-
-const initialState: UsersState = {
-	users: usersMockData,
-	isAuthenticated: false,
-};
-
-const usersSlice = createSlice({
-	name: "users",
-	initialState,
-	reducers: {
-		addUser: (state, action: PayloadAction<User>) => {
-			state.users.push(action.payload);
-		},
-
-		setAuthentication: (state, action: PayloadAction<boolean>) => {
-			state.isAuthenticated = action.payload;
-		},
-
-		resetUsers: (state) => {
-			state.users = initialState.users;
-			state.isAuthenticated = false;
-		},
-	},
-});
-
-export const { addUser, resetUsers, setAuthentication } = usersSlice.actions;
-
-export default usersSlice.reducer;
-
-
-
-// // // // // // // // // // // // // // // // // // // // 
-
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppDispatch } from "../../store/Store";
-import { usersMockData } from "../../mockData/users";
-
-interface Account {
-	accountName: string;
-	accountNumber: string;
-	balance: string;
-	balanceType: string;
-}
-
-interface User {
-	id: string;
-	firstName: string;
-	lastName: string;
-	userName: string;
-	email: string;
-	createdAt: string;
-	updatedAt: string;
-	accounts: Account[];
-}
-
-interface UsersState {
-	users: User[];
-	isAuthenticated: boolean;
-	currentUser: User | null;
-}
-
-interface UserLoginPayload {
-	email: string;
-	token: string;
-}
-
-const initialState: UsersState = {
-	users: usersMockData,
-	isAuthenticated: false,
-	currentUser: null,
-};
-
-const usersSlice = createSlice({
-	name: "users",
-	initialState,
-	reducers: {
-		addUser: (state, action: PayloadAction<User>) => {
-			state.users.push(action.payload);
-		},
-
-		setAuthentication: (state, action: PayloadAction<boolean>) => {
-			state.isAuthenticated = action.payload;
-		},
-
-		// Reducer pour la connexion réussie
-		loginUserSuccess: (state, action: PayloadAction<UserLoginPayload>) => {
-			const user = state.users.find(
-				(user) => user.email === action.payload.email
-			);
-			if (user) {
-				state.currentUser = user;
-				state.isAuthenticated = true;
-				// Stocker le token dans le localStorage
-				localStorage.setItem("authToken", action.payload.token);
-			}
-		},
-
-		// Reducer pour la déconnexion
-		logoutUser: (state) => {
-			state.currentUser = null;
-			state.isAuthenticated = false;
-			// Supprimer le token du localStorage
-			localStorage.removeItem("authToken");
-		},
-
-		resetUsers: (state) => {
-			state.users = initialState.users;
-			state.isAuthenticated = false;
-			localStorage.removeItem("authToken");
-		},
-	},
-});
-
-export const {
-	addUser,
-	resetUsers,
-	setAuthentication,
-	loginUserSuccess,
-	logoutUser,
-} = usersSlice.actions;
-
-// Action asynchrone pour la connexion
-export const loginUser =
-	(email: string, token: string) => async (dispatch: AppDispatch) => {
-		try {
-			const userResponse = await fetch("/user/profile", {
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-
-			const userData = await userResponse.json();
-
-			if (userData) {
-				dispatch(loginUserSuccess({ email, token }));
-			}
-		} catch (error) {
-			console.error("Failed to login user:", error);
-		}
-	};
-
-export default usersSlice.reducer;
-
-// // // // // // // // // // // // // 
-
-
-export const loginUser =
-	(email: string, token: string) => async (dispatch: AppDispatch) => {
-		try {
-			const userResponse = await fetch("/user/profile", {
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-
-			const userData = await userResponse.json();
-
-			if (userData) {
-				// Dispatcher l'email ici, au lieu d'utiliser directement les données de la réponse
-				dispatch(loginUserSuccess({ email, token }));
-			}
-		} catch (error) {
-			console.error("Failed to login user:", error);
-		}
-	};
-
-   // // // // // // // // // // // // // 
-
-   

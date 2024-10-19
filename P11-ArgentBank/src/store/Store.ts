@@ -2,7 +2,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { thunk } from "redux-thunk";
-import counterReducer from "../features/counter/counterSilice";
+import counterReducer from "../features/counter/counterSlice";
 import usersReducer from "../pages/user/usersSlice";
 
 const store = configureStore({

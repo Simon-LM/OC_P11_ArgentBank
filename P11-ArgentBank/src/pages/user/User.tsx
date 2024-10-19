@@ -23,7 +23,7 @@ const User: React.FC = () => {
 				<h1>
 					Welcome back
 					<br />
-					{currentUser.firstName} {currentUser.lastName}!
+					{currentUser.firstName} {currentUser.lastName} !
 				</h1>
 				<button className={user["edit-button"]}>Edit Name</button>
 			</div>
