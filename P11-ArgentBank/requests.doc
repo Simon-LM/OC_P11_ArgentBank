@@ -1,0 +1,393 @@
+
+
+Scénario et phase 1
+
+Vous venez d’intégrer Argent Bank comme développeur front-end.
+Argent Bank est une nouvelle banque en ligne qui souhaite percer dans le secteur bancaire.
+
+  
+
+Vous travaillez avec Mila, la cheffe de projet, pour la mise en place du tableau de bord des utilisateurs. 
+Vous recevez deux mails du CTO, Avery Moreau :
+
+
+Objet : Mise en place du dashboard : phase 1
+
+De : Avery Moreau
+
+À : Moi, Mila
+
+
+Bonjour Mila et l’équipe,
+
+ 
+
+Nous allons pouvoir commencer à travailler sur notre application web React pour le nouveau système d'authentification des utilisateurs. 
+
+ 
+
+Ayant des délais très serrés, nous comptons beaucoup sur l’équipe !
+
+ 
+
+Voici un aperçu de ce dont nous avons besoin pour la phase 1 : Authentification des utilisateurs.
+
+ 
+
+Créer l’application web complète et responsive avec React.
+Voici : les mock-ups (qui montrent comment la fonctionnalité marchera une fois les routes API implémentées), le code Front-end (avec les Github Issues) pour la page d'accueil, la page de connexion et la page de profil ainsi que le code Back-end.
+
+Ce que doit faire l’application :
+L'utilisateur peut visiter la page d'accueil.
+L'utilisateur peut se connecter au système (et pouvoir gérer des erreurs si l’username ou mdp sont incorrects).
+L'utilisateur peut se déconnecter du système.
+L'utilisateur ne peut voir les informations relatives à son propre profil qu'après s'être connecté avec succès.
+L’utilisateur ne peut pas modifier son nom ni son prénom, mais il peut modifier son pseudo.
+
+Utiliser Redux pour gérer le state de l'ensemble de l'application.
+ 
+
+Vous pouvez commencer par forker les repos et suivre l’avancement du travail en créant des issues GitHub, grâce aux modèles d’Issues que nous y avons incluses.
+
+ 
+
+Nos ingénieurs back-end ont déjà créé toutes les routes API dont vous avez besoin. Vous trouverez toute la documentation Swagger à l'intérieur du repo.
+
+ 
+
+Un petit point sur Redux. À ce stade de l'application, cela peut paraître un peu trop, pour le peu de données à passer entre les composants. Mais gardez bien en tête que lorsque nous travaillerons sur les transactions, nous aurons alors beaucoup plus de données à gérer.  
+
+ 
+
+A noter lors de l’intégration du contenu des pages : nous aimerions mettre en place des bonnes pratiques de Green Code.
+Il faut veiller en particulier à 2 aspects lors de l’intégration : 
+
+que les images soient optimisées tant sur le poids que sur les dimensions.
+que le code soit optimisé par la création, le plus possible, de composants réutilisables.
+
+Merci à vous. 
+
+Je vous envoie un mail demain pour la deuxième étape. 
+
+ 
+
+Avery,
+
+CTO @ArgentBank
+
+--------------------------------
+
+Étapes : 
+
+Étape 0 : 
+
+Une fois cette étape terminée, je devrais avoir :
+
+le back-end du site fonctionnel.
+testé les routes de login et récupération du profil utilisateur.
+ 
+
+Recommandations : 
+
+Commencez par forker le repo original du projet.
+Suivez les instructions du fichier ReadMe.md.
+Une fois que le projet est lancé et que la base de données a été remplie, vous pouvez tester votre application. Pour cela, vous pouvez ouvrir la documentation de l’API à l’adresse : http://localhost:3001/api-docs. Vous pouvez tester les routes dans Postman pour vous assurer de bien récupérer les valeurs attendues. 
+ 
+
+Points de vigilance :
+
+Si vous rencontrez des difficultés lors de l’installation de l’application ou du chargement des données en base, vérifiez que vous avez des versions de Node ou de mongoDB compatibles installées sur votre ordinateur.
+  
+
+Ressources :
+
+En cas de difficultés avec l’installation de l'application, consultez le site de Node.js et le site de MongoDB. 
+Pour vous faciliter la gestion de versions de Node, vous pouvez utiliser nvm (pour les utilisateurs de Windows, bien lire la section Important Notes)
+Découvrez pourquoi utiliser des API REST dans nos projets web avec la première partie du cours Adoptez les API REST dans vos projets web.
+
+
+Étape 1 : 
+Durant cette première étape, nous allons créer notre application au travers de Create React App, et nous allons transformer le code que nous avons en HTML en React.
+
+ 
+
+Avant de démarrer cette étape, je dois avoir :
+
+installé le back-end de l’application, et testé la route de connexion (login) pour m’assurer du bon fonctionnement du back-end.
+ 
+
+Une fois cette étape terminée, je devrais avoir :
+
+l’application React créée.
+les différentes routes gérées par React Router.
+les pages HTML/CSS de l’application intégrées avec React.
+ 
+
+Recommandations : 
+
+Si vous souhaitez voir un exemple de l’implémentation de Redux, vous pouvez suivre les recommandations de la documentation de Redux, et installer votre application en vous basant sur le template Redux. Dans ce cas, prenez le temps d’analyser le code présent. Vous verrez qu’une petite application de compteur est fournie, utilisant Redux et Redux Toolkit.
+Avant de commencer à intégrer les différents composants, installez React Router pour gérer la navigation dans l’application. 
+Découpez les différentes pages en composants pertinents.
+ 
+
+Points de vigilance :
+
+N’oubliez pas d’optimiser les images fournies.
+Pensez à bien découper vos composants ; pour cela, demandez-vous quels éléments de l’interface peuvent être réutilisés, vous serez ainsi conforme aux bonnes pratiques du Green Code.
+ 
+
+Ressources :
+
+La section Transformez votre application en single page application avec React Router du cours Créez une application React Complète.
+La section Réduisez l’empreinte écologique de votre site web du cours Appliquez les principes du Green IT dans votre entreprise.
+
+
+Étape 2 : 
+Avant de démarrer cette étape, je dois avoir :
+
+intégré le contenu des différentes pages avec React et React Router.
+ 
+
+Une fois cette étape terminée, je devrais avoir :
+
+la gestion de la connexion utilisateur fonctionnelle dans mon application, et les premiers éléments présents dans le store de Redux.
+ 
+
+Recommandations : 
+
+Avant de commencer à écrire vos appels API, posez-vous ces questions : 
+Qu’est-ce que je cherche à récupérer à travers cet appel ? 
+Comment devrais-je gérer une réponse correcte de mon API ? 
+Que faire en cas d’erreur (par exemple sur les identifiants de l’utilisateur) ?
+Est-ce que j’aurai besoin de garder les informations de la réponse pour pouvoir naviguer de manière fluide dans l’application, une fois connecté ? 
+Les réponses à ces questions devraient vous aider à bien choisir quelles informations garder dans le store de Redux. 
+ 
+
+Points de vigilance :
+
+On ne devrait pouvoir accéder à la page de profil de l’utilisateur qu’une fois connecté. 
+Certaines informations du profil de l’utilisateur connecté s’affichent à différents endroits de l'application ; ces éléments devront être des composants différents, néanmoins ils devront être alimentés par la même source de données. 
+Pensez à gérer la déconnexion de l'utilisateur, et donc la disparition de ses informations dans le store de l’application.
+ 
+
+Ressources :
+
+La section Utilisez le thunk middleware du cours Utilisez le state manager Redux pour gérer l’état de vos applications, pour rappel de la bonne gestion des appels réseaux avec Redux. 
+La section Unifiez actions et reducers avec les slices du même cours, pour bien écrire la logique de Redux avec Redux Toolkit.
+
+
+Étape 3 : 
+L’application est maintenant sécurisée, et nous pouvons naviguer entre les différentes pages sans être déconnecté. Il est temps maintenant de passer à une feature clé de l’application Argent Bank : la modification du nom d’utilisateur. 
+
+ 
+
+Avant de démarrer cette étape, je dois avoir :
+
+sécurisé la connexion de l’utilisateur. 
+ 
+
+Une fois cette étape terminée, je devrais avoir :
+
+la possibilité de mettre à jour mon username.
+ 
+
+Recommandations : 
+
+Commencez par créer le formulaire ; puis, afin de traiter au mieux l’appel à l’API pour réaliser l’actualisation, posez-vous ces questions :
+Ai-je besoin que les modifications persistent ? 
+Une fois les modifications enregistrées, où doit se répercuter le changement de l’affichage pour que l’ensemble de la page soit cohérent ? 
+ 
+
+Points de vigilance :
+
+Pensez bien au cycle de vie des composants lorsque ceux-ci utilisent le store de Redux.
+
+
+Phase 2 : Gestion des transactions
+Le lendemain 
+￼
+
+
+Vous recevez le nouveau mail d'Avery. 
+
+
+Objet : Mise en place du dashboard : phase 2
+
+De : Avery Moreau
+
+À : Moi, Mila
+
+ 
+
+Pour la phase 2 : Transactions, nous sommes encore en phase de conception. Nous mettons au point une fonctionnalité pour les transactions, qui doit pouvoir permettre aux utilisateurs :
+
+ 
+
+de visualiser toutes leurs transactions pour le mois en cours, groupées par compte ;
+de visualiser les détails d'une transaction dans une autre vue ;
+d'ajouter, de modifier ou de supprimer des informations sur une transaction (on ne supprimera ou n'ajoutera pas de transaction).
+ 
+
+Afin d’avoir plusieurs avis sur la question, et comme vous travaillez sur l’application dans la phase 1, nous voulons connaître votre avis sur la façon dont vous pensez que les routes API devraient être modélisées du côté back-end. Nous avons besoin que vous nous fournissiez un document décrivant les routes API proposées pour les manipulations sur les transactions, en suivant les directives de Swagger. 
+
+ 
+
+Parmi les éléments clés à spécifier pour chaque endpoint de l’API, il faudra :
+
+ 
+
+la méthode HTTP (ex. : GET, POST, etc.) ;
+la route (ex. : /store/inventory) ;
+la description de ce à quoi correspond l’endpoint (ex. : Retour de l'inventaire des animaux de compagnie) ;
+les paramètres possibles pour tenir compte des différents scénarios (ex. : itemId (facultatif) = ID de l'article spécifique à demander à la base de données d'inventaire) ;
+les différentes réponses avec les codes de réponse correspondants qui ont un sens pour cet endpoint (ex. : 404 : réponse d'erreur d'article inconnu).
+ 
+
+Vous pouvez utiliser la page des transactions présentée dans les maquettes pour guider vos choix (mais vous n'avez pas besoin d'implémenter cette page). Assurez-vous simplement que le document soit exporté vers un fichier YAML (c'est-à-dire Fichier > Enregistrer sous YAML) en utilisant la syntaxe Swagger, qui peut être exportée dans l'outil d'édition de Swagger.
+
+ 
+
+Nous ferons une revue de code et discuterons ensemble de la proposition d'API une fois que tout sera terminé.
+
+ 
+
+Au plaisir de travailler avec vous !
+
+Avery,
+
+CTO @ArgentBank
+
+ 
+
+Vous avez toutes les clés en main pour réaliser cette mission !
+
+L'interface est en anglais. Même si vous n'êtes pas très à l'aise dans cette langue, c'est l'occasion de pratiquer un peu ! C'est toujours bien pour un développeur de lire l'anglais, car la documentation professionnelle se fait souvent dans cette langue. Et Google Traduction est votre ami. 
+
+Étapes : 
+
+Étape 4 : Avant de démarrer cette étape, je dois avoir :
+
+l’application React Redux complètement fonctionnelle.
+ 
+
+Une fois cette étape terminée, je devrais avoir :
+
+une liste des endpoints nécessaires au bon fonctionnement de l’application.
+ 
+
+Recommandations : 
+
+Lors de l’analyse des maquettes, posez-vous ces questions : 
+
+Quelles données cherche-t-on à récupérer pour les transactions ? 
+Que peut-on ajouter, modifier ou supprimer, et quelles actions cela implique-t-il au niveau de l’API ? 
+Cela vous aidera à pouvoir lister toutes les actions nécessaires au bon fonctionnement de l’API. 
+
+ 
+
+Points de vigilance :
+
+Vous n’êtes pas forcément obligé d’utiliser toutes les méthodes du CRUD ( Create Read Update Delete) dans votre spécification. Il sera cependant important que vous soyez prêt à justifier vos choix durant la soutenance. 
+
+ 
+
+Ressources :
+
+Découvrez les grands axes de la création d’API REST avec la partie 3 du cours Adoptez les API REST pour vos projets web.
+
+
+
+Étapes 5 : 
+C’est bon, vous avez défini les différents endpoints de votre API ? Il est temps de les intégrer dans le document Swagger de l’application.
+
+ 
+
+Avant de démarrer cette étape, je dois avoir :
+
+la liste de mes endpoints pour les transactions.
+ 
+
+Une fois cette étape terminée, je devrais avoir :
+
+le document Swagger avec les opérations de transaction.
+ 
+
+Recommandations : 
+
+Pour écrire les routes de l’API, utilisez la base qui vous est donnée avec les utilisateurs, cela vous évitera de commencer de zéro. 
+ 
+
+Points de vigilance :
+
+Le document actuel suit la nomenclature Swagger 2.0, choisissez la bonne documentation pour poursuivre l’intégration des routes. 
+
+ 
+
+Ressources :
+
+La documentation Swagger pour vous aider dans la rédaction des routes.
+
+
+Étape 6 : 
+
+Voilà, le travail est fini, il est temps de faire une relecture de l’ensemble, et de préparer les livrables du projet.
+
+ 
+
+Avant de démarrer cette étape, je dois avoir :
+
+l’application React Redux finalisée. 
+le document Swagger rédigé.
+ 
+
+Une fois cette étape terminée, je devrais avoir :
+
+les livrables déposés sur la plateforme.
+ 
+
+Recommandations : 
+
+Lancez le projet et testez les fonctionnalités demandées pour être sûr que tout fonctionne correctement.
+Relisez votre document Swagger. Assurez-vous d’avoir défini toutes les routes permettant de réaliser les fonctionnalités demandées.
+
+----------------------------------------------------------------
+
+Livrables et soutenance : 
+
+
+Livrables
+￼
+
+ 
+
+Un fichier au format TXT ou PDF contenant le lien vers votre code sur GitHub remplissant toutes les exigences de la phase 1 : Authentification de l'utilisateur.
+Un fichier swagger au format YML des modèles d'API proposés, avec les endpoints requis pour la phase 2 : Transactions.
+Pour faciliter votre passage devant le jury, déposez sur la plateforme, dans un dossier ZIP nommé “Titre_du_projet_nom_prénom”, tous les livrables du projet comme suit : Nom_Prénom_n° du livrable_nom du livrable__date de démarrage du projet. Cela donnera :  
+
+Nom_Prénom_1_code_phase_1_mmaaaa
+Nom_Prénom_1_swagger_phase_2_mmaaaa
+Par exemple, le premier livrable peut être nommé comme suit : Dupont_Jean_1_code_phase_1_022024 
+
+ 
+
+Soutenance
+￼
+
+ 
+
+L'évaluateur jouera le rôle d'Avery Moreau, le CTO de ArgentBank. La soutenance de 30 minutes sera structurée comme suit :
+
+Présentation des livrables (15 minutes) 
+Commencez par présenter la manière dont vous avez géré la connexion de l’utilisateur ainsi que la modification du profil.
+Poursuivez en expliquant vos choix sur l’écriture des routes pour les transactions. 
+Discussion (10 minutes) 
+L'évaluateur vous posera des questions sur votre méthodologie et vos résultats, ainsi que sur les points suivants :
+Comment avez-vous pris en compte les principes du Green Code lors de l'intégration du site ?
+Comment avez-vous implémenté Redux ?
+Comment avez-vous choisi les routes à créer pour l’API ?
+Soyez prêt à défendre votre travail, car l'évaluateur pourra contester vos décisions !
+Debrief (5 minutes)
+L'évaluateur cessera de jouer le rôle d'Avery Moreau afin que vous puissiez débriefer ensemble.
+Durant la soutenance, l’évaluateur pourra vous demander de coder certains éléments en direct. L’objectif est de vérifier votre maîtrise et votre compréhension du projet avant de poursuivre votre parcours.
+
+Votre présentation devra durer 15 minutes (+/- 5 minutes). Puisque le respect des durées des présentations est important en milieu professionnel, les présentations en dessous de 10 minutes ou au-dessus de 20 minutes peuvent être refusées.  

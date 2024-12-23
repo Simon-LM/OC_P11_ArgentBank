@@ -3,7 +3,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/Store";
+import { RootState, AppDispatch } from "../../store/Store";
 import { logoutUser } from "../../pages/user/usersSlice";
 
 const Header: React.FC = () => {
@@ -13,7 +13,7 @@ const Header: React.FC = () => {
 	const currentUser = useSelector(
 		(state: RootState) => state.users.currentUser
 	);
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 
 	const handleSignOut = () => {
@@ -34,11 +34,11 @@ const Header: React.FC = () => {
 
 			{isAuthenticated && currentUser ? (
 				<div>
-					<Link to="/signin" onClick={handleSignOut}>
+					<Link to="/user" className="main-nav-item">
 						<i className="fa fa-user-circle"></i>
-						{currentUser.firstName}
+						{currentUser.userName}
 					</Link>
-					<Link to="/signin" onClick={handleSignOut}>
+					<Link to="/" onClick={handleSignOut} className="main-nav-item">
 						<i className="fa fa-sign-out"></i>Sign Out
 					</Link>
 				</div>

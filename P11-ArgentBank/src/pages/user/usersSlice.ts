@@ -2,6 +2,8 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { usersMockData } from "../../mockData/users";
+// import { fetchUserProfile } from "../../utils/authService";
+
 interface Account {
 	accountName: string;
 	accountNumber: string;
@@ -17,7 +19,7 @@ interface User {
 	email: string;
 	createdAt: string;
 	updatedAt: string;
-	accounts: Account[];
+	accounts?: Account[]; // Rendre 'accounts' optionnel
 }
 
 interface UsersState {
@@ -47,24 +49,39 @@ const usersSlice = createSlice({
 		},
 
 		loginUserSuccess: (state, action: PayloadAction<UserLoginPayload>) => {
-			const user = state.users.find(
-				(user) => user.email === action.payload.email
-			);
-			if (user) {
-				state.currentUser = user;
-				state.isAuthenticated = true;
-				localStorage.setItem("authToken", action.payload.token);
-			}
+			state.isAuthenticated = true;
+			sessionStorage.setItem("authToken", action.payload.token);
+			// }
 		},
 
 		logoutUser: (state) => {
 			state.currentUser = null;
 			state.isAuthenticated = false;
-			localStorage.removeItem("authToken");
+			sessionStorage.removeItem("authToken");
+		},
+		updateCurrentUser: (state, action: PayloadAction<Partial<User>>) => {
+			if (state.currentUser) {
+				state.currentUser = {
+					...state.currentUser,
+					...action.payload,
+				};
+			} else {
+				state.currentUser = action.payload as User;
+			}
+		},
+		setAuthState: (state, action: PayloadAction<User>) => {
+			state.isAuthenticated = true;
+			state.currentUser = action.payload;
 		},
 	},
 });
 
-export const { addUser, loginUserSuccess, logoutUser } = usersSlice.actions;
+export const {
+	addUser,
+	loginUserSuccess,
+	logoutUser,
+	updateCurrentUser,
+	setAuthState,
+} = usersSlice.actions;
 
 export default usersSlice.reducer;

@@ -5,5 +5,6 @@ declare const classNames: {
   readonly "sign-in-icon": "sign-in-icon";
   readonly "input-remember": "input-remember";
   readonly "input-wrapper": "input-wrapper";
+  readonly "error-message": "error-message";
 };
 export = classNames;
