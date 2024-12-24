@@ -6,7 +6,6 @@ import {
 	Route,
 	Navigate,
 } from "react-router-dom";
-import { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Header from "./layouts/header/Header";
@@ -21,8 +20,6 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import useSessionTimeout from "./hooks/useSessionTimeout/useSessionTimeout";
 
 function App() {
-	const [count, setCount] = useState(0);
-
 	const dispatch = useDispatch<AppDispatch>();
 	const sessionDuration = 5 * 60 * 1000;
 
@@ -35,7 +32,6 @@ function App() {
 	return (
 		<Router>
 			<Header />
-			{/* <main> */}
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/signIn" element={<SignIn />} />
@@ -50,12 +46,6 @@ function App() {
 				<Route path="*" element={<Navigate to="/error404" />} />
 				<Route path="/Error404" element={<Error404 />} />
 			</Routes>
-			<div className="card">
-				<button onClick={() => setCount((count) => count + 1)}>
-					count is {count}
-				</button>
-			</div>
-			{/* </main> */}
 			<Footer />
 		</Router>
 	);

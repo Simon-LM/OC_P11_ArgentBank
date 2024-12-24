@@ -7,10 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 
 const schema = z.object({
-	userName: z.string().nonempty("User name is required"),
+	userName: z
+		.string()
+		.nonempty("User name is required")
+		.refine((val) => val.trim() !== "", "User name cannot be empty"),
 	firstName: z.string().nonempty("First name is required"),
 	lastName: z.string().nonempty("Last name is required"),
 });
+
 type FormData = z.infer<typeof schema>;
 
 interface EditUserFormProps {
@@ -41,12 +45,16 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 		},
 	});
 
-	const handleSave = (data: FormData) => onSave(data);
+	const handleSave = async (data: FormData) => {
+		// Ne faites pas de retour manuel ici :
+		// if (!data.userName.trim()) { return false; }
+		onSave(data);
+	};
 
 	return (
 		<>
 			<h2>Edit user info</h2>
-			<form onSubmit={handleSubmit(handleSave)}>
+			<form onSubmit={handleSubmit(handleSave)} role="form">
 				<div>
 					<Label htmlFor="userName">User Name</Label>
 					<input id="userName" {...register("userName")} />

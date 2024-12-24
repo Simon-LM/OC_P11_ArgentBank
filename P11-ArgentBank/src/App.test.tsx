@@ -3,8 +3,52 @@
 import { describe, test, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Provider } from "react-redux";
-import store from "./store/Store"; // Importez votre store Redux
+import { configureStore } from "@reduxjs/toolkit";
+import userReducer from "./pages/user/usersSlice";
+import { usersMockData } from "./mockData/users";
+import store from "./store/Store";
+
 import App from "./App";
+
+// Mock du store avec un état authentifié
+const createMockStore = (isAuthenticated = false) => {
+	return configureStore({
+		reducer: {
+			users: userReducer,
+		},
+		preloadedState: {
+			users: {
+				isAuthenticated,
+				currentUser: isAuthenticated
+					? {
+							id: "66e6fc6d339057ebf4c97019",
+							firstName: "Tony",
+							lastName: "Stark",
+							userName: "Iron",
+							email: "tony@stark.com",
+							createdAt: "2024-09-15T15:25:33.373Z",
+							updatedAt: "2024-09-15T15:25:33.373Z",
+							accounts: [
+								{
+									accountName: "Argent Bank Checking",
+									accountNumber: "8949",
+									balance: "$5,600.55",
+									balanceType: "Available Balance",
+								},
+								{
+									accountName: "Argent Bank Savings",
+									accountNumber: "2094",
+									balance: "$12,450.22",
+									balanceType: "Available Balance",
+								},
+							],
+						}
+					: null,
+				users: usersMockData,
+			},
+		},
+	});
+};
 
 describe("App component", () => {
 	// Test 1 : vérifier si la page Home est bien rendue par défaut
@@ -36,15 +80,20 @@ describe("App component", () => {
 
 	// Test 3 : vérifier la navigation vers la page User
 	test("renders User page when navigating to /User", () => {
+		// Configurer le store avec un utilisateur authentifié
+		const authenticatedStore = createMockStore(true);
+
+		// Simuler la navigation vers /User
 		window.history.pushState({}, "User page", "/User");
+
 		render(
-			<Provider store={store}>
+			<Provider store={authenticatedStore}>
 				<App />
 			</Provider>
 		);
 
-		// Vérifiez qu'un texte unique à la page User est présent
-		expect(screen.getByText(/Loading user data.../i)).toBeInTheDocument();
+		// Vérifier que le composant User est rendu
+		expect(screen.getByText(/Welcome/i)).toBeInTheDocument();
 	});
 
 	// Test 4 : tester la redirection vers Error404 pour les routes non valides
@@ -73,23 +122,5 @@ describe("App component", () => {
 		// Vérifiez que le Header et le Footer sont bien rendus
 		expect(screen.getByRole("banner")).toBeInTheDocument(); // Header
 		expect(screen.getByRole("contentinfo")).toBeInTheDocument(); // Footer
-	});
-
-	// Test 6 : tester le bouton d'incrémentation du compteur
-	test("increments count when button is clicked", () => {
-		render(
-			<Provider store={store}>
-				<App />
-			</Provider>
-		);
-
-		// Vérifiez que le compteur commence à 0
-		expect(screen.getByText(/count is 0/i)).toBeInTheDocument();
-
-		// Simulez un clic sur le bouton
-		fireEvent.click(screen.getByRole("button", { name: /count is/i }));
-
-		// Vérifiez que le compteur est incrémenté
-		expect(screen.getByText(/count is 1/i)).toBeInTheDocument();
 	});
 });

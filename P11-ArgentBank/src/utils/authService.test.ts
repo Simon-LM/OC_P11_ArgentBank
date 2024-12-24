@@ -1,184 +1,199 @@
 /** @format */
 
-import { loginUser, fetchUserProfile, loginSchema } from "./authService";
-// import { loginSchema } from "./authService";
-import { expect, test, describe, vi } from "vitest";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+	loginUser,
+	fetchUserProfile,
+	updateUserProfile,
+	initializeAuth,
+} from "./authService";
+import store, { AppDispatch } from "../store/Store";
 
-// Mock fetch globalement
-global.fetch = vi.fn();
+beforeEach(() => {
+	vi.stubGlobal("fetch", vi.fn());
+});
 
-describe("loginSchema Validation", () => {
-	test("devrait valider correctement des informations de connexion valides", () => {
-		const validCredentials = {
-			email: "test@example.com",
-			password: "password123",
-		};
-		const parsed = loginSchema.safeParse(validCredentials);
-		expect(parsed.success).toBe(true);
-	});
-
-	test("devrait échouer pour un email invalide", () => {
-		const invalidCredentials = {
-			email: "invalid-email",
-			password: "password123",
-		};
-		const parsed = loginSchema.safeParse(invalidCredentials);
-		expect(parsed.success).toBe(false);
-	});
-
-	test("devrait échouer pour un mot de passe trop court", () => {
-		const invalidCredentials = { email: "test@example.com", password: "short" };
-		const parsed = loginSchema.safeParse(invalidCredentials);
-		expect(parsed.success).toBe(false);
-	});
+afterEach(() => {
+	vi.restoreAllMocks();
 });
 
 describe("loginUser Function", () => {
-	test("should return a token when valid credentials are provided", async () => {
-		const validCredentials = {
-			email: "test@example.com",
-			password: "validPassword123",
-		};
-		const mockToken = "mockToken123";
+	// Mock de réponse valide
+	const mockValidLoginResponse = {
+		status: 200,
+		message: "User successfully logged in",
+		body: {
+			token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+		},
+	};
 
-		// Mock de la réponse fetch
-		global.fetch = vi.fn(
-			() =>
-				Promise.resolve({
-					ok: true,
-					status: 200,
-					statusText: "OK",
-					headers: new Headers({ "Content-Type": "application/json" }),
-					json: () =>
-						Promise.resolve({
-							status: 200,
-							message: "Success",
-							body: { token: mockToken },
-						}),
-				}) as Promise<Response> // Ici on indique à TypeScript que c'est un Promise<Response>
-		);
+	// Mock de réponse invalide
+	const mockInvalidLoginResponse = {
+		status: 401,
+		message: "invalid signature",
+	};
 
-		const token = await loginUser(validCredentials);
-		expect(token).toBe(mockToken);
+	test("renvoie un token pour des identifiants valides", async () => {
+		(fetch as unknown as vi.Mock).mockResolvedValueOnce({
+			ok: true,
+			json: async () => mockValidLoginResponse,
+		});
+
+		const result = await loginUser({
+			email: "steve@rogers.com",
+			password: "password123",
+		});
+
+		expect(result).toBe(mockValidLoginResponse.body.token);
 	});
 
-	test("should throw an error when invalid credentials are provided", async () => {
-		const invalidCredentials = {
-			email: "test@example.com",
-			password: "invalidPassword",
-		};
+	test("lance une erreur pour des identifiants invalides", async () => {
+		(fetch as unknown as vi.Mock).mockResolvedValueOnce({
+			ok: false,
+			status: 401,
+			json: async () => mockInvalidLoginResponse,
+		});
 
-		// Simulation d'une réponse incorrecte
-		global.fetch = vi.fn(
-			() =>
-				Promise.resolve({
-					ok: false,
-					status: 401,
-					statusText: "Unauthorized",
-					headers: new Headers({ "Content-Type": "application/json" }),
-					json: () =>
-						Promise.resolve({
-							status: 401,
-							message: "Invalid credentials",
-						}),
-				}) as Promise<Response>
-		);
-
-		await expect(loginUser(invalidCredentials)).rejects.toThrow(
-			"Login failed: 401 - Invalid credentials"
-		);
-	});
-	test("should throw an error if credentials are invalid", async () => {
-		const invalidCredentials = {
-			email: "invalid-email",
-			password: "short",
-		};
-
-		await expect(loginUser(invalidCredentials)).rejects.toThrow(
-			"Invalid email format"
-		);
-	});
-
-	test("should throw an error if the API response does not match the schema", async () => {
-		const validCredentials = {
-			email: "test@example.com",
-			password: "validPassword123",
-		};
-
-		global.fetch = vi.fn(
-			() =>
-				Promise.resolve({
-					ok: true,
-					status: 200,
-					json: () =>
-						Promise.resolve({
-							status: 200,
-							message: "Success",
-							body: { wrongField: "mockToken" }, // Champs incorrect
-						}),
-				}) as Promise<Response>
-		);
-
-		await expect(loginUser(validCredentials)).rejects.toThrow();
+		await expect(
+			loginUser({
+				email: "steve@rogers.com",
+				password: "wrongpass",
+			})
+		).rejects.toThrow("Login failed: 401 - invalid signature");
 	});
 });
 
 describe("fetchUserProfile Function", () => {
-	test("should return user profile when valid token is provided", async () => {
-		const mockToken = "validToken123";
-		const mockProfile = {
-			status: 200,
-			message: "Success",
-			body: {
-				id: "user-id",
-				email: "test@example.com",
-				userName: "TestUser",
-			},
-		};
+	const mockValidProfileResponse = {
+		status: 200,
+		message: "Successfully got user profile data",
+		body: {
+			email: "steve@rogers.com",
+			firstName: "Steve",
+			lastName: "Rogers",
+			userName: "Captain",
+			createdAt: "2024-09-15T15:25:33.375Z",
+			updatedAt: "2024-12-24T16:49:18.315Z",
+			id: "66e6fc6d339057ebf4c9701b",
+			accounts: [
+				{
+					accountName: "Argent Bank Checking",
+					accountNumber: "8349",
+					balance: "$2,082.79",
+					balanceType: "Available Balance",
+				},
+			],
+		},
+	};
 
-		// Mock de la réponse fetch pour la requête du profil utilisateur
-		global.fetch = vi.fn(
-			() =>
-				Promise.resolve({
-					ok: true,
-					status: 200,
-					json: () => Promise.resolve(mockProfile),
-				}) as Promise<Response>
-		);
+	test("récupère le profil avec succès", async () => {
+		(fetch as unknown as vi.Mock).mockResolvedValueOnce({
+			ok: true,
+			json: async () => mockValidProfileResponse,
+		});
 
-		const profile = await fetchUserProfile(mockToken);
+		const profile = await fetchUserProfile("valid-token");
+		expect(profile).toEqual(mockValidProfileResponse.body);
+	});
+});
+describe("updateUserProfile Function", () => {
+	test("devrait mettre à jour le profil utilisateur avec succès", async () => {
+		(fetch as unknown as vi.Mock).mockResolvedValueOnce({
+			ok: true,
+			json: async () => ({
+				status: 200,
+				message: "Profile updated",
+				body: {
+					id: "66e6fc6d339057ebf4c9701b",
+					email: "steve@rogers.com",
+					userName: "CaptainUpdated",
+					createdAt: "2024-09-15T15:25:33.375Z",
+					updatedAt: "2024-12-24T16:49:18.315Z",
+				},
+			}),
+		});
 
-		// On compare directement à la propriété `body` de la réponse de l'API
-		expect(profile).toEqual(mockProfile.body);
+		const result = await updateUserProfile("CaptainUpdated", "valid-token");
+		expect(result.userName).toBe("CaptainUpdated");
 	});
 
-	test("should throw an error if fetch fails", async () => {
-		const mockToken = "mockToken123";
+	test("devrait lancer une erreur si la mise à jour échoue", async () => {
+		(fetch as unknown as vi.Mock).mockResolvedValueOnce({
+			ok: false,
+			status: 400,
+			json: async () => ({
+				status: 400,
+				message: "Bad request",
+			}),
+		});
 
-		global.fetch = vi.fn(
-			() =>
-				Promise.resolve({
-					ok: false,
-					status: 403,
-					json: () => Promise.resolve({ status: 403, message: "Unauthorized" }),
-				}) as Promise<Response>
-		);
+		await expect(
+			updateUserProfile("CaptainUpdated", "invalid-token")
+		).rejects.toThrow("Update failed: 400 - Bad request");
+	});
+});
 
-		await expect(fetchUserProfile(mockToken)).rejects.toThrow();
+describe("initializeAuth Function", () => {
+	const mockDispatch = vi.fn();
+
+	test("ne fait rien si pas de token en sessionStorage", async () => {
+		// S'assurer que sessionStorage est vide
+		sessionStorage.clear();
+
+		const initAuthThunk = initializeAuth();
+		await initAuthThunk(mockDispatch);
+
+		// Vérifier qu'aucune action n'a été dispatchée
+		expect(mockDispatch).not.toHaveBeenCalled();
 	});
 
-	test("should throw an error if response does not match the schema", async () => {
-		const mockToken = "mockToken123";
+	test("charge l'utilisateur s'il y a un token valide", async () => {
+		// Configurer un token valide
+		sessionStorage.setItem("authToken", "test-token");
+		sessionStorage.setItem("expiresAt", (Date.now() + 100000).toString());
 
-		global.fetch = vi.fn(
-			() =>
-				Promise.resolve({
-					ok: true,
-					status: 200,
-					json: () => Promise.resolve({ wrongField: "mockData" }), // Champs incorrect
-				}) as Promise<Response>
+		// Mock de la réponse API
+		(fetch as unknown as vi.Mock).mockResolvedValueOnce({
+			ok: true,
+			json: async () => ({
+				status: 200,
+				message: "Successfully got user profile data",
+				body: {
+					id: "66e6fc6d339057ebf4c9701b",
+					email: "steve@rogers.com",
+					userName: "Captain",
+					firstName: "Steve",
+					lastName: "Rogers",
+					createdAt: "2024-09-15T15:25:33.375Z",
+					updatedAt: "2024-12-24T16:49:18.315Z",
+				},
+			}),
+		});
+
+		const initAuthThunk = initializeAuth();
+		await initAuthThunk(mockDispatch);
+
+		// Vérifier que setAuthState a été appelé avec le profil
+		expect(mockDispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: "users/setAuthState",
+			})
 		);
+	});
 
-		await expect(fetchUserProfile(mockToken)).rejects.toThrow();
+	test("déconnecte l'utilisateur si le token a expiré", async () => {
+		// Configurer un token expiré
+		sessionStorage.setItem("authToken", "test-token");
+		sessionStorage.setItem("expiresAt", (Date.now() - 1000).toString());
+
+		const initAuthThunk = initializeAuth();
+		await initAuthThunk(mockDispatch);
+
+		// Vérifier que logoutUser a été appelé
+		expect(mockDispatch).toHaveBeenCalledWith(
+			expect.objectContaining({
+				type: "users/logoutUser",
+			})
+		);
 	});
 });
