@@ -20,3 +20,11 @@ main {
 .main {
 	flex: 1;
 }
+
+button {
+	cursor: pointer;
+	&:hover,
+	&:focus-visible {
+		opacity: 0.85;
+	}
+}

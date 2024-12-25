@@ -2,10 +2,15 @@
 @import "@styles/abstracts/functions";
 @import "@styles/abstracts/variables";
 
+.title {
+	color: $dark-text;
+}
+
 .bg-dark {
 	flex: 1;
 	height: 100%;
 	background: $light-bg-user;
+	color: $light-text;
 }
 .edit-button {
 	border-color: $light-button-border;

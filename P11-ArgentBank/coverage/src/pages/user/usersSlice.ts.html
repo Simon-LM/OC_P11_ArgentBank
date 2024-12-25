@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">70.83% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>48/48</span>
+                <span class='fraction'>34/48</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/6</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">20% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>1/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">70.83% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>48/48</span>
+                <span class='fraction'>34/48</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -197,34 +197,34 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -283,35 +283,35 @@ const usersSlice = createSlice({
 	name: "users",
 	initialState,
 	reducers: {
-		addUser: (state, action: PayloadAction&lt;User&gt;) =&gt; {
-			state.users.push(action.payload);
-		},
+		addUser: <span class="fstat-no" title="function not covered" >(state, action: PayloadAction&lt;User&gt;) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >			state.users.push(action.payload);</span>
+<span class="cstat-no" title="statement not covered" >		},</span>
 &nbsp;
-		loginUserSuccess: (state, action: PayloadAction&lt;UserLoginPayload&gt;) =&gt; {
-			state.isAuthenticated = true;
-			sessionStorage.setItem("authToken", action.payload.token);
+		loginUserSuccess: <span class="fstat-no" title="function not covered" >(state, action: PayloadAction&lt;UserLoginPayload&gt;) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >			state.isAuthenticated = true;</span>
+<span class="cstat-no" title="statement not covered" >			sessionStorage.setItem("authToken", action.payload.token);</span>
 			// }
-		},
+<span class="cstat-no" title="statement not covered" >		},</span>
 &nbsp;
-		logoutUser: (state) =&gt; {
-			state.currentUser = null;
-			state.isAuthenticated = false;
-			sessionStorage.removeItem("authToken");
-		},
+		logoutUser: <span class="fstat-no" title="function not covered" >(state) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >			state.currentUser = null;</span>
+<span class="cstat-no" title="statement not covered" >			state.isAuthenticated = false;</span>
+<span class="cstat-no" title="statement not covered" >			sessionStorage.removeItem("authToken");</span>
+<span class="cstat-no" title="statement not covered" >		},</span>
 		updateCurrentUser: (state, action: PayloadAction&lt;Partial&lt;User&gt;&gt;) =&gt; {
 			if (state.currentUser) {
 				state.currentUser = {
 					...state.currentUser,
 					...action.payload,
 				};
-			} else {
-				state.currentUser = action.payload as User;
-			}
+<span class="branch-0 cbranch-no" title="branch not covered" >			} else {</span>
+<span class="cstat-no" title="statement not covered" >				state.currentUser = action.payload as User;</span>
+<span class="cstat-no" title="statement not covered" >			}</span>
 		},
-		setAuthState: (state, action: PayloadAction&lt;User&gt;) =&gt; {
-			state.isAuthenticated = true;
-			state.currentUser = action.payload;
-		},
+		setAuthState: <span class="fstat-no" title="function not covered" >(state, action: PayloadAction&lt;User&gt;) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >			state.isAuthenticated = true;</span>
+<span class="cstat-no" title="statement not covered" >			state.currentUser = action.payload;</span>
+<span class="cstat-no" title="statement not covered" >		},</span>
 	},
 });
 &nbsp;
@@ -331,7 +331,7 @@ export default usersSlice.reducer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-24T21:09:39.536Z
+                at 2024-12-25T23:13:34.851Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

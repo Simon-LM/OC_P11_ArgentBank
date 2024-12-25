@@ -1,4 +1,5 @@
 declare const classNames: {
+  readonly title: "title";
   readonly "bg-dark": "bg-dark";
   readonly "edit-button": "edit-button";
   readonly account: "account";

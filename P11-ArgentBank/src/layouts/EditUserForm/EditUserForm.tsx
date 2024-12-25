@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
+import editUserForm from "./editUserForm.module.scss";
 
 const schema = z.object({
 	userName: z
@@ -52,30 +53,72 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 	};
 
 	return (
-		<>
+		<div className={editUserForm["EditUserForm-container"]}>
 			<h2>Edit user info</h2>
-			<form onSubmit={handleSubmit(handleSave)} role="form">
+			<form
+				className={editUserForm["form-container"]}
+				onSubmit={handleSubmit(handleSave)}
+				role="form">
 				<div>
-					<Label htmlFor="userName">User Name</Label>
-					<input id="userName" {...register("userName")} />
-					{errors.userName && <p>{errors.userName.message}</p>}
+					<Label className={editUserForm.label} htmlFor="userName">
+						User Name :
+					</Label>
+					<input
+						className={editUserForm.input}
+						id="userName"
+						{...register("userName")}
+					/>
+					{errors.userName && (
+						<p className={editUserForm["error-message"]}>
+							{errors.userName.message}
+						</p>
+					)}
 				</div>
 				<div>
-					<Label htmlFor="firstName">First Name</Label>
-					<input id="firstName" readOnly {...register("firstName")} />
-					{errors.firstName && <p>{errors.firstName.message}</p>}
+					<Label className={editUserForm.label} htmlFor="firstName">
+						First Name :
+					</Label>
+					<input
+						className={editUserForm.input_readonly}
+						id="firstName"
+						readOnly
+						{...register("firstName")}
+					/>
+					{errors.firstName && (
+						<p className={editUserForm["error-message"]}>
+							{errors.firstName.message}
+						</p>
+					)}
 				</div>
 				<div>
-					<Label htmlFor="lastName">Last Name</Label>
-					<input id="lastName" readOnly {...register("lastName")} />
-					{errors.lastName && <p>{errors.lastName.message}</p>}
+					<Label className={editUserForm.label} htmlFor="lastName">
+						Last Name :
+					</Label>
+					<input
+						className={editUserForm.input_readonly}
+						id="lastName"
+						readOnly
+						{...register("lastName")}
+					/>
+					{errors.lastName && (
+						<p className={editUserForm["error-message"]}>
+							{errors.lastName.message}
+						</p>
+					)}
 				</div>
-				<button type="submit">Save</button>
-				<button type="button" onClick={onCancel}>
-					Cancel
-				</button>
+				<div className={editUserForm["button-group"]}>
+					<button className={editUserForm["submit-button"]} type="submit">
+						Save
+					</button>
+					<button
+						className={editUserForm["cancel-button"]}
+						type="button"
+						onClick={onCancel}>
+						Cancel
+					</button>
+				</div>
 			</form>
-		</>
+		</div>
 	);
 };
 

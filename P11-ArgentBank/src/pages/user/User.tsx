@@ -51,7 +51,7 @@ const User: React.FC = () => {
 	return (
 		<main className={user["bg-dark"]}>
 			<div className="header">
-				<h1>
+				<h1 className={user["title"]}>
 					Welcome back
 					<br />
 					{currentUser.firstName} {currentUser.lastName} !
