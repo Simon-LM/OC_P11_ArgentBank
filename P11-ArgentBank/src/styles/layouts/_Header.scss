@@ -12,13 +12,7 @@
 
 .main-nav a {
 	font-weight: bold;
-	color: $light-text;
 }
-
-.main-nav a.router-link-exact-active {
-	color: $light-text-link;
-}
-
 .main-nav-item {
 	display: flex;
 	flex-direction: row;

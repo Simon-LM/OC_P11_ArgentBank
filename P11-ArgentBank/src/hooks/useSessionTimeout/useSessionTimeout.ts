@@ -1,35 +1,89 @@
 /** @format */
 
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store/Store";
+// import { useEffect, useRef } from "react";
+// import { useDispatch } from "react-redux";
+// import { logoutUser } from "../../pages/user/usersSlice";
+
+// const useSessionTimeout = (timeout: number) => {
+// 	const dispatch = useDispatch();
+// 	const timerRef = useRef<number | null>(null);
+
+// 	useEffect(() => {
+// 		// Crée un premier timer
+// 		timerRef.current = window.setTimeout(() => {
+// 			dispatch(logoutUser());
+// 		}, timeout);
+
+// 		const resetTimer = () => {
+// 			if (timerRef.current) {
+// 				clearTimeout(timerRef.current);
+// 			}
+// 			timerRef.current = window.setTimeout(() => {
+// 				dispatch(logoutUser());
+// 			}, timeout);
+// 		};
+
+// 		window.addEventListener("mousemove", resetTimer);
+// 		window.addEventListener("keypress", resetTimer);
+
+// 		return () => {
+// 			if (timerRef.current) {
+// 				clearTimeout(timerRef.current);
+// 			}
+// 			window.removeEventListener("mousemove", resetTimer);
+// 			window.removeEventListener("keypress", resetTimer);
+// 		};
+// 	}, [dispatch, timeout]);
+// };
+
+// export default useSessionTimeout;
+
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../pages/user/usersSlice";
+import { RootState } from "../../store/Store";
 
 const useSessionTimeout = (timeout: number) => {
-	const dispatch = useDispatch<AppDispatch>();
+	const dispatch = useDispatch();
+	const timerRef = useRef<number | null>(null);
+	const isAuthenticated = useSelector(
+		(state: RootState) => state.users.isAuthenticated
+	);
 
 	useEffect(() => {
-		const timer = setTimeout(() => {
-			dispatch(logoutUser());
-		}, timeout);
+		const startTimer = () => {
+			if (timerRef.current) {
+				clearTimeout(timerRef.current);
+			}
 
-		const resetTimer = () => {
-			clearTimeout(timer);
-			// Redémarrer le timer
-			setTimeout(() => {
+			// Mettre à jour expiresAt dans sessionStorage
+			const expiresAt = new Date().getTime() + timeout;
+			sessionStorage.setItem("expiresAt", expiresAt.toString());
+
+			timerRef.current = window.setTimeout(() => {
 				dispatch(logoutUser());
 			}, timeout);
 		};
 
-		window.addEventListener("mousemove", resetTimer);
-		window.addEventListener("keypress", resetTimer);
+		if (isAuthenticated) {
+			startTimer();
 
-		return () => {
-			clearTimeout(timer);
-			window.removeEventListener("mousemove", resetTimer);
-			window.removeEventListener("keypress", resetTimer);
-		};
-	}, [dispatch, timeout]);
+			const resetTimer = () => {
+				startTimer();
+			};
+
+			window.addEventListener("mousemove", resetTimer);
+			window.addEventListener("keypress", resetTimer);
+
+			return () => {
+				if (timerRef.current) {
+					clearTimeout(timerRef.current);
+				}
+				window.removeEventListener("mousemove", resetTimer);
+				window.removeEventListener("keypress", resetTimer);
+			};
+		}
+	}, [dispatch, timeout, isAuthenticated]);
 };
 
 export default useSessionTimeout;

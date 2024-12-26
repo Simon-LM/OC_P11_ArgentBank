@@ -36,7 +36,7 @@
 	background: gainsboro;
 	&:active,
 	&:focus-visible {
-		color: #e53935;
+		color: #e53935 !important;
 	}
 	// Styliser le texte sélectionné
 	&::selection {

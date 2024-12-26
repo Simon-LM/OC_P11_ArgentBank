@@ -15,7 +15,8 @@
 	}
 }
 
-a:hover {
+a:hover,
+a:focus-visible {
 	color: $light-text-link-hover !important;
 	@media (prefers-color-scheme: dark) {
 		color: $dark-text-link-hover !important;
