@@ -1,43 +1,5 @@
 /** @format */
 
-// import { useEffect, useRef } from "react";
-// import { useDispatch } from "react-redux";
-// import { logoutUser } from "../../pages/user/usersSlice";
-
-// const useSessionTimeout = (timeout: number) => {
-// 	const dispatch = useDispatch();
-// 	const timerRef = useRef<number | null>(null);
-
-// 	useEffect(() => {
-// 		// Crée un premier timer
-// 		timerRef.current = window.setTimeout(() => {
-// 			dispatch(logoutUser());
-// 		}, timeout);
-
-// 		const resetTimer = () => {
-// 			if (timerRef.current) {
-// 				clearTimeout(timerRef.current);
-// 			}
-// 			timerRef.current = window.setTimeout(() => {
-// 				dispatch(logoutUser());
-// 			}, timeout);
-// 		};
-
-// 		window.addEventListener("mousemove", resetTimer);
-// 		window.addEventListener("keypress", resetTimer);
-
-// 		return () => {
-// 			if (timerRef.current) {
-// 				clearTimeout(timerRef.current);
-// 			}
-// 			window.removeEventListener("mousemove", resetTimer);
-// 			window.removeEventListener("keypress", resetTimer);
-// 		};
-// 	}, [dispatch, timeout]);
-// };
-
-// export default useSessionTimeout;
-
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../pages/user/usersSlice";

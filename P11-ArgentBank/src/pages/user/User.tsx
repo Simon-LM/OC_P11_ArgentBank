@@ -6,7 +6,7 @@ import { RootState } from "../../store/Store";
 import user from "./user.module.scss";
 import classNames from "classnames";
 import { useState } from "react";
-import EditUserForm from "../../layouts/EditUserForm/EditUserForm";
+import EditUserForm from "../../components/EditUserForm/EditUserForm";
 import { updateCurrentUser } from "./usersSlice";
 import { updateUserProfile } from "../../utils/authService";
 
