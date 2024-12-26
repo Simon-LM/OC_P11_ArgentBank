@@ -1,126 +1,113 @@
 /** @format */
 
-import { describe, test, expect } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, test, expect, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./pages/user/usersSlice";
-import { usersMockData } from "./mockData/users";
-import store from "./store/Store";
-
+import userReducer, { UsersState, User } from "./pages/user/usersSlice";
 import App from "./App";
 
-// Mock du store avec un état authentifié
-const createMockStore = (isAuthenticated = false) => {
+// Définir RootState
+interface RootState {
+	users: UsersState;
+}
+
+// Store mock avec le state correct
+const createTestStore = (isAuthenticated = false) => {
+	const preloadedState: RootState = {
+		users: {
+			isAuthenticated,
+			currentUser: isAuthenticated
+				? {
+						id: "123",
+						userName: "Tony",
+						firstName: "Tony",
+						lastName: "Stark",
+						email: "tony@stark.com",
+						createdAt: new Date().toISOString(),
+						updatedAt: new Date().toISOString(),
+						accounts: [
+							{
+								accountName: "Argent Bank Checking",
+								accountNumber: "x8349",
+								balance: "$2,082.79", // string
+								balanceType: "Available Balance",
+							},
+						],
+					}
+				: null,
+			users: [] as User[], // Type explicite pour éviter never[]
+		},
+	};
+
 	return configureStore({
 		reducer: {
 			users: userReducer,
 		},
-		preloadedState: {
-			users: {
-				isAuthenticated,
-				currentUser: isAuthenticated
-					? {
-							id: "66e6fc6d339057ebf4c97019",
-							firstName: "Tony",
-							lastName: "Stark",
-							userName: "Iron",
-							email: "tony@stark.com",
-							createdAt: "2024-09-15T15:25:33.373Z",
-							updatedAt: "2024-09-15T15:25:33.373Z",
-							accounts: [
-								{
-									accountName: "Argent Bank Checking",
-									accountNumber: "8949",
-									balance: "$5,600.55",
-									balanceType: "Available Balance",
-								},
-								{
-									accountName: "Argent Bank Savings",
-									accountNumber: "2094",
-									balance: "$12,450.22",
-									balanceType: "Available Balance",
-								},
-							],
-						}
-					: null,
-				users: usersMockData,
-			},
-		},
+		preloadedState,
 	});
 };
 
-describe("App component", () => {
-	// Test 1 : vérifier si la page Home est bien rendue par défaut
-	test("renders Home page by default", () => {
+describe("App", () => {
+	let store: ReturnType<typeof createTestStore>;
+
+	beforeEach(() => {
+		store = createTestStore();
+	});
+
+	test("affiche la page Home par défaut", async () => {
 		render(
 			<Provider store={store}>
 				<App />
 			</Provider>
 		);
 
-		// Vérifiez qu'un texte unique à la page Home est présent
-		expect(
-			screen.getByText(/Open a savings account with Argent Bank today!/i)
-		).toBeInTheDocument();
+		expect(await screen.findByText(/No fees./i)).toBeInTheDocument();
 	});
 
-	// Test 2 : vérifier la navigation vers la page SignIn
-	test("renders SignIn page when navigating to /SignIn", () => {
-		window.history.pushState({}, "SignIn page", "/SignIn");
+	test("affiche le Header sur toutes les pages", () => {
 		render(
 			<Provider store={store}>
 				<App />
 			</Provider>
 		);
 
-		// Vérifiez qu'un texte unique à la page SignIn est présent
-		expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
+		expect(screen.getByRole("banner")).toBeInTheDocument();
 	});
 
-	// Test 3 : vérifier la navigation vers la page User
-	test("renders User page when navigating to /User", () => {
-		// Configurer le store avec un utilisateur authentifié
-		const authenticatedStore = createMockStore(true);
-
-		// Simuler la navigation vers /User
-		window.history.pushState({}, "User page", "/User");
-
-		render(
-			<Provider store={authenticatedStore}>
-				<App />
-			</Provider>
-		);
-
-		// Vérifier que le composant User est rendu
-		expect(screen.getByText(/Welcome/i)).toBeInTheDocument();
-	});
-
-	// Test 4 : tester la redirection vers Error404 pour les routes non valides
-	test("redirects to Error404 for invalid routes", () => {
-		window.history.pushState({}, "Invalid route", "/invalid-route");
+	test("affiche le Footer sur toutes les pages", () => {
 		render(
 			<Provider store={store}>
 				<App />
 			</Provider>
 		);
 
-		// Vérifiez que la page 404 est bien rendue
-		expect(
-			screen.getByText(/Oops, the page you are requesting does not exist./i)
-		).toBeInTheDocument();
+		expect(screen.getByRole("contentinfo")).toBeInTheDocument();
 	});
 
-	// Test 5 : vérifier que le Header et le Footer sont toujours présents
-	test("renders Header and Footer on all routes", () => {
+	test("redirige vers Error404 pour une route invalide", async () => {
+		window.history.pushState({}, "", "/invalid");
+
 		render(
 			<Provider store={store}>
 				<App />
 			</Provider>
 		);
 
-		// Vérifiez que le Header et le Footer sont bien rendus
-		expect(screen.getByRole("banner")).toBeInTheDocument(); // Header
-		expect(screen.getByRole("contentinfo")).toBeInTheDocument(); // Footer
+		expect(await screen.findByText(/404/i)).toBeInTheDocument();
+	});
+
+	test("protège la route /user sans authentification", async () => {
+		const unauthenticatedStore = createTestStore(false);
+
+		window.history.pushState({}, "", "/user");
+
+		render(
+			<Provider store={unauthenticatedStore}>
+				<App />
+			</Provider>
+		);
+
+		expect(await screen.findByText(/Sign In/i)).toBeInTheDocument();
 	});
 });

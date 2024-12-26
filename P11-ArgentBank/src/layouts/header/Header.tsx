@@ -24,15 +24,26 @@ const Header: React.FC = () => {
 	return (
 		<nav className="main-nav" role="banner">
 			<a className="main-nav-logo" href="./">
-				<img
-					className="main-nav-logo-image"
-					src="./src/assets/img/argentBankLogo.svg"
-					alt="Argent Bank Logo"
-					width="200"
-					height="55"
-					title="Argent Bank - Your Trusted Online Banking Partner"
-					loading="eager"
-				/>
+				<picture>
+					<source
+						srcSet="./src/assets/img/argentBankLogo.avif"
+						type="image/avif"
+					/>
+					<source
+						srcSet="./src/assets/img/argentBankLogo.webp"
+						type="image/webp"
+					/>
+					<img
+						className="main-nav-logo-image"
+						src="./src/assets/img/argentBankLogo.avif"
+						alt="Argent Bank Logo"
+						width="200"
+						height="55"
+						title="Argent Bank - Your Trusted Online Banking Partner"
+						loading="eager"
+						fetchPriority="high"
+					/>
+				</picture>
 				<h1 className="sr-only">
 					Argent Bank - Your Trusted Online Banking Partner Since 2020
 				</h1>

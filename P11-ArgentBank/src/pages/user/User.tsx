@@ -50,12 +50,12 @@ const User: React.FC = () => {
 
 	return (
 		<main className={user["bg-dark"]}>
-			<div className="header">
-				<h1 className={user["title"]}>
+			<div>
+				<h2 className={user["title"]}>
 					Welcome back
 					<br />
 					{currentUser.firstName} {currentUser.lastName} !
-				</h1>
+				</h2>
 
 				{isEditing ? (
 					<EditUserForm

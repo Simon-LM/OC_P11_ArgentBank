@@ -2,16 +2,14 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { usersMockData } from "../../mockData/users";
-// import { fetchUserProfile } from "../../utils/authService";
-
-interface Account {
+export interface Account {
 	accountName: string;
 	accountNumber: string;
 	balance: string;
 	balanceType: string;
 }
 
-interface User {
+export interface User {
 	id: string;
 	firstName: string;
 	lastName: string;
@@ -19,10 +17,10 @@ interface User {
 	email: string;
 	createdAt: string;
 	updatedAt: string;
-	accounts?: Account[]; // Rendre 'accounts' optionnel
+	accounts?: Account[];
 }
 
-interface UsersState {
+export interface UsersState {
 	users: User[];
 	isAuthenticated: boolean;
 	currentUser: User | null;
