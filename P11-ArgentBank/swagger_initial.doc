@@ -1,0 +1,207 @@
+User Module
+￼
+POST
+​/user​/login
+Login
+API for Login
+
+Parameters
+￼Try it out
+Name	Description
+body *
+(body)
+Login Payload
+
+Example Value
+Model
+{
+  "email": "string",
+  "password": "string"
+}
+Parameter content type
+￼
+application/json
+Responses
+Response content type
+￼
+application/json
+Code	Description
+200	
+Login Successfully
+
+Example Value
+Model
+{
+  "token": "string"
+}
+400	
+Invalid Fields
+
+500	
+Internal Server Error
+
+POST
+​/user​/signup
+Signup
+API for Signup
+
+Parameters
+￼Try it out
+Name	Description
+body *
+(body)
+Signup Payload
+
+Example Value
+Model
+{
+  "email": "string",
+  "password": "string",
+  "firstName": "string",
+  "lastName": "string",
+  "userName": "string"
+}
+Parameter content type
+￼
+application/json
+Responses
+Response content type
+￼
+application/json
+Code	Description
+200	
+Signup Successfully
+
+Example Value
+Model
+{
+  "status": 0,
+  "message": "string",
+  "body": {
+    "id": "string",
+    "email": "string"
+  }
+}
+400	
+Invalid Fields
+
+500	
+Internal Server Error
+
+GET
+​/user​/profile
+User Profile API
+￼
+API for fetching a user profile
+
+Parameters
+￼Try it out
+No parameters
+
+Responses
+Response content type
+￼
+application/json
+Code	Description
+200	
+User profile retrieved successully
+
+Example Value
+Model
+{
+  "status": 0,
+  "message": "string",
+  "body": {
+    "id": "string",
+    "email": "string"
+  }
+}
+400	
+Invalid Fields
+
+500	
+Internal Server Error
+
+PUT
+​/user​/profile
+User Profile API
+￼
+API for updating a user profile
+
+Parameters
+￼Try it out
+Name	Description
+body *
+object
+(body)
+Update user profile attributes
+
+Example Value
+Model
+{
+  "userName": "string"
+}
+Parameter content type
+￼
+application/json
+Responses
+Response content type
+￼
+application/json
+Code	Description
+200	
+User profile retrieved successully
+
+Example Value
+Model
+{
+  "status": 0,
+  "message": "string",
+  "body": {
+    "id": "string",
+    "email": "string"
+  }
+}
+400	
+Invalid Fields
+
+500	
+Internal Server Error
+
+Models
+User{
+email	string
+user email
+
+password	string
+user password
+
+firstName	string
+user first name
+
+lastName	string
+user last name
+
+userName	string
+user public name
+
+}
+Login{
+email	string
+user email
+
+password	string
+user password
+
+}
+ApiResponse{
+status	integer
+message	string
+body	{...}
+}
+LoginResponse{
+token	string
+}
+UserProfile{
+userName	string
+}
