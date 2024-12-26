@@ -28,8 +28,14 @@ const Header: React.FC = () => {
 					className="main-nav-logo-image"
 					src="./src/assets/img/argentBankLogo.svg"
 					alt="Argent Bank Logo"
+					width="200"
+					height="55"
+					title="Argent Bank - Your Trusted Online Banking Partner"
+					loading="eager"
 				/>
-				<h1 className="sr-only">Argent Bank</h1>
+				<h1 className="sr-only">
+					Argent Bank - Your Trusted Online Banking Partner Since 2020
+				</h1>
 			</a>
 
 			{isAuthenticated && currentUser ? (
