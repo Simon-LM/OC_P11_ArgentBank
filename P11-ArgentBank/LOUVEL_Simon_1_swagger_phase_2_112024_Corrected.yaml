@@ -1,4 +1,5 @@
-# @format
+
+
 swagger: "2.0"
 info:
   version: "1.0.0"
@@ -68,7 +69,7 @@ paths:
         500:
           description: "Server error"
     put:
-      summary: "Update transaction"
+      summary: "Update transaction category and description"
       parameters:
         - name: "transactionId"
           in: "path"
@@ -78,30 +79,21 @@ paths:
           name: "body"
           required: true
           schema:
-            $ref: "#/definitions/Transaction"
+            type: "object"
+            properties:
+              category:
+                type: "string"
+                description: "New category for the transaction"
+              description:
+                type: "string"
+                description: "New description for the transaction"
       responses:
         200:
           description: "Transaction successfully updated"
           schema:
-            $ref: "#/definitions/Transaction"
+            $ref: "#/definitions/TransactionUpdate"
         400:
           description: "Invalid data"
-        401:
-          description: "Unauthorized"
-        404:
-          description: "Transaction not found"
-        500:
-          description: "Server error"
-    delete:
-      summary: "Delete transaction"
-      parameters:
-        - name: "transactionId"
-          in: "path"
-          required: true
-          type: "string"
-      responses:
-        204:
-          description: "Transaction successfully deleted"
         401:
           description: "Unauthorized"
         404:
@@ -138,3 +130,13 @@ definitions:
         type: "string"
         enum: ["CREDIT", "DEBIT"]
         description: "Transaction type"
+
+  TransactionUpdate:
+    type: "object"
+    properties:
+      category:
+        type: "string"
+        description: "New category for the transaction"
+      description:
+        type: "string"
+        description: "New description for the transaction"
