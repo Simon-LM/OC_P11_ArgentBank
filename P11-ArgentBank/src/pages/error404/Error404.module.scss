@@ -3,24 +3,36 @@
 .error404 {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	justify-content: center;
 	align-items: center;
-	gap: 4rem;
-	padding: 0 4rem;
-	background: red;
+	min-height: calc(100vh - 10rem);
+	padding: 2rem;
+
 	&__title {
 		font-weight: 700;
 		font-size: clamp(6rem, 25vmin, 18rem);
-		line-height: clamp(8rem, 25vmin, 20rem);
+		color: #00bc77;
 		margin: 0;
 	}
+
 	&__text {
 		font-size: clamp(1.2rem, 4vmin, 2rem);
-		line-height: clamp(1.4rem, 4vmin, 2.2rem);
+		margin: 2rem 0;
+		font-weight: bold;
 	}
+
 	&__link {
-		border-radius: 0.2em;
-		padding: 0.2em;
-		text-decoration: underline;
+		font-weight: bold;
+		color: #00bc77;
+		text-decoration: none;
+		padding: 8px 16px;
+		border: 2px solid #00bc77;
+		border-radius: 4px;
+
+		&:hover {
+			background-color: #00bc77;
+			color: white !important;
+			text-decoration: none;
+		}
 	}
 }

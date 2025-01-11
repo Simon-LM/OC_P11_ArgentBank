@@ -41,7 +41,7 @@ const Header: React.FC = () => {
 						height="55"
 						title="Argent Bank - Your Trusted Online Banking Partner"
 						loading="eager"
-						fetchPriority="high"
+						// fetchPriority="high"
 					/>
 				</picture>
 				<h1 className="sr-only">

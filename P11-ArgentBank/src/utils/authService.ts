@@ -82,8 +82,12 @@ export const loginUser = async (credentials: LoginCredentials) => {
 	};
 
 	try {
+		// const response = await fetch(
+		// 	"http://localhost:3001/api/v1/user/login",
+		// 	requestOptions
+		// );
 		const response = await fetch(
-			"http://localhost:3001/api/v1/user/login",
+			"/api/user/login", // Modification uniquement de la route
 			requestOptions
 		);
 
@@ -110,6 +114,13 @@ export const loginUser = async (credentials: LoginCredentials) => {
 		sessionStorage.setItem("authToken", token);
 		sessionStorage.setItem("expiresAt", expiresAt.toString());
 
+		// Add
+		const user = usersMockData.find((u) => u.email === credentials.email);
+		if (user) {
+			sessionStorage.setItem("userId", user.id);
+			sessionStorage.setItem("currentUserName", user.userName);
+		}
+
 		return token;
 	} catch (error) {
 		console.error("Error during login:", error);
@@ -119,14 +130,20 @@ export const loginUser = async (credentials: LoginCredentials) => {
 // Fonction pour récupérer le profil utilisateur après connexion
 export const fetchUserProfile = async (token: string) => {
 	try {
-		const API_BASE_URL =
-			import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api/v1";
+		// const API_BASE_URL =
+		// 	import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api/v1";
 
-		const response = await fetch(`${API_BASE_URL}/user/profile`, {
+		// const response = await fetch(`${API_BASE_URL}/user/profile`, {
+		// 	method: "GET",
+		// 	headers: {
+		// 		Authorization: `Bearer ${token}`,
+		// 	},
+		// });
+
+		const response = await fetch("/api/user/profile", {
+			// Modification de la route
 			method: "GET",
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
+			headers: { Authorization: `Bearer ${token}` },
 		});
 
 		if (!response.ok) {
@@ -180,39 +197,72 @@ export const fetchUserProfile = async (token: string) => {
 };
 
 // Fonction pour mettre à jour le profil utilisateur
-export const updateUserProfile = async (
-	userName: string,
-	token: string
-): Promise<{ id: string; email: string; userName?: string }> => {
-	const requestOptions: RequestInit = {
-		method: "PUT",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token}`,
-		},
-		body: JSON.stringify({ userName }),
-	};
+// export const updateUserProfile = async (
+// 	userName: string,
+// 	token: string
+// ): Promise<{ id: string; email: string; userName?: string }> => {
+// 	const requestOptions: RequestInit = {
+// 		method: "PUT",
+// 		headers: {
+// 			"Content-Type": "application/json",
+// 			Authorization: `Bearer ${token}`,
+// 		},
+// 		body: JSON.stringify({ userName }),
+// 	};
 
+// 	try {
+// 		// const response = await fetch(
+// 		// 	"http://localhost:3001/api/v1/user/profile",
+// 		// 	requestOptions
+// 		// );
+// 		const response = await fetch("/api/user/profile", requestOptions);
+// 		if (!response.ok) {
+// 			const data = await response.json();
+// 			throw new Error(`Update failed: ${response.status} - ${data.message}`);
+// 		}
+
+// 		const data = await response.json();
+
+// 		// Validation de la réponse API avec Zod
+// 		const parsedResponse = updateProfileResponseSchema.safeParse(data);
+// 		if (!parsedResponse.success) {
+// 			throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
+// 		}
+
+// 		return parsedResponse.data.body;
+// 	} catch (error) {
+// 		console.error("Error updating user profile:", error);
+// 		throw error;
+// 	}
+// };
+
+export const updateUserProfile = async (userName: string, token: string) => {
 	try {
-		const response = await fetch(
-			"http://localhost:3001/api/v1/user/profile",
-			requestOptions
-		);
+		const response = await fetch("/api/user/profile", {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ userName }),
+		});
 
 		if (!response.ok) {
-			const data = await response.json();
-			throw new Error(`Update failed: ${response.status} - ${data.message}`);
+			throw new Error("Failed to update profile");
 		}
 
-		const data = await response.json();
+		// Stocker le nouveau username
+		sessionStorage.setItem("currentUserName", userName);
 
-		// Validation de la réponse API avec Zod
-		const parsedResponse = updateProfileResponseSchema.safeParse(data);
-		if (!parsedResponse.success) {
-			throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
-		}
+		// Récupérer l'utilisateur complet avec les données mockées
+		const userId = sessionStorage.getItem("userId");
+		const baseUser = usersMockData.find((u) => u.id === userId);
 
-		return parsedResponse.data.body;
+		// Retourner l'utilisateur avec le nouveau username
+		return {
+			...baseUser,
+			userName,
+		};
 	} catch (error) {
 		console.error("Error updating user profile:", error);
 		throw error;
@@ -220,19 +270,46 @@ export const updateUserProfile = async (
 };
 
 // Fonction pour initialiser l'authentification au démarrage de l'app
+// export const initializeAuth = () => {
+// 	return async (dispatch: AppDispatch) => {
+// 		const token = sessionStorage.getItem("authToken");
+// 		const expiresAt = sessionStorage.getItem("expiresAt");
+
+// 		if (token && expiresAt) {
+// 			const now = new Date().getTime();
+// 			if (now > parseInt(expiresAt, 10)) {
+// 				// Si le token a expiré, déconnecter l'utilisateur
+// 				dispatch(logoutUser());
+// 			} else {
+// 				try {
+// 					const userProfile = await fetchUserProfile(token);
+// 					dispatch(setAuthState(userProfile));
+// 				} catch (error) {
+// 					console.error("Failed to initialize authentication:", error);
+// 					dispatch(logoutUser());
+// 				}
+// 			}
+// 		}
+// 	};
+// };
+
 export const initializeAuth = () => {
 	return async (dispatch: AppDispatch) => {
 		const token = sessionStorage.getItem("authToken");
 		const expiresAt = sessionStorage.getItem("expiresAt");
+		const storedUserName = sessionStorage.getItem("currentUserName");
 
 		if (token && expiresAt) {
 			const now = new Date().getTime();
 			if (now > parseInt(expiresAt, 10)) {
-				// Si le token a expiré, déconnecter l'utilisateur
 				dispatch(logoutUser());
 			} else {
 				try {
 					const userProfile = await fetchUserProfile(token);
+					// Utiliser le userName stocké dans sessionStorage s'il existe
+					if (storedUserName) {
+						userProfile.userName = storedUserName;
+					}
 					dispatch(setAuthState(userProfile));
 				} catch (error) {
 					console.error("Failed to initialize authentication:", error);
@@ -242,3 +319,7 @@ export const initializeAuth = () => {
 		}
 	};
 };
+
+// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+// // // // // // // // // // // // // // // // // // // //
+// // // // // // // // // // // // // // // // // // // // // // //

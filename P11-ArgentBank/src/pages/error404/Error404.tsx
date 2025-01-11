@@ -1,18 +1,18 @@
 /** @format */
 
 import { Link } from "react-router-dom";
-import "./Error404.module.scss";
+import styles from "./Error404.module.scss";
 
 function Error404() {
 	return (
-		<div className="error404">
-			<h2 className="error404__title">404</h2>
-			<p className="error404__text">
+		<div className={styles.error404}>
+			<h2 className={styles["error404__title"]}>404</h2>
+			<p className={styles["error404__text"]}>
 				Oops, the page you are requesting does not exist.
 			</p>
-			<Link className="error404__link links" to="/">
+			<Link className={styles["error404__link"]} to="/">
 				Return to the homepage
-			</Link>
+			</Link>{" "}
 		</div>
 	);
 }
