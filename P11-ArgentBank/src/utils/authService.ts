@@ -40,17 +40,17 @@ const profileResponseSchema = z.object({
 });
 
 // Schéma pour la réponse de mise à jour du profil utilisateur
-const updateProfileResponseSchema = z.object({
-	status: z.number(),
-	message: z.string(),
-	body: z.object({
-		id: z.string(),
-		email: z.string(),
-		userName: z.string(),
-		createdAt: z.string(),
-		updatedAt: z.string(),
-	}),
-});
+// const updateProfileResponseSchema = z.object({
+// 	status: z.number(),
+// 	message: z.string(),
+// 	body: z.object({
+// 		id: z.string(),
+// 		email: z.string(),
+// 		userName: z.string(),
+// 		createdAt: z.string(),
+// 		updatedAt: z.string(),
+// 	}),
+// });
 
 // Schéma pour les données de connexion (credentials)
 const loginSchema = z.object({
