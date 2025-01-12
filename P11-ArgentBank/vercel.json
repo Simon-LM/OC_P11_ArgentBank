@@ -13,5 +13,9 @@
         "installCommand": "pnpm install"
       }
     }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/" }
   ]
 }
