@@ -105,55 +105,48 @@ const JWT_SECRET = process.env.VITE_JWT_SECRET || "default_secret_key";
 	// 	res.status(405).json({ status: 405, message: "Method Not Allowed" });
 	// }
 // }
-export default async function handler(req, res) {
-	// Autoriser explicitement CORS
+module.exports = async (req, res) => {
+	// CORS Headers
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
-	// Gérer la requête OPTIONS pour CORS
+	// Options request
 	if (req.method === 'OPTIONS') {
 	  return res.status(200).end();
 	}
   
-	// Vérifier si c'est une requête POST
+	// Only allow POST
 	if (req.method !== 'POST') {
 	  return res.status(405).json({
 		status: 405,
-		message: "Method Not Allowed - Only POST requests are accepted"
+		message: "Method Not Allowed"
 	  });
 	}
   
 	try {
 	  const { email, password } = req.body;
-	  console.log('Login attempt:', { email, password });
-  
-	  // Vérifier les credentials
 	  const user = users.find(u => u.email === email && u.password === password);
-	  
+  
 	  if (!user) {
-		return res.status(400).json({
-		  status: 400,
+		return res.status(401).json({
+		  status: 401,
 		  message: "Invalid credentials"
 		});
 	  }
   
-	  // Générer le token
-	  const token = "dev-token-" + user.id;
-  
-	  // Retourner la réponse
 	  return res.status(200).json({
 		status: 200,
 		message: "Login successful",
-		body: { token }
+		body: {
+		  token: "dev-example-token"
+		}
 	  });
-  
 	} catch (error) {
-	  console.error('Login error:', error);
+	  console.error(error);
 	  return res.status(500).json({
 		status: 500,
-		message: "Internal server error",
-		error: error.message
+		message: "Server error"
 	  });
 	}
-  }
+  };
