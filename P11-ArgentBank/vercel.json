@@ -1,31 +1,17 @@
 {
-<<<<<<< HEAD
-    "rewrites": [
-      { "source": "/api/(.*)", "destination": "/api/$1" }
-    ],
-=======
-    "version": 2,
->>>>>>> fc815033dd75dd771be9fffb4d0449d0ab7eca5d
-    "builds": [
-      {
-        "src": "package.json",
-        "use": "@vercel/static-build",
-        "config": {
-<<<<<<< HEAD
-          "buildCommand": "vite build",
-          "outputDirectory": "dist",
-          "installCommand": "pnpm install"
-        }
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ],
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "vite build",
+        "outputDirectory": "dist",
+        "installCommand": "pnpm install"
       }
-=======
-          "buildCommand": "npm run build",
-          "outputDirectory": "dist",
-          "installCommand": "npm install --legacy-peer-deps"
-        }
-      }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "/" }
->>>>>>> fc815033dd75dd771be9fffb4d0449d0ab7eca5d
-    ]
-  }
+    }
+  ]
+}
