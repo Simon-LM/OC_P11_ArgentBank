@@ -105,18 +105,25 @@ const JWT_SECRET = process.env.VITE_JWT_SECRET || "default_secret_key";
 	// 	res.status(405).json({ status: 405, message: "Method Not Allowed" });
 	// }
 // }
-module.exports = async (req, res) => {
-	// CORS Headers
+
+
+export default async function handler(req, res) {
+	// Logs pour débogage
+	console.log('Méthode:', req.method);
+	console.log('Corps:', req.body);
+  
+	// Configuration CORS
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+	res.setHeader('Content-Type', 'application/json');
   
-	// Options request
+	// Gestion preflight CORS
 	if (req.method === 'OPTIONS') {
 	  return res.status(200).end();
 	}
   
-	// Only allow POST
+	// Vérification méthode POST
 	if (req.method !== 'POST') {
 	  return res.status(405).json({
 		status: 405,
@@ -126,27 +133,46 @@ module.exports = async (req, res) => {
   
 	try {
 	  const { email, password } = req.body;
-	  const user = users.find(u => u.email === email && u.password === password);
+  
+	  // Validation des champs
+	  if (!email || !password) {
+		return res.status(400).json({
+		  status: 400,
+		  message: "Email and password are required"
+		});
+	  }
+  
+	  // Recherche utilisateur
+	  const user = users.find(u => 
+		u.email === email && u.password === password
+	  );
   
 	  if (!user) {
 		return res.status(401).json({
 		  status: 401,
-		  message: "Invalid credentials"
+		  message: "Invalid email or password"
 		});
 	  }
   
+	  // Génération du token JWT
+	  const token = jwt.sign(
+		{ id: user.id }, 
+		JWT_SECRET,
+		{ expiresIn: '1h' }
+	  );
+  
+	  // Réponse succès
 	  return res.status(200).json({
 		status: 200,
-		message: "Login successful",
-		body: {
-		  token: "dev-example-token"
-		}
+		message: "User successfully logged in",
+		body: { token }
 	  });
+  
 	} catch (error) {
-	  console.error(error);
+	  console.error('Login error:', error);
 	  return res.status(500).json({
 		status: 500,
-		message: "Server error"
+		message: "Internal server error"
 	  });
 	}
-  };
+  }
