@@ -1,7 +1,7 @@
 /** @format */
 
 import { memo } from "react";
-import Feature from "../Feature/Feature";
+import Feature from "../Feature";
 
 const Features = memo(() => (
 	<section className="features">

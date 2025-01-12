@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import Features from "../../components/Features/Features";
+import Features from "../../components/Features";
 
 const Home: React.FC = () => {
 	return (
