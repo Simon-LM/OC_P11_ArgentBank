@@ -24,27 +24,84 @@ const users = [
 const JWT_SECRET = process.env.VITE_JWT_SECRET || "default_secret_key";
 
 export default function handler(req, res) {
+
+	console.log('Request method:', req.method);
+	console.log('Request headers:', req.headers);
+	console.log('Request body:', req.body);
+	
+	 // Gérer CORS preflight
+	 if (req.method === 'OPTIONS') {
+		return res.status(200).end();
+	  }
+	
+	
 	if (req.method === "POST") {
-		const { email, password } = req.body;
+    try {
+      const { email, password } = req.body;
 
-		const user = users.find(
-			(u) => u.email === email && u.password === password
-		);
-		if (!user) {
-			return res
-				.status(400)
-				.json({ status: 400, message: "Invalid email or password" });
-		}
+      if (!email || !password) {
+        return res.status(400).json({
+          status: 400,
+          message: "Email and password are required"
+        });
+      }
 
-		// const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
-		const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+      const user = users.find(
+        (u) => u.email === email && u.password === password
+      );
 
-		return res.status(200).json({
-			status: 200,
-			message: "User successfully logged in",
-			body: { token },
-		});
-	} else {
-		res.status(405).json({ status: 405, message: "Method Not Allowed" });
-	}
+      if (!user) {
+        return res.status(400).json({
+          status: 400,
+          message: "Invalid email or password"
+        });
+      }
+
+      const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+
+      return res.status(200).json({
+        status: 200,
+        message: "User successfully logged in",
+        body: { token }
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      return res.status(500).json({
+        status: 500,
+        message: "Internal server error"
+      });
+    }
+  }
+
+  return res.status(405).json({
+    status: 405,
+    message: "Method not allowed"
+  });
+	
+	
+	
+	
+	// if (req.method === "POST") {
+	// 	const { email, password } = req.body;
+
+	// 	const user = users.find(
+	// 		(u) => u.email === email && u.password === password
+	// 	);
+	// 	if (!user) {
+	// 		return res
+	// 			.status(400)
+	// 			.json({ status: 400, message: "Invalid email or password" });
+	// 	}
+
+	// 	// const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+	// 	const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+
+	// 	return res.status(200).json({
+	// 		status: 200,
+	// 		message: "User successfully logged in",
+	// 		body: { token },
+	// 	});
+	// } else {
+	// 	res.status(405).json({ status: 405, message: "Method Not Allowed" });
+	// }
 }
