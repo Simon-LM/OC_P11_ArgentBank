@@ -1,14 +1,14 @@
 /** @format */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { thunk } from "redux-thunk";
+// import { thunk } from "redux-thunk";
 import usersReducer from "../pages/user/usersSlice";
 
 const store = configureStore({
 	reducer: {
 		users: usersReducer,
 	},
-	middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+	// middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

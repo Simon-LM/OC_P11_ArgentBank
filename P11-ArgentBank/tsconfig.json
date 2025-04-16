@@ -53,6 +53,9 @@
             ],
             "@mockData/*": [
                 "src/mockData/*"
+            ],
+            "@generated/*": [
+                "src/generated/*"
             ]
         }
     }

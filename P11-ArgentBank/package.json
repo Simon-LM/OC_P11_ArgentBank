@@ -17,12 +17,14 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.1",
+		"@prisma/client": "^6.6.0",
 		"@radix-ui/react-label": "^2.1.1",
 		"@reduxjs/toolkit": "^2.2.7",
 		"classnames": "^2.5.1",
 		"dotenv": "^16.4.7",
 		"jsonwebtoken": "^9.0.2",
 		"normalize.css": "^8.0.1",
+		"prisma": "^6.6.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-hook-form": "^7.54.2",
@@ -38,8 +40,8 @@
 		"@testing-library/user-event": "^14.5.2",
 		"@types/jest": "^29.5.13",
 		"@types/node": "^22.7.4",
-		"@types/react": "^18.3.3",
-		"@types/react-dom": "^18.3.0",
+		"@types/react": "^18.3.20",
+		"@types/react-dom": "^18.3.6",
 		"@types/react-router-dom": "^5.3.3",
 		"@types/redux-mock-store": "^1.0.6",
 		"@vitejs/plugin-react-swc": "^3.5.0",
@@ -65,5 +67,12 @@
 	"engines": {
 		"node": "18.x",
 		"npm": "9.x"
-	  }
+	},
+	"pnpm": {
+		"ignoredBuiltDependencies": [
+			"@prisma/client",
+			"@prisma/engines",
+			"prisma"
+		]
+	}
 }
