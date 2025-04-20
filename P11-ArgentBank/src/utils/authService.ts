@@ -82,10 +82,6 @@ export const loginUser = async (credentials: LoginCredentials) => {
 	};
 
 	try {
-		// const response = await fetch(
-		// 	"http://localhost:3001/api/v1/user/login",
-		// 	requestOptions
-		// );
 		const response = await fetch(
 			"/api/user/login", // Modification uniquement de la route
 			requestOptions
@@ -121,7 +117,8 @@ export const loginUser = async (credentials: LoginCredentials) => {
 			sessionStorage.setItem("currentUserName", user.userName);
 		}
 
-		return token;
+		// return token;
+		return parsedResponse.data;
 	} catch (error) {
 		console.error("Error during login:", error);
 		throw error;
@@ -130,16 +127,6 @@ export const loginUser = async (credentials: LoginCredentials) => {
 // Fonction pour récupérer le profil utilisateur après connexion
 export const fetchUserProfile = async (token: string) => {
 	try {
-		// const API_BASE_URL =
-		// 	import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api/v1";
-
-		// const response = await fetch(`${API_BASE_URL}/user/profile`, {
-		// 	method: "GET",
-		// 	headers: {
-		// 		Authorization: `Bearer ${token}`,
-		// 	},
-		// });
-
 		const response = await fetch("/api/user/profile", {
 			// Modification de la route
 			method: "GET",
@@ -196,46 +183,6 @@ export const fetchUserProfile = async (token: string) => {
 	}
 };
 
-// Fonction pour mettre à jour le profil utilisateur
-// export const updateUserProfile = async (
-// 	userName: string,
-// 	token: string
-// ): Promise<{ id: string; email: string; userName?: string }> => {
-// 	const requestOptions: RequestInit = {
-// 		method: "PUT",
-// 		headers: {
-// 			"Content-Type": "application/json",
-// 			Authorization: `Bearer ${token}`,
-// 		},
-// 		body: JSON.stringify({ userName }),
-// 	};
-
-// 	try {
-// 		// const response = await fetch(
-// 		// 	"http://localhost:3001/api/v1/user/profile",
-// 		// 	requestOptions
-// 		// );
-// 		const response = await fetch("/api/user/profile", requestOptions);
-// 		if (!response.ok) {
-// 			const data = await response.json();
-// 			throw new Error(`Update failed: ${response.status} - ${data.message}`);
-// 		}
-
-// 		const data = await response.json();
-
-// 		// Validation de la réponse API avec Zod
-// 		const parsedResponse = updateProfileResponseSchema.safeParse(data);
-// 		if (!parsedResponse.success) {
-// 			throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
-// 		}
-
-// 		return parsedResponse.data.body;
-// 	} catch (error) {
-// 		console.error("Error updating user profile:", error);
-// 		throw error;
-// 	}
-// };
-
 export const updateUserProfile = async (userName: string, token: string) => {
 	try {
 		const response = await fetch("/api/user/profile", {
@@ -269,30 +216,6 @@ export const updateUserProfile = async (userName: string, token: string) => {
 	}
 };
 
-// Fonction pour initialiser l'authentification au démarrage de l'app
-// export const initializeAuth = () => {
-// 	return async (dispatch: AppDispatch) => {
-// 		const token = sessionStorage.getItem("authToken");
-// 		const expiresAt = sessionStorage.getItem("expiresAt");
-
-// 		if (token && expiresAt) {
-// 			const now = new Date().getTime();
-// 			if (now > parseInt(expiresAt, 10)) {
-// 				// Si le token a expiré, déconnecter l'utilisateur
-// 				dispatch(logoutUser());
-// 			} else {
-// 				try {
-// 					const userProfile = await fetchUserProfile(token);
-// 					dispatch(setAuthState(userProfile));
-// 				} catch (error) {
-// 					console.error("Failed to initialize authentication:", error);
-// 					dispatch(logoutUser());
-// 				}
-// 			}
-// 		}
-// 	};
-// };
-
 export const initializeAuth = () => {
 	return async (dispatch: AppDispatch) => {
 		const token = sessionStorage.getItem("authToken");
@@ -319,7 +242,3 @@ export const initializeAuth = () => {
 		}
 	};
 };
-
-// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-// // // // // // // // // // // // // // // // // // // //
-// // // // // // // // // // // // // // // // // // // // // // //

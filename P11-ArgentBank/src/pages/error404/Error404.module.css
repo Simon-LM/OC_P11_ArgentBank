@@ -1,0 +1,33 @@
+/** @format */
+.error404 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 10rem);
+  padding: 2rem;
+}
+.error404__title {
+  font-weight: 700;
+  font-size: clamp(6rem, 25vmin, 18rem);
+  color: #00bc77;
+  margin: 0;
+}
+.error404__text {
+  font-size: clamp(1.2rem, 4vmin, 2rem);
+  margin: 2rem 0;
+  font-weight: bold;
+}
+.error404__link {
+  font-weight: bold;
+  color: #00bc77;
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 2px solid #00bc77;
+  border-radius: 4px;
+}
+.error404__link:hover {
+  background-color: #00bc77;
+  color: white !important;
+  text-decoration: none;
+}/*# sourceMappingURL=Error404.module.css.map */

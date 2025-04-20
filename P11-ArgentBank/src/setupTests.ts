@@ -1,6 +1,11 @@
 /** @format */
 
-import "@testing-library/jest-dom"; // Importer jest-dom pour ses matchers comme `toBeInTheDocument`
-import { vi } from "vitest";
+import "@testing-library/jest-dom";
+// import { vi } from "vitest";
 
-global.vi = vi;
+// // eslint-disable-next-line no-var
+// declare global {
+// 	var vi: typeof vi;
+// }
+
+// global.vi = vi;

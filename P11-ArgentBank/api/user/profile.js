@@ -1,112 +1,28 @@
 /** @format */
 
-// import jwt from "jsonwebtoken";
-
-// const users = [
-// 	{
-// 		id: "66e6fc6d339057ebf4c97019",
-// 		email: "tony@stark.com",
-// 		firstName: "Tony",
-// 		lastName: "Stark",
-// 		userName: "Iron",
-// 		createdAt: "2024-09-15T15:25:33.373Z",
-// 		updatedAt: "2025-01-11T18:57:21.884Z",
-// 	},
-// 	{
-// 		id: "77f7fd7e440168ff05d8712a",
-// 		email: "steve@rogers.com",
-// 		firstName: "Steve",
-// 		lastName: "Rogers",
-// 		userName: "Captain",
-// 		createdAt: "2024-09-15T15:30:00.000Z",
-// 		updatedAt: "2025-01-11T18:57:21.884Z",
-// 	},
-// ];
-
-// const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
-
-// export default function handler(req, res) {
-// 	if (req.method === "GET") {
-// 		const authHeader = req.headers.authorization;
-// 		if (!authHeader || !authHeader.startsWith("Bearer ")) {
-// 			return res.status(401).json({ status: 401, message: "Unauthorized" });
-// 		}
-
-// 		const token = authHeader.split(" ")[1];
-// 		try {
-// 			const decoded = jwt.verify(token, JWT_SECRET);
-
-// 			const user = users.find((u) => u.id === decoded.id);
-// 			if (!user) {
-// 				return res.status(400).json({ status: 400, message: "User not found" });
-// 			}
-
-// 			return res.status(200).json({
-// 				status: 200,
-// 				message: "Successfully got user profile data",
-// 				body: user,
-// 			});
-// 		} catch (error) {
-// 			return res.status(401).json({ status: 401, message: "Invalid Token" });
-// 		}
-// 	} else {
-// 		res.status(405).json({ status: 405, message: "Method Not Allowed" });
-// 	}
-// }
-
-// // // // // // // // // // // // //
-
+// import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
 
-const users = [
-	{
-		id: "66e6fc6d339057ebf4c97019",
-		email: "tony@stark.com",
-		password: "password123",
-		firstName: "Tony",
-		lastName: "Stark",
-		userName: "Iron",
-		createdAt: "2024-09-15T15:25:33.373Z",
-		updatedAt: "2025-01-11T18:57:21.884Z",
-	},
-	{
-		id: "77f7fd7e440168ff05d8712a",
-		email: "steve@rogers.com",
-		password: "password456",
-		firstName: "Steve",
-		lastName: "Rogers",
-		userName: "Captain",
-		createdAt: "2024-09-15T15:30:00.000Z",
-		updatedAt: "2025-01-11T18:57:21.884Z",
-	},
-];
+const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
 
-const JWT_SECRET = process.env.VITE_JWT_SECRET || "default_secret_key";
-
-export default function handler(req, res) {
-	// GET /user/profile
+export default async function handler(req, res) {
 	if (req.method === "GET") {
 		const authHeader = req.headers.authorization;
 		if (!authHeader || !authHeader.startsWith("Bearer ")) {
-			return res.status(401).json({
-				status: 401,
-				message: "Unauthorized",
-			});
+			console.log("No or bad Authorization header");
+			return res.status(401).json({ status: 401, message: "Unauthorized" });
 		}
 
 		const token = authHeader.split(" ")[1];
 		try {
 			const decoded = jwt.verify(token, JWT_SECRET);
-			const user = users.find((u) => u.id === decoded.id);
-
+			console.log("Decoded JWT:", decoded);
+			const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+			console.log("User trouvé:", user);
 			if (!user) {
-				return res.status(404).json({
-					status: 404,
-					message: "User not found",
-				});
+				return res.status(404).json({ status: 404, message: "User not found" });
 			}
-
-			// Format selon Swagger
 			return res.status(200).json({
 				status: 200,
 				message: "User profile retrieved successfully",
@@ -121,67 +37,70 @@ export default function handler(req, res) {
 				},
 			});
 		} catch (error) {
-			return res.status(500).json({
-				status: 500,
-				message: "Internal Server Error",
-			});
+			console.error("Profile error:", error);
+			return res
+				.status(500)
+				.json({ status: 500, message: "Internal Server Error" });
 		}
 	}
 
-	// PUT /user/profile
-	if (req.method === "PUT") {
+	if (req.method === "PUT" || req.method === "PATCH") {
 		const authHeader = req.headers.authorization;
 		if (!authHeader || !authHeader.startsWith("Bearer ")) {
-			return res.status(401).json({
-				status: 401,
-				message: "Unauthorized",
-			});
+			return res.status(401).json({ status: 401, message: "Unauthorized" });
 		}
-
 		const token = authHeader.split(" ")[1];
 		try {
 			const decoded = jwt.verify(token, JWT_SECRET);
-			const { userName } = req.body;
 
-			if (!userName) {
-				return res.status(400).json({
-					status: 400,
-					message: "Invalid Fields",
+			let body = req.body;
+			if (!body) {
+				let raw = "";
+				await new Promise((resolve) => {
+					req.on("data", (chunk) => {
+						raw += chunk;
+					});
+					req.on("end", resolve);
 				});
+				try {
+					body = JSON.parse(raw);
+				} catch {
+					body = {};
+				}
 			}
 
-			const userIndex = users.findIndex((u) => u.id === decoded.id);
-			if (userIndex === -1) {
-				return res.status(404).json({
-					status: 404,
-					message: "User not found",
-				});
+			const { userName, firstName, lastName } = body;
+			if (!userName && !firstName && !lastName) {
+				return res
+					.status(400)
+					.json({ status: 400, message: "No fields to update" });
 			}
 
-			users[userIndex].userName = userName;
-			users[userIndex].updatedAt = new Date().toISOString();
+			const updatedUser = await prisma.user.update({
+				where: { id: decoded.id },
+				data: { userName, firstName, lastName },
+			});
 
 			return res.status(200).json({
 				status: 200,
 				message: "User profile updated successfully",
 				body: {
-					id: users[userIndex].id,
-					email: users[userIndex].email,
-					userName: users[userIndex].userName,
-					createdAt: users[userIndex].createdAt,
-					updatedAt: users[userIndex].updatedAt,
+					id: updatedUser.id,
+					email: updatedUser.email,
+					userName: updatedUser.userName,
+					firstName: updatedUser.firstName,
+					lastName: updatedUser.lastName,
+					createdAt: updatedUser.createdAt,
+					updatedAt: updatedUser.updatedAt,
 				},
 			});
 		} catch (error) {
-			return res.status(500).json({
-				status: 500,
-				message: "Internal Server Error",
-			});
+			console.error("Profile update error:", error);
+			return res
+				.status(500)
+				.json({ status: 500, message: "Internal Server Error" });
 		}
 	}
 
-	return res.status(405).json({
-		status: 405,
-		message: "Method Not Allowed",
-	});
+	return res.status(405).json({ status: 405, message: "Method Not Allowed" });
 }

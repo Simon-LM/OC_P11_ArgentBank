@@ -12,7 +12,8 @@
         "baseUrl": "src",
         "types": [
             "vitest/globals",
-            "@testing-library/jest-dom"
+            "@testing-library/jest-dom",
+            "@prisma/client"
         ],
         "jsx": "react-jsx",
         "module": "esnext",

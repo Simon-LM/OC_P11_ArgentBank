@@ -13,7 +13,8 @@
 		"test": "vitest run",
 		"test:dev": "vitest --mode development",
 		"test:watch": "vitest watch",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"prisma:test": "node -r ts-node/register src/prismaTest.ts"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.1",
@@ -24,6 +25,7 @@
 		"dotenv": "^16.4.7",
 		"jsonwebtoken": "^9.0.2",
 		"normalize.css": "^8.0.1",
+		"pg": "^8.14.1",
 		"prisma": "^6.6.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
@@ -39,7 +41,7 @@
 		"@testing-library/react": "^16.0.1",
 		"@testing-library/user-event": "^14.5.2",
 		"@types/jest": "^29.5.13",
-		"@types/node": "^22.7.4",
+		"@types/node": "^22.14.1",
 		"@types/react": "^18.3.20",
 		"@types/react-dom": "^18.3.6",
 		"@types/react-router-dom": "^5.3.3",
@@ -57,8 +59,9 @@
 		"redux-mock-store": "^1.5.4",
 		"sass": "^1.79.4",
 		"sass-embedded": "^1.78.0",
+		"ts-node": "^10.9.2",
 		"tsx": "^4.19.3",
-		"typescript": "^5.5.3",
+		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.0.1",
 		"vite": "^5.4.1",
 		"vite-plugin-auto-alias": "^1.0.7",

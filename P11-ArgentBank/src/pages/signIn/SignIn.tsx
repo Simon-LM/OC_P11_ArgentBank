@@ -24,7 +24,8 @@ const SignIn: React.FC = () => {
 			console.log("Login successful:", result);
 
 			// Récupérer le token
-			const token: string = result;
+			// const token: string = result;
+			const token: string = result.body.token;
 
 			// Envoyer les informations à Redux via loginUserSuccess (en tant qu'objet)
 			await dispatch(loginUserSuccess({ email, token: token }));
