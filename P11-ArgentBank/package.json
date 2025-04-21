@@ -21,6 +21,7 @@
 		"@prisma/client": "^6.6.0",
 		"@radix-ui/react-label": "^2.1.1",
 		"@reduxjs/toolkit": "^2.2.7",
+		"bcrypt": "^5.1.1",
 		"classnames": "^2.5.1",
 		"dotenv": "^16.4.7",
 		"jsonwebtoken": "^9.0.2",
@@ -40,6 +41,7 @@
 		"@testing-library/jest-dom": "^6.5.0",
 		"@testing-library/react": "^16.0.1",
 		"@testing-library/user-event": "^14.5.2",
+		"@types/bcrypt": "^5.0.2",
 		"@types/jest": "^29.5.13",
 		"@types/node": "^22.14.1",
 		"@types/react": "^18.3.20",
@@ -77,6 +79,9 @@
 			"@prisma/client",
 			"@prisma/engines",
 			"prisma"
+		],
+		"onlyBuiltDependencies": [
+			"bcrypt"
 		]
 	}
 }

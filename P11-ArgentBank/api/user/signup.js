@@ -1,65 +1,22 @@
 /** @format */
 
-// const users = [
-// 	{
-// 		id: "66e6fc6d339057ebf4c97019",
-// 		email: "tony@stark.com",
-// 		password: "password123",
-// 		firstName: "Tony",
-// 		lastName: "Stark",
-// 		userName: "Iron",
-// 	},
-// 	{
-// 		id: "77f7fd7e440168ff05d8712a",
-// 		email: "steve@rogers.com",
-// 		password: "password456",
-// 		firstName: "Steve",
-// 		lastName: "Rogers",
-// 		userName: "Captain",
-// 	},
-// ];
+import bcrypt from "bcrypt";
+import { prisma } from "../lib/prisma.js";
 
-// export default function handler(req, res) {
-// 	if (req.method === "POST") {
-// 		const { email, password, firstName, lastName, userName } = req.body;
-
-// 		if (!email || !password || !firstName || !lastName || !userName) {
-// 			return res.status(400).json({ status: 400, message: "Invalid Fields" });
-// 		}
-
-// 		const existingUser = users.find((u) => u.email === email);
-// 		if (existingUser) {
-// 			return res
-// 				.status(400)
-// 				.json({ status: 400, message: "Email already in use" });
-// 		}
-
-// 		const newUser = {
-// 			id: `${Date.now()}`,
-// 			email,
-// 			password,
-// 			firstName,
-// 			lastName,
-// 			userName,
-// 		};
-
-// 		users.push(newUser);
-
-// 		return res.status(200).json({
-// 			status: 200,
-// 			message: "Signup Successfully",
-// 			body: { id: newUser.id, email: newUser.email },
-// 		});
-// 	} else {
-// 		res.status(405).json({ status: 405, message: "Method Not Allowed" });
-// 	}
-// }
-
-// // // // // // // // // // // // //
-
-import { prisma } from "../../lib/prisma.js";
+const saltRounds = 10;
 
 export default async function handler(req, res) {
+	// Configuration CORS (ajouté pour la cohérence, même si moins critique pour signup)
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+	res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+	res.setHeader("Content-Type", "application/json");
+
+	// Gestion preflight CORS
+	if (req.method === "OPTIONS") {
+		return res.status(200).end();
+	}
+
 	if (req.method === "POST") {
 		// Lecture du body (pour Vercel/serverless)
 		let body = req.body;
@@ -93,11 +50,20 @@ export default async function handler(req, res) {
 					.json({ status: 400, message: "Email already in use" });
 			}
 
+			// --- Hachage du mot de passe ---
+			const hashedPassword = await bcrypt.hash(password, saltRounds);
+			// ---------------------------------
+
 			// Crée le nouvel utilisateur
 			const newUser = await prisma.user.create({
-				data: { email, password, firstName, lastName, userName },
+				data: {
+					email,
+					password: hashedPassword,
+					firstName,
+					lastName,
+					userName,
+				},
 			});
-
 			return res.status(201).json({
 				status: 201,
 				message: "Signup Successfully",

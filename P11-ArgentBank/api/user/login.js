@@ -1,5 +1,6 @@
 /** @format */
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
@@ -61,11 +62,17 @@ export default async function handler(req, res) {
 			where: { email },
 		});
 
-		// IMPORTANT : Vérifier aussi le mot de passe
-		if (!user || user.password !== password) {
+		// Vérifier si l'utilisateur existe ET comparer le mot de passe fourni avec le hash stocké
+		// bcrypt.compare est asynchrone !
+		const isPasswordValid = user
+			? await bcrypt.compare(password, user.password)
+			: false;
+
+		if (!isPasswordValid) {
+			// Si l'utilisateur n'existe pas OU si le mot de passe est invalide
 			return res.status(401).json({
 				status: 401,
-				message: "Invalid email or password",
+				message: "Invalid email or password", // Garder un message générique pour la sécurité
 			});
 		}
 
