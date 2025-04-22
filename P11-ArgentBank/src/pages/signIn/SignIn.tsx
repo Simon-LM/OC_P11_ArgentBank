@@ -43,7 +43,7 @@ const SignIn: React.FC = () => {
 	};
 
 	return (
-		<main className={signin["bg-dark"]}>
+		<main className={signin["signin-page-main"]}>
 			<section className={signin["sign-in-content"]}>
 				<i
 					className={classNames(
@@ -74,10 +74,10 @@ const SignIn: React.FC = () => {
 						/>
 					</div>
 					{error && <p className={signin["error-message"]}>{error}</p>}
-					<div className={signin["input-remember"]}>
+					{/* <div className={signin["input-remember"]}>
 						<input type="checkbox" id="remember-me" />
 						<label htmlFor="remember-me">Remember me</label>
-					</div>
+					</div> */}
 					<button className={signin["sign-in-button"]}>Sign In</button>
 				</form>
 			</section>

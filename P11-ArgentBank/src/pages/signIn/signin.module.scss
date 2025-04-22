@@ -6,19 +6,27 @@
 // 	flex: 1;
 // }
 
-.bg-dark {
+.signin-page-main {
 	flex: 1;
 	height: 100%;
 	background: $light-bg-user;
+	@media (prefers-color-scheme: dark) {
+		background: $dark-bg-user;
+	}
 }
 .sign-in-content {
 	box-sizing: border-box;
-	background: $light-bg;
+	background: $light-signin-card-bg;
 	color: $light-text;
 	width: rem(300);
 	margin: 0 auto;
 	margin-top: 3rem;
 	padding: 2rem;
+	border-radius: rem(4);
+	@media (prefers-color-scheme: dark) {
+		background: $dark-signin-card-bg;
+		color: $dark-text;
+	}
 }
 .sign-in-button {
 	display: block;
@@ -26,10 +34,21 @@
 	padding: rem(8);
 	font-size: 1.1rem;
 	font-weight: bold;
-	margin-top: 1rem;
+	margin-top: 2rem;
 	border-color: $light-button-border;
 	background-color: $light-button-bg;
-	color: $dark-text;
+	color: $light-button-text;
+	border-radius: rem(4);
+
+	&:hover {
+		filter: brightness(1.1);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		border-color: $dark-button-border;
+		background-color: $dark-button-bg;
+		color: $dark-button-text;
+	}
 }
 
 .sign-in-icon {
@@ -57,10 +76,20 @@
 .input-wrapper input {
 	padding: rem(5);
 	font-size: 1.2rem;
+	border: 1px solid $light-border-card;
+	background-color: $light-input-bg;
+	color: $light-text;
+	border-radius: rem(4);
+
+	@media (prefers-color-scheme: dark) {
+		border-color: $dark-border-card;
+		background-color: $dark-input-bg;
+		color: $dark-text;
+	}
 }
 
 .error-message {
-	color: red;
+	color: $color-error;
 	font-size: 0.9rem;
 	margin-top: 0.5rem;
 }

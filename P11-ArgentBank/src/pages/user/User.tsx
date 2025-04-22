@@ -84,7 +84,7 @@ const User: React.FC = () => {
 
 	return (
 		<>
-			<main className={user["bg-dark"]}>
+			<main className={user["user-page-main"]}>
 				{/* --- Section Accueil et Édition --- */}
 				<div>
 					<h2 className={user["title"]}>
@@ -117,7 +117,7 @@ const User: React.FC = () => {
 				)}
 				{accountsStatus === "succeeded" &&
 					accounts.map((account) => (
-						<section
+						<button
 							className={classNames(user["account"], {
 								[user["account-selected"]]: account.id === selectedAccountId, // Style si sélectionné
 							})}
@@ -145,7 +145,7 @@ const User: React.FC = () => {
 								{/* Le bouton n'est plus nécessaire si la section est cliquable */}
 								{/* <button className={user["transaction-button"]}>View transactions</button> */}
 							</div>
-						</section>
+						</button>
 					))}
 
 				{/* --- Section Transactions --- */}

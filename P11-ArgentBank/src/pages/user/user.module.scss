@@ -3,23 +3,35 @@
 @import "@styles/abstracts/variables";
 
 .title {
-	color: $dark-text;
+	color: $light-text;
 	font-size: 2rem !important;
+	@media (prefers-color-scheme: dark) {
+		color: $dark-text;
+	}
 }
 
-.bg-dark {
+.user-page-main {
 	flex: 1;
 	height: 100%;
 	background: $light-bg-user;
 	color: $light-text;
+	@media (prefers-color-scheme: dark) {
+		background: $dark-bg-user;
+		color: $dark-text;
+	}
 }
 .edit-button {
 	border-color: $light-button-border;
 	background-color: $light-button-bg;
-	color: $dark-text;
+	color: $light-button-text;
 	font-weight: bold;
 	padding: rem(10);
 	margin: 2rem 0;
+	@media (prefers-color-scheme: dark) {
+		border-color: $dark-button-border;
+		background-color: $dark-button-bg;
+		color: $dark-button-text;
+	}
 }
 
 .error-message {
@@ -32,8 +44,9 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border: 1px solid $color-black;
-	background-color: $light-bg;
+	border: 1px solid $light-account-border;
+	background-color: $light-account-bg;
+	color: $light-account-text;
 	width: 80%;
 	margin: 0 auto;
 	flex-direction: column;
@@ -41,10 +54,30 @@
 	box-sizing: border-box;
 	text-align: left;
 	margin-bottom: 2rem;
-	transition: background-color 0.2s ease-in-out;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+
+	transition:
+		background-color 0.2s ease-in-out,
+		border-color 0.2s ease-in-out,
+		color 0.2s ease-in-out;
 
 	&:hover {
-		background-color: lighten($light-bg, 5%);
+		background-color: $light-account-hover-bg;
+		color: $light-account-hover-text;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		border-color: $dark-account-border;
+		background-color: $dark-account-bg;
+		color: $dark-account-text;
+
+		&:hover {
+			// Ajustement léger pour le hover dark
+			background-color: $dark-account-hover-bg;
+			color: $dark-account-hover-text;
+		}
 	}
 }
 
@@ -71,20 +104,28 @@
 }
 
 .account-selected {
-	border-left: 5px solid $primary-color;
-	background-color: lighten($light-bg, 3%);
+	border-left: 1.5rem solid $light-account-selected-border;
+	background-color: $light-account-selected-bg;
+
+	@media (prefers-color-scheme: dark) {
+		border-left-color: $dark-account-selected-border;
+		background-color: $dark-account-selected-bg;
+	}
 }
 
 .transaction-detail {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border-bottom: 1px solid $color-gray-light;
+	border-bottom: 1px solid $light-transaction-border;
 	width: 80%;
 	margin: 0 auto;
 	padding: 1rem 1.5rem;
 	box-sizing: border-box;
 	text-align: left;
+	@media (prefers-color-scheme: dark) {
+		border-bottom-color: $dark-transaction-border;
+	}
 }
 
 .transaction-button {
@@ -96,7 +137,12 @@
 	margin-top: 1rem;
 	border-color: $light-button-border;
 	background-color: $light-button-bg;
-	color: $dark-text;
+	color: $light-button-text;
+	@media (prefers-color-scheme: dark) {
+		border-color: $dark-button-border;
+		background-color: $dark-button-bg;
+		color: $dark-button-text;
+	}
 }
 
 @media (min-width: 720px) {
