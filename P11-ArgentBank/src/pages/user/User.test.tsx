@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import User from "./User";
-import usersReducer from "./usersSlice";
+import usersReducer from "../../store/slices/usersSlice";
 import * as authService from "../../utils/authService";
 import { describe, test, expect, vi } from "vitest";
 

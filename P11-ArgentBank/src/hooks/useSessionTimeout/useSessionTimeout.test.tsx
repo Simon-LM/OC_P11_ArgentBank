@@ -4,7 +4,7 @@ import { renderHook } from "@testing-library/react";
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { logoutUser } from "../../pages/user/usersSlice";
+import { logoutUser } from "../../store/slices/usersSlice";
 import useSessionTimeout from "./useSessionTimeout";
 import type { ReactNode } from "react";
 

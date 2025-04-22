@@ -181,7 +181,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import SignIn from "./SignIn";
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "../user/usersSlice";
+import userReducer from "../../store/slices/usersSlice";
 import * as authService from "../../utils/authService";
 import type { NavigateFunction } from "react-router-dom";
 

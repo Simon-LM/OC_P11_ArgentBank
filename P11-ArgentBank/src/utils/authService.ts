@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { usersMockData } from "../mockData/users";
-import { setAuthState, logoutUser } from "../pages/user/usersSlice";
+import { setAuthState, logoutUser } from "../store/slices/usersSlice";
 import { AppDispatch } from "../store/Store";
 
 // Schéma pour la réponse de l'API de connexion (login)

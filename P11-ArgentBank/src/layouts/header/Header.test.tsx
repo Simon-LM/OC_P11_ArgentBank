@@ -9,7 +9,7 @@ import Header from "./Header";
 import userReducer, {
 	logoutUser,
 	UsersState,
-} from "../../pages/user/usersSlice";
+} from "../../store/slices/usersSlice";
 
 // Définition de l'interface RootState basée sur le store réel
 interface RootState {

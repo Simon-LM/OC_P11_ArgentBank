@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "../../pages/user/usersSlice";
+import { logoutUser } from "../../store/slices/usersSlice";
 import { RootState } from "../../store/Store";
 
 const useSessionTimeout = (timeout: number) => {

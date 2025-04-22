@@ -4,7 +4,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
-import { logoutUser } from "../../pages/user/usersSlice";
+import { logoutUser } from "../../store/slices/usersSlice";
 import argentBankLogoWebp from "../../assets/img/argentBankLogo.webp";
 import argentBankLogoAvif from "../../assets/img/argentBankLogo.avif";
 
@@ -26,21 +26,18 @@ const Header: React.FC = () => {
 	return (
 		<nav className="main-nav" role="banner">
 			<a className="main-nav-logo" href="./">
-			<picture>
-  <source
-    srcSet={argentBankLogoWebp}
-    type="image/webp"
-  />
-  <img
-    className="main-nav-logo-image"
-    src={argentBankLogoAvif}
-    alt="Argent Bank Logo"
-    width="200"
-    height="55"
-    title="Argent Bank - Your Trusted Online Banking Partner"
-    loading="eager"
-  />
-</picture>
+				<picture>
+					<source srcSet={argentBankLogoWebp} type="image/webp" />
+					<img
+						className="main-nav-logo-image"
+						src={argentBankLogoAvif}
+						alt="Argent Bank Logo"
+						width="200"
+						height="55"
+						title="Argent Bank - Your Trusted Online Banking Partner"
+						loading="eager"
+					/>
+				</picture>
 				<h1 className="sr-only">
 					Argent Bank - Your Trusted Online Banking Partner Since 2020
 				</h1>

@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { MemoryRouter } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import userReducer from "../../pages/user/usersSlice";
+import userReducer from "../../store/slices/usersSlice";
 
 // Helper pour créer un store avec un état spécifique
 const createMockStore = (isAuthenticated: boolean) => {

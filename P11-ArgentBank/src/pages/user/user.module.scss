@@ -22,6 +22,12 @@
 	margin: 2rem 0;
 }
 
+.error-message {
+	color: $color-error;
+	font-weight: bold;
+	margin: 1rem 0;
+}
+
 .account {
 	display: flex;
 	justify-content: space-between;
@@ -35,6 +41,11 @@
 	box-sizing: border-box;
 	text-align: left;
 	margin-bottom: 2rem;
+	transition: background-color 0.2s ease-in-out;
+
+	&:hover {
+		background-color: lighten($light-bg, 5%);
+	}
 }
 
 .account-amount {
@@ -57,6 +68,23 @@
 .account-content-wrapper {
 	width: 100%;
 	flex: 1;
+}
+
+.account-selected {
+	border-left: 5px solid $primary-color;
+	background-color: lighten($light-bg, 3%);
+}
+
+.transaction-detail {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid $color-gray-light;
+	width: 80%;
+	margin: 0 auto;
+	padding: 1rem 1.5rem;
+	box-sizing: border-box;
+	text-align: left;
 }
 
 .transaction-button {

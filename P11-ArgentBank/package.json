@@ -16,6 +16,9 @@
 		"typecheck": "tsc --noEmit",
 		"prisma:test": "node -r ts-node/register src/prismaTest.ts"
 	},
+	"prisma": {
+		"seed": "tsx prisma/seed.ts"
+	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.1",
 		"@prisma/client": "^6.6.0",

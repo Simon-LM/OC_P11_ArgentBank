@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import signin from "./signin.module.scss";
 import classNames from "classnames";
 import { loginUser, fetchUserProfile } from "../../utils/authService";
-import { loginUserSuccess, updateCurrentUser } from "../user/usersSlice";
+import { loginUserSuccess, setAuthState } from "../../store/slices/usersSlice";
 import { AppDispatch } from "../../store/Store";
 
 const SignIn: React.FC = () => {
@@ -19,25 +19,19 @@ const SignIn: React.FC = () => {
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		try {
-			// Requête de login pour récupérer le token
 			const result = await loginUser({ email, password });
 			console.log("Login successful:", result);
 
-			// Récupérer le token
-			// const token: string = result;
 			const token: string = result.body.token;
 
-			// Envoyer les informations à Redux via loginUserSuccess (en tant qu'objet)
-			await dispatch(loginUserSuccess({ email, token: token }));
+			// await dispatch(loginUserSuccess({ email, token: token }));
+			dispatch(loginUserSuccess({ email, token }));
 
-			// Mettre à jour l'authentification
-			// dispatch(setAuthentication(true));
-
-			// Récupérer le profil utilisateur depuis l'API
 			const userProfile = await fetchUserProfile(token);
-			dispatch(updateCurrentUser(userProfile));
 
-			// Rediriger l'utilisateur vers la page User après connexion
+			// dispatch(updateCurrentUser(userProfile));
+			dispatch(setAuthState(userProfile));
+
 			navigate("/User");
 		} catch (err) {
 			if (err instanceof Error) {

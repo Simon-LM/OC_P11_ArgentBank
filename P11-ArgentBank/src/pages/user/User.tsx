@@ -1,106 +1,199 @@
 /** @format */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/Store";
+import { RootState, AppDispatch } from "../../store/Store";
 import user from "./user.module.scss";
 import classNames from "classnames";
-import { useState } from "react";
 import EditUserForm from "../../components/EditUserForm/EditUserForm";
-import { updateCurrentUser } from "./usersSlice";
+import {
+	updateCurrentUser,
+	fetchTransactions,
+	fetchAccounts,
+	selectAccount,
+} from "../../store/slices/usersSlice";
 import { updateUserProfile } from "../../utils/authService";
 
 const User: React.FC = () => {
-	const dispatch = useDispatch();
-	const currentUser = useSelector(
-		(state: RootState) => state.users.currentUser
-	);
+	const dispatch = useDispatch<AppDispatch>();
 	const [isEditing, setIsEditing] = useState(false);
 
-	console.log("User data from store:", currentUser);
+	// // Sélectionner les données utilisateur et l'état d'authentification
+	// const { currentUser, isAuthenticated } = useSelector(
+	// 	(state: RootState) => state.users
+	// );
+
+	// // Sélectionner l'état des transactions
+	// const { transactions, transactionsStatus, transactionsError } = useSelector(
+	// 	(state: RootState) => state.users
+	// );
+
+	const {
+		currentUser,
+		isAuthenticated,
+		accounts,
+		accountsStatus,
+		accountsError,
+		selectedAccountId,
+		transactions,
+		transactionsStatus,
+		transactionsError,
+	} = useSelector((state: RootState) => state.users);
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			if (accountsStatus === "idle") {
+				dispatch(fetchAccounts());
+			}
+			if (transactionsStatus === "idle") {
+				dispatch(fetchTransactions());
+			}
+		}
+	}, [dispatch, isAuthenticated, accountsStatus, transactionsStatus]);
 
 	if (!currentUser) {
 		return <p>Loading user data...</p>;
 	}
 
-	const handleSave = async (data: {
-		userName: string;
-		firstName: string;
-		lastName: string;
-	}) => {
-		console.log("New user data:", data);
+	const handleSave = async (data: { userName: string }) => {
 		const token = sessionStorage.getItem("authToken");
 		if (!token) {
 			console.error("No auth token found.");
-			// Optionnel: Rediriger vers la page de connexion
 			return;
 		}
-
 		try {
-			// Appel à l'API pour mettre à jour le userName
 			const updatedUser = await updateUserProfile(data.userName, token);
-			// Mettre à jour le Redux store avec le nouveau userName
 			dispatch(updateCurrentUser({ userName: updatedUser.userName }));
 			setIsEditing(false);
 		} catch (error) {
 			console.error("Failed to update user profile:", error);
-			// Optionnel: Afficher une notification d'erreur à l'utilisateur
 		}
 	};
 
+	// const filteredTransactions =
+	// 	transactionsStatus === "succeeded" && selectedAccountId
+	// 		? transactions.filter((tx) => tx.accountId === selectedAccountId)
+	// 		: [];
+
+	const filteredTransactions =
+		transactionsStatus === "succeeded"
+			? selectedAccountId
+				? transactions.filter((tx) => tx.accountId === selectedAccountId)
+				: transactions
+			: [];
+
 	return (
-		<main className={user["bg-dark"]}>
-			<div>
-				<h2 className={user["title"]}>
-					Welcome back
-					<br />
-					{currentUser.firstName} {currentUser.lastName} !
-				</h2>
+		<>
+			<main className={user["bg-dark"]}>
+				{/* --- Section Accueil et Édition --- */}
+				<div>
+					<h2 className={user["title"]}>
+						Welcome back
+						<br />
+						{currentUser.firstName} {currentUser.lastName} !
+					</h2>
+					{isEditing ? (
+						<EditUserForm
+							currentUser={currentUser}
+							onSave={handleSave}
+							onCancel={() => setIsEditing(false)}
+						/>
+					) : (
+						<button
+							className={user["edit-button"]}
+							onClick={() => setIsEditing(true)}>
+							Edit Name
+						</button>
+					)}
+				</div>
 
-				{isEditing ? (
-					<EditUserForm
-						currentUser={currentUser}
-						onSave={handleSave}
-						onCancel={() => setIsEditing(false)}
-					/>
-				) : (
-					<button
-						className={user["edit-button"]}
-						onClick={() => setIsEditing(true)}>
-						Edit Name
-					</button>
+				{/* --- Section Comptes --- */}
+				<h2 className="sr-only">Accounts</h2>
+				{accountsStatus === "loading" && <p>Loading accounts...</p>}
+				{accountsStatus === "failed" && (
+					<p className={user["error-message"]}>
+						Error loading accounts: {accountsError}
+					</p>
 				)}
-			</div>
+				{accountsStatus === "succeeded" &&
+					accounts.map((account) => (
+						<section
+							className={classNames(user["account"], {
+								[user["account-selected"]]: account.id === selectedAccountId, // Style si sélectionné
+							})}
+							key={account.id}
+							// Rendre cliquable pour sélectionner
+							onClick={() => dispatch(selectAccount(account.id))}
+							style={{ cursor: "pointer" }} // Indiquer que c'est cliquable
+						>
+							<div className={user["account-content-wrapper"]}>
+								<h3 className={user["account-title"]}>
+									{account.type} (x{account.accountNumber})
+								</h3>
+								<p className={user["account-amount"]}>
+									€{account.balance.toFixed(2)}
+								</p>
+								<p className={user["account-amount-description"]}>
+									Available Balance
+								</p>
+							</div>
+							<div
+								className={classNames(
+									user["account-content-wrapper"],
+									user["cta"]
+								)}>
+								{/* Le bouton n'est plus nécessaire si la section est cliquable */}
+								{/* <button className={user["transaction-button"]}>View transactions</button> */}
+							</div>
+						</section>
+					))}
 
-			<h2 className="sr-only">Accounts</h2>
-
-			{currentUser.accounts && currentUser.accounts.length > 0 ? (
-				currentUser.accounts.map((account) => (
-					<section className={user["account"]} key={account.accountNumber}>
-						<div className={user["account-content-wrapper"]}>
-							<h3 className={user["account-title"]}>
-								{account.accountName} (x{account.accountNumber.slice(-4)})
-							</h3>
-							<p className={user["account-amount"]}>{account.balance}</p>
-							<p className={user["account-amount-description"]}>
-								{account.balanceType}
-							</p>
-						</div>
-						<div
-							className={classNames(
-								user["account-content-wrapper"],
-								user["cta"]
-							)}>
-							<button className={user["transaction-button"]}>
-								View transactions
-							</button>
-						</div>
-					</section>
-				))
-			) : (
-				<p>Aucun compte disponible.</p>
-			)}
-		</main>
+				{/* --- Section Transactions --- */}
+				{/* Afficher seulement si un compte est sélectionné */}
+				<>
+					<h2 className="sr-only">Transactions for selected account</h2>
+					{transactionsStatus === "loading" && <p>Loading transactions...</p>}
+					{transactionsStatus === "failed" && (
+						<p className={user["error-message"]}>
+							Error loading transactions: {transactionsError}
+						</p>
+					)}
+					{/* Utiliser filteredTransactions ici */}
+					{transactionsStatus === "succeeded" && (
+						<>
+							{filteredTransactions.length === 0 ? (
+								<p>No transactions found for this account.</p>
+							) : (
+								filteredTransactions.map((tx) => (
+									<section className={user["transaction-detail"]} key={tx.id}>
+										{" "}
+										{/* Utiliser une classe différente ? */}
+										<div className={user["account-content-wrapper"]}>
+											{" "}
+											{/* Réutiliser les styles ? */}
+											<h3 className={user["account-title"]}>
+												{tx.description}
+											</h3>
+											<p className={user["account-amount-description"]}>
+												{new Date(tx.date).toLocaleDateString()} - {tx.category}
+											</p>
+											<p className={user["account-amount"]}>
+												{tx.amount.toFixed(2)} € ({tx.type})
+											</p>
+											{tx.notes && (
+												<p className={user["account-amount-description"]}>
+													Notes: {tx.notes}
+												</p>
+											)}
+										</div>
+									</section>
+								))
+							)}
+						</>
+					)}
+				</>
+			</main>
+		</>
 	);
 };
 

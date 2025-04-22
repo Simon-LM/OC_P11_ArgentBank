@@ -2,7 +2,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 // import { thunk } from "redux-thunk";
-import usersReducer from "../pages/user/usersSlice";
+import usersReducer from "./slices/usersSlice";
 
 const store = configureStore({
 	reducer: {
