@@ -1,41 +1,43 @@
 /** @format */
-@import "@styles/abstracts/functions";
-@import "@styles/abstracts/variables";
+// @import "@styles/abstracts/functions";
+// @import "@styles/abstracts/variables";
+@use "@styles/abstracts/functions" as func;
+@use "@styles/abstracts/variables" as var;
 
 .title {
-	color: $light-text;
-	font-size: 2rem !important;
+	color: var.$light-text;
+	font-size: func.rem(32) !important;
 	@media (prefers-color-scheme: dark) {
-		color: $dark-text;
+		color: var.$dark-text;
 	}
 }
 
 .user-page-main {
 	flex: 1;
 	height: 100%;
-	background: $light-bg-user;
-	color: $light-text;
+	background: var.$light-bg-user;
+	color: var.$light-text;
 	@media (prefers-color-scheme: dark) {
-		background: $dark-bg-user;
-		color: $dark-text;
+		background: var.$dark-bg-user;
+		color: var.$dark-text;
 	}
 }
 .edit-button {
-	border-color: $light-button-border;
-	background-color: $light-button-bg;
-	color: $light-button-text;
+	border-color: var.$light-button-border;
+	background-color: var.$light-button-bg;
+	color: var.$light-button-text;
 	font-weight: bold;
-	padding: rem(10);
+	padding: func.rem(10);
 	margin: 2rem 0;
 	@media (prefers-color-scheme: dark) {
-		border-color: $dark-button-border;
-		background-color: $dark-button-bg;
-		color: $dark-button-text;
+		border-color: var.$dark-button-border;
+		background-color: var.$dark-button-bg;
+		color: var.$dark-button-text;
 	}
 }
 
 .error-message {
-	color: $color-error;
+	color: var.$color-error;
 	font-weight: bold;
 	margin: 1rem 0;
 }
@@ -44,9 +46,9 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border: 1px solid $light-account-border;
-	background-color: $light-account-bg;
-	color: $light-account-text;
+	border: 1px solid var.$light-account-border;
+	background-color: var.$light-account-bg;
+	color: var.$light-account-text;
 	width: 80%;
 	margin: 0 auto;
 	flex-direction: column;
@@ -64,19 +66,19 @@
 		color 0.2s ease-in-out;
 
 	&:hover {
-		background-color: $light-account-hover-bg;
-		color: $light-account-hover-text;
+		background-color: var.$light-account-hover-bg;
+		color: var.$light-account-hover-text;
 	}
 
 	@media (prefers-color-scheme: dark) {
-		border-color: $dark-account-border;
-		background-color: $dark-account-bg;
-		color: $dark-account-text;
+		border-color: var.$dark-account-border;
+		background-color: var.$dark-account-bg;
+		color: var.$dark-account-text;
 
 		&:hover {
 			// Ajustement léger pour le hover dark
-			background-color: $dark-account-hover-bg;
-			color: $dark-account-hover-text;
+			background-color: var.$dark-account-hover-bg;
+			color: var.$dark-account-hover-text;
 		}
 	}
 }
@@ -104,12 +106,12 @@
 }
 
 .account-selected {
-	border-left: 1.5rem solid $light-account-selected-border;
-	background-color: $light-account-selected-bg;
+	border-left: 1.5rem solid var.$light-account-selected-border;
+	background-color: var.$light-account-selected-bg;
 
 	@media (prefers-color-scheme: dark) {
-		border-left-color: $dark-account-selected-border;
-		background-color: $dark-account-selected-bg;
+		border-left-color: var.$dark-account-selected-border;
+		background-color: var.$dark-account-selected-bg;
 	}
 }
 
@@ -117,31 +119,93 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border-bottom: 1px solid $light-transaction-border;
+	border-bottom: 1px solid var.$light-transaction-border;
 	width: 80%;
 	margin: 0 auto;
 	padding: 1rem 1.5rem;
 	box-sizing: border-box;
 	text-align: left;
 	@media (prefers-color-scheme: dark) {
-		border-bottom-color: $dark-transaction-border;
+		border-bottom-color: var.$dark-transaction-border;
 	}
 }
 
 .transaction-button {
 	display: block;
 	width: 100%;
-	padding: rem(8);
+	padding: func.rem(8);
 	font-size: 1.1rem;
 	font-weight: bold;
 	margin-top: 1rem;
-	border-color: $light-button-border;
-	background-color: $light-button-bg;
-	color: $light-button-text;
+	border-color: var.$light-button-border;
+	background-color: var.$light-button-bg;
+	color: var.$light-button-text;
 	@media (prefers-color-scheme: dark) {
-		border-color: $dark-button-border;
-		background-color: $dark-button-bg;
-		color: $dark-button-text;
+		border-color: var.$dark-button-border;
+		background-color: var.$dark-button-bg;
+		color: var.$dark-button-text;
+	}
+}
+
+.pagination-nav {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+	gap: 0.5rem;
+}
+
+.pagination-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: func.rem(8) func.rem(12);
+	border: 1px solid var.$light-button-border;
+	background-color: var.$light-bg;
+	color: var.$light-button-border;
+	border-radius: func.rem(4);
+	font-weight: bold;
+	transition:
+		background-color 0.2s,
+		color 0.2s;
+
+	svg {
+		fill: currentColor;
+	}
+
+	&:hover:not(:disabled) {
+		background-color: var.$light-button-bg;
+		color: var.$light-button-text;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		border-color: var.$dark-button-border;
+		background-color: var.$dark-bg;
+		color: var.$dark-button-border;
+
+		&:hover:not(:disabled) {
+			background-color: var.$dark-button-bg;
+			color: var.$dark-button-text;
+		}
+	}
+}
+
+.pagination-button-current,
+.pagination-button[aria-current="page"] {
+	background-color: var.$light-button-bg;
+	color: var.$light-button-text;
+	border-color: var.$light-button-border;
+
+	@media (prefers-color-scheme: dark) {
+		background-color: var.$dark-button-bg;
+		color: var.$dark-button-text;
+		border-color: var.$dark-button-border;
 	}
 }
 
@@ -155,6 +219,6 @@
 	}
 
 	.transaction-button {
-		width: rem(200);
+		width: func.rem(200);
 	}
 }

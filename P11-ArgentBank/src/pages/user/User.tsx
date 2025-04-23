@@ -13,20 +13,14 @@ import {
 	selectAccount,
 } from "../../store/slices/usersSlice";
 import { updateUserProfile } from "../../utils/authService";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { TransactionType } from "@prisma/client";
 
 const User: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [isEditing, setIsEditing] = useState(false);
-
-	// // Sélectionner les données utilisateur et l'état d'authentification
-	// const { currentUser, isAuthenticated } = useSelector(
-	// 	(state: RootState) => state.users
-	// );
-
-	// // Sélectionner l'état des transactions
-	// const { transactions, transactionsStatus, transactionsError } = useSelector(
-	// 	(state: RootState) => state.users
-	// );
+	const [currentPage, setCurrentPage] = useState(1);
+	const transactionsPerPage = 10;
 
 	const {
 		currentUser,
@@ -51,6 +45,10 @@ const User: React.FC = () => {
 		}
 	}, [dispatch, isAuthenticated, accountsStatus, transactionsStatus]);
 
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [selectedAccountId]);
+
 	if (!currentUser) {
 		return <p>Loading user data...</p>;
 	}
@@ -70,17 +68,39 @@ const User: React.FC = () => {
 		}
 	};
 
-	// const filteredTransactions =
-	// 	transactionsStatus === "succeeded" && selectedAccountId
-	// 		? transactions.filter((tx) => tx.accountId === selectedAccountId)
-	// 		: [];
-
 	const filteredTransactions =
 		transactionsStatus === "succeeded"
 			? selectedAccountId
 				? transactions.filter((tx) => tx.accountId === selectedAccountId)
 				: transactions
 			: [];
+
+	const indexOfLastTransaction = currentPage * transactionsPerPage;
+	const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+	const currentTransactions = filteredTransactions.slice(
+		indexOfFirstTransaction,
+		indexOfLastTransaction
+	);
+	const totalPages = Math.ceil(
+		filteredTransactions.length / transactionsPerPage
+	);
+
+	const handlePageChange = (pageNumber: number) => {
+		setCurrentPage(pageNumber);
+	};
+
+	const handlePreviousPage = () => {
+		setCurrentPage((prev) => Math.max(prev - 1, 1));
+	};
+
+	const handleNextPage = () => {
+		setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+	};
+
+	const pageNumbers = [];
+	for (let i = 1; i <= totalPages; i++) {
+		pageNumbers.push(i);
+	}
 
 	return (
 		<>
@@ -106,7 +126,6 @@ const User: React.FC = () => {
 						</button>
 					)}
 				</div>
-
 				{/* --- Section Comptes --- */}
 				<h2 className="sr-only">Accounts</h2>
 				{accountsStatus === "loading" && <p>Loading accounts...</p>}
@@ -147,9 +166,7 @@ const User: React.FC = () => {
 							</div>
 						</button>
 					))}
-
 				{/* --- Section Transactions --- */}
-				{/* Afficher seulement si un compte est sélectionné */}
 				<>
 					<h2 className="sr-only">Transactions for selected account</h2>
 					{transactionsStatus === "loading" && <p>Loading transactions...</p>}
@@ -158,19 +175,20 @@ const User: React.FC = () => {
 							Error loading transactions: {transactionsError}
 						</p>
 					)}
-					{/* Utiliser filteredTransactions ici */}
 					{transactionsStatus === "succeeded" && (
 						<>
-							{filteredTransactions.length === 0 ? (
-								<p>No transactions found for this account.</p>
+							{/* Afficher les transactions de la page actuelle */}
+							{currentTransactions.length === 0 ? (
+								<p>
+									{selectedAccountId
+										? "No transactions found for this account."
+										: "No transactions found."}
+								</p>
 							) : (
-								filteredTransactions.map((tx) => (
+								currentTransactions.map((tx) => (
 									<section className={user["transaction-detail"]} key={tx.id}>
-										{" "}
-										{/* Utiliser une classe différente ? */}
+										{/* ... (structure interne de la transaction existante) ... */}
 										<div className={user["account-content-wrapper"]}>
-											{" "}
-											{/* Réutiliser les styles ? */}
 											<h3 className={user["account-title"]}>
 												{tx.description}
 											</h3>
@@ -178,7 +196,9 @@ const User: React.FC = () => {
 												{new Date(tx.date).toLocaleDateString()} - {tx.category}
 											</p>
 											<p className={user["account-amount"]}>
-												{tx.amount.toFixed(2)} € ({tx.type})
+												{/* Afficher +/- explicitement peut être plus clair */}
+												{tx.type === TransactionType.CREDIT ? "+" : "-"}
+												{tx.amount.toFixed(2)} €
 											</p>
 											{tx.notes && (
 												<p className={user["account-amount-description"]}>
@@ -188,6 +208,41 @@ const User: React.FC = () => {
 										</div>
 									</section>
 								))
+							)}
+
+							{/* --- Contrôles de Pagination --- */}
+							{totalPages > 1 && (
+								<nav
+									className={user["pagination-nav"]}
+									aria-label="Transaction pagination">
+									<button
+										onClick={handlePreviousPage}
+										disabled={currentPage === 1}
+										className={user["pagination-button"]}
+										aria-label="Go to previous page">
+										<FaChevronLeft />
+									</button>
+									{pageNumbers.map((number) => (
+										<button
+											key={number}
+											onClick={() => handlePageChange(number)}
+											className={classNames(user["pagination-button"], {
+												[user["pagination-button-current"]]:
+													currentPage === number,
+											})}
+											aria-current={currentPage === number ? "page" : undefined}
+											aria-label={`Go to page ${number}`}>
+											{number}
+										</button>
+									))}
+									<button
+										onClick={handleNextPage}
+										disabled={currentPage === totalPages}
+										className={user["pagination-button"]}
+										aria-label="Go to next page">
+										<FaChevronRight />
+									</button>
+								</nav>
 							)}
 						</>
 					)}
