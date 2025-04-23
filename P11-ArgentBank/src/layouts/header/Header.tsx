@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
 import { logoutUser } from "../../store/slices/usersSlice";
+import argentBankLogoPng from "../../assets/img/argentBankLogo.png";
 import argentBankLogoWebp from "../../assets/img/argentBankLogo.webp";
 import argentBankLogoAvif from "../../assets/img/argentBankLogo.avif";
 
@@ -19,18 +20,19 @@ const Header: React.FC = () => {
 	const navigate = useNavigate();
 
 	const handleSignOut = () => {
-		dispatch(logoutUser()); // Utilise logoutUser pour déconnecter l'utilisateur
-		navigate("/signin"); // Rediriger vers la page de connexion après déconnexion
+		dispatch(logoutUser());
+		navigate("/signin");
 	};
 
 	return (
 		<nav className="main-nav" role="banner">
 			<a className="main-nav-logo" href="./">
 				<picture>
+					<source srcSet={argentBankLogoAvif} type="image/avif" />
 					<source srcSet={argentBankLogoWebp} type="image/webp" />
 					<img
 						className="main-nav-logo-image"
-						src={argentBankLogoAvif}
+						src={argentBankLogoPng}
 						alt="Argent Bank Logo"
 						width="200"
 						height="55"
