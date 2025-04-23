@@ -35,7 +35,7 @@ const Header: React.FC = () => {
 						src={argentBankLogoPng}
 						alt="Argent Bank Logo"
 						width="200"
-						height="55"
+						height="38"
 						title="Argent Bank - Your Trusted Online Banking Partner"
 						loading="eager"
 					/>
@@ -44,22 +44,23 @@ const Header: React.FC = () => {
 					Argent Bank - Your Trusted Online Banking Partner Since 2020
 				</h1>
 			</a>
-
-			{isAuthenticated && currentUser ? (
-				<div className="main-nav">
-					<Link to="/user" className="main-nav-item">
-						<i className="fa fa-user-circle"></i>
-						{currentUser.userName}
+			<div className="main-nav-items">
+				{isAuthenticated && currentUser ? (
+					<>
+						<Link to="/user" className="main-nav-item">
+							<i className="fa fa-user-circle"></i>
+							{currentUser.userName}
+						</Link>
+						<Link to="/" onClick={handleSignOut} className="main-nav-item">
+							<i className="fa fa-sign-out"></i>Sign Out
+						</Link>
+					</>
+				) : (
+					<Link to="/signin" className="main-nav-item">
+						<i className="fa fa-user-circle"></i>Sign In
 					</Link>
-					<Link to="/" onClick={handleSignOut} className="main-nav-item">
-						<i className="fa fa-sign-out"></i>Sign Out
-					</Link>
-				</div>
-			) : (
-				<Link to="/signin" className="main-nav-item">
-					<i className="fa fa-user-circle"></i>Sign In
-				</Link>
-			)}
+				)}
+			</div>
 		</nav>
 	);
 };

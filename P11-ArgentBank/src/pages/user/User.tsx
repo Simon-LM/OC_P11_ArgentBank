@@ -215,33 +215,117 @@ const User: React.FC = () => {
 								<nav
 									className={user["pagination-nav"]}
 									aria-label="Transaction pagination">
-									<button
-										onClick={handlePreviousPage}
-										disabled={currentPage === 1}
-										className={user["pagination-button"]}
-										aria-label="Go to previous page">
-										<FaChevronLeft />
-									</button>
-									{pageNumbers.map((number) => (
+									<div
+										className={`${user["pagination-arrow"]} ${user["prev"]}`}>
 										<button
-											key={number}
-											onClick={() => handlePageChange(number)}
-											className={classNames(user["pagination-button"], {
-												[user["pagination-button-current"]]:
-													currentPage === number,
-											})}
-											aria-current={currentPage === number ? "page" : undefined}
-											aria-label={`Go to page ${number}`}>
-											{number}
+											onClick={handlePreviousPage}
+											disabled={currentPage === 1}
+											className={user["pagination-button"]}
+											aria-label="Go to previous page">
+											<FaChevronLeft />
 										</button>
-									))}
-									<button
-										onClick={handleNextPage}
-										disabled={currentPage === totalPages}
-										className={user["pagination-button"]}
-										aria-label="Go to next page">
-										<FaChevronRight />
-									</button>
+									</div>
+
+									<div className={user["pagination-numbers"]}>
+										{/* Afficher seulement quelques pages au milieu si trop nombreuses */}
+										{pageNumbers.length <= 7 ? (
+											// Afficher toutes les pages si 7 ou moins
+											pageNumbers.map((number) => (
+												<button
+													key={number}
+													onClick={() => handlePageChange(number)}
+													className={classNames(user["pagination-button"], {
+														[user["pagination-button-current"]]:
+															currentPage === number,
+													})}
+													aria-current={
+														currentPage === number ? "page" : undefined
+													}
+													aria-label={`Go to page ${number}`}>
+													{number}
+												</button>
+											))
+										) : (
+											// Pagination intelligente pour de nombreuses pages
+											<>
+												{/* Première page toujours visible */}
+												<button
+													onClick={() => handlePageChange(1)}
+													className={classNames(user["pagination-button"], {
+														[user["pagination-button-current"]]:
+															currentPage === 1,
+													})}
+													aria-current={currentPage === 1 ? "page" : undefined}
+													aria-label="Go to page 1">
+													1
+												</button>
+
+												{/* Ellipse si nécessaire */}
+												{currentPage > 3 && (
+													<span className={user["pagination-ellipsis"]}>
+														...
+													</span>
+												)}
+
+												{/* Pages autour de la page courante */}
+												{pageNumbers
+													.filter(
+														(num) =>
+															num !== 1 &&
+															num !== totalPages &&
+															num >= currentPage - 1 &&
+															num <= currentPage + 1
+													)
+													.map((number) => (
+														<button
+															key={number}
+															onClick={() => handlePageChange(number)}
+															className={classNames(user["pagination-button"], {
+																[user["pagination-button-current"]]:
+																	currentPage === number,
+															})}
+															aria-current={
+																currentPage === number ? "page" : undefined
+															}
+															aria-label={`Go to page ${number}`}>
+															{number}
+														</button>
+													))}
+
+												{/* Ellipse si nécessaire */}
+												{currentPage < totalPages - 2 && (
+													<span className={user["pagination-ellipsis"]}>
+														...
+													</span>
+												)}
+
+												{/* Dernière page toujours visible */}
+												<button
+													onClick={() => handlePageChange(totalPages)}
+													className={classNames(user["pagination-button"], {
+														[user["pagination-button-current"]]:
+															currentPage === totalPages,
+													})}
+													aria-current={
+														currentPage === totalPages ? "page" : undefined
+													}
+													aria-label={`Go to page ${totalPages}`}>
+													{totalPages}
+												</button>
+											</>
+										)}
+									</div>
+
+									<div
+										className={`${user["pagination-arrow"]} ${user["next"]}`}>
+										<button
+											onClick={handleNextPage}
+											disabled={currentPage === totalPages}
+											className={user["pagination-button"]}
+											aria-label="Go to next page">
+											<FaChevronRight />
+										</button>
+									</div>
 								</nav>
 							)}
 						</>

@@ -1,18 +1,35 @@
 /** @format */
+@use "@styles/abstracts/placeholders" as *;
+@use "@styles/abstracts/variables" as var;
+@use "@styles/abstracts/mixins" as mix;
 
 .main-nav {
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap-reverse;
 	justify-content: space-between;
 	align-items: center;
-	min-height: 4rem;
-	gap: 1rem;
-	padding: 0.25rem rem(20);
+	min-height: 5rem;
+	gap: 0.5rem;
+	padding: 0 1.5vw;
+	background-color: var.$light-bg-header;
+	box-shadow:
+		0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+	@media (prefers-color-scheme: dark) {
+		background-color: var.$dark-bg-header;
+	}
+}
+.main-nav-items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 0.5rem;
+	margin: 0.5rem 0.25rem;
+	margin-left: auto;
+	justify-content: flex-end;
 }
 
-.main-nav a {
-	font-weight: bold;
-}
 .main-nav-item {
 	display: flex;
 	flex-direction: row;
@@ -20,19 +37,20 @@
 	align-items: center;
 	vertical-align: middle;
 	text-decoration: none;
+	font-weight: bold;
 	gap: 0.25rem;
-}
-
-.main-nav-item:hover {
-	text-decoration: underline;
+	white-space: nowrap;
 }
 
 .main-nav-logo {
 	display: flex;
 	align-items: center;
+	margin: 0.5rem;
 }
 
 .main-nav-logo-image {
 	max-width: 100%;
 	width: rem(200);
+	height: auto;
+	object-fit: contain;
 }

@@ -1,53 +1,60 @@
 /** @format */
-@import "@styles/abstracts/functions";
-@import "@styles/abstracts/variables";
-
-// .main {
-// 	flex: 1;
-// }
+// @import "@styles/abstracts/functions";
+// @import "@styles/abstracts/variables";
+@use "@styles/abstracts/functions" as func;
+@use "@styles/abstracts/variables" as var;
+@use "@styles/abstracts/mixins" as mix;
+@use "@styles/abstracts/placeholders" as *;
 
 .signin-page-main {
-	flex: 1;
+	// flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 	height: 100%;
-	background: $light-bg-user;
+	padding: 2rem 0;
+	background: var.$light-bg-user;
+
 	@media (prefers-color-scheme: dark) {
-		background: $dark-bg-user;
+		background: var.$dark-bg-user;
 	}
 }
 .sign-in-content {
 	box-sizing: border-box;
-	background: $light-signin-card-bg;
-	color: $light-text;
-	width: rem(300);
-	margin: 0 auto;
-	margin-top: 3rem;
-	padding: 2rem;
-	border-radius: rem(4);
+	background: var.$light-signin-card-bg;
+	color: var.$light-text;
+	width: min(func.rem(300), 90%);
+	margin: min(2rem, 5vh) auto;
+	padding: min(5vw, 2rem);
+	border-radius: func.rem(4);
+
+	@extend %text-wrap;
+
 	@media (prefers-color-scheme: dark) {
-		background: $dark-signin-card-bg;
-		color: $dark-text;
+		background: var.$dark-signin-card-bg;
+		color: var.$dark-text;
 	}
 }
 .sign-in-button {
 	display: block;
 	width: 100%;
-	padding: rem(8);
+	padding: func.rem(8);
 	font-size: 1.1rem;
 	font-weight: bold;
 	margin-top: 2rem;
-	border-color: $light-button-border;
-	background-color: $light-button-bg;
-	color: $light-button-text;
-	border-radius: rem(4);
+	border-color: var.$light-button-border;
+	background-color: var.$light-button-bg;
+	color: var.$light-button-text;
+	border-radius: func.rem(4);
 
 	&:hover {
 		filter: brightness(1.1);
 	}
 
 	@media (prefers-color-scheme: dark) {
-		border-color: $dark-button-border;
-		background-color: $dark-button-bg;
-		color: $dark-button-text;
+		border-color: var.$dark-button-border;
+		background-color: var.$dark-button-bg;
+		color: var.$dark-button-text;
 	}
 }
 
@@ -67,29 +74,34 @@
 	flex-direction: column;
 	text-align: left;
 	margin-bottom: 1rem;
+	width: 100%;
 }
 
 .input-wrapper label {
 	font-weight: bold;
+	@extend %text-wrap;
 }
 
 .input-wrapper input {
-	padding: rem(5);
+	padding: func.rem(5);
 	font-size: 1.2rem;
-	border: 1px solid $light-border-card;
-	background-color: $light-input-bg;
-	color: $light-text;
-	border-radius: rem(4);
+	border: 1px solid var.$light-border-card;
+	background-color: var.$light-input-bg;
+	color: var.$light-text;
+	border-radius: func.rem(4);
+	width: 100%;
+	box-sizing: border-box;
 
 	@media (prefers-color-scheme: dark) {
-		border-color: $dark-border-card;
-		background-color: $dark-input-bg;
-		color: $dark-text;
+		border-color: var.$dark-border-card;
+		background-color: var.$dark-input-bg;
+		color: var.$dark-text;
 	}
 }
 
 .error-message {
-	color: $color-error;
+	color: var.$color-error;
 	font-size: 0.9rem;
 	margin-top: 0.5rem;
+	@extend %text-wrap;
 }

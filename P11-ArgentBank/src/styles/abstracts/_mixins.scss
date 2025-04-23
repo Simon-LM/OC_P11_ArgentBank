@@ -1,0 +1,23 @@
+/** @format */
+
+@mixin text-wrap($break-mode: "break-word") {
+	overflow-wrap: break-word;
+
+	@if $break-mode == "break-all" {
+		word-break: break-all;
+	} @else if $break-mode == "break-word" {
+		word-break: break-word;
+	} @else if $break-mode == "normal" {
+		word-break: normal;
+	}
+
+	hyphens: auto;
+	max-width: 100%;
+}
+
+@mixin number-format($tabular: true) {
+	@if $tabular {
+		font-variant-numeric: tabular-nums;
+		font-feature-settings: "tnum";
+	}
+}

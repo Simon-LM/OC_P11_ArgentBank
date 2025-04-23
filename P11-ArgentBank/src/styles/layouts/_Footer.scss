@@ -1,14 +1,26 @@
 /** @format */
 
+@use "@styles/abstracts/placeholders" as *;
+@use "@styles/abstracts/variables" as var;
+@use "@styles/abstracts/mixins" as mix;
+
 .footer {
 	display: flex;
 	justify-content: center;
-	border-top: 2px solid $light-border-footer;
+	border-top: 2px solid var.$light-border-footer;
 	min-height: 1.5rem;
 	padding: 2rem 0 1.5rem;
+	background-color: var.$light-bg-footer;
+
+	@media (prefers-color-scheme: dark) {
+		border-top-color: var.$dark-border-footer;
+		background-color: var.$dark-bg-footer;
+	}
 }
 
 .footer-text {
 	margin: 0;
 	padding: 0;
+	@extend %text-wrap;
+	max-width: 90%;
 }
