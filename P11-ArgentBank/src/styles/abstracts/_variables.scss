@@ -1,31 +1,38 @@
 /** @format */
 
-$primary-color: #2c3e50;
-$secondary-color: #747bff;
-$color-accent: #42b983;
+// $primary-color: #2c3e50;
+// $secondary-color: #747bff;
+// $tertiary-color: #12002b;
+// $color-accent: #42b983;
+
+$primary-color: #2d3748;
+$secondary-color: #6866e9;
+$color-accent: #058857;
+$color-accent-dark: #345e41;
 
 $color-white: #ffffff;
+$color-balanced: #757575;
 $color-black: #000000;
+
+// $off-white: #fafaf9;
+// $near-black: #0c0a09;
 
 $color-gray-50: #f7fafc;
 $color-gray-100: #edf2f7;
 $color-gray-200: #e2e8f0;
-$color-gray-400: #cbd5e0;
-$color-gray-500: #a0aec0;
-$color-gray-600: #718096;
-$color-gray-700: #4a5568;
-$color-gray-800: #2d3748;
-$color-gray-900: #1a202c;
+// $color-gray-400: #cbd5e0;
+// $color-gray-500: #a0aec0;
+// $color-gray-600: #718096;
+// $color-gray-700: #4a5568;
+// $color-gray-800: #2d3748;
+// $color-gray-800: $primary-color;
+// $color-gray-900: #1a202c;
 
 // State colors
 $color-success: $color-accent;
 $color-warning: #ffc107;
 $color-error: #dc3545;
 $color-info: $secondary-color;
-
-// // Link colors
-$color-link: #007bff;
-$color-link-hover: darken($color-link, 10%);
 
 // // // // // // // // // // // // // // //
 
@@ -37,54 +44,79 @@ $color-text-on-light: $color-black;
 
 // // // // // // // // // // // // // // //
 
-// Couleurs pour le thème light
+// // Couleurs pour le thème light // //
+
+// Links
+$light_text-link: $primary-color;
+$light_text-link-hover: $secondary-color;
+
+// Header
+$light_bg_header: $color-white;
+$light_text-link_header: $primary-color;
+$light_text-link-hover_header: $secondary-color;
+
+// Footer
+$light_bg_footer: $color-white;
+
+//  Home
 $light-bg: $color-white;
+$light_bg_hero-content: $color-white;
+$light_icon-border: $color-accent;
+
 $light-bg-user: $color-gray-50;
 $light-text: $primary-color;
-$light-text-link: $primary-color;
-$light-text-link-hover: $secondary-color;
-$light-button-bg: $color-accent;
-$light-button-border: $color-accent;
-$light-button-text: $color-text-on-dark;
-$light-icon-border: $color-accent;
+// $light-button-bg: $color-accent;
+// $light-button-border: $color-accent;
+// $light-button-text: $color-text-on-dark;
 $light-border-card: $color-gray-200;
 $light-border-footer: $color-gray-200;
-$light-title-footer: $primary-color;
+// $light-title-footer: $primary-color;
+
+// SignIn
+$light-signin-page-bg: $color-gray-50;
+
+$light-signin-card-bg: $light-bg;
+
+$signin-page-bg: $light-bg-user;
+$signin-card-bg: $light-bg;
+$signin-card-border-radius: 4px;
+$signin-card-text: $light-text;
+$signin-card-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+// $signin-input-bg: $light-input-bg;
+$signin-input-border: $light-border-card;
+$signin-input-text: $light-text;
+$signin-label-text: $light-text;
+
+$signin-icon-color: $primary-color;
+$signin-icon-size: 5rem;
+
+$signin-error-text: $color-error;
+$signin-error-bg: rgba($color-error, 0.05);
+
+// Account
 $light-account-bg: $light-bg;
 $light-account-border: $light-border-card;
 $light-account-text: $light-text;
 $light-account-hover-bg: $primary-color;
 $light-account-hover-text: $color-text-on-dark;
-$light-account-selected-border: $primary-color;
+$light-account-selected-border: $secondary-color;
 $light-account-selected-bg: $color-gray-100;
 $light-transaction-border: $light-border-footer;
-$light-signin-card-bg: $light-bg;
 $light-input-bg: $light-bg;
-$light-bg-header: $color-white;
-$light-bg-footer: $color-white;
+$light-form-bg: $primary-color;
 
-// Couleurs pour le thème dark
-$dark-bg: $color-gray-900;
-$dark-bg-user: $color-gray-900;
-$dark-text: $color-gray-100;
-$dark-text-link: $color-gray-100;
-$dark-text-link-hover: $secondary-color;
-$dark-button-bg: $color-accent;
-$dark-button-border: $color-accent;
-$dark-button-text: $color-text-on-dark;
-$dark-icon-border: $color-accent;
-$dark-border-card: $color-gray-700;
-$dark-border-footer: $color-gray-700;
-$dark-title-footer: $color-gray-100;
-$dark-account-bg: $dark-bg;
-$dark-account-border: $dark-border-card;
-$dark-account-text: $dark-text;
-$dark-account-hover-bg: $color-gray-100;
-$dark-account-hover-text: $primary-color;
-$dark-account-selected-border: $secondary-color;
-$dark-account-selected-bg: lighten($dark-bg, 3%);
-$dark-transaction-border: $dark-border-footer;
-$dark-signin-card-bg: $color-gray-800;
-$dark-input-bg: $color-gray-800;
-$dark-bg-header: $color-gray-800;
-$dark-bg-footer: $color-gray-800;
+// Button
+$light-button-bg: $color-accent-dark;
+$light-button-border: $color-accent-dark;
+$light-button-text: $color-text-on-dark;
+$light-button-hover-bg: $color-accent;
+$light-button-hover-border: $color-accent;
+
+// Bouton Cancel - thème light
+$light-cancel-button-bg: $color-accent;
+$light-cancel-button-border: $color-accent;
+$light-cancel-button-text: $color-text-on-dark;
+$light-cancel-hover-bg: $color-error;
+$light-cancel-hover-border: $color-error;
+$light-cancel-hover-text: $color-white;

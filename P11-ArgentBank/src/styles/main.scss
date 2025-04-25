@@ -2,7 +2,6 @@
 
 @import "normalize.css"; /* Add */
 @import "abstracts/variables.scss";
-@import "themes/dark-light-toggle.scss";
 @import "abstracts/placeholders.scss";
 @import "abstracts/functions.scss";
 @import "abstracts/mixins.scss";
@@ -16,3 +15,28 @@
 @import "layouts/Header.scss";
 @import "layouts/Footer.scss";
 @import "layouts/Home.scss";
+
+// // // // // // // // // // // // // // //
+
+// /* External libraries */
+// @import "normalize.css";
+
+// /* Abstracts - Fondations */
+// @use "abstracts/variables" as var;
+// @use "abstracts/functions" as func;
+// @use "abstracts/mixins" as mix;
+// @use "abstracts/placeholders";
+
+// /* Base */
+// @use "base/globale";
+// @use "base/typography";
+
+// /* Accessibilité */
+// @use "accessibility/pointer";
+// @use "accessibility/screen-reader";
+// @use "accessibility/accessibility";
+
+// /* Layouts */
+// @use "layouts/Header";
+// @use "layouts/Footer";
+// @use "layouts/Home";

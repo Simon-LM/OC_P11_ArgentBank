@@ -49,9 +49,6 @@
             "@utils/*": [
                 "src/utils/*"
             ],
-            "@mockData/*": [
-                "src/mockData/*"
-            ],
             "@generated/*": [
                 "src/generated/*"
             ]

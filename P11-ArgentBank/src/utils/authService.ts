@@ -1,7 +1,6 @@
 /** @format */
 
 import { z } from "zod";
-import { usersMockData } from "../mockData/users";
 import { setAuthState, logoutUser } from "../store/slices/usersSlice";
 import { AppDispatch } from "../store/Store";
 
@@ -38,19 +37,6 @@ const profileResponseSchema = z.object({
 			.optional(),
 	}),
 });
-
-// Schéma pour la réponse de mise à jour du profil utilisateur
-// const updateProfileResponseSchema = z.object({
-// 	status: z.number(),
-// 	message: z.string(),
-// 	body: z.object({
-// 		id: z.string(),
-// 		email: z.string(),
-// 		userName: z.string(),
-// 		createdAt: z.string(),
-// 		updatedAt: z.string(),
-// 	}),
-// });
 
 // Schéma pour les données de connexion (credentials)
 const loginSchema = z.object({
@@ -110,14 +96,16 @@ export const loginUser = async (credentials: LoginCredentials) => {
 		sessionStorage.setItem("authToken", token);
 		sessionStorage.setItem("expiresAt", expiresAt.toString());
 
-		// Add
-		const user = usersMockData.find((u) => u.email === credentials.email);
-		if (user) {
-			sessionStorage.setItem("userId", user.id);
-			sessionStorage.setItem("currentUserName", user.userName);
+		try {
+			const userProfile = await fetchUserProfile(token);
+			// Stocker les infos importantes en session
+			sessionStorage.setItem("userId", userProfile.id);
+			sessionStorage.setItem("currentUserName", userProfile.userName);
+		} catch (error) {
+			console.warn("Couldn't fetch user profile after login:", error);
+			// Continue quand même, l'utilisateur est connecté
 		}
 
-		// return token;
 		return parsedResponse.data;
 	} catch (error) {
 		console.error("Error during login:", error);
@@ -150,30 +138,17 @@ export const fetchUserProfile = async (token: string) => {
 
 		const user = parsedResponse.data.body;
 
-		// Injecter des comptes mock si 'accounts' est absent
+		// Si accounts est absent, on initialise avec un tableau vide
 		if (!user.accounts) {
-			const mockUser = usersMockData.find(
-				(u) => u.id === user.id || u.email === user.email
-			);
-			if (mockUser && mockUser.accounts) {
-				user.accounts = mockUser.accounts;
-			} else {
-				user.accounts = []; // Ou toute valeur par défaut souhaitée
-			}
+			user.accounts = [];
 		}
 
-		// Injecter 'createdAt' et 'updatedAt' si Absents
-		if (!user.createdAt || !user.updatedAt) {
-			const mockUser = usersMockData.find(
-				(u) => u.id === user.id || u.email === user.email
-			);
-			if (mockUser) {
-				user.createdAt = mockUser.createdAt;
-				user.updatedAt = mockUser.updatedAt;
-			} else {
-				user.createdAt = new Date().toISOString(); // Valeur par défaut
-				user.updatedAt = new Date().toISOString(); // Valeur par défaut
-			}
+		// Si createdAt ou updatedAt sont absents, on les initialise
+		if (!user.createdAt) {
+			user.createdAt = new Date().toISOString();
+		}
+		if (!user.updatedAt) {
+			user.updatedAt = new Date().toISOString();
 		}
 
 		return user;
@@ -201,15 +176,9 @@ export const updateUserProfile = async (userName: string, token: string) => {
 		// Stocker le nouveau username
 		sessionStorage.setItem("currentUserName", userName);
 
-		// Récupérer l'utilisateur complet avec les données mockées
-		const userId = sessionStorage.getItem("userId");
-		const baseUser = usersMockData.find((u) => u.id === userId);
+		const updatedProfile = await fetchUserProfile(token);
 
-		// Retourner l'utilisateur avec le nouveau username
-		return {
-			...baseUser,
-			userName,
-		};
+		return updatedProfile;
 	} catch (error) {
 		console.error("Error updating user profile:", error);
 		throw error;

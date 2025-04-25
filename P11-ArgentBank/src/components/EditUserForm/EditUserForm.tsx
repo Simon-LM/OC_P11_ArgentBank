@@ -59,53 +59,63 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 				className={editUserForm["form-container"]}
 				onSubmit={handleSubmit(handleSave)}
 				role="form">
-				<div>
+				<div className={editUserForm["input-group"]}>
 					<Label className={editUserForm.label} htmlFor="userName">
 						User Name :
 					</Label>
-					<input
-						className={editUserForm.input}
-						id="userName"
-						{...register("userName")}
-					/>
-					{errors.userName && (
-						<p className={editUserForm["error-message"]}>
-							{errors.userName.message}
-						</p>
-					)}
+					<div className={editUserForm["input-wrapper"]}>
+						<input
+							className={editUserForm.input}
+							id="userName"
+							{...register("userName")}
+							aria-invalid={errors.userName ? "true" : "false"}
+						/>
+						{errors.userName && (
+							<p className={editUserForm["error-message"]} role="alert">
+								{errors.userName.message}
+							</p>
+						)}
+					</div>
 				</div>
-				<div>
+
+				<div className={editUserForm["input-group"]}>
 					<Label className={editUserForm.label} htmlFor="firstName">
 						First Name :
 					</Label>
-					<input
-						className={editUserForm.input_readonly}
-						id="firstName"
-						readOnly
-						{...register("firstName")}
-					/>
-					{errors.firstName && (
-						<p className={editUserForm["error-message"]}>
-							{errors.firstName.message}
-						</p>
-					)}
+					<div className={editUserForm["input-wrapper"]}>
+						<input
+							className={editUserForm.input_readonly}
+							id="firstName"
+							readOnly
+							{...register("firstName")}
+						/>
+						{errors.firstName && (
+							<p className={editUserForm["error-message"]}>
+								{errors.firstName.message}
+							</p>
+						)}
+					</div>
 				</div>
-				<div>
+
+				<div className={editUserForm["input-group"]}>
 					<Label className={editUserForm.label} htmlFor="lastName">
 						Last Name :
 					</Label>
-					<input
-						className={editUserForm.input_readonly}
-						id="lastName"
-						readOnly
-						{...register("lastName")}
-					/>
-					{errors.lastName && (
-						<p className={editUserForm["error-message"]}>
-							{errors.lastName.message}
-						</p>
-					)}
+					<div className={editUserForm["input-wrapper"]}>
+						<input
+							className={editUserForm.input_readonly}
+							id="lastName"
+							readOnly
+							{...register("lastName")}
+						/>
+						{errors.lastName && (
+							<p className={editUserForm["error-message"]}>
+								{errors.lastName.message}
+							</p>
+						)}
+					</div>
 				</div>
+
 				<div className={editUserForm["button-group"]}>
 					<button className={editUserForm["submit-button"]} type="submit">
 						Save

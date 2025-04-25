@@ -25,7 +25,7 @@ const Header: React.FC = () => {
 	};
 
 	return (
-		<nav className="main-nav" role="banner">
+		<nav className="header" role="banner">
 			<a className="main-nav-logo" href="./">
 				<picture>
 					<source srcSet={argentBankLogoAvif} type="image/avif" />

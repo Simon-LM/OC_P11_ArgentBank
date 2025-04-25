@@ -1,23 +1,17 @@
 /** @format */
-// @import "@styles/abstracts/functions";
-// @import "@styles/abstracts/variables";
+
 @use "@styles/abstracts/functions" as func;
 @use "@styles/abstracts/variables" as var;
 @use "@styles/abstracts/mixins" as mix;
 @use "@styles/abstracts/placeholders" as *;
 
 .signin-page-main {
-	// flex: 1;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	height: 100%;
 	padding: 2rem 0;
-	background: var.$light-bg-user;
-
-	@media (prefers-color-scheme: dark) {
-		background: var.$dark-bg-user;
-	}
+	background: var.$light-signin-page-bg;
 }
 .sign-in-content {
 	box-sizing: border-box;
@@ -26,14 +20,10 @@
 	width: min(func.rem(300), 90%);
 	margin: min(2rem, 5vh) auto;
 	padding: min(5vw, 2rem);
-	border-radius: func.rem(4);
-
 	@extend %text-wrap;
-
-	@media (prefers-color-scheme: dark) {
-		background: var.$dark-signin-card-bg;
-		color: var.$dark-text;
-	}
+	box-shadow:
+		0 2px 10px rgba(0, 0, 0, 0.1),
+		0 4px 20px rgba(0, 0, 0, 0.05);
 }
 .sign-in-button {
 	display: block;
@@ -42,19 +32,13 @@
 	font-size: 1.1rem;
 	font-weight: bold;
 	margin-top: 2rem;
-	border-color: var.$light-button-border;
 	background-color: var.$light-button-bg;
+	border-color: var.$light-button-border;
 	color: var.$light-button-text;
-	border-radius: func.rem(4);
 
 	&:hover {
-		filter: brightness(1.1);
-	}
-
-	@media (prefers-color-scheme: dark) {
-		border-color: var.$dark-button-border;
-		background-color: var.$dark-button-bg;
-		color: var.$dark-button-text;
+		background-color: var.$light-button-hover-bg;
+		border-color: var.$light-button-hover-border;
 	}
 }
 
@@ -88,15 +72,8 @@
 	border: 1px solid var.$light-border-card;
 	background-color: var.$light-input-bg;
 	color: var.$light-text;
-	border-radius: func.rem(4);
 	width: 100%;
 	box-sizing: border-box;
-
-	@media (prefers-color-scheme: dark) {
-		border-color: var.$dark-border-card;
-		background-color: var.$dark-input-bg;
-		color: var.$dark-text;
-	}
 }
 
 .error-message {

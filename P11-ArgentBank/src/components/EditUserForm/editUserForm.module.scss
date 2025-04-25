@@ -1,6 +1,9 @@
 /** @format */
-@import "@styles/abstracts/functions";
-@import "@styles/abstracts/variables";
+
+@use "@styles/abstracts/functions" as func;
+@use "@styles/abstracts/variables" as var;
+@use "@styles/abstracts/mixins" as mix;
+@use "@styles/abstracts/placeholders" as *;
 
 .EditUserForm-container {
 	display: flex;
@@ -9,74 +12,130 @@
 	align-items: center;
 	margin: 0 auto;
 	margin-bottom: 2rem;
-	background: $light-bg;
-	color: $light-text;
-	max-width: 25rem;
+	background: var.$light-signin-card-bg;
+	color: var.$light-text;
+	max-width: min(30rem, 95vw);
+	width: 100%;
+	@extend %text-wrap;
 }
 
 .form-container {
 	display: flex;
 	flex-direction: column;
+	justify-content: left;
 	gap: 1rem;
+	max-width: min(30rem, 95vw);
+	padding: 0 0.5rem;
+}
+
+.input-group {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.25rem;
+	width: 100%;
 }
 
 .label {
+	flex: 1 0 8rem;
+	min-width: 8rem;
+	max-width: 12rem;
 	font-weight: bold;
-	padding-right: 0.5rem;
+	padding: 0 0.25rem;
+	@extend %text-wrap;
+	text-align: left;
+}
+
+.input-wrapper {
+	// flex: 1;
+	flex: 999 1 12rem;
+	min-width: 0;
 }
 
 .input {
 	padding: 0.5rem;
-	border: 1px solid gainsboro;
+	border: 1px solid var.$light-border-card;
+	background-color: var.$light-input-bg;
+	color: var.$light-text;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .input_readonly {
 	padding: 0.5rem;
-	border: 1px solid gainsboro;
-	background: gainsboro;
+	border: 1px solid var.$light-border-card;
+	background-color: var.$color-gray-200;
+	color: var.$light-text;
+	width: 100%;
+	box-sizing: border-box;
+
 	&:active,
 	&:focus-visible {
-		color: #e53935 !important;
+		color: var.$color-error !important;
 	}
+
 	// Styliser le texte sélectionné
 	&::selection {
 		background: none;
-		color: #e53935;
+		color: var.$color-error;
 	}
 }
 
 .error-message {
-	color: #e53935;
+	color: var.$color-error;
 	font-size: 0.875rem;
+	@extend %text-wrap;
+	margin-top: 0.25rem;
 }
 
 .button-group {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: center;
 	gap: 1rem;
+	width: 100%;
+	margin-top: 1rem;
+}
+
+.submit-button,
+.cancel-button {
+	flex: 1 1 6rem;
+	max-width: 10rem;
+	border-color: var.$light-button-border;
+	background-color: var.$light-button-bg;
+	color: var.$light-button-text;
+	font-weight: bold;
+	padding: func.rem(10);
+	margin: 1rem 0;
+	border-radius: func.rem(4);
+	white-space: nowrap;
+	height: func.rem(45);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .submit-button {
-	min-width: 8rem;
-	border-color: $light-button-border;
-	background-color: $light-button-bg;
-	color: $dark-text;
-	font-weight: bold;
-	padding: rem(10);
-	margin: 2rem 0;
+	&:hover,
+	&:focus-visible {
+		background-color: var.$light-button-hover-bg;
+		border-color: var.$light-button-hover-border;
+		color: var.$light-cancel-hover-text;
+	}
 }
 
 .cancel-button {
-	min-width: 8rem;
-	border-color: $light-button-border;
-	background-color: $light-button-bg;
-	color: $dark-text;
-	font-weight: bold;
-	padding: rem(10);
-	margin: 2rem 0;
+	background-color: var.$light-cancel-button-bg;
+	border-color: var.$light-cancel-button-border;
+	color: var.$light-cancel-button-text;
+
 	&:hover,
 	&:focus-visible {
-		background-color: #e53935;
-		border-color: #e53935;
+		background-color: var.$light-cancel-hover-bg;
+		border-color: var.$light-cancel-hover-border;
+		color: var.$light-cancel-hover-text;
 	}
 }
