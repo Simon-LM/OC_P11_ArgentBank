@@ -1,15 +1,9 @@
 /** @format */
-// @import "@styles/abstracts/functions";
-// @import "@styles/abstracts/variables";
+
 @use "@styles/abstracts/functions" as func;
 @use "@styles/abstracts/variables" as var;
 @use "@styles/abstracts/mixins" as mix;
 @use "@styles/abstracts/placeholders" as *;
-
-.title {
-	color: var.$light-text;
-	font-size: func.rem(32) !important;
-}
 
 .user-page-main {
 	display: flex;
@@ -18,17 +12,27 @@
 	height: 100%;
 	margin: 0 auto;
 	padding: 0.25rem;
-	background: var.$light-bg-user;
-	// background: var.$tertiary-color;
-	color: var.$light-text;
+	background: var.$light_user_bg;
+	color: var.$light_user_text;
 }
+
+.title {
+	color: var.$light_user_title;
+	font-size: func.rem(32) !important;
+}
+
 .edit-button {
-	border-color: var.$light-button-border;
-	background-color: var.$light-button-bg;
-	color: var.$light-button-text;
+	background-color: var.$light_button-bg;
+	border-color: var.$light_button-border;
+	color: var.$light_button-text;
 	font-weight: bold;
 	padding: func.rem(10);
 	margin: 2rem 0;
+
+	&:hover {
+		background-color: var.$light_button_bg-hover;
+		border-color: var.$light_button_border-hover;
+	}
 }
 
 .error-message {
@@ -41,9 +45,9 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border: 1px solid var.$light-account-border;
-	background-color: var.$light-account-bg;
-	color: var.$light-account-text;
+	border: 1px solid var.$light_account_border;
+	background-color: var.$light_account_bg;
+	color: var.$light_account_text;
 	width: 80%;
 	margin: 0 auto;
 	flex-direction: column;
@@ -61,8 +65,8 @@
 		color 0.2s ease-in-out;
 
 	&:hover {
-		background-color: var.$light-account-hover-bg;
-		color: var.$light-account-hover-text;
+		background-color: var.$light_account_bg-hover;
+		color: var.$light_account_text-hover;
 	}
 }
 
@@ -70,6 +74,7 @@
 	margin: 0;
 	font-size: 2.5rem;
 	font-weight: bold;
+	color: var.$light_account-amount_text;
 	@extend %text-wrap;
 	@extend %preserve-numbers;
 }
@@ -93,8 +98,8 @@
 }
 
 .account-selected {
-	border-left: 1.5rem solid var.$light-account-selected-border;
-	background-color: var.$light-account-selected-bg;
+	border-left: 1.5rem solid var.$light_account_border-selected;
+	background-color: var.$light_account_bg-selected;
 }
 
 .transaction-detail {
@@ -121,11 +126,12 @@
 	font-size: 1.1rem;
 	font-weight: bold;
 	margin-top: 1rem;
-	border-color: var.$light-button-border;
-	background-color: var.$light-button-bg;
-	color: var.$light-button-text;
+	border-color: var.$light_button_border;
+	background-color: var.$light_button_bg;
+	color: var.$light_button_text;
 }
 
+// // Pagination // //
 .pagination-nav {
 	display: flex;
 	flex-wrap: wrap;
@@ -167,9 +173,9 @@
 	min-width: func.rem(36);
 	height: func.rem(36);
 	padding: 0 func.rem(8);
-	border: 1px solid var.$light-button-border;
-	background-color: var.$light-bg;
-	color: var.$light-button-border;
+	background-color: var.$light_pagination-button_bg;
+	border: 1px solid var.$light_pagination-button_border;
+	color: var.$light_pagination-button_text;
 	border-radius: func.rem(4);
 	font-weight: bold;
 	@extend %text-wrap;
@@ -183,8 +189,9 @@
 	}
 
 	&:hover:not(:disabled) {
-		background-color: var.$light-button-bg;
-		color: var.$light-button-text;
+		background-color: var.$light_pagination-button_bg-hover;
+		border-color: var.$light_pagination-button_border-hover;
+		color: var.$light_pagination-button_text-hover;
 	}
 
 	&:disabled {
@@ -195,9 +202,12 @@
 
 .pagination-button-current,
 .pagination-button[aria-current="page"] {
-	background-color: var.$light-button-bg;
-	color: var.$light-button-text;
-	border-color: var.$light-button-border;
+	background-color: var.$light_pagination-button_bg-selected;
+	border-color: var.$light_pagination-button_border-selected;
+	color: var.$light_pagination-button_text-selected;
+	&:hover {
+		cursor: not-allowed;
+	}
 }
 
 .pagination-ellipsis {
@@ -211,18 +221,4 @@
 	@extend %text-wrap;
 	text-align: center;
 	overflow: hidden;
-}
-
-@media (min-width: 720px) {
-	.account {
-		flex-direction: row;
-	}
-
-	.account-content-wrapper.cta {
-		flex: 0;
-	}
-
-	.transaction-button {
-		width: func.rem(200);
-	}
 }

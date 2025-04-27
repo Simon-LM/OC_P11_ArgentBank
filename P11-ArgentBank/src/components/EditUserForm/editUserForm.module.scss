@@ -12,10 +12,11 @@
 	align-items: center;
 	margin: 0 auto;
 	margin-bottom: 2rem;
-	background: var.$light-signin-card-bg;
-	color: var.$light-text;
 	max-width: min(30rem, 95vw);
 	width: 100%;
+	background: var.$light_editUser-bg;
+	color: var.$light_editUser-text;
+	box-shadow: var.$light_editUser_card-shadow;
 	@extend %text-wrap;
 }
 
@@ -50,25 +51,24 @@
 }
 
 .input-wrapper {
-	// flex: 1;
 	flex: 999 1 12rem;
 	min-width: 0;
 }
 
 .input {
 	padding: 0.5rem;
-	border: 1px solid var.$light-border-card;
-	background-color: var.$light-input-bg;
-	color: var.$light-text;
+	background-color: var.$light_editUser_input-bg;
+	border: 1px solid var.$light_editUser_input-border;
+	color: var.$light_editUser_input-text;
 	width: 100%;
 	box-sizing: border-box;
 }
 
 .input_readonly {
 	padding: 0.5rem;
-	border: 1px solid var.$light-border-card;
-	background-color: var.$color-gray-200;
-	color: var.$light-text;
+	background-color: var.$light_editUser_input-readonly-bg;
+	border: 1px solid var.$light_editUser_input-border;
+	color: var.$light_editUser_input-text;
 	width: 100%;
 	box-sizing: border-box;
 
@@ -77,7 +77,6 @@
 		color: var.$color-error !important;
 	}
 
-	// Styliser le texte sélectionné
 	&::selection {
 		background: none;
 		color: var.$color-error;
@@ -121,21 +120,15 @@
 .submit-button {
 	&:hover,
 	&:focus-visible {
-		background-color: var.$light-button-hover-bg;
-		border-color: var.$light-button-hover-border;
-		color: var.$light-cancel-hover-text;
+		background-color: var.$light_button_bg-hover;
+		border-color: var.$light_button_border-hover;
 	}
 }
 
 .cancel-button {
-	background-color: var.$light-cancel-button-bg;
-	border-color: var.$light-cancel-button-border;
-	color: var.$light-cancel-button-text;
-
 	&:hover,
 	&:focus-visible {
-		background-color: var.$light-cancel-hover-bg;
-		border-color: var.$light-cancel-hover-border;
-		color: var.$light-cancel-hover-text;
+		background-color: var.$light_cancel-button_bg-hover;
+		border-color: var.$light_cancel-button_border-hover;
 	}
 }
