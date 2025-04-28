@@ -18,7 +18,6 @@ export default async function handler(req, res) {
 		const token = authHeader.split(" ")[1];
 		try {
 			const decoded = jwt.verify(token, JWT_SECRET);
-			console.log("Decoded JWT:", decoded);
 			const user = await prisma.user.findUnique({ where: { id: decoded.id } });
 			console.log("User trouvé:", user);
 			if (!user) {
@@ -73,7 +72,14 @@ export default async function handler(req, res) {
 			}
 
 			// 3. Limite de taux (optionnel)
-			await rateLimitMiddleware(req, res);
+			const rateLimitResult = await rateLimitMiddleware(req, res);
+			if (rateLimitResult === true) {
+				return;
+			}
+
+			// OLD
+			// await rateLimitMiddleware(req, res);
+			// console.log("Rate limiting skipped for debugging");
 
 			// 4. Traitement du corps de la requête
 			let body = req.body;

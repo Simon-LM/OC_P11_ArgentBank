@@ -14,7 +14,8 @@ import {
 } from "../../store/slices/usersSlice";
 import { updateUserProfile } from "../../utils/authService";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { TransactionType } from "@prisma/client";
+// import { TransactionType } from "@prisma/client";
+import { TransactionType } from "../../types/transaction";
 
 const User: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();

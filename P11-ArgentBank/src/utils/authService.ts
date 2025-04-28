@@ -165,27 +165,6 @@ export const generateCSRFToken = () => {
 };
 
 export const updateUserProfile = async (userName: string, token: string) => {
-	// try {
-	// 	const response = await fetch("/api/user/profile", {
-	// 		method: "PUT",
-	// 		headers: {
-	// 			"Content-Type": "application/json",
-	// 			Authorization: `Bearer ${token}`,
-	// 		},
-	// 		body: JSON.stringify({ userName }),
-	// 	});
-
-	// 	if (!response.ok) {
-	// 		throw new Error("Failed to update profile");
-	// 	}
-
-	// 	// Stocker le nouveau username
-	// 	sessionStorage.setItem("currentUserName", userName);
-
-	// 	const updatedProfile = await fetchUserProfile(token);
-
-	// 	return updatedProfile;
-
 	try {
 		// Récupère ou génère un token CSRF
 		const csrfToken =

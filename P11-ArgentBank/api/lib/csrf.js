@@ -1,9 +1,11 @@
 /** @format */
 
-import { prisma } from "./prisma.js";
+// import { prisma } from "./prisma.js";
 
 export async function storeUserCSRFToken(userId, token) {
 	try {
+		const { prisma } = await import("./prisma.js");
+
 		const existingToken = await prisma.csrfToken.findUnique({
 			where: { userId },
 		});
@@ -34,6 +36,8 @@ export async function storeUserCSRFToken(userId, token) {
 
 export async function getUserCSRFToken(userId) {
 	try {
+		const { prisma } = await import("./prisma.js");
+
 		const record = await prisma.csrfToken.findUnique({
 			where: { userId },
 		});
