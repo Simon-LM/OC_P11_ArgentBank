@@ -1,7 +1,9 @@
 declare const classNames: {
   readonly "EditUserForm-container": "EditUserForm-container";
+  readonly disclaimer: "disclaimer";
   readonly label: "label";
   readonly "error-message": "error-message";
+  readonly disclaimerBox: "disclaimerBox";
   readonly "form-container": "form-container";
   readonly "input-group": "input-group";
   readonly "input-wrapper": "input-wrapper";

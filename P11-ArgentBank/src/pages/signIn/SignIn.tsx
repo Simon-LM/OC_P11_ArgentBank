@@ -13,8 +13,27 @@ const SignIn: React.FC = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
-	const dispatch = useDispatch<AppDispatch>(); // Typage correct de dispatch
+	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
+
+	const getErrorMessage = (errorMessage: string): string => {
+		if (errorMessage.includes("401")) {
+			return "Invalid email or password";
+		}
+
+		if (
+			errorMessage.toLowerCase().includes("email") ||
+			errorMessage.toLowerCase().includes("username")
+		) {
+			return "Invalid email address";
+		}
+
+		if (errorMessage.toLowerCase().includes("password")) {
+			return "Incorrect password";
+		}
+
+		return "Unable to login. Please check your credentials.";
+	};
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
@@ -24,20 +43,18 @@ const SignIn: React.FC = () => {
 
 			const token: string = result.body.token;
 
-			// await dispatch(loginUserSuccess({ email, token: token }));
 			dispatch(loginUserSuccess({ email, token }));
 
 			const userProfile = await fetchUserProfile(token);
 
-			// dispatch(updateCurrentUser(userProfile));
 			dispatch(setAuthState(userProfile));
 
 			navigate("/User");
 		} catch (err) {
 			if (err instanceof Error) {
-				setError(err.message);
+				setError(getErrorMessage(err.message));
 			} else {
-				setError("An unknown error occurred");
+				setError("An unexpected error occurred");
 			}
 		}
 	};
@@ -54,10 +71,10 @@ const SignIn: React.FC = () => {
 				<h1>Sign In</h1>
 				<form onSubmit={handleSubmit}>
 					<div className={signin["input-wrapper"]}>
-						<label htmlFor="username">Username</label>
+						<label htmlFor="email">Email</label>
 						<input
 							type="email"
-							id="username"
+							id="email"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
@@ -74,10 +91,6 @@ const SignIn: React.FC = () => {
 						/>
 					</div>
 					{error && <p className={signin["error-message"]}>{error}</p>}
-					{/* <div className={signin["input-remember"]}>
-						<input type="checkbox" id="remember-me" />
-						<label htmlFor="remember-me">Remember me</label>
-					</div> */}
 					<button className={signin["sign-in-button"]}>Sign In</button>
 				</form>
 			</section>

@@ -9,7 +9,7 @@ const loginResponseSchema = z.object({
 	status: z.number(),
 	message: z.string(),
 	body: z.object({
-		token: z.string(), // Token reçu après connexion réussie
+		token: z.string(),
 	}),
 });
 
@@ -158,26 +158,74 @@ export const fetchUserProfile = async (token: string) => {
 	}
 };
 
+export const generateCSRFToken = () => {
+	const token = Math.random().toString(36).substring(2, 15);
+	sessionStorage.setItem("csrfToken", token);
+	return token;
+};
+
 export const updateUserProfile = async (userName: string, token: string) => {
+	// try {
+	// 	const response = await fetch("/api/user/profile", {
+	// 		method: "PUT",
+	// 		headers: {
+	// 			"Content-Type": "application/json",
+	// 			Authorization: `Bearer ${token}`,
+	// 		},
+	// 		body: JSON.stringify({ userName }),
+	// 	});
+
+	// 	if (!response.ok) {
+	// 		throw new Error("Failed to update profile");
+	// 	}
+
+	// 	// Stocker le nouveau username
+	// 	sessionStorage.setItem("currentUserName", userName);
+
+	// 	const updatedProfile = await fetchUserProfile(token);
+
+	// 	return updatedProfile;
+
 	try {
+		// Récupère ou génère un token CSRF
+		const csrfToken =
+			sessionStorage.getItem("csrfToken") || generateCSRFToken();
+
+		const userId = sessionStorage.getItem("userId");
+		if (!userId) {
+			throw new Error("User ID not found in session");
+		}
+
+		await fetch("/api/csrf/store", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				userId,
+				csrfToken,
+			}),
+		});
+
 		const response = await fetch("/api/user/profile", {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${token}`,
+				"X-CSRF-Token": csrfToken, // Ajout du token CSRF
 			},
 			body: JSON.stringify({ userName }),
 		});
 
 		if (!response.ok) {
-			throw new Error("Failed to update profile");
+			const errorData = await response.json();
+			throw new Error(`Failed to update profile: ${errorData.message}`);
 		}
 
-		// Stocker le nouveau username
 		sessionStorage.setItem("currentUserName", userName);
 
 		const updatedProfile = await fetchUserProfile(token);
-
 		return updatedProfile;
 	} catch (error) {
 		console.error("Error updating user profile:", error);

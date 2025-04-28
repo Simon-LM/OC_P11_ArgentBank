@@ -58,3 +58,13 @@ model Transaction {
   account   Account @relation(fields: [accountId], references: [id])
   accountId String  
 }
+
+model CsrfToken {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@index([userId])
+}

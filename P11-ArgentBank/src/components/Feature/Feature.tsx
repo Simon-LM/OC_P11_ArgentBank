@@ -14,15 +14,17 @@ const Feature: React.FC<FeatureProps> = ({
 	description,
 }) => (
 	<div className="feature-item">
-		<div className="feature-item-icon">
+		<div className="feature-item__icon">
 			<i className={`feature-icon ${iconClass}`} aria-label={iconLabel}>
-				<div className="icon-image-description">
+				<div className="feature-icon__description">
 					<span className="material-symbols-outlined">image</span> {iconLabel}
 				</div>
 			</i>
 		</div>
-		<h3 className="feature-item-title">{title}</h3>
-		<p>{description}</p>
+		<div className="feature-item__content">
+			<h3 className="feature-item__title">{title}</h3>
+			<p className="feature-item__description">{description}</p>
+		</div>
 	</div>
 );
 
