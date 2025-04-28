@@ -2,7 +2,7 @@
 
 import { prisma } from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
-// import { rateLimitMiddleware } from "../middleware/rateLimit.js";
+import { rateLimitMiddleware } from "../middleware/rateLimit.js";
 import { getUserCSRFToken } from "../lib/csrf.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
@@ -73,7 +73,7 @@ export default async function handler(req, res) {
 			}
 
 			// 3. Limite de taux (optionnel)
-			// await rateLimitMiddleware(req, res);
+			await rateLimitMiddleware(req, res);
 
 			// 4. Traitement du corps de la requête
 			let body = req.body;
@@ -137,113 +137,6 @@ export default async function handler(req, res) {
 				.json({ status: 500, message: "Internal Server Error" });
 		}
 	}
-
-	// if (req.method === "PUT" || req.method === "PATCH") {
-
-	// 	const authHeader = req.headers.authorization;
-	// 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
-	// 		return res.status(401).json({ status: 401, message: "Unauthorized" });
-	// 	}
-
-	// 	const token = authHeader.split(" ")[1];
-	// 	const csrfToken = req.headers["x-csrf-token"];
-
-	// 	try {
-	// 		if (!csrfToken) {
-	// 			return res.status(403).json({
-	// 				status: 403,
-	// 				message: "CSRF token missing",
-	// 			});
-	// 		}
-
-	// 		const decoded = jwt.verify(token, JWT_SECRET);
-
-	// 		const storedToken = await getUserCSRFToken(decoded.id);
-	// 		if (!storedToken || csrfToken !== storedToken) {
-	// 			return res.status(403).json({
-	// 				status: 403,
-	// 				message: "Invalid CSRF token",
-	// 			});
-	// 		}
-	// 	} catch (error) {
-	// 		console.error("Profile update error:", error);
-	// 		return res
-	// 			.status(500)
-	// 			.json({ status: 500, message: "Internal Server Error" });
-	// 	}
-	// }
-
-	// if (req.method === "PUT" || req.method === "PATCH") {
-	// 	const authHeader = req.headers.authorization;
-	// 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
-	// 		return res.status(401).json({ status: 401, message: "Unauthorized" });
-	// 	}
-	// 	const token = authHeader.split(" ")[1];
-	// 	try {
-	// 		const decoded = jwt.verify(token, JWT_SECRET);
-
-	// 		let body = req.body;
-	// 		if (!body) {
-	// 			let raw = "";
-	// 			await new Promise((resolve) => {
-	// 				req.on("data", (chunk) => {
-	// 					raw += chunk;
-	// 				});
-	// 				req.on("end", resolve);
-	// 			});
-	// 			try {
-	// 				body = JSON.parse(raw);
-	// 			} catch {
-	// 				body = {};
-	// 			}
-	// 		}
-
-	// 		const { userName, firstName, lastName } = body;
-	// 		if (!userName && !firstName && !lastName) {
-	// 			return res
-	// 				.status(400)
-	// 				.json({ status: 400, message: "No fields to update" });
-	// 		}
-
-	// 		function sanitizeInput(input) {
-	// 			if (!input || typeof input !== "string") return input;
-	// 			return input.replace(/[<>'"`;]/g, "");
-	// 		}
-
-	// 		const updatedUser = await prisma.user.update({
-	// 			where: { id: decoded.id },
-	// 			data: {
-	// 				userName: sanitizeInput(userName),
-	// 				firstName: sanitizeInput(firstName),
-	// 				lastName: sanitizeInput(lastName),
-	// 			},
-	// 		});
-
-	// 		// const updatedUser = await prisma.user.update({
-	// 		// 	where: { id: decoded.id },
-	// 		// 	data: { userName, firstName, lastName },
-	// 		// });
-
-	// 		return res.status(200).json({
-	// 			status: 200,
-	// 			message: "User profile updated successfully",
-	// 			body: {
-	// 				id: updatedUser.id,
-	// 				email: updatedUser.email,
-	// 				userName: updatedUser.userName,
-	// 				firstName: updatedUser.firstName,
-	// 				lastName: updatedUser.lastName,
-	// 				createdAt: updatedUser.createdAt,
-	// 				updatedAt: updatedUser.updatedAt,
-	// 			},
-	// 		});
-	// 	} catch (error) {
-	// 		console.error("Profile update error:", error);
-	// 		return res
-	// 			.status(500)
-	// 			.json({ status: 500, message: "Internal Server Error" });
-	// 	}
-	// }
 
 	return res.status(405).json({ status: 405, message: "Method Not Allowed" });
 }
