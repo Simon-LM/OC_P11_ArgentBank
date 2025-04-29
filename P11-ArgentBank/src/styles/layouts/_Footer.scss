@@ -14,11 +14,22 @@
 		0 -4px 10px -1px rgba(0, 0, 0, 0.2),
 		0 -2px 6px -1px rgba(0, 0, 0, 0.15),
 		0 -8px 16px -8px rgba(0, 0, 0, 0.1);
-}
 
-.footer-text {
-	margin: 0;
-	padding: 0;
-	@extend %text-wrap;
-	max-width: 90%;
+	&__text {
+		margin: 0 auto;
+		padding: 1rem;
+		color: var.$light_footer_text;
+		box-sizing: border-box;
+	}
+
+	&__link {
+		color: var.$light_footer_link;
+		text-decoration: none;
+		transition: color 0.3s ease;
+		font-weight: 600;
+
+		&:hover {
+			color: var.$light_footer_link-hover;
+		}
+	}
 }
