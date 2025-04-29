@@ -2,6 +2,8 @@
 
 # ArgentBank - Modern Banking Application Demonstration Project
 
+> **Important Note:** The main project files are located in the [P11-ArgentBank](./P11-ArgentBank/) directory. This README provides an overview of the project.
+
 ![ArgentBank Logo](https://slm-argentbank.vercel.app/assets/argentBankLogo-DLOlZX8G.avif)
 
 ## 🏦 Project Overview
@@ -10,7 +12,7 @@ ArgentBank is a modern banking application with secure authentication and compre
 
 ## 🌐 Live Demo
 
-[Live Demo Link](https://p11-argent-bank-vite-react.vercel.app/)
+[Live Demo Link](https://slm-argentbank.vercel.app/)
 
 ## ✨ Features
 

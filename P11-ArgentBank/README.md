@@ -10,7 +10,7 @@ ArgentBank is a modern banking application with secure authentication and compre
 
 ## 🌐 Live Demo
 
-[Live Demo Link](https://p11-argent-bank-vite-react.vercel.app/)
+[Live Demo Link](https://slm-argentbank.vercel.app/)
 
 ## ✨ Features
 
