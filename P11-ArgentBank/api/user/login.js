@@ -2,31 +2,11 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma.js";
+import { rateLimitMiddleware } from "../middleware/rateLimit.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
 
 export default async function handler(req, res) {
-	// Parse body manuellement
-	if (req.method === "POST" && !req.body) {
-		let body = "";
-		await new Promise((resolve) => {
-			req.on("data", (chunk) => {
-				body += chunk;
-			});
-			req.on("end", resolve);
-		});
-		try {
-			req.body = JSON.parse(body);
-		} catch {
-			req.body = {};
-		}
-	}
-
-	// Logs pour débogage
-	console.log(req.body);
-	console.log("Méthode:", req.method);
-	console.log("Corps:", req.body);
-
 	// Configuration CORS
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -44,6 +24,17 @@ export default async function handler(req, res) {
 			status: 405,
 			message: "Method Not Allowed",
 		});
+	}
+
+	const rateLimitResult = await rateLimitMiddleware(req, res, "login");
+	if (rateLimitResult === true) {
+		// Si limite atteinte, la réponse 429 a déjà été envoyée
+		return;
+	}
+
+	// Parse body manuellement (si nécessaire)
+	if (!req.body) {
+		// Le reste du code existant...
 	}
 
 	try {

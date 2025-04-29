@@ -1,7 +1,5 @@
 /** @format */
 
-import { Redis } from "@upstash/redis";
-
 // Stockage en mémoire pour le développement
 const memoryStore = {};
 
@@ -9,20 +7,26 @@ const memoryStore = {};
 const isVercelProd = !!process.env.VERCEL_ENV;
 
 // Configuration commune
-const WINDOW_SIZE = 60 * 60 * 1000; // 1 heure
-const MAX_REQUESTS = 5;
+const WINDOW_SIZE = 60 * 60 * 1000;
+const MAX_REQUESTS = {
+	"profile-update": 5,
+	login: 10,
+	default: 20,
+};
 
-export async function rateLimitMiddleware(req, res) {
+export async function rateLimitMiddleware(req, res, operationType = "default") {
 	const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-	const key = `rate-limit:${ip}:profile-update`;
+	const env = process.env.NODE_ENV || "development";
+	const key = `rate-limit:${env}:${ip}:${operationType}`;
+	const limit = MAX_REQUESTS[operationType] || MAX_REQUESTS.default;
 
 	try {
 		if (isVercelProd) {
 			// Version production avec Redis
-			return await prodRateLimiter(req, res, key);
+			return await prodRateLimiter(req, res, key, limit);
 		} else {
 			// Version développement avec stockage mémoire
-			return await devRateLimiter(req, res, key);
+			return await devRateLimiter(req, res, key, limit);
 		}
 	} catch (error) {
 		console.error("Rate limiting error:", error);
@@ -32,7 +36,7 @@ export async function rateLimitMiddleware(req, res) {
 }
 
 // Implémentation pour le développement
-async function devRateLimiter(req, res, key) {
+async function devRateLimiter(req, res, key, limit) {
 	// Initialiser si nécessaire
 	memoryStore[key] = memoryStore[key] || [];
 
@@ -42,10 +46,10 @@ async function devRateLimiter(req, res, key) {
 		(time) => time > now - WINDOW_SIZE
 	);
 
-	if (windowRequests.length >= MAX_REQUESTS) {
+	if (windowRequests.length >= limit) {
 		res.status(429).json({
 			status: 429,
-			message: "Too many update requests. Please try again later.",
+			message: "Too many requests. Please try again later.",
 		});
 		return true;
 	}
@@ -59,7 +63,7 @@ async function devRateLimiter(req, res, key) {
 }
 
 // Implémentation pour la production
-async function prodRateLimiter(req, res, key) {
+async function prodRateLimiter(req, res, key, limit) {
 	try {
 		// Import dynamique pour éviter les erreurs en dev
 		const { Redis } = await import("@upstash/redis");
@@ -78,7 +82,7 @@ async function prodRateLimiter(req, res, key) {
 		const now = Date.now();
 		const windowRequests = requests.filter((time) => time > now - WINDOW_SIZE);
 
-		if (windowRequests.length >= MAX_REQUESTS) {
+		if (windowRequests.length >= limit) {
 			res.status(429).json({
 				status: 429,
 				message: "Too many update requests. Please try again later.",

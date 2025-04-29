@@ -72,14 +72,14 @@ export default async function handler(req, res) {
 			}
 
 			// 3. Limite de taux (optionnel)
-			const rateLimitResult = await rateLimitMiddleware(req, res);
+			const rateLimitResult = await rateLimitMiddleware(
+				req,
+				res,
+				"profile-update"
+			);
 			if (rateLimitResult === true) {
 				return;
 			}
-
-			// OLD
-			// await rateLimitMiddleware(req, res);
-			// console.log("Rate limiting skipped for debugging");
 
 			// 4. Traitement du corps de la requête
 			let body = req.body;
