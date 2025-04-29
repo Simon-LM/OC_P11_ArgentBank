@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
 import { rateLimitMiddleware } from "../middleware/rateLimit.js";
 import { getUserCSRFToken } from "../lib/csrf.js";
+import { usernameBlacklist } from "../lib/blacklist.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
 
@@ -19,7 +20,6 @@ export default async function handler(req, res) {
 		try {
 			const decoded = jwt.verify(token, JWT_SECRET);
 			const user = await prisma.user.findUnique({ where: { id: decoded.id } });
-			console.log("User trouvé:", user);
 			if (!user) {
 				return res.status(404).json({ status: 404, message: "User not found" });
 			}
@@ -104,6 +104,15 @@ export default async function handler(req, res) {
 				return res
 					.status(400)
 					.json({ status: 400, message: "No fields to update" });
+			}
+			if (userName) {
+				const regex = new RegExp(usernameBlacklist.join("|"), "i");
+				if (regex.test(userName)) {
+					return res.status(400).json({
+						status: 400,
+						message: "Username contains inappropriate words",
+					});
+				}
 			}
 
 			// 6. Assainissement des entrées

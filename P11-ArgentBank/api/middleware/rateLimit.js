@@ -1,6 +1,6 @@
 /** @format */
 
-// import { Redis } from "@upstash/redis";
+import { Redis } from "@upstash/redis";
 
 // Stockage en mémoire pour le développement
 const memoryStore = {};

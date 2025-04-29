@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { setAuthState, logoutUser } from "../store/slices/usersSlice";
 import { AppDispatch } from "../store/Store";
+import { usernameBlacklist } from "./blacklist";
 
 // Schéma pour la réponse de l'API de connexion (login)
 const loginResponseSchema = z.object({
@@ -164,8 +165,17 @@ export const generateCSRFToken = () => {
 	return token;
 };
 
+export const validateUsername = (username: string): boolean => {
+	const regex = new RegExp(usernameBlacklist.join("|"), "i");
+	return !regex.test(username);
+};
+
 export const updateUserProfile = async (userName: string, token: string) => {
 	try {
+		if (!validateUsername(userName)) {
+			throw new Error("Username contains inappropriate words or terms");
+		}
+
 		// Récupère ou génère un token CSRF
 		const csrfToken =
 			sessionStorage.getItem("csrfToken") || generateCSRFToken();

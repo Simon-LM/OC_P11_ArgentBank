@@ -67,7 +67,19 @@
 	&:hover {
 		background-color: var.$light_account_bg-hover;
 		color: var.$light_account_text-hover;
+
+		.account-amount {
+			color: var.$light_account_text-hover;
+		}
 	}
+}
+
+.account-title {
+	margin: 0;
+	padding: 0;
+	font-size: 1rem;
+	font-weight: normal;
+	@include mix.text-wrap;
 }
 
 .account-amount {
@@ -77,19 +89,15 @@
 	color: var.$light_account-amount_text;
 	@extend %text-wrap;
 	@extend %preserve-numbers;
+
+	// &:hover {
+	// 	color: var.$light_account_text-hover;
+	// }
 }
 
 .account-amount-description {
 	margin: 0;
 	@include mix.text-wrap("break-word");
-}
-
-.account-title {
-	margin: 0;
-	padding: 0;
-	font-size: 1rem;
-	font-weight: normal;
-	@include mix.text-wrap;
 }
 
 .account-content-wrapper {

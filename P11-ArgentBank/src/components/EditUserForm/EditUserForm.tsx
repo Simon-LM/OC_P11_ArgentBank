@@ -6,6 +6,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import editUserForm from "./editUserForm.module.scss";
+import { usernameBlacklist } from "../../utils/blacklist";
 
 const schema = z.object({
 	userName: z
@@ -16,7 +17,12 @@ const schema = z.object({
 		.refine(
 			(val) => /^[a-zA-Z0-9_-]+$/.test(val),
 			"Only letters, numbers, underscore and hyphen are allowed"
-		),
+		)
+		.refine((val) => {
+			const regex = new RegExp(usernameBlacklist.join("|"), "i");
+			return !regex.test(val);
+		}, "Username contains inappropriate words or terms"),
+
 	firstName: z.string().nonempty("First name is required"),
 	lastName: z.string().nonempty("Last name is required"),
 });
