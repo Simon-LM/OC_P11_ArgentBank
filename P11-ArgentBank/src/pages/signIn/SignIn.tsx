@@ -59,18 +59,56 @@ const SignIn: React.FC = () => {
 		}
 	};
 
+	// return (
+	// 	<main className={signin["signin-page-main"]}>
+	// 		<section className={signin["sign-in-content"]}>
+	// 			<i
+	// 				className={classNames(
+	// 					"fa",
+	// 					"fa-user-circle",
+	// 					signin["sign-in-icon"]
+	// 				)}></i>
+	// 			<h1>Sign In</h1>
+	// 			<form onSubmit={handleSubmit}>
+	// 				<div className={signin["input-wrapper"]}>
+	// 					<label htmlFor="email">Email</label>
+	// 					<input
+	// 						type="email"
+	// 						id="email"
+	// 						value={email}
+	// 						onChange={(e) => setEmail(e.target.value)}
+	// 						required
+	// 					/>
+	// 				</div>
+	// 				<div className={signin["input-wrapper"]}>
+	// 					<label htmlFor="password">Password</label>
+	// 					<input
+	// 						type="password"
+	// 						id="password"
+	// 						value={password}
+	// 						onChange={(e) => setPassword(e.target.value)}
+	// 						required
+	// 					/>
+	// 				</div>
+	// 				{error && <p className={signin["error-message"]}>{error}</p>}
+	// 				<button className={signin["sign-in-button"]}>Sign In</button>
+	// 			</form>
+	// 		</section>
+	// 	</main>
+	// );
+
 	return (
-		<main className={signin["signin-page-main"]}>
-			<section className={signin["sign-in-content"]}>
+		<main className={signin["signin-page"]}>
+			<section className={signin["signin-form"]}>
 				<i
 					className={classNames(
 						"fa",
 						"fa-user-circle",
-						signin["sign-in-icon"]
+						signin["signin-form__icon"]
 					)}></i>
 				<h1>Sign In</h1>
 				<form onSubmit={handleSubmit}>
-					<div className={signin["input-wrapper"]}>
+					<div className={signin["signin-form__input-group"]}>
 						<label htmlFor="email">Email</label>
 						<input
 							type="email"
@@ -80,7 +118,7 @@ const SignIn: React.FC = () => {
 							required
 						/>
 					</div>
-					<div className={signin["input-wrapper"]}>
+					<div className={signin["signin-form__input-group"]}>
 						<label htmlFor="password">Password</label>
 						<input
 							type="password"
@@ -90,8 +128,8 @@ const SignIn: React.FC = () => {
 							required
 						/>
 					</div>
-					{error && <p className={signin["error-message"]}>{error}</p>}
-					<button className={signin["sign-in-button"]}>Sign In</button>
+					{error && <p className={signin["signin-form__error"]}>{error}</p>}
+					<button className={signin["signin-form__button"]}>Sign In</button>
 				</form>
 			</section>
 		</main>

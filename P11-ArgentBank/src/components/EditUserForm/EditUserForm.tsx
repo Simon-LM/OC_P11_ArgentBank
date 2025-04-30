@@ -64,84 +64,91 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 	};
 
 	return (
-		<div className={editUserForm["EditUserForm-container"]}>
+		<div className={editUserForm["edit-user-form__container"]}>
 			<h2>Edit user info</h2>
 
-			{/* Ajout de la boîte d'information */}
-			<div className={editUserForm.disclaimerBox}>
-				<p className={editUserForm.disclaimer}>
+			<div className={editUserForm["edit-user-form__disclaimer-box"]}>
+				<p className={editUserForm["edit-user-form__disclaimer"]}>
 					<strong>Note:</strong> This is a demonstration site. Any username you
 					set will be visible to other visitors.
 				</p>
 			</div>
 
 			<form
-				className={editUserForm["form-container"]}
+				className={editUserForm["edit-user-form__form"]}
 				onSubmit={handleSubmit(handleSave)}
 				role="form">
-				<div className={editUserForm["input-group"]}>
-					<Label className={editUserForm.label} htmlFor="userName">
+				<div className={editUserForm["edit-user-form__input-group"]}>
+					<Label
+						className={editUserForm["edit-user-form__label"]}
+						htmlFor="userName">
 						User Name :
 					</Label>
-					<div className={editUserForm["input-wrapper"]}>
+					<div className={editUserForm["edit-user-form__input-wrapper"]}>
 						<input
-							className={editUserForm.input}
+							className={editUserForm["edit-user-form__input"]}
 							id="userName"
 							{...register("userName")}
 							aria-invalid={errors.userName ? "true" : "false"}
 						/>
 						{errors.userName && (
-							<p className={editUserForm["error-message"]} role="alert">
+							<p className={editUserForm["edit-user-form__error"]} role="alert">
 								{errors.userName.message}
 							</p>
 						)}
 					</div>
 				</div>
 
-				<div className={editUserForm["input-group"]}>
-					<Label className={editUserForm.label} htmlFor="firstName">
+				<div className={editUserForm["edit-user-form__input-group"]}>
+					<Label
+						className={editUserForm["edit-user-form__label"]}
+						htmlFor="firstName">
 						First Name :
 					</Label>
-					<div className={editUserForm["input-wrapper"]}>
+					<div className={editUserForm["edit-user-form__input-wrapper"]}>
 						<input
-							className={editUserForm.input_readonly}
+							className={`${editUserForm["edit-user-form__input"]} ${editUserForm["edit-user-form__input--readonly"]}`}
 							id="firstName"
 							readOnly
 							{...register("firstName")}
 						/>
 						{errors.firstName && (
-							<p className={editUserForm["error-message"]}>
+							<p className={editUserForm["edit-user-form__error"]}>
 								{errors.firstName.message}
 							</p>
 						)}
 					</div>
 				</div>
 
-				<div className={editUserForm["input-group"]}>
-					<Label className={editUserForm.label} htmlFor="lastName">
+				<div className={editUserForm["edit-user-form__input-group"]}>
+					<Label
+						className={editUserForm["edit-user-form__label"]}
+						htmlFor="lastName">
 						Last Name :
 					</Label>
-					<div className={editUserForm["input-wrapper"]}>
+					<div className={editUserForm["edit-user-form__input-wrapper"]}>
 						<input
-							className={editUserForm.input_readonly}
+							className={`${editUserForm["edit-user-form__input"]} ${editUserForm["edit-user-form__input--readonly"]}`}
 							id="lastName"
 							readOnly
 							{...register("lastName")}
 						/>
 						{errors.lastName && (
-							<p className={editUserForm["error-message"]}>
+							<p className={editUserForm["edit-user-form__error"]}>
 								{errors.lastName.message}
 							</p>
 						)}
 					</div>
 				</div>
 
-				<div className={editUserForm["button-group"]}>
-					<button className={editUserForm["submit-button"]} type="submit">
+				<div className={editUserForm["edit-user-form__button-group"]}>
+					<button
+						className={`${editUserForm["edit-user-form__button"]} ${editUserForm["edit-user-form__button--submit"]}`}
+						type="submit">
 						Save
 					</button>
 					<button
-						className={editUserForm["cancel-button"]}
+						className={`${editUserForm["edit-user-form__button"]} ${editUserForm["edit-user-form__button--cancel"]}`}
 						type="button"
 						onClick={onCancel}>
 						Cancel

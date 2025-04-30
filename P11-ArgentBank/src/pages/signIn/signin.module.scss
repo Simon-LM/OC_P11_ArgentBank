@@ -5,82 +5,167 @@
 @use "@styles/abstracts/mixins" as mix;
 @use "@styles/abstracts/placeholders" as *;
 
-.signin-page-main {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	height: 100%;
-	padding: 2rem 0;
-	background: var.$light_signin_page-bg;
-}
-.sign-in-content {
-	box-sizing: border-box;
-	background: var.$light_signin_card-bg;
-	color: var.$light_signin_card-text;
-	width: min(func.rem(300), 90%);
-	margin: min(2rem, 5vh) auto;
-	padding: min(5vw, 2rem);
-	@extend %text-wrap;
-	box-shadow: var.$light_signin_card-shadow;
-}
+// .signin-page-main {
+// 	display: flex;
+// 	flex-direction: column;
+// 	justify-content: center;
+// 	height: 100%;
+// 	padding: 2rem 0;
+// 	background: var.$light_signin_page-bg;
+// }
+// .sign-in-content {
+// 	box-sizing: border-box;
+// 	background: var.$light_signin_card-bg;
+// 	color: var.$light_signin_card-text;
+// 	width: min(func.rem(300), 90%);
+// 	margin: min(2rem, 5vh) auto;
+// 	padding: min(5vw, 2rem);
+// 	@extend %text-wrap;
+// 	box-shadow: var.$light_signin_card-shadow;
+// }
 
-.sign-in-icon {
-	font-size: 5rem;
-	color: var.$signin-icon-color;
-}
+// .sign-in-icon {
+// 	font-size: 5rem;
+// 	color: var.$signin-icon-color;
+// }
 
-.input-remember {
-	display: flex;
-}
+// .input-remember {
+// 	display: flex;
+// }
 
-.input-remember label {
-	margin-left: 0.25rem;
-}
+// .input-remember label {
+// 	margin-left: 0.25rem;
+// }
 
-.input-wrapper {
-	display: flex;
-	flex-direction: column;
-	text-align: left;
-	margin-bottom: 1rem;
-	width: 100%;
-}
+// .input-wrapper {
+// 	display: flex;
+// 	flex-direction: column;
+// 	text-align: left;
+// 	margin-bottom: 1rem;
+// 	width: 100%;
+// }
 
-.input-wrapper label {
-	font-weight: bold;
-	color: var.$light_signin_label-text;
-	@extend %text-wrap;
-}
+// .input-wrapper label {
+// 	font-weight: bold;
+// 	color: var.$light_signin_label-text;
+// 	@extend %text-wrap;
+// }
 
-.input-wrapper input {
-	padding: func.rem(5);
-	font-size: 1.2rem;
-	background-color: var.$light_signin_input-bg;
-	border: 1px solid var.$light_signin_input-border;
-	color: var.$light_signin_input-text;
-	width: 100%;
-	box-sizing: border-box;
-}
+// .input-wrapper input {
+// 	padding: func.rem(5);
+// 	font-size: 1.2rem;
+// 	background-color: var.$light_signin_input-bg;
+// 	border: 1px solid var.$light_signin_input-border;
+// 	color: var.$light_signin_input-text;
+// 	width: 100%;
+// 	box-sizing: border-box;
+// }
 
-.error-message {
-	color: var.$color-error;
-	font-size: 0.9rem;
-	margin-top: 0.5rem;
-	@extend %text-wrap;
-}
+// .error-message {
+// 	color: var.$color-error;
+// 	font-size: 0.9rem;
+// 	margin-top: 0.5rem;
+// 	@extend %text-wrap;
+// }
 
-.sign-in-button {
-	display: block;
-	width: 100%;
-	padding: func.rem(8);
-	font-size: 1.1rem;
-	font-weight: bold;
-	margin-top: 2rem;
-	background-color: var.$light_button_bg;
-	border-color: var.$light_button_border;
-	color: var.$light_button_text;
+// .sign-in-button {
+// 	display: block;
+// 	width: 100%;
+// 	padding: func.rem(8);
+// 	font-size: 1.1rem;
+// 	font-weight: bold;
+// 	margin-top: 2rem;
+// 	background-color: var.$light_button_bg;
+// 	border-color: var.$light_button_border;
+// 	color: var.$light_button_text;
 
-	&:hover {
-		background-color: var.$light_button_bg-hover;
-		border-color: var.$light_button_border-hover;
+// 	&:hover {
+// 		background-color: var.$light_button_bg-hover;
+// 		border-color: var.$light_button_border-hover;
+// 	}
+// }
+
+// // // // // // // // // //
+
+.signin {
+	&-page {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		height: 100%;
+		padding: 2rem 0;
+		background: var.$light_signin_page-bg;
+	}
+
+	&-form {
+		box-sizing: border-box;
+		background: var.$light_signin_card-bg;
+		color: var.$light_signin_card-text;
+		width: min(func.rem(300), 90%);
+		margin: min(2rem, 5vh) auto;
+		padding: min(5vw, 2rem);
+		@extend %text-wrap;
+		box-shadow: var.$light_signin_card-shadow;
+
+		&__icon {
+			font-size: 5rem;
+			color: var.$signin-icon-color;
+		}
+
+		&__input-group {
+			display: flex;
+			flex-direction: column;
+			text-align: left;
+			margin-bottom: 1rem;
+			width: 100%;
+
+			label {
+				font-weight: bold;
+				color: var.$light_signin_label-text;
+				@extend %text-wrap;
+			}
+
+			input {
+				padding: func.rem(5);
+				font-size: 1.2rem;
+				background-color: var.$light_signin_input-bg;
+				border: 1px solid var.$light_signin_input-border;
+				color: var.$light_signin_input-text;
+				width: 100%;
+				box-sizing: border-box;
+			}
+		}
+
+		&__remember {
+			display: flex;
+
+			label {
+				margin-left: 0.25rem;
+			}
+		}
+
+		&__error {
+			color: var.$color-error;
+			font-size: 0.9rem;
+			margin-top: 0.5rem;
+			@extend %text-wrap;
+		}
+
+		&__button {
+			display: block;
+			width: 100%;
+			padding: func.rem(8);
+			font-size: 1.1rem;
+			font-weight: bold;
+			margin-top: 2rem;
+			background-color: var.$light_button_bg;
+			border-color: var.$light_button_border;
+			color: var.$light_button_text;
+
+			&:hover {
+				background-color: var.$light_button_bg-hover;
+				border-color: var.$light_button_border-hover;
+			}
+		}
 	}
 }

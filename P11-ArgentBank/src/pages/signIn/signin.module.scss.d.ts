@@ -1,10 +1,10 @@
 declare const classNames: {
-  readonly "sign-in-content": "sign-in-content";
-  readonly "input-wrapper": "input-wrapper";
-  readonly "error-message": "error-message";
-  readonly "signin-page-main": "signin-page-main";
-  readonly "sign-in-icon": "sign-in-icon";
-  readonly "input-remember": "input-remember";
-  readonly "sign-in-button": "sign-in-button";
+  readonly "signin-form": "signin-form";
+  readonly "signin-form__input-group": "signin-form__input-group";
+  readonly "signin-form__error": "signin-form__error";
+  readonly "signin-page": "signin-page";
+  readonly "signin-form__icon": "signin-form__icon";
+  readonly "signin-form__remember": "signin-form__remember";
+  readonly "signin-form__button": "signin-form__button";
 };
 export = classNames;

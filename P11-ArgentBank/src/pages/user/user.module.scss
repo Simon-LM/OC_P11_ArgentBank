@@ -5,53 +5,59 @@
 @use "@styles/abstracts/mixins" as mix;
 @use "@styles/abstracts/placeholders" as *;
 
-.user-page-main {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	height: 100%;
-	margin: 0 auto;
-	padding: 0.25rem;
-	background: var.$light_user_bg;
-	color: var.$light_user_text;
-}
-
-.title {
-	color: var.$light_user_title;
-	font-size: func.rem(32) !important;
-}
-
-.edit-button {
-	background-color: var.$light_button-bg;
-	border-color: var.$light_button-border;
-	color: var.$light_button-text;
-	font-weight: bold;
-	padding: func.rem(10);
-	margin: 2rem 0;
-
-	&:hover {
-		background-color: var.$light_button_bg-hover;
-		border-color: var.$light_button_border-hover;
+.user {
+	&-page {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+		margin: 0 auto;
+		padding: 0.25rem;
+		background: var.$light_user_bg;
+		color: var.$light_user_text;
+		box-sizing: border-box;
 	}
-}
 
-.error-message {
-	color: var.$color-error;
-	font-weight: bold;
-	margin: 1rem 0;
+	&__title {
+		color: var.$light_user_title;
+		font-size: func.rem(32) !important;
+	}
+
+	&__edit-button {
+		background-color: var.$light_button-bg;
+		border-color: var.$light_button-border;
+		color: var.$light_button-text;
+		font-weight: bold;
+		width: 92.5%;
+		max-width: 15rem;
+		padding: 0.75rem;
+		margin: 2rem 0;
+
+		&:hover {
+			background-color: var.$light_button_bg-hover;
+			border-color: var.$light_button_border-hover;
+		}
+	}
+
+	&__error {
+		color: var.$color-error;
+		font-weight: bold;
+		margin: 1rem 0;
+	}
 }
 
 .account {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border: 1px solid var.$light_account_border;
+	border: func.rem(1) solid var.$light_account_border;
 	background-color: var.$light_account_bg;
 	color: var.$light_account_text;
-	width: 80%;
+	width: 92.5%;
+	max-width: 30rem;
 	margin: 0 auto;
 	flex-direction: column;
-	padding: 1.5rem;
+	padding: calc(0.5rem + 1vw);
 	box-sizing: border-box;
 	text-align: left;
 	margin-bottom: 2rem;
@@ -68,165 +74,166 @@
 		background-color: var.$light_account_bg-hover;
 		color: var.$light_account_text-hover;
 
-		.account-amount {
+		.account__amount {
 			color: var.$light_account_text-hover;
 		}
 	}
+
+	&--selected {
+		border-left: 1.5rem solid var.$light_account_border-selected;
+		background-color: var.$light_account_bg-selected;
+	}
+
+	&__title {
+		margin: 0;
+		padding: 0;
+		font-size: 1rem;
+		font-weight: normal;
+		@include mix.text-wrap;
+	}
+
+	&__amount {
+		margin: 0;
+		font-size: clamp(1.5rem, 5vw, 2.5rem);
+		font-weight: bold;
+		color: var.$light_account-amount_text;
+		@extend %text-wrap;
+		@extend %preserve-numbers;
+	}
+
+	&__description {
+		margin: 0;
+		@include mix.text-wrap("break-word");
+	}
+
+	&__content {
+		width: 100%;
+		flex: 1;
+	}
+
+	&__button {
+		display: block;
+		width: 100%;
+		padding: func.rem(8);
+		font-size: 1.1rem;
+		font-weight: bold;
+		margin-top: 1rem;
+		border-color: var.$light_button_border;
+		background-color: var.$light_button_bg;
+		color: var.$light_button_text;
+	}
 }
 
-.account-title {
-	margin: 0;
-	padding: 0;
-	font-size: 1rem;
-	font-weight: normal;
-	@include mix.text-wrap;
-}
-
-.account-amount {
-	margin: 0;
-	font-size: 2.5rem;
-	font-weight: bold;
-	color: var.$light_account-amount_text;
-	@extend %text-wrap;
-	@extend %preserve-numbers;
-
-	// &:hover {
-	// 	color: var.$light_account_text-hover;
-	// }
-}
-
-.account-amount-description {
-	margin: 0;
-	@include mix.text-wrap("break-word");
-}
-
-.account-content-wrapper {
-	width: 100%;
-	flex: 1;
-}
-
-.account-selected {
-	border-left: 1.5rem solid var.$light_account_border-selected;
-	background-color: var.$light_account_bg-selected;
-}
-
-.transaction-detail {
+.transaction {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	border-bottom: 1px solid var.$light-transaction-border;
-	width: 80%;
+	width: 92.5%;
+	max-width: 30rem;
 	margin: 0 auto;
 	padding: 1rem 1.5rem;
 	box-sizing: border-box;
 	text-align: left;
-	box-sizing: border-box;
 
 	* {
 		@extend %text-wrap;
 	}
 }
 
-.transaction-button {
-	display: block;
-	width: 100%;
-	padding: func.rem(8);
-	font-size: 1.1rem;
-	font-weight: bold;
-	margin-top: 1rem;
-	border-color: var.$light_button_border;
-	background-color: var.$light_button_bg;
-	color: var.$light_button_text;
-}
-
-// // Pagination // //
-.pagination-nav {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
-	margin: 2rem auto;
-	gap: 0.5rem;
-	max-width: 90%;
-	padding: 0 1rem;
-}
-
-.pagination-controls {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem;
-	justify-content: center;
-}
-.pagination-arrow {
-	flex-shrink: 0;
-	order: 0;
-
-	&.next {
-		order: 2;
-	}
-}
-
-.pagination-numbers {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem;
-	justify-content: center;
-	order: 1;
-}
-
-.pagination-button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: func.rem(36);
-	height: func.rem(36);
-	padding: 0 func.rem(8);
-	background-color: var.$light_pagination-button_bg;
-	border: 1px solid var.$light_pagination-button_border;
-	color: var.$light_pagination-button_text;
-	border-radius: func.rem(4);
-	font-weight: bold;
-	@extend %text-wrap;
-	@extend %preserve-numbers;
-	transition:
-		background-color 0.2s,
-		color 0.2s;
-
-	svg {
-		fill: currentColor;
+.pagination {
+	&__nav {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		margin: 2rem auto;
+		gap: 0.5rem;
+		max-width: 90%;
+		padding: 0 1rem;
 	}
 
-	&:hover:not(:disabled) {
-		background-color: var.$light_pagination-button_bg-hover;
-		border-color: var.$light_pagination-button_border-hover;
-		color: var.$light_pagination-button_text-hover;
+	&__controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		justify-content: center;
 	}
 
-	&:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-}
+	&__arrow {
+		flex-shrink: 0;
+		order: 0;
 
-.pagination-button-current,
-.pagination-button[aria-current="page"] {
-	background-color: var.$light_pagination-button_bg-selected;
-	border-color: var.$light_pagination-button_border-selected;
-	color: var.$light_pagination-button_text-selected;
-	&:hover {
-		cursor: not-allowed;
-	}
-}
+		&--prev {
+			order: 0;
+		}
 
-.pagination-ellipsis {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: func.rem(36);
-	height: func.rem(36);
-	padding: 0;
-	font-weight: bold;
-	@extend %text-wrap;
-	text-align: center;
-	overflow: hidden;
+		&--next {
+			order: 2;
+		}
+	}
+
+	&__numbers {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		justify-content: center;
+		order: 1;
+	}
+
+	&__button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: func.rem(36);
+		height: func.rem(36);
+		padding: 0 func.rem(8);
+		background-color: var.$light_pagination-button_bg;
+		border: 1px solid var.$light_pagination-button_border;
+		color: var.$light_pagination-button_text;
+		border-radius: func.rem(4);
+		font-weight: bold;
+		@extend %text-wrap;
+		@extend %preserve-numbers;
+		transition:
+			background-color 0.2s,
+			color 0.2s;
+
+		svg {
+			fill: currentColor;
+		}
+
+		&:hover:not(:disabled) {
+			background-color: var.$light_pagination-button_bg-hover;
+			border-color: var.$light_pagination-button_border-hover;
+			color: var.$light_pagination-button_text-hover;
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		&--current {
+			background-color: var.$light_pagination-button_bg-selected;
+			border-color: var.$light_pagination-button_border-selected;
+			color: var.$light_pagination-button_text-selected;
+			&:hover {
+				cursor: not-allowed;
+			}
+		}
+	}
+
+	&__ellipsis {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: func.rem(36);
+		height: func.rem(36);
+		padding: 0;
+		font-weight: bold;
+		@extend %text-wrap;
+		text-align: center;
+		overflow: hidden;
+	}
 }

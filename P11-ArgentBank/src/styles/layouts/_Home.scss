@@ -6,7 +6,7 @@
 @use "@styles/abstracts/variables" as var;
 
 .hero {
-	background-image: url("/src/assets/img/bank-tree.jpg"); // .jpg au lieu de .jpeg
+	background-image: url("/src/assets/img/bank-tree.jpg");
 	background-position: 0 func.rem(-50);
 	background-size: cover;
 	background-repeat: no-repeat;
@@ -20,59 +20,58 @@
 	@supports (background-image: url("/src/assets/img/bank-tree.avif")) {
 		background-image: url("/src/assets/img/bank-tree.avif");
 	}
+
 	@media (min-width: 920px) {
 		height: func.rem(400);
 		background-position: 0% 33%;
 	}
-}
 
-.hero-image-description {
-	position: absolute;
-	z-index: -1;
-	width: 75vw;
-	height: 80%;
-	top: 0.5rem;
-	left: 2rem;
-	font-size: 1.1rem;
-	outline: func.rem(2) dashed var.$color-balanced;
-	color: var.$color-balanced;
-}
+	&__image-description {
+		position: absolute;
+		z-index: -1;
+		width: 75vw;
+		height: 80%;
+		top: 0.5rem;
+		left: 2rem;
+		font-size: 1.1rem;
+		outline: func.rem(2) dashed var.$color-balanced;
+		color: var.$color-balanced;
+	}
 
-.hero-content {
-	position: absolute;
-	top: 4vw;
-	right: 4vw;
-	display: flex;
-	flex-direction: column;
-	// width: max-content;
-	max-width: 50vw;
-	max-width: clamp(10rem, calc(92vw - 8vw), calc(100vw - 8vw));
-	padding: clamp(1rem, 2vw, 2rem);
-	text-align: left;
-	margin: 0 auto;
-	background-color: var.$light_bg_hero-content;
-	box-sizing: border-box;
-	// @extend %text-wrap;
+	&__content {
+		position: absolute;
+		top: 4vw;
+		right: 4vw;
+		display: flex;
+		flex-direction: column;
+		max-width: 50vw;
+		max-width: clamp(10rem, calc(92vw - 8vw), calc(100vw - 8vw));
+		padding: clamp(1rem, 2vw, 2rem);
+		text-align: left;
+		margin: 0 auto;
+		background-color: var.$light_bg_hero-content;
+		box-sizing: border-box;
 
-	@media (max-width: 30rem) {
-		width: 12rem;
-		max-width: calc(100vw - 8vw);
+		@media (max-width: 30rem) {
+			width: 12rem;
+			max-width: calc(100vw - 8vw);
+		}
+	}
+
+	&__subtitle {
+		font-weight: bold;
+		font-size: 1rem;
+		font-size: clamp(1rem, 2.2vw, 1.5rem);
+		margin: 0;
+	}
+
+	&__text {
+		margin-bottom: 0;
+		font-size: clamp(0.8rem, 2vw, 1.2rem);
 	}
 }
 
-.hero-content .subtitle {
-	font-weight: bold;
-	font-size: 1rem;
-	font-size: clamp(1rem, 2.2vw, 1.5rem);
-	margin: 0;
-	// @extend %text-wrap;
-}
-
-.hero-content .text {
-	margin-bottom: 0;
-	font-size: clamp(0.8rem, 2vw, 1.2rem);
-	// @extend %text-wrap;
-}
+// // // // // // // // //
 
 .features {
 	display: flex;
@@ -81,8 +80,6 @@
 	width: 100%;
 	// background-color: red;
 }
-
-// // // // // // // // // // // // //
 
 .feature-item {
 	flex: 1 0 20rem;
@@ -123,15 +120,15 @@
 	position: relative;
 	background-size: cover;
 
-	&-1 {
+	&--chat {
 		background-repeat: no-repeat;
 		background-image: url("@assets/img/icon-chat_light-mode.png");
 	}
-	&-2 {
+	&--money {
 		background-repeat: no-repeat;
 		background-image: url("@assets/img/icon-money_light-mode.png");
 	}
-	&-3 {
+	&--security {
 		background-repeat: no-repeat;
 		background-image: url("@assets/img/icon-security_light-mode.png");
 	}

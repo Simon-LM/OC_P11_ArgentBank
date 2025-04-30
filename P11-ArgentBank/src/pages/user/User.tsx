@@ -105,10 +105,10 @@ const User: React.FC = () => {
 
 	return (
 		<>
-			<main className={user["user-page-main"]}>
+			<main className={user["user-page"]}>
 				{/* --- Section Accueil et Édition --- */}
 				<div>
-					<h2 className={user["title"]}>
+					<h2 className={user["user__title"]}>
 						Welcome back
 						<br />
 						{currentUser.firstName} {currentUser.lastName} !
@@ -121,7 +121,7 @@ const User: React.FC = () => {
 						/>
 					) : (
 						<button
-							className={user["edit-button"]}
+							className={user["user__edit-button"]}
 							onClick={() => setIsEditing(true)}>
 							Edit Name
 						</button>
@@ -131,7 +131,7 @@ const User: React.FC = () => {
 				<h2 className="sr-only">Accounts</h2>
 				{accountsStatus === "loading" && <p>Loading accounts...</p>}
 				{accountsStatus === "failed" && (
-					<p className={user["error-message"]}>
+					<p className={user["user__error"]}>
 						Error loading accounts: {accountsError}
 					</p>
 				)}
@@ -139,32 +139,25 @@ const User: React.FC = () => {
 					accounts.map((account) => (
 						<button
 							className={classNames(user["account"], {
-								[user["account-selected"]]: account.id === selectedAccountId, // Style si sélectionné
+								[user["account--selected"]]: account.id === selectedAccountId, // Style si sélectionné
 							})}
 							key={account.id}
 							// Rendre cliquable pour sélectionner
 							onClick={() => dispatch(selectAccount(account.id))}
 							style={{ cursor: "pointer" }} // Indiquer que c'est cliquable
 						>
-							<div className={user["account-content-wrapper"]}>
-								<h3 className={user["account-title"]}>
+							<div className={user["account__content"]}>
+								<h3 className={user["account__title"]}>
 									{account.type} (x{account.accountNumber})
 								</h3>
-								<p className={user["account-amount"]}>
+								<p className={user["account__amount"]}>
 									€{account.balance.toFixed(2)}
 								</p>
-								<p className={user["account-amount-description"]}>
+								<p className={user["account__description"]}>
 									Available Balance
 								</p>
 							</div>
-							<div
-								className={classNames(
-									user["account-content-wrapper"],
-									user["cta"]
-								)}>
-								{/* Le bouton n'est plus nécessaire si la section est cliquable */}
-								{/* <button className={user["transaction-button"]}>View transactions</button> */}
-							</div>
+							<div className={classNames(user["account__content"])}></div>
 						</button>
 					))}
 				{/* --- Section Transactions --- */}
@@ -172,7 +165,7 @@ const User: React.FC = () => {
 					<h2 className="sr-only">Transactions for selected account</h2>
 					{transactionsStatus === "loading" && <p>Loading transactions...</p>}
 					{transactionsStatus === "failed" && (
-						<p className={user["error-message"]}>
+						<p className={user["user__error"]}>
 							Error loading transactions: {transactionsError}
 						</p>
 					)}
@@ -187,22 +180,22 @@ const User: React.FC = () => {
 								</p>
 							) : (
 								currentTransactions.map((tx) => (
-									<section className={user["transaction-detail"]} key={tx.id}>
+									<section className={user["transaction"]} key={tx.id}>
 										{/* ... (structure interne de la transaction existante) ... */}
-										<div className={user["account-content-wrapper"]}>
-											<h3 className={user["account-title"]}>
+										<div className={user["account__content"]}>
+											<h3 className={user["account__title"]}>
 												{tx.description}
 											</h3>
-											<p className={user["account-amount-description"]}>
+											<p className={user["account__description"]}>
 												{new Date(tx.date).toLocaleDateString()} - {tx.category}
 											</p>
-											<p className={user["account-amount"]}>
+											<p className={user["account__amount"]}>
 												{/* Afficher +/- explicitement peut être plus clair */}
 												{tx.type === TransactionType.CREDIT ? "+" : "-"}
 												{tx.amount.toFixed(2)} €
 											</p>
 											{tx.notes && (
-												<p className={user["account-amount-description"]}>
+												<p className={user["account__amount"]}>
 													Notes: {tx.notes}
 												</p>
 											)}
@@ -214,20 +207,19 @@ const User: React.FC = () => {
 							{/* --- Contrôles de Pagination --- */}
 							{totalPages > 1 && (
 								<nav
-									className={user["pagination-nav"]}
+									className={user["pagination__nav"]}
 									aria-label="Transaction pagination">
-									<div
-										className={`${user["pagination-arrow"]} ${user["prev"]}`}>
+									<div className={user["pagination__arrow--prev"]}>
 										<button
 											onClick={handlePreviousPage}
 											disabled={currentPage === 1}
-											className={user["pagination-button"]}
+											className={user["pagination__button"]}
 											aria-label="Go to previous page">
 											<FaChevronLeft />
 										</button>
 									</div>
 
-									<div className={user["pagination-numbers"]}>
+									<div className={user["pagination__numbers"]}>
 										{/* Afficher seulement quelques pages au milieu si trop nombreuses */}
 										{pageNumbers.length <= 7 ? (
 											// Afficher toutes les pages si 7 ou moins
@@ -235,8 +227,8 @@ const User: React.FC = () => {
 												<button
 													key={number}
 													onClick={() => handlePageChange(number)}
-													className={classNames(user["pagination-button"], {
-														[user["pagination-button-current"]]:
+													className={classNames(user["pagination__button"], {
+														[user["pagination__button--current"]]:
 															currentPage === number,
 													})}
 													aria-current={
@@ -252,8 +244,8 @@ const User: React.FC = () => {
 												{/* Première page toujours visible */}
 												<button
 													onClick={() => handlePageChange(1)}
-													className={classNames(user["pagination-button"], {
-														[user["pagination-button-current"]]:
+													className={classNames(user["pagination__button"], {
+														[user["pagination__button--current"]]:
 															currentPage === 1,
 													})}
 													aria-current={currentPage === 1 ? "page" : undefined}
@@ -263,7 +255,7 @@ const User: React.FC = () => {
 
 												{/* Ellipse si nécessaire */}
 												{currentPage > 3 && (
-													<span className={user["pagination-ellipsis"]}>
+													<span className={user["pagination__ellipsis"]}>
 														...
 													</span>
 												)}
@@ -281,10 +273,13 @@ const User: React.FC = () => {
 														<button
 															key={number}
 															onClick={() => handlePageChange(number)}
-															className={classNames(user["pagination-button"], {
-																[user["pagination-button-current"]]:
-																	currentPage === number,
-															})}
+															className={classNames(
+																user["pagination__button"],
+																{
+																	[user["pagination__button--current"]]:
+																		currentPage === number,
+																}
+															)}
 															aria-current={
 																currentPage === number ? "page" : undefined
 															}
@@ -295,7 +290,7 @@ const User: React.FC = () => {
 
 												{/* Ellipse si nécessaire */}
 												{currentPage < totalPages - 2 && (
-													<span className={user["pagination-ellipsis"]}>
+													<span className={user["pagination__ellipsis"]}>
 														...
 													</span>
 												)}
@@ -303,8 +298,8 @@ const User: React.FC = () => {
 												{/* Dernière page toujours visible */}
 												<button
 													onClick={() => handlePageChange(totalPages)}
-													className={classNames(user["pagination-button"], {
-														[user["pagination-button-current"]]:
+													className={classNames(user["pagination__button"], {
+														[user["pagination__button--current"]]:
 															currentPage === totalPages,
 													})}
 													aria-current={
@@ -317,12 +312,11 @@ const User: React.FC = () => {
 										)}
 									</div>
 
-									<div
-										className={`${user["pagination-arrow"]} ${user["next"]}`}>
+									<div className={user["pagination__arrow--next"]}>
 										<button
 											onClick={handleNextPage}
 											disabled={currentPage === totalPages}
-											className={user["pagination-button"]}
+											className={user["pagination__button"]}
 											aria-label="Go to next page">
 											<FaChevronRight />
 										</button>
