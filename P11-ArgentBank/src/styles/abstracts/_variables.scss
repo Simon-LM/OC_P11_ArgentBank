@@ -74,6 +74,9 @@ $light_user_bg: $color-gray-50;
 $light_user_title: $primary-color;
 $light_user_text: $color-black;
 
+$light_user_section-heading: $primary-color;
+$light_section-border: $color-gray-200;
+
 // Account
 $light_account_bg: $color-white;
 $light_account_border: $color-gray-200;
@@ -85,7 +88,12 @@ $light_account_bg-selected: $color-gray-100;
 $light_account-amount_text: $primary-color;
 
 // Transaction
-$light_transaction_border: $color-gray-200;
+$light_transaction_bg: $color-white;
+$light_transaction_bg-hover: $color-gray-100;
+$light-transaction-border: $color-gray-200;
+$light_transaction-meta: $color-gray-700;
+$light_transaction-note: $color-gray-800;
+$light_transaction-note-border: $color-gray-400;
 
 // EditUser
 $light_editUser-bg: $color-white;

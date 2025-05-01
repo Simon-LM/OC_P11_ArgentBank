@@ -18,9 +18,26 @@
 		box-sizing: border-box;
 	}
 
+	// &__title {
+	// 	color: var.$light_user_title;
+	// 	font-size: func.rem(32) !important;
+	// }
+
 	&__title {
 		color: var.$light_user_title;
 		font-size: func.rem(32) !important;
+		margin-bottom: 1rem;
+		font-weight: bold;
+		position: relative;
+
+		&::after {
+			content: "";
+			display: block;
+			width: func.rem(80);
+			height: func.rem(3);
+			background-color: var.$primary-color;
+			margin: 0.75rem auto 0;
+		}
 	}
 
 	&__edit-button {
@@ -33,6 +50,11 @@
 		padding: 0.75rem;
 		margin: 2rem 0;
 
+		padding: 0.5rem 1.25rem;
+		// border-radius: func.rem(4);
+		margin: 1.5rem 0;
+		transition: all 0.2s ease;
+
 		&:hover {
 			background-color: var.$light_button_bg-hover;
 			border-color: var.$light_button_border-hover;
@@ -43,6 +65,28 @@
 		color: var.$color-error;
 		font-weight: bold;
 		margin: 1rem 0;
+	}
+}
+
+.section {
+	&__heading {
+		color: var.$light_user_section-heading;
+		font-size: func.rem(22);
+		margin: 2rem 0 1rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid var.$light_section-border;
+		width: 92.5%;
+		max-width: 30rem;
+		margin-left: auto;
+		margin-right: auto;
+
+		&:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px var.$secondary-color;
+			padding-left: 0.5rem;
+		}
+
+		transition: padding 0.2s ease;
 	}
 }
 
@@ -70,6 +114,8 @@
 		border-color 0.2s ease-in-out,
 		color 0.2s ease-in-out;
 
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
 	&:hover {
 		background-color: var.$light_account_bg-hover;
 		color: var.$light_account_text-hover;
@@ -79,16 +125,38 @@
 		}
 	}
 
+	// &--selected {
+	// 	border-left: 1.5rem solid var.$light_account_border-selected;
+	// 	background-color: var.$light_account_bg-selected;
+	// }
 	&--selected {
-		border-left: 1.5rem solid var.$light_account_border-selected;
+		border-left: 0.5rem solid var.$light_account_border-selected;
 		background-color: var.$light_account_bg-selected;
+		position: relative;
+
+		&::before {
+			content: "Selected";
+			position: absolute;
+			top: 0.5rem;
+			right: 0.5rem;
+			font-size: 0.75rem;
+			padding: 0.25rem 0.5rem;
+			background-color: var.$light_account_border-selected;
+			color: white;
+			// border-radius: 4px;
+		}
+	}
+
+	&__content {
+		width: 100%;
+		flex: 1;
 	}
 
 	&__title {
 		margin: 0;
 		padding: 0;
-		font-size: 1rem;
-		font-weight: normal;
+		font-size: 1.25rem;
+		font-weight: 500;
 		@include mix.text-wrap;
 	}
 
@@ -97,6 +165,7 @@
 		font-size: clamp(1.5rem, 5vw, 2.5rem);
 		font-weight: bold;
 		color: var.$light_account-amount_text;
+		margin: 0.5rem 0;
 		@extend %text-wrap;
 		@extend %preserve-numbers;
 	}
@@ -106,9 +175,10 @@
 		@include mix.text-wrap("break-word");
 	}
 
-	&__content {
-		width: 100%;
-		flex: 1;
+	&__note {
+		font-size: 1rem;
+		font-style: italic;
+		margin: 0;
 	}
 
 	&__button {
@@ -124,20 +194,94 @@
 	}
 }
 
+.transaction-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	width: 92.5%;
+	max-width: 30rem;
+	margin: 0 auto;
+}
+
 .transaction {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	border-bottom: 1px solid var.$light-transaction-border;
-	width: 92.5%;
-	max-width: 30rem;
-	margin: 0 auto;
+	// width: 92.5%;
+	// max-width: 30rem;
+
+	// margin: 0 auto;
+	margin: 0 0 0.75rem 0;
+
 	padding: 1rem 1.5rem;
 	box-sizing: border-box;
 	text-align: left;
 
+	margin-bottom: 0.75rem;
+	background-color: var.$light_transaction_bg;
+	border-left: 0;
+	border-bottom: 1px solid var.$light-transaction-border;
+	transition: background-color 0.15s ease;
+
 	* {
 		@extend %text-wrap;
+	}
+
+	// &:hover {
+	// 	background-color: var.$light_transaction_bg-hover;
+	// }
+
+	&__content {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	&__amount-container {
+		display: flex;
+		padding: 0 0.5rem;
+		width: 100%;
+
+		&--credit {
+			justify-content: flex-end;
+			font-size: 3rem;
+			border-right: 2px solid var.$color-success;
+		}
+
+		&--debit {
+			justify-content: flex-start;
+			border-left: 2px solid var.$secondary-color;
+		}
+	}
+
+	&__title {
+		font-weight: 600;
+		margin-bottom: 0.25rem;
+	}
+
+	&__meta {
+		font-size: 0.9rem;
+		color: var.$light_transaction-meta;
+		margin-bottom: 0.25rem;
+	}
+
+	&__amount {
+		font-weight: bold;
+		font-size: 2rem;
+		margin: 0.25rem 0;
+		.transaction__amount-container--credit & {
+			font-size: 2.1rem;
+		}
+	}
+
+	&__note {
+		font-style: italic;
+		font-size: 0.85rem;
+		color: var.$light_transaction-note;
+		margin-top: 0.5rem;
+		padding-left: 0.5rem;
+		border-left: 2px solid var.$light_transaction-note-border;
 	}
 }
 

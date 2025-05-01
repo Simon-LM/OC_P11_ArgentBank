@@ -22,6 +22,8 @@ const User: React.FC = () => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const transactionsPerPage = 10;
+	const transactionHeadingRef = React.useRef<HTMLHeadingElement>(null);
+	const [actionFeedback, setActionFeedback] = useState("");
 
 	const {
 		currentUser,
@@ -48,6 +50,14 @@ const User: React.FC = () => {
 
 	useEffect(() => {
 		setCurrentPage(1);
+	}, [selectedAccountId]);
+
+	useEffect(() => {
+		if (transactionHeadingRef.current && selectedAccountId) {
+			setTimeout(() => {
+				transactionHeadingRef.current?.focus();
+			}, 100);
+		}
 	}, [selectedAccountId]);
 
 	if (!currentUser) {
@@ -82,6 +92,20 @@ const User: React.FC = () => {
 		indexOfFirstTransaction,
 		indexOfLastTransaction
 	);
+
+	const handleAccountSelect = (accountId: string) => {
+		dispatch(selectAccount(accountId));
+		const selectedAcc = accounts.find((acc) => acc.id === accountId);
+
+		if (selectedAcc) {
+			setActionFeedback(
+				`Account ${selectedAcc.type} selected. Transactions filtered.`
+			);
+
+			setTimeout(() => setActionFeedback(""), 5000);
+		}
+	};
+
 	const totalPages = Math.ceil(
 		filteredTransactions.length / transactionsPerPage
 	);
@@ -127,204 +151,255 @@ const User: React.FC = () => {
 						</button>
 					)}
 				</div>
+
 				{/* --- Section Comptes --- */}
-				<h2 className="sr-only">Accounts</h2>
-				{accountsStatus === "loading" && <p>Loading accounts...</p>}
-				{accountsStatus === "failed" && (
-					<p className={user["user__error"]}>
-						Error loading accounts: {accountsError}
-					</p>
-				)}
-				{accountsStatus === "succeeded" &&
-					accounts.map((account) => (
-						<button
-							className={classNames(user["account"], {
-								[user["account--selected"]]: account.id === selectedAccountId, // Style si sélectionné
-							})}
-							key={account.id}
-							// Rendre cliquable pour sélectionner
-							onClick={() => dispatch(selectAccount(account.id))}
-							style={{ cursor: "pointer" }} // Indiquer que c'est cliquable
-						>
-							<div className={user["account__content"]}>
-								<h3 className={user["account__title"]}>
-									{account.type} (x{account.accountNumber})
-								</h3>
-								<p className={user["account__amount"]}>
-									€{account.balance.toFixed(2)}
-								</p>
-								<p className={user["account__description"]}>
-									Available Balance
-								</p>
-							</div>
-							<div className={classNames(user["account__content"])}></div>
-						</button>
-					))}
-				{/* --- Section Transactions --- */}
-				<>
-					<h2 className="sr-only">Transactions for selected account</h2>
-					{transactionsStatus === "loading" && <p>Loading transactions...</p>}
-					{transactionsStatus === "failed" && (
+				<section aria-labelledby="accounts-heading">
+					<h2 id="accounts-heading" className={user["section__heading"]}>
+						Your Accounts
+					</h2>
+					{accountsStatus === "loading" && <p>Loading accounts...</p>}
+					{accountsStatus === "failed" && (
 						<p className={user["user__error"]}>
-							Error loading transactions: {transactionsError}
+							Error loading accounts: {accountsError}
 						</p>
 					)}
-					{transactionsStatus === "succeeded" && (
-						<>
-							{/* Afficher les transactions de la page actuelle */}
-							{currentTransactions.length === 0 ? (
-								<p>
-									{selectedAccountId
-										? "No transactions found for this account."
-										: "No transactions found."}
-								</p>
-							) : (
-								currentTransactions.map((tx) => (
-									<section className={user["transaction"]} key={tx.id}>
-										{/* ... (structure interne de la transaction existante) ... */}
-										<div className={user["account__content"]}>
-											<h3 className={user["account__title"]}>
-												{tx.description}
-											</h3>
-											<p className={user["account__description"]}>
-												{new Date(tx.date).toLocaleDateString()} - {tx.category}
-											</p>
-											<p className={user["account__amount"]}>
-												{/* Afficher +/- explicitement peut être plus clair */}
-												{tx.type === TransactionType.CREDIT ? "+" : "-"}
-												{tx.amount.toFixed(2)} €
-											</p>
-											{tx.notes && (
-												<p className={user["account__amount"]}>
-													Notes: {tx.notes}
-												</p>
+					{accountsStatus === "succeeded" &&
+						accounts.map((account) => (
+							<button
+								className={classNames(user["account"], {
+									[user["account--selected"]]: account.id === selectedAccountId,
+								})}
+								key={account.id}
+								// onClick={() => dispatch(selectAccount(account.id))}
+								onClick={() => handleAccountSelect(account.id)}
+								style={{ cursor: "pointer" }}>
+								<div className={user["account__content"]}>
+									<h3 className={user["account__title"]}>
+										{account.type} (x{account.accountNumber})
+									</h3>
+									<p className={user["account__amount"]}>
+										€{account.balance.toFixed(2)}
+									</p>
+									<p className={user["account__description"]}>
+										Available Balance
+									</p>
+								</div>
+								<div className={classNames(user["account__content"])}></div>
+
+								<span className="sr-only" id={`account-${account.id}-desc`}>
+									Selecting this account will filter transactions to show only
+									those related to this account.
+								</span>
+							</button>
+						))}
+					{actionFeedback && (
+						<div className="sr-only" role="status" aria-live="polite">
+							{actionFeedback}
+						</div>
+					)}
+				</section>
+
+				{/* --- Section Transactions --- */}
+				<>
+					{/* <h2 className="sr-only">Transactions for selected account</h2> */}
+					{/* <h2 className={user["section__heading"]}>Your Transactions</h2> */}
+					<section aria-labelledby="transactions-heading">
+						<h2
+							id="transactions-heading"
+							className={user["section__heading"]}
+							ref={transactionHeadingRef}
+							tabIndex={-1}
+							aria-live="polite">
+							{selectedAccountId
+								? `Transactions for ${accounts.find((acc) => acc.id === selectedAccountId)?.type} (x${accounts.find((acc) => acc.id === selectedAccountId)?.accountNumber})`
+								: "All Account Transactions"}
+						</h2>
+
+						{transactionsStatus === "loading" && <p>Loading transactions...</p>}
+						{transactionsStatus === "failed" && (
+							<p className={user["user__error"]}>
+								Error loading transactions: {transactionsError}
+							</p>
+						)}
+						{transactionsStatus === "succeeded" && (
+							<>
+								{/* Afficher les transactions de la page actuelle */}
+
+								{currentTransactions.length === 0 ? (
+									<p>
+										{selectedAccountId
+											? "No transactions found for this account."
+											: "No transactions found."}
+									</p>
+								) : (
+									<ul
+										className={user["transaction-list"]}
+										aria-label="Transaction history">
+										{currentTransactions.map((tx) => (
+											<li className={user["transaction"]} key={tx.id}>
+												<div className={user["account__content"]}>
+													<h3 className={user["transaction__title"]}>
+														{tx.description}
+													</h3>
+													<p className={user["transaction__meta"]}>
+														{new Date(tx.date).toLocaleDateString()} -{" "}
+														{tx.category}
+													</p>
+
+													<div
+														className={classNames(
+															user["transaction__amount-container"],
+															{
+																[user["transaction__amount-container--credit"]]:
+																	tx.type === TransactionType.CREDIT,
+																[user["transaction__amount-container--debit"]]:
+																	tx.type === TransactionType.DEBIT,
+															}
+														)}>
+														<p
+															className={user["transaction__amount"]}
+															aria-label={`${tx.type === TransactionType.CREDIT ? "Crédit de" : "Débit de"} ${tx.amount.toFixed(2)} euros`}>
+															{tx.type === TransactionType.CREDIT
+																? `+${tx.amount.toFixed(2)} €`
+																: `-${tx.amount.toFixed(2)} €`}
+														</p>
+													</div>
+
+													{tx.notes && (
+														<p className={user["transaction__note"]}>
+															Notes: {tx.notes}
+														</p>
+													)}
+												</div>
+											</li>
+										))}
+									</ul>
+								)}
+
+								{/* --- Contrôles de Pagination --- */}
+								{totalPages > 1 && (
+									<nav
+										className={user["pagination__nav"]}
+										aria-label="Transaction pagination">
+										<div className={user["pagination__arrow--prev"]}>
+											<button
+												onClick={handlePreviousPage}
+												disabled={currentPage === 1}
+												className={user["pagination__button"]}
+												aria-label="Go to previous page">
+												<FaChevronLeft />
+											</button>
+										</div>
+
+										<div className={user["pagination__numbers"]}>
+											{/* Afficher seulement quelques pages au milieu si trop nombreuses */}
+											{pageNumbers.length <= 7 ? (
+												// Afficher toutes les pages si 7 ou moins
+												pageNumbers.map((number) => (
+													<button
+														key={number}
+														onClick={() => handlePageChange(number)}
+														className={classNames(user["pagination__button"], {
+															[user["pagination__button--current"]]:
+																currentPage === number,
+														})}
+														aria-current={
+															currentPage === number ? "page" : undefined
+														}
+														aria-label={`Go to page ${number}`}>
+														{number}
+													</button>
+												))
+											) : (
+												// Pagination intelligente pour de nombreuses pages
+												<>
+													{/* Première page toujours visible */}
+													<button
+														onClick={() => handlePageChange(1)}
+														className={classNames(user["pagination__button"], {
+															[user["pagination__button--current"]]:
+																currentPage === 1,
+														})}
+														aria-current={
+															currentPage === 1 ? "page" : undefined
+														}
+														aria-label="Go to page 1">
+														1
+													</button>
+
+													{/* Ellipse si nécessaire */}
+													{currentPage > 3 && (
+														<span className={user["pagination__ellipsis"]}>
+															...
+														</span>
+													)}
+
+													{/* Pages autour de la page courante */}
+													{pageNumbers
+														.filter(
+															(num) =>
+																num !== 1 &&
+																num !== totalPages &&
+																num >= currentPage - 1 &&
+																num <= currentPage + 1
+														)
+														.map((number) => (
+															<button
+																key={number}
+																onClick={() => handlePageChange(number)}
+																className={classNames(
+																	user["pagination__button"],
+																	{
+																		[user["pagination__button--current"]]:
+																			currentPage === number,
+																	}
+																)}
+																aria-current={
+																	currentPage === number ? "page" : undefined
+																}
+																aria-label={`Go to page ${number}`}>
+																{number}
+															</button>
+														))}
+
+													{/* Ellipse si nécessaire */}
+													{currentPage < totalPages - 2 && (
+														<span className={user["pagination__ellipsis"]}>
+															...
+														</span>
+													)}
+
+													{/* Dernière page toujours visible */}
+													<button
+														onClick={() => handlePageChange(totalPages)}
+														className={classNames(user["pagination__button"], {
+															[user["pagination__button--current"]]:
+																currentPage === totalPages,
+														})}
+														aria-current={
+															currentPage === totalPages ? "page" : undefined
+														}
+														aria-label={`Go to page ${totalPages}`}>
+														{totalPages}
+													</button>
+												</>
 											)}
 										</div>
-									</section>
-								))
-							)}
 
-							{/* --- Contrôles de Pagination --- */}
-							{totalPages > 1 && (
-								<nav
-									className={user["pagination__nav"]}
-									aria-label="Transaction pagination">
-									<div className={user["pagination__arrow--prev"]}>
-										<button
-											onClick={handlePreviousPage}
-											disabled={currentPage === 1}
-											className={user["pagination__button"]}
-											aria-label="Go to previous page">
-											<FaChevronLeft />
-										</button>
-									</div>
-
-									<div className={user["pagination__numbers"]}>
-										{/* Afficher seulement quelques pages au milieu si trop nombreuses */}
-										{pageNumbers.length <= 7 ? (
-											// Afficher toutes les pages si 7 ou moins
-											pageNumbers.map((number) => (
-												<button
-													key={number}
-													onClick={() => handlePageChange(number)}
-													className={classNames(user["pagination__button"], {
-														[user["pagination__button--current"]]:
-															currentPage === number,
-													})}
-													aria-current={
-														currentPage === number ? "page" : undefined
-													}
-													aria-label={`Go to page ${number}`}>
-													{number}
-												</button>
-											))
-										) : (
-											// Pagination intelligente pour de nombreuses pages
-											<>
-												{/* Première page toujours visible */}
-												<button
-													onClick={() => handlePageChange(1)}
-													className={classNames(user["pagination__button"], {
-														[user["pagination__button--current"]]:
-															currentPage === 1,
-													})}
-													aria-current={currentPage === 1 ? "page" : undefined}
-													aria-label="Go to page 1">
-													1
-												</button>
-
-												{/* Ellipse si nécessaire */}
-												{currentPage > 3 && (
-													<span className={user["pagination__ellipsis"]}>
-														...
-													</span>
-												)}
-
-												{/* Pages autour de la page courante */}
-												{pageNumbers
-													.filter(
-														(num) =>
-															num !== 1 &&
-															num !== totalPages &&
-															num >= currentPage - 1 &&
-															num <= currentPage + 1
-													)
-													.map((number) => (
-														<button
-															key={number}
-															onClick={() => handlePageChange(number)}
-															className={classNames(
-																user["pagination__button"],
-																{
-																	[user["pagination__button--current"]]:
-																		currentPage === number,
-																}
-															)}
-															aria-current={
-																currentPage === number ? "page" : undefined
-															}
-															aria-label={`Go to page ${number}`}>
-															{number}
-														</button>
-													))}
-
-												{/* Ellipse si nécessaire */}
-												{currentPage < totalPages - 2 && (
-													<span className={user["pagination__ellipsis"]}>
-														...
-													</span>
-												)}
-
-												{/* Dernière page toujours visible */}
-												<button
-													onClick={() => handlePageChange(totalPages)}
-													className={classNames(user["pagination__button"], {
-														[user["pagination__button--current"]]:
-															currentPage === totalPages,
-													})}
-													aria-current={
-														currentPage === totalPages ? "page" : undefined
-													}
-													aria-label={`Go to page ${totalPages}`}>
-													{totalPages}
-												</button>
-											</>
-										)}
-									</div>
-
-									<div className={user["pagination__arrow--next"]}>
-										<button
-											onClick={handleNextPage}
-											disabled={currentPage === totalPages}
-											className={user["pagination__button"]}
-											aria-label="Go to next page">
-											<FaChevronRight />
-										</button>
-									</div>
-								</nav>
-							)}
-						</>
-					)}
+										<div className={user["pagination__arrow--next"]}>
+											<button
+												onClick={handleNextPage}
+												disabled={currentPage === totalPages}
+												className={user["pagination__button"]}
+												aria-label="Go to next page">
+												<FaChevronRight />
+											</button>
+										</div>
+									</nav>
+								)}
+							</>
+						)}
+					</section>
 				</>
 			</main>
 		</>
