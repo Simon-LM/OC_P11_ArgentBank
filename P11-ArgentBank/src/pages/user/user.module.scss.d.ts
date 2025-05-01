@@ -1,5 +1,6 @@
 declare const classNames: {
   readonly account__amount: "account__amount";
+  readonly "transaction-row__amount": "transaction-row__amount";
   readonly pagination__button: "pagination__button";
   readonly pagination__ellipsis: "pagination__ellipsis";
   readonly "user-page": "user-page";
@@ -19,7 +20,6 @@ declare const classNames: {
   readonly "transaction-row": "transaction-row";
   readonly "transaction-row__cell": "transaction-row__cell";
   readonly "transaction-row__cell--amount-credit": "transaction-row__cell--amount-credit";
-  readonly "transaction-row__amount": "transaction-row__amount";
   readonly "transaction-row__cell--amount-debit": "transaction-row__cell--amount-debit";
   readonly "transaction-row__title": "transaction-row__title";
   readonly "transaction-row__meta": "transaction-row__meta";
