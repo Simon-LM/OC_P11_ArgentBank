@@ -1,6 +1,5 @@
 declare const classNames: {
   readonly account__amount: "account__amount";
-  readonly transaction: "transaction";
   readonly pagination__button: "pagination__button";
   readonly pagination__ellipsis: "pagination__ellipsis";
   readonly "user-page": "user-page";
@@ -15,15 +14,17 @@ declare const classNames: {
   readonly account__description: "account__description";
   readonly account__note: "account__note";
   readonly account__button: "account__button";
-  readonly "transaction-list": "transaction-list";
-  readonly transaction__content: "transaction__content";
-  readonly "transaction__amount-container": "transaction__amount-container";
-  readonly "transaction__amount-container--credit": "transaction__amount-container--credit";
-  readonly "transaction__amount-container--debit": "transaction__amount-container--debit";
-  readonly transaction__title: "transaction__title";
-  readonly transaction__meta: "transaction__meta";
-  readonly transaction__amount: "transaction__amount";
-  readonly transaction__note: "transaction__note";
+  readonly "transaction-table": "transaction-table";
+  readonly "sr-only": "sr-only";
+  readonly "transaction-row": "transaction-row";
+  readonly "transaction-row__cell": "transaction-row__cell";
+  readonly "transaction-row__cell--amount-credit": "transaction-row__cell--amount-credit";
+  readonly "transaction-row__amount": "transaction-row__amount";
+  readonly "transaction-row__cell--amount-debit": "transaction-row__cell--amount-debit";
+  readonly "transaction-row__title": "transaction-row__title";
+  readonly "transaction-row__meta": "transaction-row__meta";
+  readonly "transaction-row__category-tag": "transaction-row__category-tag";
+  readonly "transaction-row__note": "transaction-row__note";
   readonly pagination__nav: "pagination__nav";
   readonly pagination__controls: "pagination__controls";
   readonly pagination__arrow: "pagination__arrow";

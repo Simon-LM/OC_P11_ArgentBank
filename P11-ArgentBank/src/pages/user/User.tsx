@@ -232,48 +232,70 @@ const User: React.FC = () => {
 											: "No transactions found."}
 									</p>
 								) : (
-									<ul
-										className={user["transaction-list"]}
+									<table
+										className={user["transaction-table"]}
 										aria-label="Transaction history">
-										{currentTransactions.map((tx) => (
-											<li className={user["transaction"]} key={tx.id}>
-												<div className={user["account__content"]}>
-													<h3 className={user["transaction__title"]}>
-														{tx.description}
-													</h3>
-													<p className={user["transaction__meta"]}>
-														{new Date(tx.date).toLocaleDateString()} -{" "}
-														{tx.category}
-													</p>
+										<caption className="sr-only">
+											Details of your account transactions
+										</caption>
+										<thead className="sr-only">
+											<tr>{/* En-têtes inchangés */}</tr>
+										</thead>
+										<tbody>
+											{currentTransactions.map((tx) => (
+												<tr className={user["transaction-row"]} key={tx.id}>
+													<td className={user["transaction-row__cell"]}>
+														<h3 className={user["transaction-row__title"]}>
+															{tx.description}
+														</h3>
+													</td>
+													<td className={user["transaction-row__cell"]}>
+														{/* <p className={user["transaction-row__meta"]}>
+															{new Date(tx.date).toLocaleDateString()} -{" "}
+															{tx.category}
+														</p> */}
 
-													<div
+														<p className={user["transaction-row__meta"]}>
+															{new Date(tx.date).toLocaleDateString()}
+															{tx.category && (
+																<span
+																	className={
+																		user["transaction-row__category-tag"]
+																	}>
+																	{tx.category}
+																</span>
+															)}
+														</p>
+													</td>
+													<td
 														className={classNames(
-															user["transaction__amount-container"],
+															user["transaction-row__cell"],
 															{
-																[user["transaction__amount-container--credit"]]:
+																[user["transaction-row__cell--amount-credit"]]:
 																	tx.type === TransactionType.CREDIT,
-																[user["transaction__amount-container--debit"]]:
+																[user["transaction-row__cell--amount-debit"]]:
 																	tx.type === TransactionType.DEBIT,
 															}
 														)}>
-														<p
-															className={user["transaction__amount"]}
+														<span
+															className={user["transaction-row__amount"]}
 															aria-label={`${tx.type === TransactionType.CREDIT ? "Crédit de" : "Débit de"} ${tx.amount.toFixed(2)} euros`}>
 															{tx.type === TransactionType.CREDIT
 																? `+${tx.amount.toFixed(2)} €`
 																: `-${tx.amount.toFixed(2)} €`}
-														</p>
-													</div>
-
-													{tx.notes && (
-														<p className={user["transaction__note"]}>
-															Notes: {tx.notes}
-														</p>
-													)}
-												</div>
-											</li>
-										))}
-									</ul>
+														</span>
+													</td>
+													<td className={user["transaction-row__cell"]}>
+														{tx.notes && (
+															<p className={user["transaction-row__note"]}>
+																{tx.notes}
+															</p>
+														)}
+													</td>
+												</tr>
+											))}
+										</tbody>
+									</table>
 								)}
 
 								{/* --- Contrôles de Pagination --- */}

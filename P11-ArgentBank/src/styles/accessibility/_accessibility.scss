@@ -1,7 +1,21 @@
 /** @format */
 
+@use "../abstracts/variables" as var;
+
 *:focus-visible {
-	outline: 0.2rem solid $light_text-link-hover !important;
+	outline: 0.2rem solid var.$light_text-link-hover !important;
 	outline-offset: 0.15rem;
-	box-shadow: 0 0 0 0.1rem $color-white;
+	box-shadow: 0 0 0 0.1rem var.$color-white;
+}
+
+@mixin sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
 }
