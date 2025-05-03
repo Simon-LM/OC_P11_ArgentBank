@@ -65,6 +65,13 @@
 		text-align: left;
 	}
 
+	&__help-text {
+		display: block;
+		font-size: 0.85rem;
+		color: var.$color-balanced;
+		margin-top: 0.25rem;
+	}
+
 	&__input-wrapper {
 		flex: 999 1 12rem;
 		min-width: 0;

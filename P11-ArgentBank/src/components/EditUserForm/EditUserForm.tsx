@@ -1,6 +1,7 @@
 /** @format */
 
 import React from "react";
+import { useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,11 +64,33 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 		onSave(data);
 	};
 
-	return (
-		<div className={editUserForm["edit-user-form__container"]}>
-			<h2>Edit user info</h2>
+	const containerRef = useRef<HTMLDivElement>(null);
 
-			<div className={editUserForm["edit-user-form__disclaimer-box"]}>
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			containerRef.current?.focus();
+		}, 10);
+		return () => clearTimeout(timer);
+	}, []);
+
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === "Escape") {
+			onCancel();
+		}
+	};
+
+	return (
+		<div
+			className={editUserForm["edit-user-form__container"]}
+			onKeyDown={handleKeyDown}
+			tabIndex={0}
+			ref={containerRef}
+			aria-label="Edit user information form">
+			<h2 id="edit-user-form-title">Edit user info</h2>
+
+			<div
+				className={editUserForm["edit-user-form__disclaimer-box"]}
+				role="note">
 				<p className={editUserForm["edit-user-form__disclaimer"]}>
 					<strong>Note:</strong> This is a demonstration site. Any username you
 					set will be visible to other visitors.
@@ -77,7 +100,9 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 			<form
 				className={editUserForm["edit-user-form__form"]}
 				onSubmit={handleSubmit(handleSave)}
-				role="form">
+				// onKeyDown={handleKeyDown}
+				role="form"
+				aria-labelledby="edit-user-form-title">
 				<div className={editUserForm["edit-user-form__input-group"]}>
 					<Label
 						className={editUserForm["edit-user-form__label"]}
@@ -90,7 +115,14 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							id="userName"
 							{...register("userName")}
 							aria-invalid={errors.userName ? "true" : "false"}
+							aria-describedby="username-requirements"
 						/>
+						<span
+							id="username-requirements"
+							className={editUserForm["edit-user-form__help-text"]}>
+							Max 10 chars: a-z, 0-9, _ and -
+						</span>
+
 						{errors.userName && (
 							<p className={editUserForm["edit-user-form__error"]} role="alert">
 								{errors.userName.message}
@@ -110,8 +142,14 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							className={`${editUserForm["edit-user-form__input"]} ${editUserForm["edit-user-form__input--readonly"]}`}
 							id="firstName"
 							readOnly
+							aria-readonly="true"
 							{...register("firstName")}
+							aria-describedby="firstName-readonly-desc"
 						/>
+						<span id="firstName-readonly-desc" className="sr-only">
+							First name cannot be modified in this application.
+						</span>
+
 						{errors.firstName && (
 							<p className={editUserForm["edit-user-form__error"]}>
 								{errors.firstName.message}
@@ -131,8 +169,13 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							className={`${editUserForm["edit-user-form__input"]} ${editUserForm["edit-user-form__input--readonly"]}`}
 							id="lastName"
 							readOnly
+							aria-readonly="true"
 							{...register("lastName")}
+							aria-describedby="lastName-readonly-desc"
 						/>
+						<span id="lastName-readonly-desc" className="sr-only">
+							Last name cannot be modified in this application.
+						</span>
 						{errors.lastName && (
 							<p className={editUserForm["edit-user-form__error"]}>
 								{errors.lastName.message}

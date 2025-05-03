@@ -86,6 +86,24 @@
 		// transition: padding 0.2s ease;
 	}
 }
+.accounts-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+
+	&__item {
+		margin-bottom: 0.75rem;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		button {
+			width: 100%;
+		}
+	}
+}
 
 .account {
 	display: flex;

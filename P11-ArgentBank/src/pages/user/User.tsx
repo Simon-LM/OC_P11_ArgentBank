@@ -153,45 +153,60 @@ const User: React.FC = () => {
 				</div>
 
 				{/* --- Section Comptes --- */}
+
 				<section aria-labelledby="accounts-heading">
 					<h2 id="accounts-heading" className={user["section__heading"]}>
-						Your Accounts
+						{accounts.length === 0
+							? "You have no accounts"
+							: `Your ${accounts.length} ${accounts.length === 1 ? "Account" : "Accounts"}`}
 					</h2>
+
 					{accountsStatus === "loading" && <p>Loading accounts...</p>}
 					{accountsStatus === "failed" && (
 						<p className={user["user__error"]}>
 							Error loading accounts: {accountsError}
 						</p>
 					)}
-					{accountsStatus === "succeeded" &&
-						accounts.map((account) => (
-							<button
-								className={classNames(user["account"], {
-									[user["account--selected"]]: account.id === selectedAccountId,
-								})}
-								key={account.id}
-								// onClick={() => dispatch(selectAccount(account.id))}
-								onClick={() => handleAccountSelect(account.id)}
-								style={{ cursor: "pointer" }}>
-								<div className={user["account__content"]}>
-									<h3 className={user["account__title"]}>
-										{account.type} (x{account.accountNumber})
-									</h3>
-									<p className={user["account__amount"]}>
-										€{account.balance.toFixed(2)}
-									</p>
-									<p className={user["account__description"]}>
-										Available Balance
-									</p>
-								</div>
-								<div className={classNames(user["account__content"])}></div>
 
-								<span className="sr-only" id={`account-${account.id}-desc`}>
-									Selecting this account will filter transactions to show only
-									those related to this account.
-								</span>
-							</button>
-						))}
+					{accountsStatus === "succeeded" && (
+						<ul
+							className={user["accounts-list"]}
+							aria-label="Select an account to view its transactions">
+							{accounts.map((account, index) => (
+								<li key={account.id} className={user["accounts-list__item"]}>
+									<button
+										className={classNames(user["account"], {
+											[user["account--selected"]]:
+												account.id === selectedAccountId,
+										})}
+										onClick={() => handleAccountSelect(account.id)}
+										aria-pressed={account.id === selectedAccountId}
+										aria-describedby={`account-${account.id}-desc`}>
+										<div className={user["account__content"]}>
+											<h3 className={user["account__title"]}>
+												{account.type} (x{account.accountNumber})
+											</h3>
+											<p className={user["account__amount"]}>
+												€{account.balance.toFixed(2)}
+											</p>
+											<p className={user["account__description"]}>
+												Available Balance
+											</p>
+										</div>
+										<span className="sr-only" id={`account-${account.id}-desc`}>
+											Account {index + 1} of {accounts.length}.
+											{account.id === selectedAccountId
+												? " Currently selected."
+												: ""}
+											Selecting this account will filter transactions to show
+											only those related to this account.
+										</span>
+									</button>
+								</li>
+							))}
+						</ul>
+					)}
+
 					{actionFeedback && (
 						<div className="sr-only" role="status" aria-live="polite">
 							{actionFeedback}

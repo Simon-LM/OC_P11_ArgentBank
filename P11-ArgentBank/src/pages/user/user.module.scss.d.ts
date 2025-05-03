@@ -8,6 +8,8 @@ declare const classNames: {
   readonly "user__edit-button": "user__edit-button";
   readonly user__error: "user__error";
   readonly section__heading: "section__heading";
+  readonly "accounts-list": "accounts-list";
+  readonly "accounts-list__item": "accounts-list__item";
   readonly account: "account";
   readonly "account--selected": "account--selected";
   readonly account__content: "account__content";
