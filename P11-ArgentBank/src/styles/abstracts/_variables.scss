@@ -136,3 +136,21 @@ $light_pagination-button_text-hover: $color-white;
 $light_pagination-button_bg-selected: $color-accent-dark;
 $light_pagination-button_border-selected: $color-accent-dark;
 $light_pagination-button_text-selected: $color-white;
+
+// TransactionSearch Component
+$transaction-search-bg: #f8f9fa;
+$transaction-search-border: #e9ecef;
+$transaction-search-label-color: $primary-color;
+$transaction-search-input-border: $color-gray-400;
+$transaction-search-input-focus-border: $secondary-color;
+$transaction-search-input-focus-shadow: rgba(104, 102, 233, 0.2);
+$transaction-search-button-color: $color-gray-600;
+$transaction-search-button-hover-color: $color-error;
+$transaction-search-help-text-color: $color-gray-600;
+$transaction-search-spinner-color: $secondary-color;
+$transaction-search-scope-button-border: $color-gray-400;
+$transaction-search-scope-button-color: $color-gray-700;
+$transaction-search-scope-button-hover-bg: $secondary-color;
+$transaction-search-scope-button-hover-text: $color-white;
+$transaction-search-scope-button-active-bg: $secondary-color;
+$transaction-search-scope-button-active-color: $color-white;

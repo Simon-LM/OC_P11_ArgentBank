@@ -1,0 +1,147 @@
+/** @format */
+
+@use "@styles/abstracts/functions" as func;
+@use "@styles/abstracts/variables" as var;
+@use "@styles/abstracts/mixins" as mix;
+
+.transaction-search {
+	width: 92.5%;
+	max-width: 30rem;
+	margin: 1rem auto;
+	padding: 1rem;
+	background-color: var.$transaction-search-bg;
+	border-radius: 0.25rem;
+	border: 1px solid var.$transaction-search-border;
+
+	&__label {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		color: var.$transaction-search-label-color;
+	}
+
+	&__search-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	&__container {
+		position: relative;
+		display: flex;
+		align-items: center;
+		flex: 1;
+		min-width: 200px;
+	}
+
+	&__input {
+		width: 100%;
+		padding: 0.75rem;
+		border: 1px solid var.$transaction-search-input-border;
+		border-radius: 0.25rem;
+		font-size: 1rem;
+
+		&:focus {
+			outline: none;
+			border-color: var.$transaction-search-input-focus-border;
+			box-shadow: 0 0 0 2px var.$transaction-search-input-focus-shadow;
+		}
+
+		&--error {
+			border-color: var.$color-error;
+		}
+	}
+
+	&__input {
+		&::-webkit-search-cancel-button,
+		&::-webkit-search-decoration {
+			-webkit-appearance: none;
+			appearance: none;
+			display: none;
+		}
+	}
+
+	&__button {
+		position: absolute;
+		right: 0.75rem;
+		top: 50%;
+		transform: translateY(-50%);
+		background: none;
+		border: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		color: var.$transaction-search-button-color;
+		cursor: pointer;
+
+		svg {
+			display: block;
+		}
+
+		&:hover {
+			color: var.$transaction-search-button-hover-color;
+		}
+	}
+
+	&__global-button {
+		padding: 0.75rem 1rem;
+		background-color: transparent;
+		border: 1px solid var.$transaction-search-scope-button-border;
+		border-radius: 0.25rem;
+		font-size: 0.875rem;
+		color: var.$transaction-search-scope-button-color;
+		transition: all 0.2s ease;
+		white-space: nowrap;
+
+		&:hover {
+			background-color: var.$transaction-search-scope-button-hover-bg;
+			color: var.$transaction-search-scope-button-hover-text;
+		}
+
+		&--active {
+			background-color: var.$transaction-search-scope-button-active-bg;
+			border-color: var.$transaction-search-scope-button-active-bg;
+			color: var.$transaction-search-scope-button-active-color;
+			font-weight: 500;
+		}
+
+		// &:focus {
+		// 	outline: 2px solid var.$secondary-color;
+		// 	outline-offset: 2px;
+		// }
+	}
+
+	&__spinner {
+		position: absolute;
+		right: 2.5rem;
+		top: 50%;
+		transform: translateY(-50%);
+		animation: spin 1s linear infinite;
+		color: var.$transaction-search-spinner-color;
+	}
+
+	&__error-message {
+		color: var.$color-error;
+		font-size: 0.875rem;
+		margin-top: 0.25rem;
+	}
+
+	&__help-text {
+		font-size: 0.875rem;
+		color: var.$transaction-search-help-text-color;
+		margin-bottom: 0.5rem;
+		margin-top: -0.25rem;
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: translateY(-50%) rotate(0deg);
+	}
+	to {
+		transform: translateY(-50%) rotate(360deg);
+	}
+}

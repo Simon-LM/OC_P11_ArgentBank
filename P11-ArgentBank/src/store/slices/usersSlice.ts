@@ -33,8 +33,28 @@ export interface Transaction {
 	createdAt: string;
 	updatedAt: string;
 	accountId: string;
-	// Optionnel: Inclure des détails du compte si l'API les renvoie
-	// account?: { accountNumber: string; type: string };
+}
+
+export interface SearchTransactionsParams {
+	accountId?: string;
+	searchTerm?: string;
+	category?: string;
+	fromDate?: string;
+	toDate?: string;
+	minAmount?: number;
+	maxAmount?: number;
+	type?: "CREDIT" | "DEBIT";
+	page?: number;
+	limit?: number;
+	sortBy?: string;
+	sortOrder?: "asc" | "desc";
+}
+
+export interface Pagination {
+	total: number;
+	page: number;
+	limit: number;
+	pages: number;
 }
 
 export interface UsersState {
@@ -47,6 +67,14 @@ export interface UsersState {
 	transactions: Transaction[];
 	transactionsStatus: "idle" | "loading" | "succeeded" | "failed";
 	transactionsError: string | null;
+
+	searchResults: Transaction[];
+	searchStatus: "idle" | "loading" | "succeeded" | "failed";
+	searchError: string | null;
+	pagination: Pagination | null;
+
+	currentSortBy?: string;
+	currentSortOrder?: "asc" | "desc";
 }
 
 interface UserLoginPayload {
@@ -87,6 +115,14 @@ const initialState: UsersState = {
 	transactions: [],
 	transactionsStatus: "idle",
 	transactionsError: null,
+
+	searchResults: [],
+	searchStatus: "idle",
+	searchError: null,
+	pagination: null,
+
+	currentSortBy: "date",
+	currentSortOrder: "desc",
 };
 
 export const fetchAccounts = createAsyncThunk<
@@ -173,6 +209,77 @@ export const fetchTransactions = createAsyncThunk<
 	}
 });
 
+export const searchTransactions = createAsyncThunk<
+	{ transactions: Transaction[]; pagination: Pagination },
+	SearchTransactionsParams,
+	{ rejectValue: string }
+>("users/searchTransactions", async (params, { rejectWithValue }) => {
+	const token = sessionStorage.getItem("authToken");
+	if (!token) {
+		return rejectWithValue("No authentication token found");
+	}
+
+	try {
+		// Construire l'URL avec les paramètres de recherche
+		const queryParams = new URLSearchParams();
+		if (params.accountId) queryParams.set("accountId", params.accountId);
+		if (params.searchTerm) queryParams.set("searchTerm", params.searchTerm);
+		if (params.category) queryParams.set("category", params.category);
+		if (params.fromDate) queryParams.set("fromDate", params.fromDate);
+		if (params.toDate) queryParams.set("toDate", params.toDate);
+		if (params.minAmount)
+			queryParams.set("minAmount", params.minAmount.toString());
+		if (params.maxAmount)
+			queryParams.set("maxAmount", params.maxAmount.toString());
+		if (params.type) queryParams.set("type", params.type);
+		queryParams.set("page", params.page?.toString() || "1");
+		queryParams.set("limit", params.limit?.toString() || "10");
+		queryParams.set("sortBy", params.sortBy || "date");
+		queryParams.set("sortOrder", params.sortOrder || "desc");
+
+		const response = await fetch(`/api/transactions/search?${queryParams}`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			return rejectWithValue(
+				errorData.message || `Failed to search transactions: ${response.status}`
+			);
+		}
+
+		const data = await response.json();
+
+		if (
+			!data.body ||
+			!data.body.transactions ||
+			!Array.isArray(data.body.transactions)
+		) {
+			return rejectWithValue("Invalid response format from server");
+		}
+
+		const transactions = data.body.transactions.map((tx: ApiTransaction) => ({
+			...tx,
+			amount: parseFloat(String(tx.amount)),
+		}));
+
+		return {
+			transactions: transactions as Transaction[],
+			pagination: data.body.pagination,
+		};
+	} catch (error) {
+		if (error instanceof Error) {
+			return rejectWithValue(error.message);
+		}
+		return rejectWithValue(
+			"An unknown error occurred while searching transactions"
+		);
+	}
+});
+
 // Création du slice
 const usersSlice = createSlice({
 	name: "users",
@@ -217,6 +324,69 @@ const usersSlice = createSlice({
 		clearTransactionsError: (state) => {
 			state.transactionsError = null;
 		},
+
+		clearSearchResults: (state) => {
+			state.searchResults = [];
+			state.searchStatus = "idle";
+			state.searchError = null;
+			state.pagination = null;
+		},
+
+		setSearchSortOrder: (
+			state,
+			action: PayloadAction<{
+				sortBy: string;
+				sortOrder: "asc" | "desc";
+			}>
+		) => {
+			const { sortBy, sortOrder } = action.payload;
+
+			state.currentSortBy = sortBy;
+			state.currentSortOrder = sortOrder;
+
+			if (state.pagination) {
+				state.pagination.page = 1;
+			} else {
+				state.pagination = {
+					total: 0,
+					page: 1,
+					limit: 10,
+					pages: 0,
+				};
+			}
+		},
+
+		setSearchFilters: (
+			state,
+			action: PayloadAction<Partial<SearchTransactionsParams>>
+		) => {
+			const filters = action.payload;
+
+			if (filters.category) {
+				// Vous pourriez ajouter une propriété à UsersState comme activeCategory
+				// state.activeCategory = filters.category;
+			}
+
+			if (filters.fromDate || filters.toDate) {
+				// Vous pourriez ajouter une propriété comme activeDateRange
+				// state.activeDateRange = {
+				//   from: filters.fromDate,
+				//   to: filters.toDate
+				// };
+			}
+
+			// Réinitialiser la page
+			if (state.pagination) {
+				state.pagination.page = 1;
+			} else {
+				state.pagination = {
+					total: 0,
+					page: 1,
+					limit: 10,
+					pages: 0,
+				};
+			}
+		},
 	},
 
 	extraReducers: (builder) => {
@@ -257,6 +427,20 @@ const usersSlice = createSlice({
 				state.transactionsStatus = "failed";
 				state.transactionsError =
 					action.payload ?? "Failed to fetch transactions";
+			})
+			.addCase(searchTransactions.pending, (state) => {
+				state.searchStatus = "loading";
+				state.searchError = null;
+			})
+			.addCase(searchTransactions.fulfilled, (state, action) => {
+				state.searchStatus = "succeeded";
+				console.log("API response:", action.payload);
+				state.searchResults = action.payload.transactions;
+				state.pagination = action.payload.pagination;
+			})
+			.addCase(searchTransactions.rejected, (state, action) => {
+				state.searchStatus = "failed";
+				state.searchError = action.payload as string;
 			});
 	},
 });
@@ -268,6 +452,9 @@ export const {
 	setAuthState,
 	clearTransactionsError,
 	selectAccount,
+	clearSearchResults,
+	setSearchSortOrder,
+	setSearchFilters,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;
