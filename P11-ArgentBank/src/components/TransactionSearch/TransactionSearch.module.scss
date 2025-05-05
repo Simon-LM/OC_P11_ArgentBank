@@ -7,8 +7,9 @@
 .transaction-search {
 	width: 92.5%;
 	max-width: 30rem;
-	margin: 1rem auto;
-	padding: 1rem;
+	margin: 0 auto;
+	margin-bottom: 1rem;
+	padding: 1rem 1vw;
 	background-color: var.$transaction-search-bg;
 	border-radius: 0.25rem;
 	border: 1px solid var.$transaction-search-border;
@@ -19,6 +20,8 @@
 		margin-bottom: 0.5rem;
 		font-weight: 600;
 		color: var.$transaction-search-label-color;
+		@include mix.text-wrap;
+		// background: red;
 	}
 
 	&__search-row {
