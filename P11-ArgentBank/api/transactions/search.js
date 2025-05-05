@@ -51,6 +51,44 @@ export default async function handler(req, res) {
 				{ notes: { contains: searchTerm, mode: "insensitive" } },
 				{ category: { contains: searchTerm, mode: "insensitive" } },
 			];
+
+			const dateMatches = searchTerm.match(
+				/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/
+			);
+			const isDate = !!dateMatches;
+
+			const numericSearchTerm = parseFloat(searchTerm.replace(/,/g, "."));
+			const isNumeric = !isNaN(numericSearchTerm);
+
+			if (isNumeric) {
+				whereClause.OR.push({
+					amount: {
+						gte: numericSearchTerm - 0.01,
+						lte: numericSearchTerm + 0.01,
+					},
+				});
+			}
+
+			if (isDate) {
+				try {
+					const day = parseInt(dateMatches[1]);
+					const month = parseInt(dateMatches[2]) - 1;
+					const year = parseInt(dateMatches[3]);
+					const fullYear = year < 100 ? 2000 + year : year;
+
+					const startDate = new Date(fullYear, month, day, 0, 0, 0);
+					const endDate = new Date(fullYear, month, day, 23, 59, 59);
+
+					whereClause.OR.push({
+						date: {
+							gte: startDate,
+							lte: endDate,
+						},
+					});
+				} catch (e) {
+					console.log("Date parsing failed:", e);
+				}
+			}
 		}
 
 		// Filtres additionnels

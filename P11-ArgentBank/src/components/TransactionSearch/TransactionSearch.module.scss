@@ -12,6 +12,7 @@
 	background-color: var.$transaction-search-bg;
 	border-radius: 0.25rem;
 	border: 1px solid var.$transaction-search-border;
+	box-sizing: border-box;
 
 	&__label {
 		display: block;
@@ -23,8 +24,17 @@
 	&__search-row {
 		display: flex;
 		flex-wrap: wrap;
+		min-width: 0; // not sure
 		align-items: center;
 		gap: 0.5rem;
+	}
+
+	&__search-tips {
+		font-size: 0.75rem;
+		color: var.$transaction-search-help-text-color;
+		margin-top: 0.25rem;
+		margin-bottom: 0.5rem;
+		font-style: italic;
 	}
 
 	&__container {
@@ -32,12 +42,19 @@
 		display: flex;
 		align-items: center;
 		flex: 1;
-		min-width: 200px;
+		flex: 3 0 60%;
+		// width: 100%;
+		min-width: 0;
 	}
 
 	&__input {
+		margin: auto 0;
+		padding: 0;
+		// min-width: 4rem;
+		min-width: 0;
 		width: 100%;
-		padding: 0.75rem;
+		// max-width: 75vw;
+		padding: 0.5rem 1vw;
 		border: 1px solid var.$transaction-search-input-border;
 		border-radius: 0.25rem;
 		font-size: 1rem;
@@ -51,9 +68,7 @@
 		&--error {
 			border-color: var.$color-error;
 		}
-	}
 
-	&__input {
 		&::-webkit-search-cancel-button,
 		&::-webkit-search-decoration {
 			-webkit-appearance: none;
@@ -64,7 +79,7 @@
 
 	&__button {
 		position: absolute;
-		right: 0.75rem;
+		right: 1vw;
 		top: 50%;
 		transform: translateY(-50%);
 		background: none;
@@ -72,10 +87,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: func.rem(24);
+		height: func.rem(24);
 		color: var.$transaction-search-button-color;
-		cursor: pointer;
 
 		svg {
 			display: block;
@@ -87,14 +101,16 @@
 	}
 
 	&__global-button {
-		padding: 0.75rem 1rem;
+		flex: 1 1 auto;
+		// width: 100%;
+		padding: 0.5rem 1vw;
 		background-color: transparent;
 		border: 1px solid var.$transaction-search-scope-button-border;
 		border-radius: 0.25rem;
 		font-size: 0.875rem;
 		color: var.$transaction-search-scope-button-color;
 		transition: all 0.2s ease;
-		white-space: nowrap;
+		// white-space: nowrap;
 
 		&:hover {
 			background-color: var.$transaction-search-scope-button-hover-bg;
@@ -107,11 +123,6 @@
 			color: var.$transaction-search-scope-button-active-color;
 			font-weight: 500;
 		}
-
-		// &:focus {
-		// 	outline: 2px solid var.$secondary-color;
-		// 	outline-offset: 2px;
-		// }
 	}
 
 	&__spinner {

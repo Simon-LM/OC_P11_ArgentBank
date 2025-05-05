@@ -96,12 +96,19 @@ const User: React.FC = () => {
 		handleSearch,
 	]);
 
+	// useEffect(() => {
+	// 	// Éviter l'initialisation
+	// 	if (searchStatus !== "idle") {
+	// 		handleSearch();
+	// 	}
+	// }, [searchParams]);
+
 	useEffect(() => {
-		// Éviter l'initialisation
-		if (searchStatus !== "idle") {
+		if (searchStatus !== "idle" && searchStatus !== "loading") {
 			handleSearch();
 		}
-	}, [searchParams]);
+		//   eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [searchParams, handleSearch]);
 
 	useEffect(() => {
 		if (selectedAccountId !== searchParams.accountId) {
@@ -284,31 +291,19 @@ const User: React.FC = () => {
 
 						{/* --- Section Transactions --- */}
 						<>
-							{/* <h2 className="sr-only">Transactions for selected account</h2> */}
-							{/* <h2 className={user["section__heading"]}>Your Transactions</h2> */}
 							<section aria-labelledby="transactions-heading">
-								{/* <h2
-									id="transactions-heading"
-									className={user["section__heading"]}
-									ref={transactionHeadingRef}
-									tabIndex={-1}
-									aria-live="polite">
-									{selectedAccount
-										? `Transactions for ${selectedAccount.type} (x${selectedAccount.accountNumber})`
-										: "All Account Transactions"}
-								</h2> */}
-
 								<h2
 									id="transactions-heading"
 									className={user["section__heading"]}
 									ref={transactionHeadingRef}
 									tabIndex={-1}
 									aria-live="polite">
-									{selectedAccount ? `Transaction History` : "All Transactions"}
-									<span className={user["section__subheading"]}>
-										{selectedAccount &&
-											`(${selectedAccount.type} x${selectedAccount.accountNumber})`}
-									</span>
+									{selectedAccount ? "Transaction History" : "All Transactions"}
+									{selectedAccount && (
+										<span className={user["section__subheading"]}>
+											Account #{selectedAccount.accountNumber}
+										</span>
+									)}
 								</h2>
 
 								<TransactionSearch
@@ -321,6 +316,18 @@ const User: React.FC = () => {
 									}}
 									isLoading={searchStatus === "loading"}
 									selectedAccount={selectedAccount}
+									onGlobalSearchToggle={() => {
+										dispatch(selectAccount(null));
+										setSearchParams((prev) => ({
+											...prev,
+											accountId: undefined,
+											page: 1,
+										}));
+										setActionFeedback(
+											"Global search activated. Showing transactions from all accounts."
+										);
+										setTimeout(() => setActionFeedback(""), 5000);
+									}}
 								/>
 
 								{searchStatus === "loading" && <p>Searching transactions...</p>}

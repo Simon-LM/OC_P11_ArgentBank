@@ -2,6 +2,7 @@ declare const classNames: {
   readonly "transaction-search": "transaction-search";
   readonly "transaction-search__label": "transaction-search__label";
   readonly "transaction-search__search-row": "transaction-search__search-row";
+  readonly "transaction-search__search-tips": "transaction-search__search-tips";
   readonly "transaction-search__container": "transaction-search__container";
   readonly "transaction-search__input": "transaction-search__input";
   readonly "transaction-search__input--error": "transaction-search__input--error";

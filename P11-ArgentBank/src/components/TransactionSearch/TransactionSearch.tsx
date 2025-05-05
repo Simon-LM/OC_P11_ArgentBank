@@ -13,6 +13,7 @@ interface TransactionSearchProps {
 		accountNumber: string;
 		type: string;
 	} | null;
+	onGlobalSearchToggle?: () => void;
 }
 
 const TransactionSearch: React.FC<TransactionSearchProps> = ({
@@ -20,6 +21,7 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 	onSearchChange,
 	isLoading,
 	selectedAccount,
+	onGlobalSearchToggle,
 }) => {
 	const [inputValue, setInputValue] = useState(searchParams.searchTerm || "");
 	const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
@@ -45,11 +47,22 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 		setSearchTimeout(timeout);
 	};
 
+	// const handleGlobalSearchToggle = () => {
+	// 	onSearchChange({
+	// 		accountId: searchParams.accountId ? undefined : selectedAccount?.id,
+	// 		page: 1,
+	// 	});
+	// };
+
 	const handleGlobalSearchToggle = () => {
-		onSearchChange({
-			accountId: searchParams.accountId ? undefined : selectedAccount?.id,
-			page: 1,
-		});
+		if (onGlobalSearchToggle && isGlobalSearchMode === false) {
+			onGlobalSearchToggle();
+		} else {
+			onSearchChange({
+				accountId: searchParams.accountId ? undefined : selectedAccount?.id,
+				page: 1,
+			});
+		}
 	};
 
 	useEffect(() => {
@@ -73,15 +86,15 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 				className={styles["transaction-search__label"]}>
 				{searchLabel}
 			</label>
-			{/* 
-			<p className={styles["transaction-search__help-text"]}>
-				Search in descriptions, categories or notes
-			</p> */}
 
-			<p className={styles["transaction-search__help-text"]}>
+			{/* <p className={styles["transaction-search__help-text"]}>
 				{selectedAccount
 					? `Showing transactions for ${selectedAccount.type} (x${selectedAccount.accountNumber})`
 					: "Showing transactions across all accounts"}
+			</p> */}
+
+			<p className={styles["transaction-search__search-tips"]}>
+				Search by date (DD/MM/YYYY), amount, description, category or notes
 			</p>
 
 			<div className={styles["transaction-search__search-row"]}>
@@ -148,13 +161,12 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 			</div>
 
 			<span id="transaction-search-instructions" className="sr-only">
-				Search field for filtering transactions by description, category or
-				notes.
+				Filter transactions by entering text.
 				{selectedAccount
-					? `Currently showing transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}.`
-					: "Currently showing transactions from all your accounts."}
-				{selectedAccount &&
-					" You can toggle global search to search across all accounts."}
+					? `Currently viewing account ending in ${selectedAccount.accountNumber}.`
+					: "Currently viewing all accounts."}
+				You can search by date format DD/MM/YYYY, exact amounts, or keywords in
+				descriptions.
 			</span>
 		</div>
 	);
