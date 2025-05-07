@@ -4,7 +4,11 @@ import React from "react";
 
 const Footer: React.FC = () => {
 	return (
-		<footer className="footer" data-testid="footer" role="contentinfo">
+		<footer
+			className="footer"
+			data-testid="footer"
+			role="contentinfo"
+			aria-label="Page footer">
 			<p className="footer__text">
 				ArgentBank - Demo Project | Developed by
 				<a

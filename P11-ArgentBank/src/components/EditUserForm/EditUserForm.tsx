@@ -92,8 +92,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 				className={editUserForm["edit-user-form__disclaimer-box"]}
 				role="note">
 				<p className={editUserForm["edit-user-form__disclaimer"]}>
-					<strong>Note:</strong> This is a demonstration site. Any username you
-					set will be visible to other visitors.
+					<i className="fa fa-info-circle" aria-hidden="true"></i>{" "}
+					<span>
+						<strong>Note:</strong> This is a demonstration site. Any username
+						you set will be visible to other visitors.
+					</span>
 				</p>
 			</div>
 

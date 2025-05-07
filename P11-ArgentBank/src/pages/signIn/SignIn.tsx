@@ -13,6 +13,8 @@ const SignIn: React.FC = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 
@@ -37,6 +39,7 @@ const SignIn: React.FC = () => {
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
+		setIsLoading(true);
 		try {
 			const result = await loginUser({ email, password });
 			console.log("Login successful:", result);
@@ -56,80 +59,104 @@ const SignIn: React.FC = () => {
 			} else {
 				setError("An unexpected error occurred");
 			}
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
-	// return (
-	// 	<main className={signin["signin-page-main"]}>
-	// 		<section className={signin["sign-in-content"]}>
-	// 			<i
-	// 				className={classNames(
-	// 					"fa",
-	// 					"fa-user-circle",
-	// 					signin["sign-in-icon"]
-	// 				)}></i>
-	// 			<h1>Sign In</h1>
-	// 			<form onSubmit={handleSubmit}>
-	// 				<div className={signin["input-wrapper"]}>
-	// 					<label htmlFor="email">Email</label>
-	// 					<input
-	// 						type="email"
-	// 						id="email"
-	// 						value={email}
-	// 						onChange={(e) => setEmail(e.target.value)}
-	// 						required
-	// 					/>
-	// 				</div>
-	// 				<div className={signin["input-wrapper"]}>
-	// 					<label htmlFor="password">Password</label>
-	// 					<input
-	// 						type="password"
-	// 						id="password"
-	// 						value={password}
-	// 						onChange={(e) => setPassword(e.target.value)}
-	// 						required
-	// 					/>
-	// 				</div>
-	// 				{error && <p className={signin["error-message"]}>{error}</p>}
-	// 				<button className={signin["sign-in-button"]}>Sign In</button>
-	// 			</form>
-	// 		</section>
-	// 	</main>
-	// );
-
 	return (
 		<main className={signin["signin-page"]}>
+			<h1 className="sr-only">Account Login - Argent Bank</h1>
+
 			<section className={signin["signin-form"]}>
 				<i
 					className={classNames(
 						"fa",
 						"fa-user-circle",
 						signin["signin-form__icon"]
-					)}></i>
-				<h1>Sign In</h1>
-				<form onSubmit={handleSubmit}>
+					)}
+					aria-hidden="true"></i>
+
+				<h2 id="signin-title">Sign In</h2>
+
+				<p className={signin["signin-form__demo-info"]}>
+					<i className="fa fa-info-circle" aria-hidden="true"></i>
+					<span>
+						<strong>Demo credentials:</strong>
+						tony@stark.com / password123
+					</span>
+				</p>
+				<form onSubmit={handleSubmit} aria-labelledby="signin-title" noValidate>
 					<div className={signin["signin-form__input-group"]}>
-						<label htmlFor="email">Email</label>
+						<label htmlFor="email" id="email-label">
+							Email
+						</label>
 						<input
 							type="email"
 							id="email"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
+							aria-required="true"
+							aria-describedby={
+								error && error.includes("email") ? "error-message" : undefined
+							}
+							aria-invalid={error && error.includes("email") ? "true" : "false"}
 						/>
 					</div>
 					<div className={signin["signin-form__input-group"]}>
 						<label htmlFor="password">Password</label>
-						<input
-							type="password"
-							id="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
+
+						<div className={signin["signin-form__password-field"]}>
+							<input
+								type={showPassword ? "text" : "password"}
+								id="password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								required
+								aria-required="true"
+								aria-describedby={
+									error && error.includes("password")
+										? "error-message"
+										: undefined
+								}
+								aria-invalid={
+									error && error.includes("password") ? "true" : "false"
+								}
+							/>
+							<button
+								type="button"
+								onClick={() => setShowPassword(!showPassword)}
+								className={signin["signin-form__password-toggle"]}
+								aria-label={showPassword ? "Hide password" : "Show password"}>
+								<i
+									className={`fa ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+									aria-hidden="true"></i>
+							</button>
+						</div>
 					</div>
-					{error && <p className={signin["signin-form__error"]}>{error}</p>}
-					<button className={signin["signin-form__button"]}>Sign In</button>
+
+					{isLoading && (
+						<p className="sr-only" role="status" aria-live="polite">
+							Authenticating your credentials...
+						</p>
+					)}
+
+					{error && (
+						<p
+							className={signin["signin-form__error"]}
+							role="alert"
+							id="error-message">
+							{error}
+						</p>
+					)}
+
+					<button
+						className={signin["signin-form__button"]}
+						disabled={isLoading}
+						aria-busy={isLoading}>
+						{isLoading ? "Authenticating..." : "Connect"}
+					</button>
 				</form>
 			</section>
 		</main>

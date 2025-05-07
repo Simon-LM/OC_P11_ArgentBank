@@ -42,6 +42,13 @@ $light_bg_header: $color-white;
 $light_text-link_header: $primary-color;
 $light_text-link-hover_header: $secondary-color;
 
+$light_nav-button-bg: transparent;
+$light_nav-button-text: $primary-color;
+$light_nav-button-hover-text: $secondary-color;
+$skip-link-bg: $secondary-color;
+$skip-link-text: $color-white;
+$skip-link-focus-shadow: 0 0 8px rgba(104, 102, 233, 0.6);
+
 // Footer
 $light_bg_footer: $color-white;
 $light_footer_text: $color-black;
