@@ -1,5 +1,6 @@
 /** @format */
 
+import { useLocation } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import {
 	BrowserRouter as Router,
@@ -16,14 +17,16 @@ import { initializeAuth } from "./utils/authService";
 import { AppDispatch } from "./store/Store";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import useSessionTimeout from "./hooks/useSessionTimeout/useSessionTimeout";
+import { matomoInstance } from "./hooks/useMatomo/useMatomo";
 
 const SignIn = lazy(() => import("./pages/signIn/SignIn"));
 const User = lazy(() => import("./pages/user/User"));
 const Error404 = lazy(() => import("./pages/error404/Error404"));
 
-function App() {
+function AppContent() {
 	const dispatch = useDispatch<AppDispatch>();
-	const sessionDuration = 5 * 60 * 1000;
+	const sessionDuration = 10 * 60 * 1000;
+	const location = useLocation();
 
 	useSessionTimeout(sessionDuration);
 
@@ -31,26 +34,42 @@ function App() {
 		dispatch(initializeAuth());
 	}, [dispatch]);
 
+	useEffect(() => {
+		matomoInstance.trackPageView({
+			documentTitle: document.title,
+		});
+	}, [location]);
+
+	return (
+		<>
+			<Header />
+			<main id="main-content">
+				<Suspense fallback={<div>Loading...</div>}>
+					<Routes>
+						<Route path="/" element={<Home />} />
+						<Route path="/signIn" element={<SignIn />} />
+						<Route
+							path="/user"
+							element={
+								<ProtectedRoute>
+									<User />
+								</ProtectedRoute>
+							}
+						/>
+						<Route path="*" element={<Navigate to="/error404" />} />
+						<Route path="/error404" element={<Error404 />} />
+					</Routes>
+				</Suspense>
+			</main>
+			<Footer />
+		</>
+	);
+}
+
+function App() {
 	return (
 		<Router>
-			<Header />
-			<Suspense fallback={<div>Loading...</div>}>
-				<Routes>
-					<Route path="/" element={<Home />} />
-					<Route path="/signIn" element={<SignIn />} />
-					<Route
-						path="/user"
-						element={
-							<ProtectedRoute>
-								<User />
-							</ProtectedRoute>
-						}
-					/>
-					<Route path="*" element={<Navigate to="/error404" />} />
-					<Route path="/error404" element={<Error404 />} />
-				</Routes>
-			</Suspense>
-			<Footer />
+			<AppContent />
 		</Router>
 	);
 }

@@ -21,7 +21,7 @@ const Header: React.FC = () => {
 
 	const handleSignOut = () => {
 		dispatch(logoutUser());
-		navigate("/signin");
+		navigate("/");
 	};
 
 	return (

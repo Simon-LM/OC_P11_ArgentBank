@@ -18,12 +18,14 @@ import { updateUserProfile } from "../../utils/authService";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { TransactionType } from "../../types/transaction";
 import TransactionSearch from "../../components/TransactionSearch/TransactionSearch";
+import { useMatomo } from "../../hooks/useMatomo/useMatomo";
 
 const User: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [isEditing, setIsEditing] = useState(false);
 	const transactionHeadingRef = React.useRef<HTMLHeadingElement>(null);
 	const [actionFeedback, setActionFeedback] = useState("");
+	const { trackEvent } = useMatomo();
 
 	// const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
 	// 	null
@@ -96,13 +98,6 @@ const User: React.FC = () => {
 		handleSearch,
 	]);
 
-	// useEffect(() => {
-	// 	// Éviter l'initialisation
-	// 	if (searchStatus !== "idle") {
-	// 		handleSearch();
-	// 	}
-	// }, [searchParams]);
-
 	useEffect(() => {
 		if (searchStatus !== "idle" && searchStatus !== "loading") {
 			handleSearch();
@@ -140,6 +135,12 @@ const User: React.FC = () => {
 			const updatedUser = await updateUserProfile(data.userName, token);
 			dispatch(updateCurrentUser({ userName: updatedUser.userName }));
 			setIsEditing(false);
+
+			trackEvent({
+				category: "Profile",
+				action: "Update",
+				name: "Username updated",
+			});
 		} catch (error) {
 			console.error("Failed to update user profile:", error);
 		}
@@ -156,6 +157,12 @@ const User: React.FC = () => {
 
 			setTimeout(() => setActionFeedback(""), 5000);
 		}
+
+		trackEvent({
+			category: "Account",
+			action: "Select",
+			name: selectedAcc?.type || "Unknown account",
+		});
 	};
 
 	const handlePageChange = (pageNumber: number) => {
@@ -194,7 +201,7 @@ const User: React.FC = () => {
 
 	return (
 		<>
-			<main className={user["user-page"]}>
+			<div className={user["user-page"]}>
 				{/* --- Section Accueil et Édition --- */}
 
 				{isAuthenticated && currentUser ? (
@@ -607,7 +614,7 @@ const User: React.FC = () => {
 				) : (
 					<p>Loading user information...</p>
 				)}
-			</main>
+			</div>
 		</>
 	);
 };

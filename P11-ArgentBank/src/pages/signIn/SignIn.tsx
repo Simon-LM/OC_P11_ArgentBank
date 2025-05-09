@@ -8,6 +8,7 @@ import classNames from "classnames";
 import { loginUser, fetchUserProfile } from "../../utils/authService";
 import { loginUserSuccess, setAuthState } from "../../store/slices/usersSlice";
 import { AppDispatch } from "../../store/Store";
+import { useMatomo } from "../../hooks/useMatomo/useMatomo";
 
 const SignIn: React.FC = () => {
 	const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ const SignIn: React.FC = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
+	const { trackEvent } = useMatomo();
 
 	const getErrorMessage = (errorMessage: string): string => {
 		if (errorMessage.includes("401")) {
@@ -42,6 +44,13 @@ const SignIn: React.FC = () => {
 		setIsLoading(true);
 		try {
 			const result = await loginUser({ email, password });
+
+			trackEvent({
+				category: "User",
+				action: "Login",
+				name: "Successful login",
+			});
+
 			console.log("Login successful:", result);
 
 			const token: string = result.body.token;
@@ -54,6 +63,12 @@ const SignIn: React.FC = () => {
 
 			navigate("/User");
 		} catch (err) {
+			trackEvent({
+				category: "User",
+				action: "Login",
+				name: `Failed login: ${err instanceof Error ? err.message : "Unknown error"}`,
+			});
+
 			if (err instanceof Error) {
 				setError(getErrorMessage(err.message));
 			} else {
@@ -65,8 +80,8 @@ const SignIn: React.FC = () => {
 	};
 
 	return (
-		<main className={signin["signin-page"]}>
-			<h1 className="sr-only">Account Login - Argent Bank</h1>
+		<div className={signin["signin-page"]}>
+			<h2 className="sr-only">Account Login - Argent Bank</h2>
 
 			<section className={signin["signin-form"]}>
 				<i
@@ -159,7 +174,7 @@ const SignIn: React.FC = () => {
 					</button>
 				</form>
 			</section>
-		</main>
+		</div>
 	);
 };
 

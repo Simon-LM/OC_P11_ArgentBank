@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@datapunt/matomo-tracker-react':
+        specifier: ^0.5.1
+        version: 0.5.1(react@18.3.1)
       '@hookform/resolvers':
         specifier: ^3.9.1
         version: 3.10.0(react-hook-form@7.56.0(react@18.3.1))
@@ -252,6 +255,14 @@ packages:
   '@csstools/css-tokenizer@3.0.3':
     resolution: {integrity: sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw==}
     engines: {node: '>=18'}
+
+  '@datapunt/matomo-tracker-js@0.5.1':
+    resolution: {integrity: sha512-9/MW9vt/BA5Db7tO6LqCeQKtuvBNjyq51faF3AzUmPMlYsJCnASIxcut3VqJKiribhUoey7aYbPIYuj9x4DLPA==}
+
+  '@datapunt/matomo-tracker-react@0.5.1':
+    resolution: {integrity: sha512-lrNYM9hFL6XK0VAdtMb7MwZrLWhaAconx4c7gOGAMvoWuoVm+ZZIYFuKtfYdYMeBf0avxWtmKRwjZEg7T8jV2A==}
+    peerDependencies:
+      react: '>= 16.8.0'
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -3112,6 +3123,13 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.3
 
   '@csstools/css-tokenizer@3.0.3': {}
+
+  '@datapunt/matomo-tracker-js@0.5.1': {}
+
+  '@datapunt/matomo-tracker-react@0.5.1(react@18.3.1)':
+    dependencies:
+      '@datapunt/matomo-tracker-js': 0.5.1
+      react: 18.3.1
 
   '@esbuild/aix-ppc64@0.21.5':
     optional: true

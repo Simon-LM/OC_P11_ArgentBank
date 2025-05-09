@@ -5,7 +5,7 @@ import Features from "../../components/Features";
 
 const Home: React.FC = () => {
 	return (
-		<main id="main-content" tabIndex={-1}>
+		<div id="main-content" tabIndex={-1}>
 			<div
 				className="hero"
 				data-testid="hero"
@@ -26,7 +26,7 @@ const Home: React.FC = () => {
 				</section>
 			</div>
 			<Features />
-		</main>
+		</div>
 	);
 };
 
