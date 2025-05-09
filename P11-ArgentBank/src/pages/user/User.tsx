@@ -199,15 +199,15 @@ const User: React.FC = () => {
 
 				{isAuthenticated && currentUser ? (
 					<>
-						<div>
-							<h2 className={user["user__title"]}>
-								Welcome back
-								<br />
-								{currentUser
-									? `${currentUser.firstName} ${currentUser.lastName}!`
-									: ""}
-							</h2>
+						<h2 className={user["user__title"]}>
+							Welcome back
+							<br />
+							{currentUser
+								? `${currentUser.firstName} ${currentUser.lastName}!`
+								: ""}
+						</h2>
 
+						<div>
 							{isEditing ? (
 								<EditUserForm
 									currentUser={currentUser}
@@ -218,7 +218,7 @@ const User: React.FC = () => {
 								<button
 									className={user["user__edit-button"]}
 									onClick={() => setIsEditing(true)}>
-									Edit Name
+									Edit User
 								</button>
 							)}
 						</div>
@@ -242,9 +242,12 @@ const User: React.FC = () => {
 							{accountsStatus === "succeeded" && (
 								<ul
 									className={user["accounts-list"]}
-									aria-label="Select an account to view its transactions">
+									aria-label="Available banking accounts"
+									role="listbox">
 									{accounts.map((account, index) => (
 										<li
+											role="option"
+											aria-selected={account.id === selectedAccountId}
 											key={account.id}
 											className={user["accounts-list__item"]}>
 											<button
@@ -337,6 +340,16 @@ const User: React.FC = () => {
 									</p>
 								)}
 
+								{searchStatus === "succeeded" && searchResults.length > 0 && (
+									<p className="sr-only" aria-live="polite">
+										{searchResults.length} transaction
+										{searchResults.length !== 1 ? "s" : ""} found
+										{selectedAccount
+											? ` for ${selectedAccount.type} account`
+											: ""}
+									</p>
+								)}
+
 								{searchStatus === "succeeded" && (
 									<>
 										{/* Afficher les transactions de la page actuelle */}
@@ -352,14 +365,33 @@ const User: React.FC = () => {
 												className={user["transaction-table"]}
 												aria-label="Transaction history">
 												<caption className="sr-only">
-													Details of your account transactions
+													{selectedAccount
+														? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
+														: "Transactions from all accounts"}
 												</caption>
 												<thead className="sr-only">
-													<tr>{/* En-têtes inchangés */}</tr>
+													<tr>
+														<th scope="col">Description</th>
+														<th scope="col">Date and Category</th>
+														<th scope="col">Amount</th>
+														<th scope="col">Notes</th>
+													</tr>
 												</thead>
-												<tbody>
-													{searchResults.map((tx) => (
-														<tr className={user["transaction-row"]} key={tx.id}>
+												<tbody
+													role="grid"
+													aria-rowcount={pagination.total}
+													aria-colcount={4}>
+													{searchResults.map((tx, index) => (
+														<tr
+															role="row"
+															aria-rowindex={
+																pagination.page * pagination.limit -
+																pagination.limit +
+																index +
+																1
+															}
+															className={user["transaction-row"]}
+															key={tx.id}>
 															<td className={user["transaction-row__cell"]}>
 																<h3 className={user["transaction-row__title"]}>
 																	{tx.description}
@@ -367,17 +399,28 @@ const User: React.FC = () => {
 															</td>
 															<td className={user["transaction-row__cell"]}>
 																{/* <p className={user["transaction-row__meta"]}>
-															{new Date(tx.date).toLocaleDateString()} -{" "}
-															{tx.category}
-														</p> */}
-
-																<p className={user["transaction-row__meta"]}>
 																	{new Date(tx.date).toLocaleDateString()}
 																	{tx.category && (
 																		<span
 																			className={
 																				user["transaction-row__category-tag"]
 																			}>
+																			{tx.category}
+																		</span>
+																	)}
+																</p> */}
+
+																<p className={user["transaction-row__meta"]}>
+																	<span
+																		aria-label={`Date: ${new Date(tx.date).toLocaleDateString()}`}>
+																		{new Date(tx.date).toLocaleDateString()}
+																	</span>
+																	{tx.category && (
+																		<span
+																			className={
+																				user["transaction-row__category-tag"]
+																			}
+																			aria-label={`Category: ${tx.category}`}>
 																			{tx.category}
 																		</span>
 																	)}
@@ -514,7 +557,9 @@ const User: React.FC = () => {
 
 															{/* Ellipse si nécessaire */}
 															{pagination.page < pagination.pages - 2 && (
-																<span className={user["pagination__ellipsis"]}>
+																<span
+																	className={user["pagination__ellipsis"]}
+																	aria-label="Pages omitted for brevity">
 																	...
 																</span>
 															)}

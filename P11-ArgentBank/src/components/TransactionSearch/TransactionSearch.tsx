@@ -47,13 +47,6 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 		setSearchTimeout(timeout);
 	};
 
-	// const handleGlobalSearchToggle = () => {
-	// 	onSearchChange({
-	// 		accountId: searchParams.accountId ? undefined : selectedAccount?.id,
-	// 		page: 1,
-	// 	});
-	// };
-
 	const handleGlobalSearchToggle = () => {
 		if (onGlobalSearchToggle && isGlobalSearchMode === false) {
 			onGlobalSearchToggle();
@@ -71,10 +64,6 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 		};
 	}, [searchTimeout]);
 
-	// const searchLabel = selectedAccount
-	// 	? `Search transactions in ${selectedAccount.type} (${selectedAccount.accountNumber})`
-	// 	: "Search transactions in all accounts";
-
 	const searchLabel = "Filter transactions";
 
 	const isGlobalSearchMode = !searchParams.accountId;
@@ -86,12 +75,6 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 				className={styles["transaction-search__label"]}>
 				{searchLabel}
 			</label>
-
-			{/* <p className={styles["transaction-search__help-text"]}>
-				{selectedAccount
-					? `Showing transactions for ${selectedAccount.type} (x${selectedAccount.accountNumber})`
-					: "Showing transactions across all accounts"}
-			</p> */}
 
 			<p className={styles["transaction-search__search-tips"]}>
 				Search by date (DD/MM/YYYY), amount, description, category or notes

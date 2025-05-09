@@ -85,7 +85,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 			onKeyDown={handleKeyDown}
 			tabIndex={0}
 			ref={containerRef}
-			aria-label="Edit user information form">
+			// aria-label="Edit user information form"
+		>
 			<h2 id="edit-user-form-title">Edit user info</h2>
 
 			<div
@@ -103,7 +104,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 			<form
 				className={editUserForm["edit-user-form__form"]}
 				onSubmit={handleSubmit(handleSave)}
-				// onKeyDown={handleKeyDown}
 				role="form"
 				aria-labelledby="edit-user-form-title">
 				<div className={editUserForm["edit-user-form__input-group"]}>
@@ -150,7 +150,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							aria-describedby="firstName-readonly-desc"
 						/>
 						<span id="firstName-readonly-desc" className="sr-only">
-							First name cannot be modified in this application.
+							This field cannot be modified.
 						</span>
 
 						{errors.firstName && (
@@ -177,7 +177,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							aria-describedby="lastName-readonly-desc"
 						/>
 						<span id="lastName-readonly-desc" className="sr-only">
-							Last name cannot be modified in this application.
+							This field cannot be modified.
 						</span>
 						{errors.lastName && (
 							<p className={editUserForm["edit-user-form__error"]}>
