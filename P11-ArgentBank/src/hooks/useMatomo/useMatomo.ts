@@ -1,6 +1,13 @@
 /** @format */
 
-import { createInstance } from "@datapunt/matomo-tracker-react";
+type MatomoCommandParams = string | number | boolean | undefined;
+type MatomoCommand = [string, ...MatomoCommandParams[]];
+
+declare global {
+	interface Window {
+		_paq: MatomoCommand[];
+	}
+}
 
 interface PageViewParams {
 	documentTitle?: string;
@@ -36,30 +43,43 @@ interface SiteSearchParams {
 	}>;
 }
 
-const matomoInstance = createInstance({
-	urlBase: "//analytics.lostintab.com/",
-	siteId: 2,
-	disabled: process.env.NODE_ENV !== "production",
-	heartBeat: {
-		active: true,
-		seconds: 30,
-	},
-	linkTracking: true,
-	configurations: {
-		disableCookies: true,
-		setSecureCookie: true,
-		setRequestMethod: "POST",
-	},
-});
-
 export function useMatomo() {
 	return {
-		trackPageView: (params?: PageViewParams) =>
-			matomoInstance.trackPageView(params),
-		trackEvent: (params: EventParams) => matomoInstance.trackEvent(params),
-		trackSiteSearch: (params: SiteSearchParams) =>
-			matomoInstance.trackSiteSearch(params),
+		trackPageView: (params?: PageViewParams) => {
+			if (window._paq) {
+				if (params) {
+					const trackingData = ["trackPageView"];
+					if (params.documentTitle) trackingData.push(params.documentTitle);
+					window._paq.push(trackingData as MatomoCommand);
+				} else {
+					window._paq.push(["trackPageView"]);
+				}
+			}
+		},
+		trackEvent: (params: EventParams) => {
+			if (window._paq) {
+				window._paq.push([
+					"trackEvent",
+					params.category,
+					params.action,
+					params.name,
+					params.value,
+				] as MatomoCommand);
+			}
+		},
+		trackSiteSearch: (params: SiteSearchParams) => {
+			if (window._paq) {
+				window._paq.push([
+					"trackSiteSearch",
+					params.keyword,
+					params.category,
+					params.count,
+				] as MatomoCommand);
+			}
+		},
 	};
 }
 
-export { matomoInstance };
+export function isMatomoLoaded(): boolean {
+	return typeof window !== "undefined" && !!window._paq;
+}

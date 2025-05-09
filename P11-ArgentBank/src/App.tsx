@@ -17,7 +17,7 @@ import { initializeAuth } from "./utils/authService";
 import { AppDispatch } from "./store/Store";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import useSessionTimeout from "./hooks/useSessionTimeout/useSessionTimeout";
-import { matomoInstance } from "./hooks/useMatomo/useMatomo";
+import { useMatomo, isMatomoLoaded } from "./hooks/useMatomo/useMatomo";
 
 const SignIn = lazy(() => import("./pages/signIn/SignIn"));
 const User = lazy(() => import("./pages/user/User"));
@@ -27,6 +27,7 @@ function AppContent() {
 	const dispatch = useDispatch<AppDispatch>();
 	const sessionDuration = 10 * 60 * 1000;
 	const location = useLocation();
+	const { trackPageView } = useMatomo();
 
 	useSessionTimeout(sessionDuration);
 
@@ -35,10 +36,12 @@ function AppContent() {
 	}, [dispatch]);
 
 	useEffect(() => {
-		matomoInstance.trackPageView({
-			documentTitle: document.title,
-		});
-	}, [location]);
+		if (isMatomoLoaded()) {
+			trackPageView({
+				documentTitle: document.title,
+			});
+		}
+	}, [location, trackPageView]);
 
 	return (
 		<>
