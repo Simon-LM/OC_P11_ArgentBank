@@ -51,8 +51,6 @@ const SignIn: React.FC = () => {
 				name: "Successful login",
 			});
 
-			console.log("Login successful:", result);
-
 			const token: string = result.body.token;
 
 			dispatch(loginUserSuccess({ email, token }));

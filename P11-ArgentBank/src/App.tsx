@@ -36,11 +36,30 @@ function AppContent() {
 	}, [dispatch]);
 
 	useEffect(() => {
-		if (isMatomoLoaded()) {
-			trackPageView({
-				documentTitle: document.title,
-			});
-		}
+		const timeoutId = setTimeout(() => {
+			if (isMatomoLoaded()) {
+				if (location.pathname.toLowerCase() !== "/user") {
+					let pageTitle = "Argent Bank - Home";
+
+					if (location.pathname === "/signIn") {
+						pageTitle = "Argent Bank - Sign In";
+					} else if (location.pathname === "/user") {
+						pageTitle = "Argent Bank - User Dashboard";
+					} else if (location.pathname === "/error404") {
+						pageTitle = "Argent Bank - Page Not Found";
+					}
+
+					document.title = pageTitle;
+
+					trackPageView({
+						documentTitle: pageTitle,
+						href: window.location.origin + location.pathname.toLowerCase(),
+					});
+				}
+			}
+		}, 500);
+
+		return () => clearTimeout(timeoutId);
 	}, [location, trackPageView]);
 
 	return (

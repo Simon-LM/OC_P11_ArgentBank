@@ -18,18 +18,14 @@ import { updateUserProfile } from "../../utils/authService";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { TransactionType } from "../../types/transaction";
 import TransactionSearch from "../../components/TransactionSearch/TransactionSearch";
-import { useMatomo } from "../../hooks/useMatomo/useMatomo";
+import { useMatomo, isMatomoLoaded } from "../../hooks/useMatomo/useMatomo";
 
 const User: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [isEditing, setIsEditing] = useState(false);
 	const transactionHeadingRef = React.useRef<HTMLHeadingElement>(null);
 	const [actionFeedback, setActionFeedback] = useState("");
-	const { trackEvent } = useMatomo();
-
-	// const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
-	// 	null
-	// );
+	const { trackEvent, trackPageView } = useMatomo();
 
 	const { searchResults, pagination, searchStatus, searchError } = useSelector(
 		(state: RootState) => ({
@@ -68,6 +64,36 @@ const User: React.FC = () => {
 	const handleSearch = useCallback(() => {
 		dispatch(searchTransactions(searchParams));
 	}, [dispatch, searchParams]);
+
+	useEffect(() => {
+		const trackingDelay = setTimeout(() => {
+			if (isMatomoLoaded()) {
+				const pageTitle = "Argent Bank - User Dashboard";
+				document.title = pageTitle;
+
+				const normalizedPath = "/user";
+				const fullUrl = window.location.origin + normalizedPath;
+
+				window._paq.push([
+					"setReferrerUrl",
+					window.location.origin + "/signin",
+				]);
+				window._paq.push(["setCustomUrl", fullUrl]);
+				window._paq.push(["setDocumentTitle", pageTitle]);
+
+				window._paq.push(["deleteCookies"]);
+				window._paq.push(["setPagePerformanceTiming", 0]);
+				window._paq.push(["trackPageView"]);
+
+				trackPageView({
+					documentTitle: pageTitle,
+					href: fullUrl,
+				});
+			}
+		}, 2000);
+
+		return () => clearTimeout(trackingDelay);
+	}, [trackEvent, trackPageView]);
 
 	useEffect(() => {
 		if (isAuthenticated) {
