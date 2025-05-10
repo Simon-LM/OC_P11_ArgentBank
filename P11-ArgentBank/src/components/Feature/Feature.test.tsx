@@ -3,7 +3,6 @@
 import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import Feature from "./Feature";
-
 describe("Feature Component", () => {
 	const mockProps = {
 		iconClass: "feature-icon-1",
@@ -38,7 +37,7 @@ describe("Feature Component", () => {
 		const { container } = render(<Feature {...mockProps} />);
 
 		expect(container.querySelector(".feature-item")).toBeInTheDocument();
-		expect(container.querySelector(".feature-item-icon")).toBeInTheDocument();
-		expect(container.querySelector(".feature-item-title")).toBeInTheDocument();
+		expect(container.querySelector(".feature-item__icon")).toBeInTheDocument(); // Corrigé: underscore double
+		expect(container.querySelector(".feature-item__title")).toBeInTheDocument(); // Corrigé: underscore double
 	});
 });

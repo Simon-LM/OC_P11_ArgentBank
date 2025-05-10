@@ -6,33 +6,48 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { MemoryRouter } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import userReducer from "../../store/slices/usersSlice";
+import userReducer, { UsersState } from "../../store/slices/usersSlice";
 
-// Helper pour créer un store avec un état spécifique
+type LoadingState = "idle" | "loading" | "succeeded" | "failed";
+
 const createMockStore = (isAuthenticated: boolean) => {
+	const initialState: UsersState = {
+		isAuthenticated,
+		currentUser: null,
+		accounts: [],
+		accountsStatus: "idle" as LoadingState,
+		accountsError: null,
+		selectedAccountId: null,
+		transactions: [],
+		transactionsStatus: "idle" as LoadingState,
+		transactionsError: null,
+		searchResults: [],
+		searchStatus: "idle" as LoadingState,
+		searchError: null,
+		pagination: null,
+		currentSortBy: "date",
+		currentSortOrder: "desc",
+	};
+
 	return configureStore({
 		reducer: {
 			users: userReducer,
 		},
 		preloadedState: {
-			users: {
-				isAuthenticated,
-				currentUser: null,
-				users: [],
-			},
+			users: initialState,
 		},
 	});
 };
 
 describe("ProtectedRoute", () => {
-	test("rend le composant enfant quand l'utilisateur est authentifié", () => {
+	test("renders the child component when user is authenticated", () => {
 		const store = createMockStore(true);
 
 		render(
 			<Provider store={store}>
 				<MemoryRouter>
 					<ProtectedRoute>
-						<div data-testid="protected-content">Contenu Protégé</div>
+						<div data-testid="protected-content">Protected Content</div>
 					</ProtectedRoute>
 				</MemoryRouter>
 			</Provider>
@@ -41,14 +56,14 @@ describe("ProtectedRoute", () => {
 		expect(screen.getByTestId("protected-content")).toBeInTheDocument();
 	});
 
-	test("redirige vers /signin quand l'utilisateur n'est pas authentifié", () => {
+	test("redirects to /signin when user is not authenticated", () => {
 		const store = createMockStore(false);
 
 		const { container } = render(
 			<Provider store={store}>
 				<MemoryRouter>
 					<ProtectedRoute>
-						<div data-testid="protected-content">Contenu Protégé</div>
+						<div data-testid="protected-content">Protected Content</div>
 					</ProtectedRoute>
 				</MemoryRouter>
 			</Provider>

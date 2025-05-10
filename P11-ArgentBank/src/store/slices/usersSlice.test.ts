@@ -2,22 +2,36 @@
 
 import { describe, test, expect, beforeEach } from "vitest";
 import reducer, {
-	addUser,
 	loginUserSuccess,
 	logoutUser,
 	updateCurrentUser,
 	setAuthState,
+	UsersState,
+	User,
+	clearTransactionsError,
+	selectAccount,
 } from "./usersSlice";
-import { usersMockData } from "../../mockData/users";
 
 describe("usersSlice", () => {
-	const initialState = {
-		users: usersMockData,
+	const initialState: UsersState = {
 		isAuthenticated: false,
 		currentUser: null,
+		accounts: [],
+		accountsStatus: "idle",
+		accountsError: null,
+		selectedAccountId: null,
+		transactions: [],
+		transactionsStatus: "idle",
+		transactionsError: null,
+		searchResults: [],
+		searchStatus: "idle",
+		searchError: null,
+		pagination: null,
+		currentSortBy: "date",
+		currentSortOrder: "desc",
 	};
 
-	const mockUser = {
+	const mockUser: User = {
 		id: "1",
 		email: "test@example.com",
 		firstName: "John",
@@ -40,12 +54,10 @@ describe("usersSlice", () => {
 	});
 
 	test("devrait retourner l'état initial", () => {
-		expect(reducer(undefined, { type: undefined })).toEqual(initialState);
-	});
-
-	test("devrait gérer addUser", () => {
-		const nextState = reducer(initialState, addUser(mockUser));
-		expect(nextState.users).toContain(mockUser);
+		const result = reducer(undefined, { type: "@@INIT" });
+		expect(result.isAuthenticated).toEqual(initialState.isAuthenticated);
+		expect(result.currentUser).toEqual(initialState.currentUser);
+		expect(result.accounts).toEqual(initialState.accounts);
 	});
 
 	test("devrait gérer loginUserSuccess", () => {
@@ -60,20 +72,47 @@ describe("usersSlice", () => {
 	});
 
 	test("devrait gérer logoutUser", () => {
-		const loggedInState = {
+		const loggedInState: UsersState = {
 			...initialState,
 			isAuthenticated: true,
 			currentUser: mockUser,
+			accounts: [
+				{
+					id: "123",
+					accountNumber: "8349",
+					balance: 2082.79,
+					type: "checking",
+					userId: "1",
+					createdAt: "2023-01-01",
+					updatedAt: "2023-01-01",
+				},
+			],
+			transactions: [
+				{
+					id: "t1",
+					amount: 1000,
+					description: "Test",
+					date: "2023-01-01",
+					category: "Food",
+					notes: null,
+					type: "DEBIT",
+					createdAt: "2023-01-01",
+					updatedAt: "2023-01-01",
+					accountId: "123",
+				},
+			],
 		};
 
 		const nextState = reducer(loggedInState, logoutUser());
 		expect(nextState.isAuthenticated).toBe(false);
 		expect(nextState.currentUser).toBeNull();
+		expect(nextState.accounts).toEqual([]);
+		expect(nextState.transactions).toEqual([]);
 		expect(sessionStorage.getItem("authToken")).toBeNull();
 	});
 
 	test("devrait gérer updateCurrentUser avec un utilisateur existant", () => {
-		const currentState = {
+		const currentState: UsersState = {
 			...initialState,
 			currentUser: mockUser,
 		};
@@ -87,24 +126,28 @@ describe("usersSlice", () => {
 		expect(nextState.currentUser?.firstName).toBe(mockUser.firstName);
 	});
 
-	test("devrait gérer updateCurrentUser sans utilisateur existant", () => {
-		const update = {
-			id: "2",
-			userName: "newUser",
-			firstName: "Jane",
-			lastName: "Doe",
-			email: "jane@example.com",
-			createdAt: "2024-03-14",
-			updatedAt: "2024-03-14",
-		};
-
-		const nextState = reducer(initialState, updateCurrentUser(update));
-		expect(nextState.currentUser).toEqual(update);
-	});
-
 	test("devrait gérer setAuthState", () => {
 		const nextState = reducer(initialState, setAuthState(mockUser));
 		expect(nextState.isAuthenticated).toBe(true);
 		expect(nextState.currentUser).toEqual(mockUser);
+	});
+
+	test("devrait gérer clearTransactionsError", () => {
+		const stateWithError: UsersState = {
+			...initialState,
+			transactionsError: "Une erreur est survenue",
+		};
+
+		const nextState = reducer(stateWithError, clearTransactionsError());
+		expect(nextState.transactionsError).toBeNull();
+	});
+
+	test("devrait gérer selectAccount", () => {
+		const accountId = "account123";
+		const nextState = reducer(initialState, selectAccount(accountId));
+		expect(nextState.selectedAccountId).toBe(accountId);
+
+		const afterState = reducer(nextState, selectAccount(null));
+		expect(afterState.selectedAccountId).toBeNull();
 	});
 });

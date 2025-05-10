@@ -12,6 +12,13 @@ export interface Account {
 	updatedAt: string;
 }
 
+export interface UIAccount {
+	accountName?: string;
+	accountNumber: string;
+	balance: string | number;
+	balanceType?: string;
+}
+
 export interface User {
 	id: string;
 	firstName: string;
@@ -20,6 +27,7 @@ export interface User {
 	email: string;
 	createdAt: string;
 	updatedAt: string;
+	accounts?: UIAccount[];
 }
 
 export interface Transaction {

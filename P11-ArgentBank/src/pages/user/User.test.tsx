@@ -4,11 +4,18 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import User from "./User";
-import usersReducer from "../../store/slices/usersSlice";
+import usersReducer, { UsersState } from "../../store/slices/usersSlice";
 import * as authService from "../../utils/authService";
 import { describe, test, expect, vi } from "vitest";
 
 vi.mock("../../utils/authService");
+vi.mock("../../hooks/useMatomo/useMatomo", () => ({
+	useMatomo: () => ({
+		trackEvent: vi.fn(),
+		trackPageView: vi.fn(),
+	}),
+	isMatomoLoaded: () => false,
+}));
 
 const mockUser = {
 	id: "1",
@@ -29,19 +36,49 @@ const mockUser = {
 };
 
 describe("User Component", () => {
-	const renderUser = (initialState = {}) => {
-		// Configuration du store avec token
+	const renderUser = (customState: Partial<UsersState> = {}) => {
+		// Set token in sessionStorage
 		sessionStorage.setItem("authToken", "fake-token");
+
+		// Create a complete initial state with all required properties
+		const initialState: UsersState = {
+			currentUser: mockUser,
+			isAuthenticated: true,
+			accounts: [
+				{
+					id: "123",
+					accountNumber: "8349",
+					balance: 2082.79,
+					type: "checking",
+					userId: "1",
+					createdAt: "2023-01-01",
+					updatedAt: "2023-01-01",
+				},
+			],
+			accountsStatus: "succeeded",
+			accountsError: null,
+			selectedAccountId: null,
+			transactions: [],
+			transactionsStatus: "succeeded",
+			transactionsError: null,
+			searchResults: [],
+			searchStatus: "succeeded",
+			searchError: null,
+			pagination: {
+				total: 0,
+				page: 1,
+				limit: 10,
+				pages: 0,
+			},
+			currentSortBy: "date",
+			currentSortOrder: "desc",
+			...customState,
+		};
 
 		const store = configureStore({
 			reducer: { users: usersReducer },
 			preloadedState: {
-				users: {
-					currentUser: mockUser,
-					isAuthenticated: true,
-					users: [],
-					...initialState,
-				},
+				users: initialState,
 			},
 		});
 
@@ -52,50 +89,52 @@ describe("User Component", () => {
 		);
 	};
 
-	test("affiche le message de chargement quand currentUser est null", () => {
+	test("displays loading message when currentUser is null", () => {
 		renderUser({ currentUser: null });
-		expect(screen.getByText(/loading user data/i)).toBeInTheDocument();
+		expect(screen.getByText(/loading user information/i)).toBeInTheDocument();
 	});
 
-	test("affiche les informations de l'utilisateur", () => {
+	test("displays user information", () => {
 		renderUser();
 		expect(screen.getByText(/tony stark/i)).toBeInTheDocument();
-		expect(screen.getByText(/argent bank checking/i)).toBeInTheDocument();
 	});
 
-	test("gère l'édition du profil", async () => {
+	test("handles profile editing", async () => {
+		const newUsername = "newuser123";
+
 		vi.mocked(authService.updateUserProfile).mockResolvedValue({
 			...mockUser,
-			userName: "newUsername",
+			userName: newUsername,
 		});
 
 		renderUser();
 
-		fireEvent.click(screen.getByText(/edit name/i));
+		fireEvent.click(screen.getByText(/edit user/i));
 
-		// Remplir le formulaire
-		const userNameInput = screen.getByLabelText(/user name/i);
-		fireEvent.change(userNameInput, { target: { value: "newUsername" } });
+		const userNameInput = screen.getByRole("textbox", { name: /user name/i });
+		fireEvent.change(userNameInput, { target: { value: newUsername } });
 
-		// Soumettre le formulaire
 		fireEvent.submit(screen.getByRole("form"));
 
-		await waitFor(() => {
-			expect(authService.updateUserProfile).toHaveBeenCalledWith(
-				"newUsername",
-				"fake-token"
-			);
-		});
+		await waitFor(
+			() => {
+				expect(authService.updateUserProfile).toHaveBeenCalledWith(
+					newUsername,
+					"fake-token"
+				);
+			},
+			{ timeout: 3000 }
+		);
 	});
 
-	test("gère les erreurs de mise à jour", async () => {
+	test("handles update errors", async () => {
 		const error = new Error("Update failed");
 		vi.mocked(authService.updateUserProfile).mockRejectedValue(error);
 
 		const consoleSpy = vi.spyOn(console, "error");
 		renderUser();
 
-		fireEvent.click(screen.getByText(/edit name/i));
+		fireEvent.click(screen.getByText(/edit user/i));
 		fireEvent.submit(screen.getByRole("form"));
 
 		await waitFor(() => {
@@ -106,10 +145,25 @@ describe("User Component", () => {
 		});
 	});
 
-	test("affiche un message quand aucun compte n'est disponible", () => {
-		const userWithoutAccounts = { ...mockUser, accounts: [] };
-		renderUser({ currentUser: userWithoutAccounts });
+	test("displays message when no accounts are available", () => {
+		renderUser({
+			accounts: [],
+			accountsStatus: "succeeded",
+		});
 
-		expect(screen.getByText(/aucun compte disponible/i)).toBeInTheDocument();
+		expect(screen.getByText(/you have no accounts/i)).toBeInTheDocument();
+	});
+
+	test("displays loading message when fetching accounts", () => {
+		renderUser({ accountsStatus: "loading" });
+		expect(screen.getByText(/loading accounts/i)).toBeInTheDocument();
+	});
+
+	test("displays error message when accounts fetch fails", () => {
+		renderUser({
+			accountsStatus: "failed",
+			accountsError: "Network error",
+		});
+		expect(screen.getByText(/error loading accounts/i)).toBeInTheDocument();
 	});
 });

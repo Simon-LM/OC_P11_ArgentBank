@@ -22,9 +22,10 @@ describe("Features Component", () => {
 	test("affiche les icônes avec les bons labels", () => {
 		render(<Features />);
 
-		expect(screen.getByLabelText("Chat icon")).toBeInTheDocument();
-		expect(screen.getByLabelText("Money icon")).toBeInTheDocument();
-		expect(screen.getByLabelText("Security icon")).toBeInTheDocument();
+		// Utiliser des regex pour rechercher des parties du texte du label
+		expect(screen.getByLabelText(/Chat icon representing/)).toBeInTheDocument();
+		expect(screen.getByLabelText(/Money icon showing/)).toBeInTheDocument();
+		expect(screen.getByLabelText(/Security shield icon/)).toBeInTheDocument();
 	});
 
 	test("rend la structure correcte du composant", () => {

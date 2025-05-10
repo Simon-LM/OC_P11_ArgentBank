@@ -39,6 +39,7 @@ const Footer: React.FC = () => {
 
 				<div
 					id="privacy-details"
+					role="region"
 					className={`footer__privacy-content ${isPrivacyOpen ? "open" : ""}`}
 					aria-hidden={!isPrivacyOpen}>
 					<p className="footer__privacy-text">

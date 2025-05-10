@@ -1,6 +1,5 @@
 /** @format */
 
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, test, expect } from "vitest";
 import Home from "./Home";
@@ -10,7 +9,9 @@ describe("Home component", () => {
 		render(<Home />);
 
 		expect(
-			screen.getByText("A tree sprout in a verse filled with coins.")
+			screen.getByText(
+				/A young tree sprout growing in a glass jar filled with coins/
+			)
 		).toBeInTheDocument();
 		expect(screen.getByText("You are our #1 priority")).toBeInTheDocument();
 		expect(
@@ -25,12 +26,12 @@ describe("Home component", () => {
 		).toBeInTheDocument();
 	});
 
-	test("should render the hero section with an empty aria-label", () => {
+	test("should render the hero section with correct aria-label", () => {
 		render(<Home />);
 		const hero = screen.getByTestId("hero");
 		expect(hero).toBeInTheDocument();
 		expect(hero.getAttribute("aria-label")).toBe(
-			"A tree sprout in a verse filled with coins."
+			"Hero banner showing a tree sprout in a jar of coins, symbolizing growth and savings"
 		);
 	});
 });

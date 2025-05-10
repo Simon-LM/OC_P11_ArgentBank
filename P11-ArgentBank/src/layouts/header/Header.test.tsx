@@ -11,12 +11,11 @@ import userReducer, {
 	UsersState,
 } from "../../store/slices/usersSlice";
 
-// Définition de l'interface RootState basée sur le store réel
 interface RootState {
 	users: UsersState;
 }
 
-// Mock de useNavigate
+// Mock useNavigate
 const mockNavigate = vi.fn();
 
 vi.mock("react-router-dom", async () => {
@@ -30,7 +29,7 @@ vi.mock("react-router-dom", async () => {
 	};
 });
 
-// Création du store mock
+// Create mock store
 const createTestStore = (isAuthenticated = false) => {
 	const preloadedState: RootState = {
 		users: {
@@ -54,7 +53,17 @@ const createTestStore = (isAuthenticated = false) => {
 						],
 					}
 				: null,
-			users: [],
+			accounts: [],
+			accountsStatus: "idle",
+			accountsError: null,
+			selectedAccountId: null,
+			transactions: [],
+			transactionsStatus: "idle",
+			transactionsError: null,
+			searchResults: [],
+			searchStatus: "idle",
+			searchError: null,
+			pagination: null,
 		},
 	};
 
@@ -72,11 +81,11 @@ describe("Header", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		store = createTestStore(true); // Authentifié par défaut
+		store = createTestStore(true); // Authenticated by default
 		spyDispatch = vi.spyOn(store, "dispatch");
 	});
 
-	test("affiche le lien 'Sign In' lorsque l'utilisateur n'est pas authentifié", () => {
+	test("displays 'Sign In' link when user is not authenticated", () => {
 		store = createTestStore(false);
 
 		render(
@@ -92,7 +101,7 @@ describe("Header", () => {
 		expect(screen.queryByText(/Tony/i)).not.toBeInTheDocument();
 	});
 
-	test("affiche le nom d'utilisateur et le lien 'Sign Out' lorsque l'utilisateur est authentifié", () => {
+	test("displays username and 'Sign Out' link when user is authenticated", () => {
 		render(
 			<Provider store={store}>
 				<BrowserRouter>
@@ -106,7 +115,7 @@ describe("Header", () => {
 		expect(screen.queryByText(/Sign In/i)).not.toBeInTheDocument();
 	});
 
-	test("dispatch logoutUser et navigue vers '/signin' lors du clic sur 'Sign Out'", () => {
+	test("dispatches logoutUser and navigates to home page when 'Sign Out' is clicked", () => {
 		render(
 			<Provider store={store}>
 				<BrowserRouter>
@@ -118,14 +127,14 @@ describe("Header", () => {
 		const signOutLink = screen.getByText(/Sign Out/i);
 		fireEvent.click(signOutLink);
 
-		// Vérifier que logoutUser a été dispatché
+		// Verify that logoutUser has been dispatched
 		expect(spyDispatch).toHaveBeenCalledWith(logoutUser());
 
-		// Vérifier que navigate a été appelé avec '/signin'
-		expect(mockNavigate).toHaveBeenCalledWith("/signin");
+		// Verify that navigate has been called with '/'
+		expect(mockNavigate).toHaveBeenCalledWith("/");
 	});
 
-	test("redirige vers '/signin' après déconnexion", () => {
+	test("redirects to home page after logout", () => {
 		render(
 			<Provider store={store}>
 				<BrowserRouter>
@@ -137,7 +146,7 @@ describe("Header", () => {
 		const signOutLink = screen.getByText(/Sign Out/i);
 		fireEvent.click(signOutLink);
 
-		// Vérifiez que navigate a été appelé avec '/signin'
-		expect(mockNavigate).toHaveBeenCalledWith("/signin");
+		// Verify that navigate has been called with '/'
+		expect(mockNavigate).toHaveBeenCalledWith("/");
 	});
 });
