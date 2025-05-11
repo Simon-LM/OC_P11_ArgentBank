@@ -25,30 +25,33 @@ const Header: React.FC = () => {
 	};
 
 	return (
-		<header className="header" role="banner" aria-labelledby="site-title">
+		<header className="header" role="banner">
+			<h1 id="site-title" className="sr-only">
+				Argent Bank - Your Trusted Online Banking Partner Since 2020
+			</h1>
+
 			{/* Skip link pour l'accessibilité - visible uniquement au focus */}
-			<a href="#main-content" className="skip-to-content">
+			<a
+				href="#main-content"
+				className="skip-to-content"
+				aria-label="Skip to main content">
 				Skip to main content
 			</a>
 
 			<div className="header__logo-container">
-				<a className="header__logo" href="./">
+				<a className="header__logo" href="./" aria-label="Go to home page">
 					<picture>
 						<source srcSet={argentBankLogoAvif} type="image/avif" />
 						<source srcSet={argentBankLogoWebp} type="image/webp" />
 						<img
 							className="header__logo-image"
 							src={argentBankLogoPng}
-							alt="Home page"
+							alt=""
 							width="200"
 							height="38"
-							title="Argent Bank - Your Trusted Online Banking Partner"
 							loading="eager"
 						/>
 					</picture>
-					<h1 id="site-title" className="sr-only">
-						Argent Bank - Your Trusted Online Banking Partner Since 2020
-					</h1>
 				</a>
 			</div>
 

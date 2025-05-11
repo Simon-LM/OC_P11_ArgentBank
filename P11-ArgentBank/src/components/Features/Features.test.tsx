@@ -8,10 +8,8 @@ describe("Features Component", () => {
 	test("rend le composant Features avec tous ses éléments", () => {
 		render(<Features />);
 
-		// Vérifie la présence du titre sr-only
 		expect(screen.getByText("Features")).toHaveClass("sr-only");
 
-		// Vérifie la présence des 3 features
 		expect(screen.getByText("You are our #1 priority")).toBeInTheDocument();
 		expect(
 			screen.getByText("More savings means higher rates")
@@ -22,10 +20,9 @@ describe("Features Component", () => {
 	test("affiche les icônes avec les bons labels", () => {
 		render(<Features />);
 
-		// Utiliser des regex pour rechercher des parties du texte du label
-		expect(screen.getByLabelText(/Chat icon representing/)).toBeInTheDocument();
-		expect(screen.getByLabelText(/Money icon showing/)).toBeInTheDocument();
-		expect(screen.getByLabelText(/Security shield icon/)).toBeInTheDocument();
+		expect(screen.getByText(/Chat icon representing/)).toBeInTheDocument();
+		expect(screen.getByText(/Money icon showing/)).toBeInTheDocument();
+		expect(screen.getByText(/Security shield icon/)).toBeInTheDocument();
 	});
 
 	test("rend la structure correcte du composant", () => {

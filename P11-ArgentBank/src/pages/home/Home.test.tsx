@@ -26,12 +26,14 @@ describe("Home component", () => {
 		).toBeInTheDocument();
 	});
 
-	test("should render the hero section with correct aria-label", () => {
+	test("should render the hero section with an accessible description", () => {
 		render(<Home />);
 		const hero = screen.getByTestId("hero");
 		expect(hero).toBeInTheDocument();
-		expect(hero.getAttribute("aria-label")).toBe(
-			"Hero banner showing a tree sprout in a jar of coins, symbolizing growth and savings"
+
+		const description = screen.getByText(
+			"A young tree sprout growing in a glass jar filled with coins, symbolizing financial growth"
 		);
+		expect(description).toBeInTheDocument();
 	});
 });

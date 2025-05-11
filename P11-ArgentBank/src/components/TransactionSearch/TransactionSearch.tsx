@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SearchTransactionsParams } from "../../store/slices/usersSlice";
 import styles from "./TransactionSearch.module.scss";
 
@@ -14,6 +14,7 @@ interface TransactionSearchProps {
 		type: string;
 	} | null;
 	onGlobalSearchToggle?: () => void;
+	onNavigateToResults?: () => void;
 }
 
 const TransactionSearch: React.FC<TransactionSearchProps> = ({
@@ -22,6 +23,7 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 	isLoading,
 	selectedAccount,
 	onGlobalSearchToggle,
+	onNavigateToResults,
 }) => {
 	const [inputValue, setInputValue] = useState(searchParams.searchTerm || "");
 	const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
@@ -68,6 +70,47 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 
 	const isGlobalSearchMode = !searchParams.accountId;
 
+	const searchInputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		const handleGlobalKeyDown = (e: KeyboardEvent) => {
+			console.log(`Key pressed globally: ${e.key}, Alt: ${e.altKey}`);
+
+			if (e.altKey && e.key.toLowerCase() === "r") {
+				e.preventDefault();
+				searchInputRef.current?.focus();
+				console.log("Alt+R activated");
+			}
+
+			if (e.altKey && e.key.toLowerCase() === "t" && !isLoading) {
+				e.preventDefault();
+				onNavigateToResults?.();
+				console.log("Alt+T activated");
+			}
+		};
+
+		document.addEventListener("keydown", handleGlobalKeyDown);
+		return () => document.removeEventListener("keydown", handleGlobalKeyDown);
+	}, [isLoading, onNavigateToResults]);
+
+	const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.altKey) {
+			return;
+		}
+
+		if (e.key === "Enter" && !isLoading) {
+			e.preventDefault();
+			setTimeout(() => {
+				onNavigateToResults?.();
+			}, 100);
+		}
+
+		if (e.key === "Escape") {
+			e.preventDefault();
+			e.currentTarget.blur();
+		}
+	};
+
 	return (
 		<div className={styles["transaction-search"]}>
 			<label
@@ -83,11 +126,13 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 			<div className={styles["transaction-search__search-row"]}>
 				<div className={styles["transaction-search__container"]}>
 					<input
+						ref={searchInputRef}
 						id="transaction-search-input"
 						type="search"
 						className={styles["transaction-search__input"]}
 						value={inputValue}
 						onChange={(e) => handleSearchChange(e.target.value)}
+						onKeyDown={handleInputKeyDown}
 						aria-describedby="transaction-search-instructions"
 					/>
 
@@ -143,13 +188,20 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 				)}
 			</div>
 
+			<p className={styles["transaction-search__keyboard-shortcuts"]}>
+				<small>
+					Keyboard shortcuts: Alt+R for search field, Alt+T for results
+				</small>
+			</p>
+
 			<span id="transaction-search-instructions" className="sr-only">
 				Filter transactions by entering text.
 				{selectedAccount
 					? `Currently viewing account ending in ${selectedAccount.accountNumber}.`
 					: "Currently viewing all accounts."}
 				You can search by date format DD/MM/YYYY, exact amounts, or keywords in
-				descriptions.
+				descriptions. Press Enter or Alt+T to navigate to search results. Press
+				Escape to exit the search field.
 			</span>
 		</div>
 	);

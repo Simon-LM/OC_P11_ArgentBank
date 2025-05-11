@@ -118,7 +118,9 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							id="userName"
 							{...register("userName")}
 							aria-invalid={errors.userName ? "true" : "false"}
-							aria-describedby="username-requirements"
+							aria-describedby={
+								errors.userName ? undefined : "username-requirements"
+							}
 						/>
 						<span
 							id="username-requirements"
@@ -147,7 +149,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							readOnly
 							aria-readonly="true"
 							{...register("firstName")}
-							aria-describedby="firstName-readonly-desc"
+							aria-describedby="firstName-label firstName-readonly-desc"
 						/>
 						<span id="firstName-readonly-desc" className="sr-only">
 							This field cannot be modified.
@@ -174,11 +176,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							readOnly
 							aria-readonly="true"
 							{...register("lastName")}
-							aria-describedby="lastName-readonly-desc"
+							// aria-describedby="lastName-readonly-desc"
 						/>
-						<span id="lastName-readonly-desc" className="sr-only">
+						{/* <span id="lastName-readonly-desc" className="sr-only">
 							This field cannot be modified.
-						</span>
+						</span> */}
 						{errors.lastName && (
 							<p className={editUserForm["edit-user-form__error"]}>
 								{errors.lastName.message}

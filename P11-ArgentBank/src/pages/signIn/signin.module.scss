@@ -26,8 +26,15 @@
 		box-shadow: var.$light_signin_card-shadow;
 
 		&__icon {
+			display: flex;
+			justify-content: center;
+			margin: 0 auto;
 			font-size: clamp(4rem, 10vw, 5rem);
 			color: var.$signin-icon-color;
+		}
+		&__title {
+			display: flex;
+			justify-content: center;
 		}
 
 		&__demo-info {

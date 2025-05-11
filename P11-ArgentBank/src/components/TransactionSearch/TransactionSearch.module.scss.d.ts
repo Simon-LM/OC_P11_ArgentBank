@@ -12,5 +12,6 @@ declare const classNames: {
   readonly "transaction-search__spinner": "transaction-search__spinner";
   readonly "transaction-search__error-message": "transaction-search__error-message";
   readonly "transaction-search__help-text": "transaction-search__help-text";
+  readonly "transaction-search__keyboard-shortcuts": "transaction-search__keyboard-shortcuts";
 };
 export = classNames;

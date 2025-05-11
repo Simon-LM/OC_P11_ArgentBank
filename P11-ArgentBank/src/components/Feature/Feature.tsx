@@ -15,10 +15,13 @@ const Feature: React.FC<FeatureProps> = ({
 }) => (
 	<div className="feature-item">
 		<div className="feature-item__icon">
-			<i className={`feature-icon ${iconClass}`} aria-label={iconLabel}>
-				<div className="feature-icon__description">
-					<span className="material-symbols-outlined">image</span> {iconLabel}
-				</div>
+			<i className={`feature-icon ${iconClass}`} aria-hidden="true">
+				<span className="feature-icon__description">
+					<span className="material-symbols-outlined" aria-hidden="true">
+						image
+					</span>{" "}
+					{iconLabel}
+				</span>
 			</i>
 		</div>
 		<div className="feature-item__content">

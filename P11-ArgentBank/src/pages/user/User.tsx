@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
 import user from "./user.module.scss";
@@ -26,6 +26,7 @@ const User: React.FC = () => {
 	const transactionHeadingRef = React.useRef<HTMLHeadingElement>(null);
 	const [actionFeedback, setActionFeedback] = useState("");
 	const { trackEvent, trackPageView } = useMatomo();
+	const tableHeadingRef = useRef<HTMLTableElement | null>(null);
 
 	const { searchResults, pagination, searchStatus, searchError } = useSelector(
 		(state: RootState) => ({
@@ -225,6 +226,26 @@ const User: React.FC = () => {
 		? accounts.find((acc) => acc.id === selectedAccountId) || null
 		: null;
 
+	const navigateToSearchResults = () => {
+		if (tableHeadingRef.current) {
+			const firstCell = tableHeadingRef.current.querySelector(
+				"th:first-child, td:first-child"
+			);
+
+			if (firstCell instanceof HTMLElement) {
+				firstCell.setAttribute("tabindex", "-1");
+				firstCell.focus();
+
+				setActionFeedback(
+					`${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} found. 
+        Use arrow keys to navigate through the table.`
+				);
+			} else {
+				tableHeadingRef.current.focus();
+			}
+		}
+	};
+
 	return (
 		<>
 			<div className={user["user-page"]}>
@@ -364,6 +385,7 @@ const User: React.FC = () => {
 										);
 										setTimeout(() => setActionFeedback(""), 5000);
 									}}
+									onNavigateToResults={navigateToSearchResults}
 								/>
 
 								{searchStatus === "loading" && <p>Searching transactions...</p>}
@@ -396,7 +418,9 @@ const User: React.FC = () => {
 										) : (
 											<table
 												className={user["transaction-table"]}
-												aria-label="Transaction history">
+												aria-label="Transaction history"
+												ref={tableHeadingRef}
+												tabIndex={-1}>
 												<caption className="sr-only">
 													{selectedAccount
 														? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
@@ -431,18 +455,6 @@ const User: React.FC = () => {
 																</h3>
 															</td>
 															<td className={user["transaction-row__cell"]}>
-																{/* <p className={user["transaction-row__meta"]}>
-																	{new Date(tx.date).toLocaleDateString()}
-																	{tx.category && (
-																		<span
-																			className={
-																				user["transaction-row__category-tag"]
-																			}>
-																			{tx.category}
-																		</span>
-																	)}
-																</p> */}
-
 																<p className={user["transaction-row__meta"]}>
 																	<span
 																		aria-label={`Date: ${new Date(tx.date).toLocaleDateString()}`}>
@@ -491,6 +503,10 @@ const User: React.FC = () => {
 												</tbody>
 											</table>
 										)}
+
+										<div className="sr-only" role="status" aria-live="polite">
+											{actionFeedback}
+										</div>
 
 										{/* --- Contrôles de Pagination --- */}
 										{pagination.pages > 1 && (

@@ -116,8 +116,8 @@
 	&__error {
 		color: var.$color-error;
 		font-size: 0.875rem;
-		@extend %text-wrap;
 		margin-top: 0.25rem;
+		@include mix.text-wrap();
 	}
 
 	&__button-group {

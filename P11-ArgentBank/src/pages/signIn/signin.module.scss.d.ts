@@ -3,6 +3,7 @@ declare const classNames: {
   readonly "signin-page": "signin-page";
   readonly "signin-form": "signin-form";
   readonly "signin-form__icon": "signin-form__icon";
+  readonly "signin-form__title": "signin-form__title";
   readonly "signin-form__demo-info": "signin-form__demo-info";
   readonly "signin-form__password-field": "signin-form__password-field";
   readonly "signin-form__password-toggle": "signin-form__password-toggle";

@@ -90,7 +90,9 @@ const SignIn: React.FC = () => {
 					)}
 					aria-hidden="true"></i>
 
-				<h2 id="signin-title">Sign In</h2>
+				<h2 id="signin-title" className={signin["signin-form__title"]}>
+					Sign In
+				</h2>
 
 				<p className={signin["signin-form__demo-info"]}>
 					<i className="fa fa-info-circle" aria-hidden="true"></i>

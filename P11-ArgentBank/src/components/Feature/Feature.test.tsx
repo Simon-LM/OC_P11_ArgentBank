@@ -16,28 +16,31 @@ describe("Feature Component", () => {
 
 		expect(screen.getByText(mockProps.title)).toBeInTheDocument();
 		expect(screen.getByText(mockProps.description)).toBeInTheDocument();
-		expect(screen.getByLabelText(mockProps.iconLabel)).toBeInTheDocument();
+		expect(screen.getByText(mockProps.iconLabel)).toBeInTheDocument();
 	});
 
 	test("applique les classes CSS correctement", () => {
 		render(<Feature {...mockProps} />);
 
-		const icon = screen.getByLabelText(mockProps.iconLabel);
+		const icon = screen.getByText(mockProps.iconLabel).closest("i");
 		expect(icon).toHaveClass("feature-icon", mockProps.iconClass);
 	});
 
 	test("respecte les critères d'accessibilité", () => {
 		render(<Feature {...mockProps} />);
 
-		const icon = screen.getByLabelText(mockProps.iconLabel);
-		expect(icon).toHaveAttribute("aria-label", mockProps.iconLabel);
+		const icon = screen.getByText(mockProps.iconLabel).closest("i");
+		expect(icon).toHaveAttribute("aria-hidden", "true");
+
+		// Vérifie que le texte d'icône est visible dans le DOM
+		expect(screen.getByText(mockProps.iconLabel)).toBeInTheDocument();
 	});
 
 	test("rend la structure HTML attendue", () => {
 		const { container } = render(<Feature {...mockProps} />);
 
 		expect(container.querySelector(".feature-item")).toBeInTheDocument();
-		expect(container.querySelector(".feature-item__icon")).toBeInTheDocument(); // Corrigé: underscore double
-		expect(container.querySelector(".feature-item__title")).toBeInTheDocument(); // Corrigé: underscore double
+		expect(container.querySelector(".feature-item__icon")).toBeInTheDocument();
+		expect(container.querySelector(".feature-item__title")).toBeInTheDocument();
 	});
 });
