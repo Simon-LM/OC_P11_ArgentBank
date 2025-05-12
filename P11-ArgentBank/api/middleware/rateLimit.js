@@ -97,6 +97,6 @@ async function prodRateLimiter(req, res, key, limit) {
 	} catch (error) {
 		console.error("Redis error:", error);
 		// En cas d'erreur avec Redis, utiliser la version mémoire
-		return await devRateLimiter(req, res, key);
+		return await devRateLimiter(req, res, key, limit); // <-- Ajoutez 'limit' ici
 	}
 }
