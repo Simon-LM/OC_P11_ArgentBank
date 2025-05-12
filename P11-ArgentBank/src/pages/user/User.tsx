@@ -246,6 +246,26 @@ const User: React.FC = () => {
 		}
 	};
 
+	const handleAccountKeyNavigation = (
+		e: React.KeyboardEvent<HTMLButtonElement>,
+		index: number
+	) => {
+		if (index === accounts.length - 1 && e.key === "ArrowDown") {
+			e.preventDefault();
+			transactionHeadingRef.current?.focus();
+		}
+
+		if (index === 0 && e.key === "ArrowUp") {
+			e.preventDefault();
+			const editButton = document.querySelector(
+				`.${user["user__edit-button"]}`
+			);
+			if (editButton instanceof HTMLElement) {
+				editButton.focus();
+			}
+		}
+	};
+
 	return (
 		<>
 			<div className={user["user-page"]}>
@@ -297,11 +317,10 @@ const User: React.FC = () => {
 								<ul
 									className={user["accounts-list"]}
 									aria-label="Available banking accounts"
-									role="listbox">
+									role="list">
 									{accounts.map((account, index) => (
 										<li
-											role="option"
-											aria-selected={account.id === selectedAccountId}
+											role="listitem"
 											key={account.id}
 											className={user["accounts-list__item"]}>
 											<button
@@ -311,15 +330,21 @@ const User: React.FC = () => {
 												})}
 												onClick={() => handleAccountSelect(account.id)}
 												aria-pressed={account.id === selectedAccountId}
-												aria-describedby={`account-${account.id}-desc`}>
-												<div className={user["account__content"]}>
+												aria-describedby={`account-${account.id}-desc`}
+												onKeyDown={(e) => handleAccountKeyNavigation(e, index)}>
+												{/* <div className={user["account__content"]}>
+																									
 													<h3 className={user["account__title"]}>
 														{account.type} (x{account.accountNumber})
 													</h3>
-													<p className={user["account__amount"]}>
+													<p
+														className={user["account__amount"]}
+														aria-label={`Available Balance: €${account.balance.toFixed(2)}`}>
 														€{account.balance.toFixed(2)}
 													</p>
-													<p className={user["account__description"]}>
+													<p
+														className={user["account__description"]}
+														aria-hidden="true">
 														Available Balance
 													</p>
 												</div>
@@ -327,12 +352,38 @@ const User: React.FC = () => {
 													className="sr-only"
 													id={`account-${account.id}-desc`}>
 													Account {index + 1} of {accounts.length}.
-													{account.id === selectedAccountId
-														? " Currently selected."
-														: ""}
-													Selecting this account will filter transactions to
-													show only those related to this account.
-												</span>
+													{account.id === selectedAccountId ? " Selected." : ""}
+												</span> */}
+
+												<div className={user["account__content"]}>
+													<div
+														aria-label={`${account.type} account, number x${account.accountNumber}, Available Balance: €${account.balance.toFixed(2)}`}>
+														<h3
+															className={user["account__title"]}
+															aria-hidden="true">
+															{account.type} (x{account.accountNumber})
+														</h3>
+														<p
+															className={user["account__amount"]}
+															aria-hidden="true">
+															€{account.balance.toFixed(2)}
+														</p>
+														<p
+															className={user["account__description"]}
+															aria-hidden="true">
+															Available Balance
+														</p>
+													</div>
+
+													<span
+														className="sr-only"
+														id={`account-${account.id}-desc`}>
+														Account {index + 1} of {accounts.length}.
+														{account.id === selectedAccountId
+															? " Selected."
+															: ""}
+													</span>
+												</div>
 											</button>
 										</li>
 									))}
