@@ -1,10 +1,12 @@
 /** @format */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { storeUserCSRFToken, getUserCSRFToken } from "./csrf.js";
+import { storeUserCSRFToken, getUserCSRFToken } from "../../../api/lib/csrf.js"; // MODIFIÉ
 
-// Créer un mock pour le module prisma.js et ses méthodes
-vi.mock("./prisma.js", async () => {
+// Créer un mock pour le module prisma.js que csrf.js importe (api/lib/prisma.js)
+// csrf.js (dans api/lib/) importe "./prisma.js", donc le mock doit cibler api/lib/prisma.js
+vi.mock("../../../api/lib/prisma.js", async () => {
+	// MODIFIÉ
 	const mockCsrfToken = {
 		findUnique: vi.fn(),
 		update: vi.fn(),
@@ -19,7 +21,7 @@ vi.mock("./prisma.js", async () => {
 });
 
 // Importer le module mocké
-const { prisma } = await import("./prisma.js");
+const { prisma } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
 
 describe("CSRF Token Management", () => {
 	const mockUserId = "user-123";

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1747093353595" clover="3.2.0">
-  <project timestamp="1747093353595" name="All files">
-    <metrics statements="4871" coveredstatements="2027" conditionals="415" coveredconditionals="315" methods="104" coveredmethods="53" elements="5390" coveredelements="2395" complexity="0" loc="4871" ncloc="4871" packages="34" files="56" classes="56"/>
+<coverage generated="1747098474541" clover="3.2.0">
+  <project timestamp="1747098474541" name="All files">
+    <metrics statements="4870" coveredstatements="2009" conditionals="410" coveredconditionals="308" methods="104" coveredmethods="53" elements="5384" coveredelements="2370" complexity="0" loc="4870" ncloc="4870" packages="34" files="56" classes="56"/>
     <package name="api">
       <metrics statements="10" coveredstatements="10" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
       <file name="ping.js" path="/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/api/ping.js">
@@ -19,30 +19,30 @@
       </file>
     </package>
     <package name="api.accounts">
-      <metrics statements="45" coveredstatements="45" conditionals="14" coveredconditionals="13" methods="1" coveredmethods="1"/>
+      <metrics statements="44" coveredstatements="40" conditionals="13" coveredconditionals="11" methods="1" coveredmethods="1"/>
       <file name="index.js" path="/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/api/accounts/index.js">
-        <metrics statements="45" coveredstatements="45" conditionals="14" coveredconditionals="13" methods="1" coveredmethods="1"/>
+        <metrics statements="44" coveredstatements="40" conditionals="13" coveredconditionals="11" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
         <line num="8" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="9" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="9" count="5" type="cond" truecount="1" falsecount="0"/>
         <line num="10" count="1" type="stmt"/>
         <line num="11" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="13" count="6" type="stmt"/>
-        <line num="14" count="7" type="cond" truecount="3" falsecount="0"/>
-        <line num="15" count="2" type="stmt"/>
-        <line num="16" count="2" type="stmt"/>
-        <line num="17" count="2" type="stmt"/>
-        <line num="18" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="20" count="4" type="stmt"/>
-        <line num="22" count="4" type="stmt"/>
-        <line num="23" count="4" type="stmt"/>
-        <line num="24" count="4" type="stmt"/>
-        <line num="26" count="4" type="cond" truecount="2" falsecount="0"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="30" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="13" count="4" type="stmt"/>
+        <line num="14" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="26" count="5" type="cond" truecount="0" falsecount="1"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="30" count="0" type="cond" truecount="1" falsecount="0"/>
         <line num="32" count="2" type="stmt"/>
         <line num="33" count="2" type="stmt"/>
         <line num="34" count="2" type="stmt"/>
@@ -53,20 +53,19 @@
         <line num="39" count="2" type="stmt"/>
         <line num="40" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="42" count="1" type="stmt"/>
-        <line num="43" count="4" type="cond" truecount="1" falsecount="0"/>
-        <line num="44" count="2" type="stmt"/>
-        <line num="45" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="43" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="44" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="45" count="1" type="stmt"/>
         <line num="46" count="1" type="stmt"/>
         <line num="47" count="1" type="stmt"/>
         <line num="48" count="1" type="stmt"/>
         <line num="49" count="1" type="stmt"/>
         <line num="50" count="1" type="stmt"/>
-        <line num="51" count="1" type="stmt"/>
-        <line num="52" count="4" type="cond" truecount="0" falsecount="1"/>
-        <line num="53" count="4" type="stmt"/>
-        <line num="54" count="4" type="stmt"/>
-        <line num="55" count="4" type="stmt"/>
-        <line num="56" count="7" type="stmt"/>
+        <line num="51" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="52" count="3" type="stmt"/>
+        <line num="53" count="3" type="stmt"/>
+        <line num="54" count="3" type="stmt"/>
+        <line num="55" count="5" type="stmt"/>
       </file>
     </package>
     <package name="api.csrf">
@@ -560,7 +559,7 @@
       </file>
     </package>
     <package name="api.user">
-      <metrics statements="263" coveredstatements="250" conditionals="74" coveredconditionals="70" methods="4" coveredmethods="4"/>
+      <metrics statements="263" coveredstatements="237" conditionals="70" coveredconditionals="65" methods="4" coveredmethods="4"/>
       <file name="login.js" path="/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/api/user/login.js">
         <metrics statements="56" coveredstatements="43" conditionals="14" coveredconditionals="10" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
@@ -762,76 +761,76 @@
         <line num="157" count="2" type="stmt"/>
       </file>
       <file name="signup.js" path="/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/api/user/signup.js">
-        <metrics statements="69" coveredstatements="69" conditionals="20" coveredconditionals="20" methods="1" coveredmethods="1"/>
+        <metrics statements="69" coveredstatements="56" conditionals="16" coveredconditionals="15" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
         <line num="8" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="9" count="14" type="stmt"/>
-        <line num="10" count="14" type="stmt"/>
-        <line num="11" count="14" type="stmt"/>
-        <line num="12" count="14" type="stmt"/>
-        <line num="13" count="14" type="stmt"/>
-        <line num="15" count="14" type="stmt"/>
-        <line num="16" count="14" type="cond" truecount="1" falsecount="0"/>
+        <line num="9" count="7" type="stmt"/>
+        <line num="10" count="7" type="stmt"/>
+        <line num="11" count="7" type="stmt"/>
+        <line num="12" count="7" type="stmt"/>
+        <line num="13" count="7" type="stmt"/>
+        <line num="15" count="7" type="stmt"/>
+        <line num="16" count="7" type="cond" truecount="1" falsecount="0"/>
         <line num="17" count="1" type="stmt"/>
         <line num="18" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="20" count="14" type="cond" truecount="1" falsecount="0"/>
-        <line num="21" count="12" type="stmt"/>
-        <line num="22" count="12" type="stmt"/>
-        <line num="23" count="12" type="cond" truecount="1" falsecount="0"/>
-        <line num="24" count="2" type="stmt"/>
-        <line num="25" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="26" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="27" count="2" type="stmt"/>
-        <line num="28" count="2" type="stmt"/>
-        <line num="29" count="2" type="stmt"/>
-        <line num="30" count="2" type="stmt"/>
-        <line num="31" count="2" type="stmt"/>
-        <line num="32" count="2" type="stmt"/>
-        <line num="33" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="2" type="stmt"/>
-        <line num="38" count="12" type="stmt"/>
-        <line num="40" count="12" type="cond" truecount="5" falsecount="0"/>
-        <line num="41" count="6" type="stmt"/>
-        <line num="42" count="6" type="stmt"/>
-        <line num="44" count="6" type="stmt"/>
-        <line num="45" count="6" type="stmt"/>
-        <line num="46" count="6" type="cond" truecount="1" falsecount="0"/>
-        <line num="47" count="12" type="cond" truecount="1" falsecount="0"/>
+        <line num="20" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="21" count="5" type="stmt"/>
+        <line num="22" count="5" type="stmt"/>
+        <line num="23" count="5" type="cond" truecount="0" falsecount="1"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="38" count="5" type="stmt"/>
+        <line num="40" count="5" type="cond" truecount="4" falsecount="0"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="42" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="44" count="4" type="stmt"/>
+        <line num="45" count="4" type="stmt"/>
+        <line num="46" count="4" type="stmt"/>
+        <line num="47" count="5" type="cond" truecount="1" falsecount="0"/>
         <line num="48" count="1" type="stmt"/>
         <line num="49" count="1" type="stmt"/>
         <line num="50" count="1" type="stmt"/>
         <line num="51" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="53" count="4" type="stmt"/>
-        <line num="54" count="4" type="cond" truecount="1" falsecount="0"/>
-        <line num="55" count="3" type="stmt"/>
-        <line num="57" count="3" type="stmt"/>
-        <line num="58" count="3" type="stmt"/>
-        <line num="59" count="3" type="stmt"/>
-        <line num="60" count="3" type="stmt"/>
-        <line num="61" count="3" type="stmt"/>
-        <line num="62" count="3" type="stmt"/>
-        <line num="63" count="3" type="stmt"/>
-        <line num="64" count="3" type="stmt"/>
-        <line num="65" count="3" type="stmt"/>
-        <line num="66" count="3" type="cond" truecount="1" falsecount="0"/>
-        <line num="67" count="2" type="stmt"/>
-        <line num="68" count="2" type="stmt"/>
-        <line num="69" count="2" type="stmt"/>
-        <line num="70" count="2" type="stmt"/>
-        <line num="71" count="2" type="stmt"/>
-        <line num="72" count="12" type="cond" truecount="1" falsecount="0"/>
-        <line num="73" count="3" type="stmt"/>
-        <line num="74" count="3" type="stmt"/>
-        <line num="75" count="3" type="stmt"/>
-        <line num="76" count="3" type="stmt"/>
-        <line num="77" count="3" type="stmt"/>
-        <line num="78" count="14" type="cond" truecount="1" falsecount="0"/>
+        <line num="53" count="3" type="stmt"/>
+        <line num="54" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="55" count="2" type="stmt"/>
+        <line num="57" count="2" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="60" count="2" type="stmt"/>
+        <line num="61" count="2" type="stmt"/>
+        <line num="62" count="2" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="65" count="2" type="stmt"/>
+        <line num="66" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="68" count="1" type="stmt"/>
+        <line num="69" count="1" type="stmt"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="72" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="73" count="2" type="stmt"/>
+        <line num="74" count="2" type="stmt"/>
+        <line num="75" count="2" type="stmt"/>
+        <line num="76" count="2" type="stmt"/>
+        <line num="77" count="2" type="stmt"/>
+        <line num="78" count="7" type="cond" truecount="1" falsecount="0"/>
         <line num="79" count="1" type="stmt"/>
         <line num="80" count="1" type="stmt"/>
-        <line num="81" count="14" type="stmt"/>
+        <line num="81" count="7" type="stmt"/>
       </file>
     </package>
     <package name="my-react-app.src">

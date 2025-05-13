@@ -41,8 +41,7 @@ export default async function handler(req, res) {
 
 		return res.status(200).json({ body: accounts });
 	} catch (error) {
-		// Utiliser error.name au lieu de instanceof
-		if (error.name === "JsonWebTokenError") {
+		if (error instanceof jwt.JsonWebTokenError) {
 			return res.status(401).json({ message: "Invalid or expired token" });
 		}
 		console.error("Error fetching accounts:", error);

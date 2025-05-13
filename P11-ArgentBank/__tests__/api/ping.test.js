@@ -1,9 +1,9 @@
 /** @format */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import handler from "./ping.js";
+import handler from "../../api/ping.js";
 
-vi.mock("./lib/prisma.js", () => {
+vi.mock("../../api/lib/prisma.js", () => {
 	return {
 		prisma: {
 			$connect: vi.fn(),
@@ -11,7 +11,7 @@ vi.mock("./lib/prisma.js", () => {
 	};
 });
 
-import { prisma } from "./lib/prisma.js";
+import { prisma } from "../../api/lib/prisma.js";
 
 describe("Ping API Handler", () => {
 	let req;

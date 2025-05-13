@@ -10,7 +10,13 @@ export default defineConfig({
 		environment: "jsdom", // Utilise jsdom pour simuler le navigateur
 		globals: true, // Permet d'utiliser des globales comme describe, it, expect sans importation
 		setupFiles: "./src/setupTests.ts", // Chemin vers votre fichier de configuration des tests
-		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+		// MODIFIÉ: Cible spécifiquement le dossier __tests__ ET les fichiers de test co-localisés
+		include: [
+			"__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+			"src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}", // Ajout pour les tests co-localisés dans src
+			// Ajoutez d'autres chemins ici si vos tests co-localisés sont ailleurs, par exemple :
+			// "api/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+		],
 		typecheck: {
 			tsconfig: "./tsconfig.json",
 		},

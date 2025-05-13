@@ -17,7 +17,7 @@ vi.mock("jsonwebtoken", () => ({
 	},
 }));
 
-vi.mock("../lib/prisma.js", () => ({
+vi.mock("../../../api/lib/prisma.js", () => ({
 	prisma: {
 		transaction: {
 			findMany: vi.fn(),
@@ -27,7 +27,7 @@ vi.mock("../lib/prisma.js", () => ({
 
 // Importer les modules mockés pour les utiliser dans les tests
 import jwt from "jsonwebtoken"; // jwt est l'exportation par défaut : { verify }
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "../../../api/lib/prisma.js";
 
 // La constante JWT_SECRET utilisée dans les assertions de test doit correspondre à la valeur stubbée.
 const LOCAL_TEST_JWT_SECRET = "valeur_stub_secret_transactions_dynamique";
@@ -43,7 +43,7 @@ describe("Transactions API Handler", () => {
 		vi.stubEnv("JWT_SECRET", LOCAL_TEST_JWT_SECRET);
 
 		// Importer dynamiquement le handler APRÈS que vi.stubEnv ait été appelé
-		const module = await import("./index.js");
+		const module = await import("../../../api/transactions/index.js");
 		handler = module.default;
 	});
 

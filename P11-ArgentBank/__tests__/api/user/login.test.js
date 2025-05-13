@@ -19,7 +19,7 @@ vi.mock("bcrypt", () => ({
 	},
 }));
 
-vi.mock("../lib/prisma.js", () => ({
+vi.mock("../../../api/lib/prisma.js", () => ({
 	prisma: {
 		// Correct: defines a named export 'prisma'
 		user: {
@@ -28,16 +28,16 @@ vi.mock("../lib/prisma.js", () => ({
 	},
 }));
 
-vi.mock("../middleware/rateLimit.js", () => ({
+vi.mock("../../../api/middleware/rateLimit.js", () => ({
 	rateLimitMiddleware: vi.fn(), // Correct: defines a named export
 }));
 
 // Import the handler AND the (now mocked) modules AFTER vi.mock calls
-import handler from "./login.js";
+import handler from "../../../api/user/login.js";
 import jwt from "jsonwebtoken"; // jwt IS the default export: { sign, verify, decode }
 import bcrypt from "bcrypt"; // bcrypt IS the default export: { compare }
-import { prisma } from "../lib/prisma.js";
-import { rateLimitMiddleware } from "../middleware/rateLimit.js";
+import { prisma } from "../../../api/lib/prisma.js";
+import { rateLimitMiddleware } from "../../../api/middleware/rateLimit.js";
 
 describe("Login API Handler", () => {
 	let req;

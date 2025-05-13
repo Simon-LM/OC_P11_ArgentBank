@@ -17,7 +17,7 @@ vi.mock("jsonwebtoken", () => ({
 	},
 }));
 
-vi.mock("../lib/prisma.js", () => ({
+vi.mock("../../../api/lib/prisma.js", () => ({
 	prisma: {
 		transaction: {
 			findMany: vi.fn(),
@@ -28,7 +28,7 @@ vi.mock("../lib/prisma.js", () => ({
 
 // Importer les modules mockés pour les utiliser dans les tests
 import jwt from "jsonwebtoken";
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "../../../api/lib/prisma.js";
 
 const TEST_JWT_SECRET = "super_secret_key_for_search_tests";
 
@@ -64,7 +64,7 @@ describe("Search Transactions API Handler", () => {
 
 	beforeAll(async () => {
 		vi.stubEnv("JWT_SECRET", TEST_JWT_SECRET);
-		const module = await import("./search.js");
+		const module = await import("../../../api/transactions/search.js");
 		handler = module.default;
 	});
 
