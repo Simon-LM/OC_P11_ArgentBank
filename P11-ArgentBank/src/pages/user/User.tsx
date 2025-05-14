@@ -226,23 +226,28 @@ const User: React.FC = () => {
 		? accounts.find((acc) => acc.id === selectedAccountId) || null
 		: null;
 
+	// const navigateToSearchResults = () => {
+	// 	if (tableHeadingRef.current) {
+	// 		const firstCell = tableHeadingRef.current.querySelector(
+	// 			"th:first-child, td:first-child"
+	// 		);
+
+	// 		if (firstCell instanceof HTMLElement) {
+	// 			firstCell.setAttribute("tabindex", "-1");
+	// 			firstCell.focus();
+
+	// 			setActionFeedback(
+	// 				`${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} found.
+	//     Use arrow keys to navigate through the table.`
+	// 			);
+	// 		} else {
+	// 			tableHeadingRef.current.focus();
+	// 		}
+	// 	}
+	// };
 	const navigateToSearchResults = () => {
 		if (tableHeadingRef.current) {
-			const firstCell = tableHeadingRef.current.querySelector(
-				"th:first-child, td:first-child"
-			);
-
-			if (firstCell instanceof HTMLElement) {
-				firstCell.setAttribute("tabindex", "-1");
-				firstCell.focus();
-
-				setActionFeedback(
-					`${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} found. 
-        Use arrow keys to navigate through the table.`
-				);
-			} else {
-				tableHeadingRef.current.focus();
-			}
+			tableHeadingRef.current.focus();
 		}
 	};
 
@@ -274,11 +279,12 @@ const User: React.FC = () => {
 				{isAuthenticated && currentUser ? (
 					<>
 						<h2 className={user["user__title"]}>
-							Welcome back
-							<br />
-							{currentUser
-								? `${currentUser.firstName} ${currentUser.lastName}!`
-								: ""}
+							<span>Welcome back</span>
+							{currentUser && ( // Afficher le nom seulement si currentUser existe
+								<span className={user["user__title-name"]}>
+									{`${currentUser.firstName} ${currentUser.lastName}!`}
+								</span>
+							)}
 						</h2>
 
 						<div>
@@ -332,29 +338,6 @@ const User: React.FC = () => {
 												aria-pressed={account.id === selectedAccountId}
 												aria-describedby={`account-${account.id}-desc`}
 												onKeyDown={(e) => handleAccountKeyNavigation(e, index)}>
-												{/* <div className={user["account__content"]}>
-																									
-													<h3 className={user["account__title"]}>
-														{account.type} (x{account.accountNumber})
-													</h3>
-													<p
-														className={user["account__amount"]}
-														aria-label={`Available Balance: €${account.balance.toFixed(2)}`}>
-														€{account.balance.toFixed(2)}
-													</p>
-													<p
-														className={user["account__description"]}
-														aria-hidden="true">
-														Available Balance
-													</p>
-												</div>
-												<span
-													className="sr-only"
-													id={`account-${account.id}-desc`}>
-													Account {index + 1} of {accounts.length}.
-													{account.id === selectedAccountId ? " Selected." : ""}
-												</span> */}
-
 												<div className={user["account__content"]}>
 													<div
 														aria-label={`${account.type} account, number x${account.accountNumber}, Available Balance: €${account.balance.toFixed(2)}`}>
@@ -485,25 +468,14 @@ const User: React.FC = () => {
 														<th scope="col">Notes</th>
 													</tr>
 												</thead>
-												<tbody
-													role="grid"
-													aria-rowcount={pagination.total}
-													aria-colcount={4}>
-													{searchResults.map((tx, index) => (
-														<tr
-															role="row"
-															aria-rowindex={
-																pagination.page * pagination.limit -
-																pagination.limit +
-																index +
-																1
-															}
-															className={user["transaction-row"]}
-															key={tx.id}>
+												<tbody>
+													{searchResults.map((tx) => (
+														<tr className={user["transaction-row"]} key={tx.id}>
 															<td className={user["transaction-row__cell"]}>
-																<h3 className={user["transaction-row__title"]}>
+																<span
+																	className={user["transaction-row__title"]}>
 																	{tx.description}
-																</h3>
+																</span>
 															</td>
 															<td className={user["transaction-row__cell"]}>
 																<p className={user["transaction-row__meta"]}>

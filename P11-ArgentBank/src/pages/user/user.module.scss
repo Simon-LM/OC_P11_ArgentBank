@@ -37,6 +37,10 @@
 			background-color: var.$primary-color;
 			margin: 0.75rem auto 0;
 		}
+
+		&-name {
+			display: block;
+		}
 	}
 
 	&__edit-button {

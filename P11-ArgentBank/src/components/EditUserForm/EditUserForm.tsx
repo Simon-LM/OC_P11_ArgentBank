@@ -149,11 +149,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 							readOnly
 							aria-readonly="true"
 							{...register("firstName")}
-							aria-describedby="firstName-label firstName-readonly-desc"
+							// aria-describedby="firstName-label firstName-readonly-desc"
 						/>
-						<span id="firstName-readonly-desc" className="sr-only">
+						{/* <span id="firstName-readonly-desc" className="sr-only">
 							This field cannot be modified.
-						</span>
+						</span> */}
 
 						{errors.firstName && (
 							<p className={editUserForm["edit-user-form__error"]}>

@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
 import { logoutUser } from "../../store/slices/usersSlice";
@@ -10,6 +10,7 @@ import argentBankLogoWebp from "../../assets/img/argentBankLogo.webp";
 import argentBankLogoAvif from "../../assets/img/argentBankLogo.avif";
 
 const Header: React.FC = () => {
+	const location = useLocation();
 	const isAuthenticated = useSelector(
 		(state: RootState) => state.users.isAuthenticated
 	);
@@ -24,22 +25,26 @@ const Header: React.FC = () => {
 		navigate("/");
 	};
 
+	const isHomePage = location.pathname === "/";
+
 	return (
 		<header className="header" role="banner">
+			<a href="#main-content" className="skip-to-content">
+				Skip to main content
+			</a>
+
 			<h1 id="site-title" className="sr-only">
 				Argent Bank - Your Trusted Online Banking Partner Since 2020
 			</h1>
 
-			{/* Skip link pour l'accessibilité - visible uniquement au focus */}
-			<a
-				href="#main-content"
-				className="skip-to-content"
-				aria-label="Skip to main content">
-				Skip to main content
-			</a>
-
 			<div className="header__logo-container">
-				<a className="header__logo" href="./" aria-label="Go to home page">
+				<a
+					className="header__logo"
+					href={isHomePage ? undefined : "./"}
+					aria-label="Go to home page"
+					aria-disabled={isHomePage ? "true" : undefined}
+					aria-current={isHomePage ? "page" : undefined}
+					onClick={isHomePage ? (e) => e.preventDefault() : undefined}>
 					<picture>
 						<source srcSet={argentBankLogoAvif} type="image/avif" />
 						<source srcSet={argentBankLogoWebp} type="image/webp" />

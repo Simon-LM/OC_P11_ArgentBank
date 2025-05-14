@@ -5,6 +5,7 @@ declare const classNames: {
   readonly pagination__ellipsis: "pagination__ellipsis";
   readonly "user-page": "user-page";
   readonly user__title: "user__title";
+  readonly "user__title-name": "user__title-name";
   readonly "user__edit-button": "user__edit-button";
   readonly user__error: "user__error";
   readonly section__heading: "section__heading";

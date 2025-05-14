@@ -5,7 +5,7 @@ import Feature from "../Feature";
 
 const Features = memo(() => (
 	<section className="features">
-		<h2 className="sr-only">Features</h2>
+		<h2 className="sr-only">Key Advantages of Banking with Argent Bank</h2>
 		<Feature
 			iconClass="feature-icon--chat"
 			iconLabel="Chat icon representing 24/7 customer service"

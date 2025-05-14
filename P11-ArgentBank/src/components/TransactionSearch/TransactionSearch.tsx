@@ -76,16 +76,14 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 		const handleGlobalKeyDown = (e: KeyboardEvent) => {
 			console.log(`Key pressed globally: ${e.key}, Alt: ${e.altKey}`);
 
-			if (e.altKey && e.key.toLowerCase() === "r") {
+			if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "f") {
 				e.preventDefault();
 				searchInputRef.current?.focus();
-				console.log("Alt+R activated");
 			}
 
-			if (e.altKey && e.key.toLowerCase() === "t" && !isLoading) {
+			if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "r" && !isLoading) {
 				e.preventDefault();
 				onNavigateToResults?.();
-				console.log("Alt+T activated");
 			}
 		};
 
@@ -100,9 +98,8 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 
 		if (e.key === "Enter" && !isLoading) {
 			e.preventDefault();
-			setTimeout(() => {
-				onNavigateToResults?.();
-			}, 100);
+
+			onNavigateToResults?.();
 		}
 
 		if (e.key === "Escape") {
@@ -190,7 +187,8 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 
 			<p className={styles["transaction-search__keyboard-shortcuts"]}>
 				<small>
-					Keyboard shortcuts: Alt+R for search field, Alt+T for results
+					Keyboard shortcuts: Ctrl+Alt+F for search field, Ctrl+Alt+R for
+					results
 				</small>
 			</p>
 
@@ -200,8 +198,8 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 					? `Currently viewing account ending in ${selectedAccount.accountNumber}.`
 					: "Currently viewing all accounts."}
 				You can search by date format DD/MM/YYYY, exact amounts, or keywords in
-				descriptions. Press Enter or Alt+T to navigate to search results. Press
-				Escape to exit the search field.
+				descriptions. Press Enter or Ctrl+Alt+R to navigate to search results.
+				Press Escape to exit the search field.
 			</span>
 		</div>
 	);

@@ -6,11 +6,7 @@ import Features from "../../components/Features";
 const Home: React.FC = () => {
 	return (
 		<div id="main-content" tabIndex={-1}>
-			<div
-				className="hero"
-				data-testid="hero"
-				// aria-label="Hero banner showing a tree sprout in a jar of coins, symbolizing growth and savings"
-			>
+			<div className="hero" data-testid="hero">
 				<div className="hero__image-description">
 					<span className="material-symbols-outlined">image</span> A young tree
 					sprout growing in a glass jar filled with coins, symbolizing financial

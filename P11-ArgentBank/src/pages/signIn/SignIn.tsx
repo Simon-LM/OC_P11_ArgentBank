@@ -79,7 +79,7 @@ const SignIn: React.FC = () => {
 
 	return (
 		<div className={signin["signin-page"]}>
-			<h2 className="sr-only">Account Login - Argent Bank</h2>
+			{/* <h2 className="sr-only">Account Login - Argent Bank</h2> */}
 
 			<section className={signin["signin-form"]}>
 				<i
