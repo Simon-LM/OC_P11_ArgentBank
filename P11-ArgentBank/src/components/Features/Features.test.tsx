@@ -8,7 +8,12 @@ describe("Features Component", () => {
 	test("rend le composant Features avec tous ses éléments", () => {
 		render(<Features />);
 
-		expect(screen.getByText("Features")).toHaveClass("sr-only");
+		const heading = screen.getByRole("heading", {
+			name: /Key Advantages of Banking with Argent Bank/i,
+			level: 2,
+		});
+		expect(heading).toBeInTheDocument();
+		expect(heading).toHaveClass("sr-only");
 
 		expect(screen.getByText("You are our #1 priority")).toBeInTheDocument();
 		expect(

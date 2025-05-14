@@ -150,4 +150,54 @@ describe("usersSlice", () => {
 		const afterState = reducer(nextState, selectAccount(null));
 		expect(afterState.selectedAccountId).toBeNull();
 	});
+
+	test("updateCurrentUser ne modifie rien si currentUser est null", () => {
+		const currentState: UsersState = {
+			...initialState,
+			currentUser: null,
+		};
+		const update = { userName: "nouveau" };
+		const nextState = reducer(currentState, updateCurrentUser(update));
+		expect(nextState.currentUser).toBeNull();
+	});
+
+	test("clearTransactionsError ne fait rien si pas d'erreur", () => {
+		const stateSansErreur: UsersState = {
+			...initialState,
+			transactionsError: null,
+		};
+		const nextState = reducer(stateSansErreur, clearTransactionsError());
+		expect(nextState.transactionsError).toBeNull();
+	});
+
+	test("selectAccount avec le même ID ne change pas l'état", () => {
+		const state: UsersState = {
+			...initialState,
+			selectedAccountId: "abc",
+		};
+		const nextState = reducer(state, selectAccount("abc"));
+		expect(nextState.selectedAccountId).toBe("abc");
+	});
+
+	test("reducer retourne l'état pour une action inconnue", () => {
+		const state: UsersState = { ...initialState };
+		const nextState = reducer(state, { type: "ACTION_INCONNUE" });
+		expect(nextState).toEqual(state);
+	});
+
+	test("setAuthState avec un utilisateur partiel ne casse pas le reducer", () => {
+		const partialUser = {
+			id: "2",
+			email: "partial@example.com",
+			firstName: "Partial",
+			lastName: "User",
+			userName: "partialuser",
+			createdAt: "2024-01-01",
+			updatedAt: "2024-01-01",
+			accounts: [],
+		};
+		const nextState = reducer(initialState, setAuthState(partialUser));
+		expect(nextState.isAuthenticated).toBe(true);
+		expect(nextState.currentUser).toEqual(partialUser);
+	});
 });

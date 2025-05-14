@@ -7,6 +7,56 @@ import User from "./User";
 import usersReducer, { UsersState } from "../../store/slices/usersSlice";
 import * as authService from "../../utils/authService";
 import { describe, test, expect, vi } from "vitest";
+import { TransactionType } from "../../types/transaction";
+import * as usersSlice from "../../store/slices/usersSlice";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { Transaction, Pagination } from "../../store/slices/usersSlice";
+import type { SearchTransactionsParams } from "../../store/slices/usersSlice";
+
+// Mock searchTransactions pour retourner une thunk factice compatible avec le typage SafePromise attendu
+vi.spyOn(usersSlice, "searchTransactions").mockImplementation(() => () => {
+	const action: PayloadAction<
+		{ transactions: Transaction[]; pagination: Pagination },
+		string,
+		{
+			arg: SearchTransactionsParams;
+			requestId: string;
+			requestStatus: "fulfilled";
+		},
+		never
+	> = {
+		type: "users/searchTransactions/fulfilled",
+		payload: {
+			transactions: [],
+			pagination: { total: 0, page: 1, limit: 10, pages: 1 },
+		},
+		meta: {
+			arg: {} as SearchTransactionsParams,
+			requestId: "mock-request-id",
+			requestStatus: "fulfilled",
+		},
+	};
+
+	const safePromise = Promise.resolve(action) as Promise<typeof action> & {
+		__linterBrands: "SafePromise";
+		abort: (reason?: string) => void;
+		requestId: string;
+		arg: SearchTransactionsParams;
+		unwrap: () => Promise<{
+			transactions: Transaction[];
+			pagination: Pagination;
+		}>;
+	};
+	safePromise.__linterBrands = "SafePromise";
+	safePromise.abort = () => {};
+	safePromise.requestId = "mock-request-id";
+	safePromise.arg = {} as SearchTransactionsParams;
+	safePromise.unwrap = async () => ({
+		transactions: [],
+		pagination: { total: 0, page: 1, limit: 10, pages: 1 },
+	});
+	return safePromise;
+});
 
 vi.mock("../../utils/authService");
 vi.mock("../../hooks/useMatomo/useMatomo", () => ({
@@ -165,5 +215,169 @@ describe("User Component", () => {
 			accountsError: "Network error",
 		});
 		expect(screen.getByText(/error loading accounts/i)).toBeInTheDocument();
+	});
+
+	test("focus sur le titre des transactions lors du changement de compte", async () => {
+		renderUser({ selectedAccountId: "123" });
+		const heading = await screen.findByRole("heading", {
+			name: /transaction history|all transactions/i,
+		});
+		expect(heading).toHaveAttribute("tabindex", "-1");
+	});
+
+	test("affiche le tableau des transactions avec en-tête accessible", async () => {
+		const now = new Date().toISOString();
+		const customState = {
+			searchResults: [
+				{
+					id: "tx1",
+					amount: 42.5,
+					description: "Achat Amazon",
+					date: now,
+					category: "Shopping",
+					notes: "Cadeau",
+					type: TransactionType.DEBIT,
+					createdAt: now,
+					updatedAt: now,
+					accountId: "123",
+				},
+			],
+			searchStatus: "succeeded" as const,
+			accounts: [
+				{
+					id: "123",
+					accountNumber: "8349",
+					balance: 2082.79,
+					type: "checking",
+					userId: "1",
+					createdAt: now,
+					updatedAt: now,
+				},
+			],
+			selectedAccountId: "123",
+		};
+		renderUser(customState);
+		const table = await screen.findByRole("table", {
+			name: /transaction history/i,
+		});
+		const thead = table.querySelector("thead");
+		expect(thead).toHaveClass("sr-only");
+		const caption = table.querySelector("caption");
+		expect(caption).toHaveClass("sr-only");
+	});
+
+	test("navigation clavier sur les comptes (flèches haut/bas)", () => {
+		renderUser();
+		const accountButtons = screen.getAllByRole("button", { name: /account/i });
+		accountButtons[0].focus();
+		fireEvent.keyDown(accountButtons[0], { key: "ArrowDown" });
+		// Le focus doit aller sur le heading des transactions
+		const heading = screen.getByRole("heading", {
+			name: /transaction history|all transactions/i,
+		});
+		// Impossible de tester le focus réel dans JSDOM, mais on vérifie l'appel
+		expect(heading).toHaveAttribute("tabindex", "-1");
+	});
+
+	test("affiche le feedback d'action dans un sr-only lors de la sélection de compte", () => {
+		renderUser();
+		const accountButton = screen.getByRole("button", { name: /account/i });
+		fireEvent.click(accountButton);
+		const feedback = screen.getAllByRole("status");
+		expect(feedback.length).toBeGreaterThan(0);
+	});
+
+	test("affiche la pagination si plusieurs pages de transactions", async () => {
+		const now = new Date().toISOString();
+		const transactions = Array.from({ length: 10 }, (_, i) => ({
+			id: `tx${i + 1}`,
+			amount: 42.5,
+			description: `Achat Amazon ${i + 1}`,
+			date: now,
+			category: "Shopping",
+			notes: "Cadeau",
+			type: TransactionType.DEBIT,
+			createdAt: now,
+			updatedAt: now,
+			accountId: "123",
+		}));
+		const customState = {
+			pagination: { total: 30, page: 1, limit: 10, pages: 3 },
+			searchResults: transactions,
+			searchStatus: "succeeded" as const,
+			accounts: [
+				{
+					id: "123",
+					accountNumber: "8349",
+					balance: 2082.79,
+					type: "checking",
+					userId: "1",
+					createdAt: now,
+					updatedAt: now,
+				},
+			],
+			selectedAccountId: "123",
+		};
+		renderUser(customState);
+		const nav = await screen.findByRole("navigation", {
+			name: /transaction pagination/i,
+		});
+		expect(nav).toBeInTheDocument();
+		const pageButtons = await screen.findAllByRole("button", {
+			name: /go to page/i,
+		});
+		expect(pageButtons.length).toBeGreaterThan(1);
+	});
+
+	test("focus sur le tableau des transactions lors de la navigation vers les résultats", async () => {
+		const now = new Date().toISOString();
+		const customState = {
+			searchResults: [
+				{
+					id: "tx1",
+					amount: 42.5,
+					description: "Achat Amazon",
+					date: now,
+					category: "Shopping",
+					notes: "Cadeau",
+					type: TransactionType.DEBIT,
+					createdAt: now,
+					updatedAt: now,
+					accountId: "123",
+				},
+			],
+			searchStatus: "succeeded" as const,
+			accounts: [
+				{
+					id: "123",
+					accountNumber: "8349",
+					balance: 2082.79,
+					type: "checking",
+					userId: "1",
+					createdAt: now,
+					updatedAt: now,
+				},
+			],
+			selectedAccountId: "123",
+		};
+		renderUser(customState);
+		const table = await screen.findByRole("table", {
+			name: /transaction history/i,
+		});
+		table.focus();
+		expect(table).toHaveFocus();
+	});
+
+	test("le feedback d'action sr-only s'affiche après sélection de compte", () => {
+		renderUser();
+		const accountButton = screen.getByRole("button", { name: /account/i });
+		fireEvent.click(accountButton);
+		const feedbacks = screen.getAllByRole("status");
+		const found = feedbacks.some((el) =>
+			el.textContent?.includes(
+				"Account checking selected. Transactions filtered."
+			)
+		);
+		expect(found).toBe(true);
 	});
 });

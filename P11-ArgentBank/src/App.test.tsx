@@ -4,7 +4,7 @@ import { describe, test, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer, { UsersState, User } from "./store/slices/usersSlice";
+import userReducer, { UsersState } from "./store/slices/usersSlice";
 import App from "./App";
 
 // Définir RootState
@@ -36,7 +36,19 @@ const createTestStore = (isAuthenticated = false) => {
 						],
 					}
 				: null,
-			users: [] as User[], // Type explicite pour éviter never[]
+			accounts: [],
+			accountsStatus: "idle",
+			accountsError: null,
+			selectedAccountId: null,
+			transactions: [],
+			transactionsStatus: "idle",
+			transactionsError: null,
+			searchResults: [],
+			searchStatus: "idle",
+			searchError: null,
+			pagination: null,
+			currentSortBy: "date",
+			currentSortOrder: "desc",
 		},
 	};
 
