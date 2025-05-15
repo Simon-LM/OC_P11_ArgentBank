@@ -125,13 +125,14 @@ describe("TransactionSearch", () => {
 
 	it("affiche les instructions d'accessibilité et le mode de recherche courant", () => {
 		render(<TransactionSearch {...defaultProps} />);
+		// Les instructions sont maintenant dans un span.sr-only unique, on vérifie son contenu
 		const instructions = screen.getByText(
-			/filter transactions by entering text/i
+			/Currently viewing account ending in/i
 		);
 		expect(instructions).toBeInTheDocument();
 		expect(instructions).toHaveClass("sr-only");
 		expect(instructions.textContent).toMatch(
-			/currently viewing account ending in/i
+			/You can search by date format DD\/MM\/YYYY, exact amounts, or keywords in\s*descriptions/i
 		);
 	});
 
@@ -143,7 +144,7 @@ describe("TransactionSearch", () => {
 				searchParams={{ searchTerm: "", page: 1 }}
 			/>
 		);
-		const instructions = screen.getByText(/currently viewing all accounts/i);
+		const instructions = screen.getByText(/Currently viewing all accounts/i);
 		expect(instructions).toBeInTheDocument();
 	});
 

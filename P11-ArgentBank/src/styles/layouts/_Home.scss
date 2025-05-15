@@ -100,7 +100,6 @@
 		align-items: center;
 		width: 100%;
 		box-sizing: border-box;
-		// padding: 0.5rem;
 		// background: pink;
 	}
 
@@ -109,27 +108,20 @@
 		// background: palevioletred;
 	}
 	&__title {
+		text-align: center;
 		font-size: 1.25rem;
 		font-weight: bold;
 		margin-bottom: 0.5rem;
 	}
 
 	&__description {
+		text-align: center;
 		margin-top: 0.5rem;
 		@include mix.text-wrap;
 	}
 }
 
 .feature-icon {
-	// width: func.rem(100);
-	// min-width: func.rem(100);
-	// min-height: func.rem(100);
-	// border: func.rem(10) solid var.$light_icon-border;
-	// border-radius: 50%;
-	// padding: 1rem;
-	// position: relative;
-	// background-size: cover;
-	// // // // // //
 	width: min(func.rem(100), 80vw);
 	height: min(func.rem(100), 80vw);
 	min-width: auto;
@@ -140,7 +132,6 @@
 	position: relative;
 	background-size: contain;
 	background-position: center;
-	// box-sizing: border-box;
 
 	&--chat {
 		background-repeat: no-repeat;
@@ -159,14 +150,18 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		text-align: center;
 		position: absolute;
+		inset: 0;
 		z-index: -1;
-		width: 100%;
-		height: 100%;
 		border-radius: 50%;
-		top: 0;
-		left: 0;
-		font-size: 1rem;
+		font-size: 0.75rem;
 		color: var.$color-balanced;
+		background: none;
+		pointer-events: none;
+		padding: 0.25rem;
+		margin: 0;
+		@include mix.text-wrap;
+		// background: red;
 	}
 }

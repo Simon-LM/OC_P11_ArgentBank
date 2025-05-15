@@ -248,6 +248,10 @@ const User: React.FC = () => {
 	const navigateToSearchResults = () => {
 		if (tableHeadingRef.current) {
 			tableHeadingRef.current.focus();
+			setActionFeedback(
+				`${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} found. Use arrow keys to navigate.`
+			);
+			setTimeout(() => setActionFeedback(""), 5000);
 		}
 	};
 
@@ -336,11 +340,18 @@ const User: React.FC = () => {
 												})}
 												onClick={() => handleAccountSelect(account.id)}
 												aria-pressed={account.id === selectedAccountId}
-												aria-describedby={`account-${account.id}-desc`}
-												onKeyDown={(e) => handleAccountKeyNavigation(e, index)}>
+												// aria-describedby={`account-${account.id}-desc`}
+												onKeyDown={(e) => handleAccountKeyNavigation(e, index)}
+												aria-label={
+													`${account.type} account, number x${account.accountNumber}, ` +
+													`Available Balance: €${account.balance.toFixed(2)}. ` +
+													`Account ${index + 1} of ${accounts.length}.` +
+													(account.id === selectedAccountId ? " Selected." : "")
+												}>
 												<div className={user["account__content"]}>
 													<div
-														aria-label={`${account.type} account, number x${account.accountNumber}, Available Balance: €${account.balance.toFixed(2)}`}>
+													// aria-label={`${account.type} account, number x${account.accountNumber}, Available Balance: €${account.balance.toFixed(2)}`}
+													>
 														<h3
 															className={user["account__title"]}
 															aria-hidden="true">
@@ -358,14 +369,14 @@ const User: React.FC = () => {
 														</p>
 													</div>
 
-													<span
+													{/* <span
 														className="sr-only"
 														id={`account-${account.id}-desc`}>
 														Account {index + 1} of {accounts.length}.
 														{account.id === selectedAccountId
 															? " Selected."
 															: ""}
-													</span>
+													</span> */}
 												</div>
 											</button>
 										</li>
@@ -460,14 +471,14 @@ const User: React.FC = () => {
 														? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
 														: "Transactions from all accounts"}
 												</caption>
-												<thead className="sr-only">
+												{/* <thead className="sr-only">
 													<tr>
 														<th scope="col">Description</th>
 														<th scope="col">Date and Category</th>
 														<th scope="col">Amount</th>
 														<th scope="col">Notes</th>
 													</tr>
-												</thead>
+												</thead> */}
 												<tbody>
 													{searchResults.map((tx) => (
 														<tr className={user["transaction-row"]} key={tx.id}>

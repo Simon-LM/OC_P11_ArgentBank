@@ -19,6 +19,7 @@ const SignIn: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 	const { trackEvent } = useMatomo();
+	const [ariaMessage, setAriaMessage] = useState<string | null>(null);
 
 	const getErrorMessage = (errorMessage: string): string => {
 		if (errorMessage.includes("401")) {
@@ -42,6 +43,7 @@ const SignIn: React.FC = () => {
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		setIsLoading(true);
+		setAriaMessage("Authenticating...");
 		try {
 			const result = await loginUser({ email, password });
 
@@ -59,8 +61,11 @@ const SignIn: React.FC = () => {
 
 			dispatch(setAuthState(userProfile));
 
+			setAriaMessage("Authentication successful. Redirecting to your account.");
+
 			navigate("/User");
 		} catch (err) {
+			setAriaMessage("Authentication failed. Please check your credentials.");
 			trackEvent({
 				category: "User",
 				action: "Login",
@@ -74,6 +79,7 @@ const SignIn: React.FC = () => {
 			}
 		} finally {
 			setIsLoading(false);
+			setTimeout(() => setAriaMessage(null), 3000);
 		}
 	};
 
@@ -173,6 +179,11 @@ const SignIn: React.FC = () => {
 						{isLoading ? "Authenticating..." : "Connect"}
 					</button>
 				</form>
+				{ariaMessage && (
+					<p className="sr-only" role="status" aria-live="polite">
+						{ariaMessage}
+					</p>
+				)}
 			</section>
 		</div>
 	);

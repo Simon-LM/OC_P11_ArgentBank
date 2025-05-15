@@ -17,9 +17,7 @@ const Feature: React.FC<FeatureProps> = ({
 		<div className="feature-item__icon">
 			<i className={`feature-icon ${iconClass}`} aria-hidden="true">
 				<span className="feature-icon__description">
-					<span className="material-symbols-outlined" aria-hidden="true">
-						image
-					</span>{" "}
+					<span className="material-symbols-outlined" aria-hidden="true"></span>{" "}
 					{iconLabel}
 				</span>
 			</i>

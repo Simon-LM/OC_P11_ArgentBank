@@ -98,13 +98,28 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 
 		if (e.key === "Enter" && !isLoading) {
 			e.preventDefault();
-
 			onNavigateToResults?.();
 		}
 
 		if (e.key === "Escape") {
 			e.preventDefault();
 			e.currentTarget.blur();
+		}
+
+		if (e.key === "ArrowDown" && !e.altKey && !e.ctrlKey) {
+			e.preventDefault();
+
+			const statusElement = document.createElement("div");
+			statusElement.setAttribute("role", "status");
+			statusElement.setAttribute("aria-live", "polite");
+			statusElement.textContent =
+				"Quitting search field. Navigating to transaction results.";
+			document.body.appendChild(statusElement);
+
+			setTimeout(() => {
+				onNavigateToResults?.();
+				document.body.removeChild(statusElement);
+			}, 100);
 		}
 	};
 
@@ -193,7 +208,6 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 			</p>
 
 			<span id="transaction-search-instructions" className="sr-only">
-				Filter transactions by entering text.
 				{selectedAccount
 					? `Currently viewing account ending in ${selectedAccount.accountNumber}.`
 					: "Currently viewing all accounts."}
