@@ -156,21 +156,21 @@
 		}
 	}
 
+	&__selected-tag {
+		display: block;
+		align-self: flex-end;
+		width: fit-content;
+		font-size: 0.75rem;
+		padding: 0.25rem 0.5rem;
+		margin-top: -0.25rem;
+		margin-right: -0.25rem;
+		background-color: var.$light_account_border-selected;
+		color: white;
+		border-radius: 0.125rem;
+	}
+
 	&--selected {
 		border-left: 0.5rem solid var.$light_account_border-selected;
-		position: relative;
-
-		&::before {
-			content: "Selected";
-			position: absolute;
-			top: 0.5rem;
-			right: 0.5rem;
-			font-size: 0.75rem;
-			padding: 0.25rem 0.5rem;
-			background-color: var.$light_account_border-selected;
-			color: white;
-			border-radius: 0.125rem;
-		}
 	}
 
 	&__content {

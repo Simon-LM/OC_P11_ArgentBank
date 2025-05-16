@@ -18,7 +18,6 @@ const useSessionTimeout = (timeout: number) => {
 				clearTimeout(timerRef.current);
 			}
 
-			// Mettre à jour expiresAt dans sessionStorage
 			const expiresAt = new Date().getTime() + timeout;
 			sessionStorage.setItem("expiresAt", expiresAt.toString());
 
@@ -35,14 +34,20 @@ const useSessionTimeout = (timeout: number) => {
 			};
 
 			window.addEventListener("mousemove", resetTimer);
-			window.addEventListener("keypress", resetTimer);
+			window.addEventListener("mousedown", resetTimer);
+			window.addEventListener("keydown", resetTimer);
+			window.addEventListener("touchstart", resetTimer);
+			window.addEventListener("focus", resetTimer, true);
 
 			return () => {
 				if (timerRef.current) {
 					clearTimeout(timerRef.current);
 				}
 				window.removeEventListener("mousemove", resetTimer);
-				window.removeEventListener("keypress", resetTimer);
+				window.removeEventListener("mousedown", resetTimer);
+				window.removeEventListener("keydown", resetTimer);
+				window.removeEventListener("touchstart", resetTimer);
+				window.removeEventListener("focus", resetTimer, true);
 			};
 		}
 	}, [dispatch, timeout, isAuthenticated]);

@@ -117,7 +117,9 @@ describe("SignIn Component", () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getByText(/Unable to login. Please check your credentials./i)
+				screen.getByText(
+					/Authentication failed. Please check your credentials./i
+				)
 			).toBeInTheDocument();
 		});
 	});

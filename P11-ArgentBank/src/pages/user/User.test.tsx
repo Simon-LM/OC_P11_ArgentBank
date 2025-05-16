@@ -274,11 +274,10 @@ describe("User Component", () => {
 			selectedAccountId: "123",
 		};
 		renderUser(customState);
-		const table = await screen.findByRole("table", {
-			name: /transaction history/i,
-		});
+		const table = await screen.findByRole("table");
 		const caption = table.querySelector("caption");
 		expect(caption).toHaveClass("sr-only");
+		expect(caption?.textContent).toMatch(/Account ending in/i);
 	});
 
 	test("affiche la pagination si plusieurs pages de transactions", async () => {
@@ -355,10 +354,72 @@ describe("User Component", () => {
 			selectedAccountId: "123",
 		};
 		renderUser(customState);
-		const table = await screen.findByRole("table", {
-			name: /transaction history/i,
-		});
+		const table = await screen.findByRole("table");
 		table.focus();
 		expect(table).toHaveFocus();
+	});
+
+	test("n'affiche pas le message 'No transactions found' quand des transactions sont présentes", async () => {
+		const now = new Date().toISOString();
+		const customState = {
+			searchResults: [
+				{
+					id: "tx1",
+					amount: 42.5,
+					description: "Achat Amazon",
+					date: now,
+					type: TransactionType.DEBIT,
+					createdAt: now,
+					updatedAt: now,
+					accountId: "123",
+					category: "Shopping",
+					notes: "Cadeau",
+				},
+			],
+			searchStatus: "succeeded" as const,
+			selectedAccountId: "123",
+		};
+
+		renderUser(customState);
+
+		expect(
+			screen.queryByText(/No transactions found/i)
+		).not.toBeInTheDocument();
+
+		expect(screen.getByRole("table")).toBeInTheDocument();
+	});
+
+	test("affiche 'No transactions found' quand il n'y a aucune transaction", async () => {
+		const emptyState = {
+			searchResults: [],
+			searchStatus: "succeeded" as const,
+		};
+		renderUser(emptyState);
+		expect(screen.getByText(/No transactions found/i)).toBeInTheDocument();
+	});
+
+	test("n'affiche pas 'No transactions found' quand des transactions sont présentes", async () => {
+		// État avec des transactions
+		const stateWithTransactions = {
+			searchResults: [
+				{
+					id: "tx1",
+					amount: 100,
+					description: "Test",
+					date: new Date().toISOString(),
+					category: "Shopping",
+					notes: "Test note",
+					type: TransactionType.DEBIT,
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
+					accountId: "123",
+				},
+			],
+			searchStatus: "succeeded" as const,
+		};
+		renderUser(stateWithTransactions);
+		expect(
+			screen.queryByText(/No transactions found/i)
+		).not.toBeInTheDocument();
 	});
 });

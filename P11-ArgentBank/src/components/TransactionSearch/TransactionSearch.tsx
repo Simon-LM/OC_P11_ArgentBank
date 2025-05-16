@@ -131,7 +131,9 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 				{searchLabel}
 			</label>
 
-			<p className={styles["transaction-search__search-tips"]}>
+			<p
+				className={styles["transaction-search__search-tips"]}
+				id="search-formats">
 				Search by date (DD/MM/YYYY), amount, description, category or notes
 			</p>
 
@@ -145,7 +147,7 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 						value={inputValue}
 						onChange={(e) => handleSearchChange(e.target.value)}
 						onKeyDown={handleInputKeyDown}
-						aria-describedby="transaction-search-instructions"
+						aria-describedby="search-context keyboard-navigation search-formats"
 					/>
 
 					{inputValue && (
@@ -200,20 +202,30 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 				)}
 			</div>
 
-			<p className={styles["transaction-search__keyboard-shortcuts"]}>
+			<p
+				className={styles["transaction-search__keyboard-shortcuts"]}
+				id="keyboard-shortcuts">
 				<small>
 					Keyboard shortcuts: Ctrl+Alt+F for search field, Ctrl+Alt+R for
 					results
 				</small>
 			</p>
 
-			<span id="transaction-search-instructions" className="sr-only">
+			<span
+				id="search-context"
+				className="sr-only"
+				data-testid="search-context">
 				{selectedAccount
 					? `Currently viewing account ending in ${selectedAccount.accountNumber}.`
 					: "Currently viewing all accounts."}
-				You can search by date format DD/MM/YYYY, exact amounts, or keywords in
-				descriptions. Press Enter or Ctrl+Alt+R to navigate to search results.
-				Press Escape to exit the search field.
+			</span>
+
+			<span
+				id="keyboard-navigation"
+				className="sr-only"
+				data-testid="keyboard-navigation">
+				Press Enter or Down Arrow to navigate to search results. Press Escape to
+				exit the search field.
 			</span>
 		</div>
 	);

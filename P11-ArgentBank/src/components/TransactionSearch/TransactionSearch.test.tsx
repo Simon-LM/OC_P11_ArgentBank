@@ -125,14 +125,23 @@ describe("TransactionSearch", () => {
 
 	it("affiche les instructions d'accessibilité et le mode de recherche courant", () => {
 		render(<TransactionSearch {...defaultProps} />);
-		// Les instructions sont maintenant dans un span.sr-only unique, on vérifie son contenu
-		const instructions = screen.getByText(
+
+		const searchContext = screen.getByTestId("search-context");
+		expect(searchContext).toBeInTheDocument();
+		expect(searchContext).toHaveClass("sr-only");
+		expect(searchContext.textContent).toMatch(
 			/Currently viewing account ending in/i
 		);
-		expect(instructions).toBeInTheDocument();
-		expect(instructions).toHaveClass("sr-only");
-		expect(instructions.textContent).toMatch(
-			/You can search by date format DD\/MM\/YYYY, exact amounts, or keywords in\s*descriptions/i
+
+		const keyboardNav = screen.getByTestId("keyboard-navigation");
+		expect(keyboardNav).toBeInTheDocument();
+		expect(keyboardNav).toHaveClass("sr-only");
+		expect(keyboardNav.textContent).toMatch(/Press Enter or Down Arrow/i);
+
+		const input = screen.getByLabelText(/filter transactions/i);
+		expect(input).toHaveAttribute(
+			"aria-describedby",
+			expect.stringContaining("search-context")
 		);
 	});
 
@@ -144,8 +153,9 @@ describe("TransactionSearch", () => {
 				searchParams={{ searchTerm: "", page: 1 }}
 			/>
 		);
-		const instructions = screen.getByText(/Currently viewing all accounts/i);
-		expect(instructions).toBeInTheDocument();
+
+		const searchContext = screen.getByTestId("search-context");
+		expect(searchContext.textContent).toBe("Currently viewing all accounts.");
 	});
 
 	it("affiche les raccourcis clavier dans l'aide", () => {

@@ -25,7 +25,7 @@ const Error404 = lazy(() => import("./pages/error404/Error404"));
 
 function AppContent() {
 	const dispatch = useDispatch<AppDispatch>();
-	const sessionDuration = 10 * 60 * 1000;
+	const sessionDuration = 5 * 60 * 1000;
 	const location = useLocation();
 	const { trackPageView } = useMatomo();
 

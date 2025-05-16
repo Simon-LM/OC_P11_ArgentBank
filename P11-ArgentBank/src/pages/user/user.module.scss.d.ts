@@ -13,6 +13,7 @@ declare const classNames: {
   readonly "accounts-list": "accounts-list";
   readonly "accounts-list__item": "accounts-list__item";
   readonly account: "account";
+  readonly "account__selected-tag": "account__selected-tag";
   readonly "account--selected": "account--selected";
   readonly account__content: "account__content";
   readonly account__title: "account__title";

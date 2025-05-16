@@ -340,18 +340,21 @@ const User: React.FC = () => {
 												})}
 												onClick={() => handleAccountSelect(account.id)}
 												aria-pressed={account.id === selectedAccountId}
-												// aria-describedby={`account-${account.id}-desc`}
 												onKeyDown={(e) => handleAccountKeyNavigation(e, index)}
 												aria-label={
+													`Account ${index + 1} of ${accounts.length}. ` +
 													`${account.type} account, number x${account.accountNumber}, ` +
 													`Available Balance: €${account.balance.toFixed(2)}. ` +
-													`Account ${index + 1} of ${accounts.length}.` +
-													(account.id === selectedAccountId ? " Selected." : "")
+													(account.id === selectedAccountId ? "Selected." : "")
 												}>
+												{account.id === selectedAccountId && (
+													<span className={user["account__selected-tag"]}>
+														Selected
+													</span>
+												)}
+
 												<div className={user["account__content"]}>
-													<div
-													// aria-label={`${account.type} account, number x${account.accountNumber}, Available Balance: €${account.balance.toFixed(2)}`}
-													>
+													<div>
 														<h3
 															className={user["account__title"]}
 															aria-hidden="true">
@@ -368,15 +371,6 @@ const User: React.FC = () => {
 															Available Balance
 														</p>
 													</div>
-
-													{/* <span
-														className="sr-only"
-														id={`account-${account.id}-desc`}>
-														Account {index + 1} of {accounts.length}.
-														{account.id === selectedAccountId
-															? " Selected."
-															: ""}
-													</span> */}
 												</div>
 											</button>
 										</li>
@@ -453,9 +447,8 @@ const User: React.FC = () => {
 								{searchStatus === "succeeded" && (
 									<>
 										{/* Afficher les transactions de la page actuelle */}
-
 										{searchResults.length === 0 ? (
-											<p>
+											<p role="status" aria-live="polite">
 												{selectedAccountId
 													? "No transactions found for this account."
 													: "No transactions found."}
@@ -463,13 +456,17 @@ const User: React.FC = () => {
 										) : (
 											<table
 												className={user["transaction-table"]}
-												aria-label="Transaction history"
 												ref={tableHeadingRef}
 												tabIndex={-1}>
-												<caption className="sr-only">
+												{/* <caption className="sr-only">
 													{selectedAccount
 														? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
 														: "Transactions from all accounts"}
+													</caption> */}
+												<caption className="sr-only">
+													{selectedAccount
+														? `Account ending in ${selectedAccount.accountNumber}`
+														: "All accounts"}
 												</caption>
 												{/* <thead className="sr-only">
 													<tr>

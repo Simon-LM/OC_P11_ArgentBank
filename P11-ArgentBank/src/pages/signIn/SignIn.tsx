@@ -85,8 +85,6 @@ const SignIn: React.FC = () => {
 
 	return (
 		<div className={signin["signin-page"]}>
-			{/* <h2 className="sr-only">Account Login - Argent Bank</h2> */}
-
 			<section className={signin["signin-form"]}>
 				<i
 					className={classNames(
@@ -157,20 +155,13 @@ const SignIn: React.FC = () => {
 						</div>
 					</div>
 
-					{isLoading && (
-						<p className="sr-only" role="status" aria-live="polite">
-							Authenticating your credentials...
-						</p>
-					)}
-
-					{error && (
-						<p
-							className={signin["signin-form__error"]}
-							role="alert"
-							id="error-message">
-							{error}
-						</p>
-					)}
+					<p className="sr-only" role="status" aria-live="polite">
+						{isLoading
+							? "Authenticating your credentials..."
+							: ariaMessage
+								? ariaMessage
+								: ""}
+					</p>
 
 					<button
 						className={signin["signin-form__button"]}
@@ -179,11 +170,11 @@ const SignIn: React.FC = () => {
 						{isLoading ? "Authenticating..." : "Connect"}
 					</button>
 				</form>
-				{ariaMessage && (
+				{/* {ariaMessage && (
 					<p className="sr-only" role="status" aria-live="polite">
 						{ariaMessage}
 					</p>
-				)}
+				)} */}
 			</section>
 		</div>
 	);
