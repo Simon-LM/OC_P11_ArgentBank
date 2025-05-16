@@ -75,7 +75,7 @@ describe("useSessionTimeout", () => {
 		expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
 	});
 
-	test("réinitialise le timer sur keypress", () => {
+	test("réinitialise le timer sur keydown", () => {
 		renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
 			wrapper: TestWrapper,
 		});
@@ -83,8 +83,8 @@ describe("useSessionTimeout", () => {
 		// Avance de 3 secondes
 		vi.advanceTimersByTime(3000);
 
-		// Simule une frappe clavier
-		window.dispatchEvent(new KeyboardEvent("keypress"));
+		// Simule une frappe clavier (keydown)
+		window.dispatchEvent(new KeyboardEvent("keydown"));
 
 		// Avance de 3 secondes supplémentaires
 		vi.advanceTimersByTime(3000);
@@ -106,14 +106,27 @@ describe("useSessionTimeout", () => {
 
 		unmount();
 
-		expect(removeEventListenerSpy).toHaveBeenCalledTimes(2);
+		expect(removeEventListenerSpy).toHaveBeenCalledTimes(5);
 		expect(removeEventListenerSpy).toHaveBeenCalledWith(
 			"mousemove",
 			expect.any(Function)
 		);
 		expect(removeEventListenerSpy).toHaveBeenCalledWith(
-			"keypress",
+			"mousedown",
 			expect.any(Function)
+		);
+		expect(removeEventListenerSpy).toHaveBeenCalledWith(
+			"keydown",
+			expect.any(Function)
+		);
+		expect(removeEventListenerSpy).toHaveBeenCalledWith(
+			"touchstart",
+			expect.any(Function)
+		);
+		expect(removeEventListenerSpy).toHaveBeenCalledWith(
+			"focus",
+			expect.any(Function),
+			true
 		);
 	});
 });

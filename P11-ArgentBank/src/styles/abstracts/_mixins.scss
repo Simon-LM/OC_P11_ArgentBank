@@ -21,3 +21,57 @@
 		font-feature-settings: "tnum";
 	}
 }
+
+// // // // // // //
+
+// @mixin fluid-width(
+// 	$min-width-rem,
+// 	$max-width-rem,
+// 	$min-viewport-rem: 20rem,
+// 	$max-viewport-rem: 75rem
+// ) {
+// 	width: clamp(
+// 		#{$min-width-rem}rem,
+// 		calc(
+// 			#{$min-width-rem}rem + (#{$max-width-rem} - #{$min-width-rem}) *
+// 				(100vw - #{$min-viewport-rem}rem) /
+// 				(#{$max-viewport-rem} - #{$min-viewport-rem})
+// 		),
+// 		#{$max-width-rem}rem
+// 	);
+// }
+
+// @mixin accessible-container($max-width-rem: 70) {
+// 	width: min(100% - clamp(0.5rem, 2vw, 2rem), #{$max-width-rem}rem);
+// 	margin-left: auto;
+// 	margin-right: auto;
+// 	box-sizing: border-box;
+// }
+
+// @mixin zoom-friendly-flex($direction: "row", $wrap: true, $gap-rem: 1) {
+// 	display: flex;
+// 	flex-direction: #{$direction};
+
+// 	@if $wrap == true {
+// 		flex-wrap: wrap;
+// 	}
+
+// 	gap: #{$gap-rem}rem;
+
+// 	// Assure que les éléments flexbox peuvent réduire sous la taille de contenu minimale
+// 	& > * {
+// 		min-width: 0;
+// 	}
+// }
+// // Point clé : Le min-width: 0 pour les enfants est crucial - cette règle souvent oubliée permet aux enfants flexbox de se rétrécir en-dessous de leur largeur minimale intrinsèque, évitant les débordements en cas de texte long ou de zoom important.
+
+// @mixin flex-item-adaptive($basis-percent: 100, $min-width-rem: 15) {
+// 	flex-grow: 1;
+// 	flex-shrink: 1;
+// 	flex-basis: #{$basis-percent + "%"};
+// 	min-width: #{$min-width-rem}rem;
+
+// 	@media (max-width: #{$min-width-rem * 2}rem) {
+// 		flex-basis: 100%;
+// 	}
+// }
