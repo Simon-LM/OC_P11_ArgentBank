@@ -22,7 +22,137 @@
 	}
 }
 
-// // // // // // //
+/**
+ * Mixin pour espacement intérieur adaptatif sans padding
+ * Utilise des pseudo-éléments pour créer un "cadre" flexible
+ */
+@mixin inner-spacing(
+	$horizontal-px: 4,
+	$vertical-px: 8,
+	$vw-factor: 0.5,
+	$max-spacing-px: 24
+) {
+	// Position relative pour le conteneur parent
+	position: relative;
+
+	// Pseudo-élément qui servira de "coussin interne"
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		// Créer le cadre intérieur (l'inverse du padding)
+		pointer-events: none; // Ne pas interférer avec les clics
+		box-shadow: inset 0 0 0
+			min(calc(#{$horizontal-px}px + #{$vw-factor}vw), #{$max-spacing-px}px);
+	}
+
+	// Conteneur pour le contenu réel
+	& > * {
+		// S'assurer que tout le contenu est à l'intérieur du "coussin"
+		margin: min(calc(#{$vertical-px}px + #{$vw-factor}vw), #{$max-spacing-px}px)
+			min(calc(#{$horizontal-px}px + #{$vw-factor}vw), #{$max-spacing-px}px);
+	}
+}
+
+/**
+ * Mixin a11y-flex: Conteneur flexbox avec gaps différenciés
+ * - Utilise row-gap et column-gap pour un contrôle précis
+ * - Conçu pour gérer les zooms extrêmes sans padding
+ */
+@mixin a11y-flex(
+	$direction: row,
+	$wrap: true,
+	$inline-gap: "minimal",
+	$block-gap: 0.5rem,
+	$width: null,
+	$content-alignment: null,
+	$max-width-rem: null,
+	$break-mode: "break-word",
+	$text-wrap: true
+) {
+	display: flex;
+	flex-direction: $direction;
+
+	@if $wrap == true {
+		flex-wrap: wrap;
+	}
+
+	// Protection essentielle contre débordement
+	& > * {
+		min-width: 0;
+
+		// Application de text-wrap aux enfants si activé
+		@if $text-wrap == true {
+			overflow-wrap: break-word;
+
+			@if $break-mode == "break-all" {
+				word-break: break-all;
+			} @else if $break-mode == "break-word" {
+				word-break: break-word;
+			} @else if $break-mode == "normal" {
+				word-break: normal;
+			}
+
+			hyphens: auto;
+			max-width: 100%;
+		}
+	}
+
+	// Gap horizontal/inline - peut être très petit pour les zooms extrêmes
+	@if $inline-gap == "minimal" {
+		column-gap: max(1px, 0.25vw); // Absolument minimal
+	} @else if $inline-gap == "tight" {
+		column-gap: max(2px, 0.5vw); // Serré mais visible
+	} @else if $inline-gap == "standard" {
+		column-gap: max(4px, 0.75vw); // Standard
+	} @else if $inline-gap == "wide" {
+		column-gap: max(8px, 1vw); // Large
+	} @else {
+		column-gap: $inline-gap; // Valeur personnalisée
+	}
+
+	// Gap vertical/block - peut rester en rem, moins problématique
+	row-gap: $block-gap;
+
+	// Largeur si spécifiée
+	@if $width != null {
+		@if type-of($width) == "string" {
+			width: $width; // Pour "92.5%" par exemple
+		} @else {
+			width: min(100% - 4px, #{$width}rem);
+		}
+		margin-inline: auto;
+	}
+
+	// Largeur maximale si spécifiée, indépendante de la largeur
+	@if $max-width-rem != null {
+		max-width: #{$max-width-rem}rem;
+	}
+
+	// Alignements optionnels
+	@if $content-alignment != null {
+		@if $content-alignment == "space-between" {
+			justify-content: space-between;
+		} @else if $content-alignment == "center" {
+			justify-content: center;
+		} @else if $content-alignment == "start" {
+			justify-content: flex-start;
+		} @else if $content-alignment == "end" {
+			justify-content: flex-end;
+		} @else {
+			justify-content: $content-alignment;
+		}
+	}
+
+	box-sizing: border-box;
+}
+
+// // // // // // // // // // // // // // // // // //
+// // // // // // // // // // // // // // // // // // // //
+// // // // // // // // // // // // // // // // //
 
 // @mixin fluid-width(
 // 	$min-width-rem,
@@ -73,5 +203,228 @@
 
 // 	@media (max-width: #{$min-width-rem * 2}rem) {
 // 		flex-basis: 100%;
+// 	}
+// }
+
+// // // // // // // // // // // // // // // // // // /**
+//  * Mixin principal pour conteneurs flexbox accessibles
+//  * Gère automatiquement l'overflow du texte et s'adapte aux zooms extrêmes
+//  */
+// @mixin a11y-flex-container(
+// 	$direction: row,
+// 	$wrap: true,
+// 	$gap-rem: 1,
+// 	$text-wrap: true,
+// 	$max-width-rem: null
+// ) {
+// 	// Configuration flexbox de base
+// 	display: flex;
+// 	flex-direction: $direction;
+
+// 	@if $wrap == true {
+// 		flex-wrap: wrap;
+// 	}
+
+// 	// Espacement adaptatif - ne grandit pas excessivement avec le zoom
+// 	gap: clamp(0.5rem, #{$gap-rem}rem, #{$gap-rem * 1.5}rem);
+
+// 	// Protection contre le débordement de texte
+// 	@if $text-wrap == true {
+// 		& > * {
+// 			min-width: 0; // Crucial pour permettre la réduction sous la largeur intrinsèque
+// 			@include text-wrap();
+// 		}
+// 	} @else {
+// 		& > * {
+// 			min-width: 0;
+// 		}
+// 	}
+
+// 	// Conteneur à largeur maximale si spécifié
+// 	@if $max-width-rem != null {
+// 		width: min(100% - clamp(0.5rem, 2vw, 2rem), #{$max-width-rem}rem);
+// 		margin-inline: auto; // Centrage horizontal
+// 		box-sizing: border-box;
+// 	}
+
+// 	// S'assurer que le padding horizontal ne devient pas excessif à grand zoom
+// 	padding-inline: clamp(0.25rem, 1vw, 1.5rem);
+// }
+
+// /**
+//  * Mixin pour les éléments enfants de flex
+//  * Combinaison de flex-item-adaptive et gestion du texte
+//  */
+// @mixin a11y-flex-item(
+// 	$basis-percent: 100,
+// 	$min-width-rem: 10,
+// 	$preserve-numbers: false,
+// 	$break-mode: "break-word"
+// ) {
+// 	// Configuration flexbox de l'élément
+// 	flex: 1 1 #{$basis-percent + "%"};
+
+// 	// Largeur minimale qui s'adapte au zoom (basée sur rem)
+// 	min-width: #{$min-width-rem}rem;
+
+// 	// Passage en pleine largeur sur petit écran ou zoom important
+// 	@media (max-width: #{$min-width-rem * 2.5}rem) {
+// 		flex-basis: 100%;
+// 		min-width: 0; // Permettre la réduction complète
+// 	}
+
+// 	// Gestion du texte avec mode configurable
+// 	@include text-wrap($break-mode);
+
+// 	// Préservation des nombres si demandée
+// 	@if $preserve-numbers {
+// 		@include number-format();
+// 	}
+
+// 	// Espacement adaptatif qui ne devient pas excessif
+// 	padding: clamp(0.25rem, 0.5vw, 1rem);
+// }
+
+/**
+ * Mixin pour espacement horizontal adaptatif (marges ou paddings)
+ * Limite l'espacement maximum à grand zoom
+ */
+// @mixin adaptive-spacing(
+// 	$property: padding,
+// 	$direction: "inline",
+// 	$min-rem: 0.25,
+// 	$max-rem: 1.5
+// ) {
+// 	@if $direction == "inline" {
+// 		#{$property}-inline: clamp(
+// 			#{$min-rem}rem,
+// 			calc(#{$min-rem}rem + 1vw),
+// 			#{$max-rem}rem
+// 		);
+// 	} @else if $direction == "block" {
+// 		#{$property}-block: clamp(
+// 			#{$min-rem}rem,
+// 			calc(#{$min-rem}rem + 1vh),
+// 			#{$max-rem}rem
+// 		);
+// 	} @else if $direction == "all" {
+// 		#{$property}: clamp(
+// 			#{$min-rem}rem,
+// 			calc(#{$min-rem}rem + 0.5vw),
+// 			#{$max-rem}rem
+// 		);
+// 	} @else {
+// 		#{$property}-#{$direction}: clamp(
+// 			#{$min-rem}rem,
+// 			calc(#{$min-rem}rem + 0.5vw),
+// 			#{$max-rem}rem
+// 		);
+// 	}
+// }
+
+// // // // // // // // // // // // // // // // //
+
+// /**
+//  * Mixin pour espacements adaptés aux zooms extrêmes
+//  * Utilise px + vw pour éviter les espacements excessifs
+//  */
+// @mixin zoom-aware-spacing(
+// 	$property: padding,
+// 	$direction: "inline",
+// 	$base-px: 4,
+// 	$vw-factor: 1,
+// 	$max-px: 24
+// ) {
+// 	// Calcul basé sur px + vw plutôt que rem
+// 	$value: calc(#{$base-px}px + #{$vw-factor}vw);
+
+// 	@if $direction == "inline" {
+// 		#{$property}-inline: min(#{$value}, #{$max-px}px);
+// 	} @else if $direction == "block" {
+// 		#{$property}-block: min(#{$value}, #{$max-px}px);
+// 	} @else if $direction == "all" {
+// 		#{$property}: min(#{$value}, #{$max-px}px);
+// 	} @else {
+// 		#{$property}-#{$direction}: min(#{$value}, #{$max-px}px);
+// 	}
+// }
+
+// /**
+//  * Conteneur flex optimisé pour accessibilité
+//  * Ne dépend pas de rem pour les espacements minimaux
+//  */
+// @mixin a11y-flex-container(
+// 	$direction: row,
+// 	$wrap: true,
+// 	$gap-base-px: 8,
+// 	$gap-vw: 0.5,
+// 	$gap-max-px: 24,
+// 	$add-padding: false,
+// 	$max-width-rem: null
+// ) {
+// 	// Configuration flexbox
+// 	display: flex;
+// 	flex-direction: $direction;
+
+// 	@if $wrap == true {
+// 		flex-wrap: wrap;
+// 	}
+
+// 	// Gap avec valeur minimale fixe en px
+// 	gap: min(calc(#{$gap-base-px}px + #{$gap-vw}vw), #{$gap-max-px}px);
+
+// 	// Protection contre débordement
+// 	& > * {
+// 		min-width: 0;
+// 	}
+
+// 	// Padding optionnel
+// 	@if $add-padding {
+// 		@include zoom-aware-spacing(padding, "inline", 6, 0.5, 16);
+// 	}
+
+// 	// Conteneur à largeur maximale si spécifié
+// 	@if $max-width-rem != null {
+// 		// Utilisation de px + % pour les marges minimales
+// 		width: min(calc(100% - 16px), #{$max-width-rem}rem);
+// 		margin-inline: auto;
+// 		box-sizing: border-box;
+// 	}
+// }
+
+// /**
+//  * Élément flex avec gestion optimale du zoom
+//  */
+// @mixin a11y-flex-item(
+// 	$basis-percent: 100,
+// 	$min-width-rem: 10,
+// 	$text-wrap: true,
+// 	$preserve-numbers: false
+// ) {
+// 	// Configuration flex
+// 	flex-grow: 1;
+// 	flex-shrink: 1;
+// 	flex-basis: #{$basis-percent + "%"};
+
+// 	// Largeur minimale basée sur rem (s'adapte au zoom)
+// 	min-width: #{$min-width-rem}rem;
+
+// 	// Media query adaptative pour petits écrans ou zoom important
+// 	@media (max-width: #{$min-width-rem * 2.5}rem) {
+// 		flex-basis: 100%;
+// 		min-width: 0; // Adaptation complète
+
+// 		// Réduction progressive du padding interne pour éviter l'encombrement
+// 		@include zoom-aware-spacing(padding, "all", 2, 0.25, 8);
+// 	}
+
+// 	// Gestion optionnelle du texte
+// 	@if $text-wrap == true {
+// 		@include text-wrap();
+// 	}
+
+// 	// Préservation des nombres si demandée
+// 	@if $preserve-numbers {
+// 		@include number-format();
 // 	}
 // }

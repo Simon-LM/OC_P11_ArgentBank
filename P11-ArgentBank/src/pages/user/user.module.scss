@@ -114,25 +114,39 @@
 			margin-bottom: 0;
 		}
 
-		button {
-			width: 100%;
-		}
+		// button {
+		// 	width: 100%;
+		// }
 	}
 }
 
 .account {
+	// @include mix.a11y-flex(
+	// 	column,
+	// 	false,
+	// 	"minimal",
+	// 	0.75rem,
+	// 	"92.5%",
+	// 	"space-between",
+	// 	30
+	// );
+	// // // // //
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
-	border: func.rem(1) solid var.$light_account_border;
-	background-color: var.$light_account_bg;
-	color: var.$light_account_text;
 	width: 92.5%;
 	max-width: 30rem;
 	margin: 0 auto;
 	flex-direction: column;
-	padding: calc(0.5rem + 1vw);
 	box-sizing: border-box;
+	// // // //
+	// padding: calc(0.5rem + 1vw);
+	padding: calc(0.4rem + 0.75vw);
+	// // // //
+
+	align-items: center;
+	border: func.rem(1) solid var.$light_account_border;
+	background-color: var.$light_account_bg;
+	color: var.$light_account_text;
 	text-align: left;
 	margin-bottom: 2rem;
 	appearance: none;
@@ -227,6 +241,8 @@
 	border-collapse: collapse;
 	border-spacing: 0;
 	display: block;
+	box-sizing: border-box;
+	background-color: red;
 	tbody {
 		width: 100%;
 		display: flex;
@@ -247,13 +263,14 @@
 	border-bottom: 1px solid var.$light-transaction-border;
 	margin: 0 0 0.75rem 0;
 	// padding: 1rem 1vw;
-	padding: 0.75rem clamp(1px, 1vw, 0.75rem);
+	// padding: 0.75rem clamp(1px, 1vw, 0.75rem);
+	padding: calc(0.4rem + 0.75vw);
 	box-sizing: border-box;
 	text-align: left;
 	background-color: var.$light_transaction_bg;
 	// background: palevioletred;
 	&__cell {
-		padding: 0.25rem;
+		padding: 0.25rem 0;
 		width: 100%;
 		// background: lightcoral;
 

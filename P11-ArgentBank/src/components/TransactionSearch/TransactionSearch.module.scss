@@ -9,11 +9,13 @@
 	max-width: 30rem;
 	margin: 0 auto;
 	margin-bottom: 1rem;
-	padding: 1rem 1vw;
+	// padding: 1rem 1vw;
+	padding: calc(0.4rem + 0.75vw);
 	background-color: var.$transaction-search-bg;
 	border-radius: 0.25rem;
 	border: 1px solid var.$transaction-search-border;
 	box-sizing: border-box;
+	// background-color: purple;
 
 	&__label {
 		display: block;
@@ -57,7 +59,8 @@
 		min-width: 0;
 		width: 100%;
 		// max-width: 75vw;
-		padding: 0.5rem 1vw;
+		// padding: 0.5rem 1vw;
+		padding: calc(0.3rem + 0.5vw);
 		border: 1px solid var.$transaction-search-input-border;
 		border-radius: 0.25rem;
 		font-size: 1rem;
@@ -106,7 +109,8 @@
 	&__global-button {
 		flex: 1 1 auto;
 		// width: 100%;
-		padding: 0.5rem 1vw;
+		// padding: 0.5rem 1vw;
+		padding: calc(0.3rem + 0.5vw);
 		background-color: transparent;
 		border: 1px solid var.$transaction-search-scope-button-border;
 		border-radius: 0.25rem;
