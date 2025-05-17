@@ -39,6 +39,19 @@ const useSessionTimeout = (timeout: number) => {
 			window.addEventListener("touchstart", resetTimer);
 			window.addEventListener("focus", resetTimer, true);
 
+			window.addEventListener("keyup", resetTimer);
+			document.addEventListener("focusin", resetTimer);
+			document.addEventListener("scroll", resetTimer);
+			document.addEventListener("selectionchange", resetTimer);
+
+			const observer = new MutationObserver(resetTimer);
+			observer.observe(document.body, {
+				attributes: true,
+				childList: true,
+				subtree: true,
+				attributeFilter: ["aria-activedescendant"],
+			});
+
 			return () => {
 				if (timerRef.current) {
 					clearTimeout(timerRef.current);

@@ -109,17 +109,17 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 		if (e.key === "ArrowDown" && !e.altKey && !e.ctrlKey) {
 			e.preventDefault();
 
-			const statusElement = document.createElement("div");
-			statusElement.setAttribute("role", "status");
-			statusElement.setAttribute("aria-live", "polite");
-			statusElement.textContent =
-				"Quitting search field. Navigating to transaction results.";
-			document.body.appendChild(statusElement);
+			// const statusElement = document.createElement("div");
+			// statusElement.setAttribute("role", "status");
+			// statusElement.setAttribute("aria-live", "polite");
+			// statusElement.textContent =
+			// 	"Quitting search field. Navigating to transaction results.";
+			// document.body.appendChild(statusElement);
 
-			setTimeout(() => {
-				onNavigateToResults?.();
-				document.body.removeChild(statusElement);
-			}, 100);
+			// setTimeout(() => {
+			onNavigateToResults?.();
+			// 	document.body.removeChild(statusElement);
+			// }, 100);
 		}
 	};
 
@@ -147,7 +147,7 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 						value={inputValue}
 						onChange={(e) => handleSearchChange(e.target.value)}
 						onKeyDown={handleInputKeyDown}
-						aria-describedby="search-context keyboard-navigation search-formats"
+						aria-describedby="search-formats navigation-help  keyboard-shortcuts"
 					/>
 
 					{inputValue && (
@@ -202,31 +202,18 @@ const TransactionSearch: React.FC<TransactionSearchProps> = ({
 				)}
 			</div>
 
+			<span
+				id="navigation-help"
+				className="sr-only"
+				data-testid="navigation-help">
+				Use Enter to navigate to results.
+			</span>
+
 			<p
 				className={styles["transaction-search__keyboard-shortcuts"]}
 				id="keyboard-shortcuts">
-				<small>
-					Keyboard shortcuts: Ctrl+Alt+F for search field, Ctrl+Alt+R for
-					results
-				</small>
+				<small>Shortcuts: Ctrl+Alt+F for search, Ctrl+Alt+R for results</small>
 			</p>
-
-			<span
-				id="search-context"
-				className="sr-only"
-				data-testid="search-context">
-				{selectedAccount
-					? `Currently viewing account ending in ${selectedAccount.accountNumber}.`
-					: "Currently viewing all accounts."}
-			</span>
-
-			<span
-				id="keyboard-navigation"
-				className="sr-only"
-				data-testid="keyboard-navigation">
-				Press Enter or Down Arrow to navigate to search results. Press Escape to
-				exit the search field.
-			</span>
 		</div>
 	);
 };

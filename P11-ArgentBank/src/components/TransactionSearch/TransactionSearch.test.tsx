@@ -126,22 +126,23 @@ describe("TransactionSearch", () => {
 	it("affiche les instructions d'accessibilité et le mode de recherche courant", () => {
 		render(<TransactionSearch {...defaultProps} />);
 
-		const searchContext = screen.getByTestId("search-context");
-		expect(searchContext).toBeInTheDocument();
-		expect(searchContext).toHaveClass("sr-only");
-		expect(searchContext.textContent).toMatch(
-			/Currently viewing account ending in/i
+		// Le contexte d'accessibilité n'est plus présent, on vérifie le tips visible
+		const tips = screen.getByText(
+			/search by date \(dd\/mm\/yyyy\), amount, description, category or notes/i
 		);
+		expect(tips).toBeInTheDocument();
 
-		const keyboardNav = screen.getByTestId("keyboard-navigation");
+		const keyboardNav = screen.getByTestId("navigation-help");
 		expect(keyboardNav).toBeInTheDocument();
 		expect(keyboardNav).toHaveClass("sr-only");
-		expect(keyboardNav.textContent).toMatch(/Press Enter or Down Arrow/i);
+		expect(keyboardNav.textContent).toMatch(
+			/Use Enter to navigate to results/i
+		);
 
 		const input = screen.getByLabelText(/filter transactions/i);
 		expect(input).toHaveAttribute(
 			"aria-describedby",
-			expect.stringContaining("search-context")
+			expect.stringContaining("search-formats")
 		);
 	});
 
@@ -154,15 +155,18 @@ describe("TransactionSearch", () => {
 			/>
 		);
 
-		const searchContext = screen.getByTestId("search-context");
-		expect(searchContext.textContent).toBe("Currently viewing all accounts.");
+		// Plus de search-context, on vérifie juste que le tips est là
+		const tips = screen.getByText(
+			/search by date \(dd\/mm\/yyyy\), amount, description, category or notes/i
+		);
+		expect(tips).toBeInTheDocument();
 	});
 
 	it("affiche les raccourcis clavier dans l'aide", () => {
 		render(<TransactionSearch {...defaultProps} />);
 		// On cible le <small> visible
 		const shortcuts = screen.getByText(
-			/keyboard shortcuts: ctrl\+alt\+f for search field, ctrl\+alt\+r for results/i
+			/Shortcuts: ctrl\+alt\+f for search, ctrl\+alt\+r for results/i
 		);
 		expect(shortcuts.tagName).toBe("SMALL");
 	});
