@@ -40,6 +40,7 @@
 		margin-top: 0.25rem;
 		margin-bottom: 0.5rem;
 		font-style: italic;
+		@include mix.text-wrap;
 	}
 
 	&__container {
@@ -48,7 +49,6 @@
 		align-items: center;
 		flex: 1;
 		flex: 3 0 60%;
-		// width: 100%;
 		min-width: 0;
 	}
 

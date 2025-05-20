@@ -60,7 +60,7 @@ const Header: React.FC = () => {
 				</a>
 			</div>
 
-			<nav aria-label="Main Navigation">
+			<nav className="header__navigation" aria-label="Main Navigation">
 				<ul className="header__nav">
 					{isAuthenticated && currentUser ? (
 						<>

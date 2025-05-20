@@ -15,6 +15,31 @@
 	max-width: 100%;
 }
 
+@mixin date-wrap {
+	overflow-wrap: break-word;
+	word-break: break-word;
+	hyphens: auto;
+	max-width: 100%;
+
+	white-space: pre-wrap;
+
+	&::after {
+		content: "";
+		display: inline-block;
+		width: 0;
+		height: 0;
+	}
+
+	&::before {
+		content: "";
+		word-break: break-all;
+	}
+
+	word-spacing: 0.05em;
+
+	text-replace: "/" "/ ";
+}
+
 @mixin number-format($tabular: true) {
 	@if $tabular {
 		font-variant-numeric: tabular-nums;

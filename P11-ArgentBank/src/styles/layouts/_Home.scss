@@ -21,7 +21,7 @@
 		background-image: url("/src/assets/img/bank-tree.avif");
 	}
 
-	@media (min-width: 920px) {
+	@media (min-width: func.rem(920)) {
 		height: func.rem(400);
 		background-position: 0% 33%;
 	}
@@ -29,14 +29,16 @@
 	&__image-description {
 		position: absolute;
 		z-index: -1;
-		width: 98vw;
+		width: 94vw;
+		width: calc(100% - 5vw);
 		height: 80%;
 		top: 0.5rem;
-		left: 1vw;
-		font-size: 1.1rem;
+		left: 2vw;
+		font-size: 0.9rem;
 		outline: func.rem(2) dashed var.$color-balanced;
 		color: var.$color-balanced;
 		box-sizing: border-box;
+		@include mix.text-wrap;
 	}
 
 	&__content {
@@ -44,6 +46,7 @@
 		top: 4vw;
 		right: 4vw;
 		display: flex;
+		// display: none;
 		flex-direction: column;
 		max-width: 50vw;
 		max-width: clamp(10rem, calc(92vw - 8vw), calc(100vw - 8vw));
@@ -89,8 +92,9 @@
 
 .feature-item {
 	flex: 1 0 20rem;
-	max-width: 100vw;
+	max-width: 100%;
 	padding: 2.5rem 0;
+	// box-sizing: border-box;
 	// background: purple;
 
 	&__icon {
@@ -155,11 +159,16 @@
 		inset: 0;
 		z-index: -1;
 		border-radius: 50%;
-		font-size: 0.75rem;
+
+		// font-size: 0.75rem;
+		font-size: clamp(0.5rem, 3vw, 0.75rem);
+
+		// padding: 0.25rem;
+		padding: clamp(0.15rem, 5%, 0.75rem);
+
 		color: var.$color-balanced;
 		background: none;
 		pointer-events: none;
-		padding: 0.25rem;
 		margin: 0;
 		@include mix.text-wrap;
 		// background: red;
