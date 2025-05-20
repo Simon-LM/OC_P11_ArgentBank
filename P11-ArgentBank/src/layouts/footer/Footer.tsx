@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
 					id="privacy-details"
 					role="region"
 					className={`footer__privacy-content ${isPrivacyOpen ? "open" : ""}`}
-					aria-hidden={!isPrivacyOpen}>
+					hidden={!isPrivacyOpen}>
 					<p className="footer__privacy-text">
 						This site uses Matomo for traffic analysis in privacy-friendly mode:
 					</p>

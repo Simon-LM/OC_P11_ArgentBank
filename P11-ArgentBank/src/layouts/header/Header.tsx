@@ -40,9 +40,9 @@ const Header: React.FC = () => {
 			<div className="header__logo-container">
 				<a
 					className="header__logo"
-					href={isHomePage ? undefined : "./"}
+					href={isHomePage ? "/" : "./"}
 					aria-label="Go to home page"
-					aria-disabled={isHomePage ? "true" : undefined}
+					// aria-disabled={isHomePage ? "true" : undefined}
 					aria-current={isHomePage ? "page" : undefined}
 					onClick={isHomePage ? (e) => e.preventDefault() : undefined}>
 					<picture>

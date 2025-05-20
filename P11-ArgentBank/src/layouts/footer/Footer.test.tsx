@@ -23,9 +23,8 @@ describe("Footer Component", () => {
 		expect(privacyButton).toBeInTheDocument();
 		expect(privacyButton).toHaveAttribute("aria-expanded", "false");
 
-		// Le contenu devrait être masqué initialement
 		const privacyContent = screen.getByRole("region", { hidden: true });
-		expect(privacyContent).toHaveAttribute("aria-hidden", "true");
+		expect(privacyContent).toHaveAttribute("hidden");
 		expect(privacyContent).not.toHaveClass("open");
 	});
 
@@ -35,20 +34,18 @@ describe("Footer Component", () => {
 			name: /Show Privacy Information/,
 		});
 
-		// Premier clic - ouvre le panneau
 		fireEvent.click(privacyButton);
 		expect(privacyButton).toHaveTextContent(/Hide Privacy Information/);
 		expect(privacyButton).toHaveAttribute("aria-expanded", "true");
 
 		const privacyContent = screen.getByRole("region", { hidden: false });
-		expect(privacyContent).toHaveAttribute("aria-hidden", "false");
+		expect(privacyContent).not.toHaveAttribute("hidden");
 		expect(privacyContent).toHaveClass("open");
 
-		// Deuxième clic - ferme le panneau
 		fireEvent.click(privacyButton);
 		expect(privacyButton).toHaveTextContent(/Show Privacy Information/);
 		expect(privacyButton).toHaveAttribute("aria-expanded", "false");
-		expect(privacyContent).toHaveAttribute("aria-hidden", "true");
+		expect(privacyContent).toHaveAttribute("hidden");
 		expect(privacyContent).not.toHaveClass("open");
 	});
 

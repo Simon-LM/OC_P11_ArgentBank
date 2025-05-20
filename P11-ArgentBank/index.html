@@ -1,9 +1,5 @@
 <!-- @format -->
 
-<!-- prettier-ignore-start -->
-<!-- formatter-ignore-start -->
-<!-- @format:off -->
-
 <!doctype html>
 <html lang="en">
 	<head>
@@ -21,9 +17,19 @@
 			media="print"
 			onload="this.media='all'" />
 
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
-			rel="stylesheet" />
+			rel="stylesheet"
+			media="print"
+			onload="this.media='all'" />
+		<!-- Fallback pour les navigateurs qui ne supportent pas l'attribut onload -->
+		<noscript>
+			<link
+				href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
+				rel="stylesheet" />
+		</noscript>
 
 		<link rel="canonical" href="https://slm-argentbank.vercel.app" />
 		<link rel="apple-touch-icon" href="/src/assets/img/argentBankLogo.svg" />
@@ -57,7 +63,3 @@
 		<script type="module" src="/src/main.tsx"></script>
 	</body>
 </html>
-
-<!-- prettier-ignore-end -->
-<!-- formatter-ignore-end -->
-<!-- @format:on -->
