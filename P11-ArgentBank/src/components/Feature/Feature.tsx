@@ -1,5 +1,41 @@
 /** @format */
 
+// interface FeatureProps {
+// 	iconClass: string;
+// 	iconLabel: string;
+// 	title: string;
+// 	description: string;
+// }
+
+// const Feature: React.FC<FeatureProps> = ({
+// 	iconClass,
+// 	iconLabel,
+// 	title,
+// 	description,
+// }) =>
+// (
+// 	<div className="feature-item">
+// 		<div className="feature-item__icon">
+// 			<i className={`feature-icon ${iconClass}`} aria-hidden="true">
+// 				<span className="feature-icon__description">
+// 					<span className="material-symbols-outlined" aria-hidden="true"></span>{" "}
+// 					{iconLabel}
+// 				</span>
+// 			</i>
+// 		</div>
+// 		<div className="feature-item__content">
+// 			<h3 className="feature-item__title">{title}</h3>
+// 			<p className="feature-item__description">{description}</p>
+// 		</div>
+// 	</div>
+// );
+
+// export default Feature;
+
+// // // // // // // // //
+
+import React, { useState } from "react";
+
 interface FeatureProps {
 	iconClass: string;
 	iconLabel: string;
@@ -12,21 +48,58 @@ const Feature: React.FC<FeatureProps> = ({
 	iconLabel,
 	title,
 	description,
-}) => (
-	<div className="feature-item">
-		<div className="feature-item__icon">
-			<i className={`feature-icon ${iconClass}`} aria-hidden="true">
-				<span className="feature-icon__description">
-					<span className="material-symbols-outlined" aria-hidden="true"></span>{" "}
-					{iconLabel}
-				</span>
-			</i>
+}) => {
+	const getIconPaths = () => {
+		const baseName = iconClass.replace("feature-icon--", "");
+		return {
+			png: `/src/assets/img/icon-${baseName}_light-mode.png`,
+			webp: `/src/assets/img/icon-${baseName}_light-mode.webp`,
+			avif: `/src/assets/img/icon-${baseName}_light-mode.avif`,
+		};
+	};
+
+	const iconPaths = getIconPaths();
+
+	const [imageError, setImageError] = useState(false);
+	const [imageLoaded, setImageLoaded] = React.useState(false);
+
+	return (
+		<div className="feature-item">
+			<div className="feature-item__icon">
+				<div className={`feature-icon ${iconClass}`}>
+					{!imageError && (
+						<picture>
+							<source srcSet={iconPaths.avif} type="image/avif" />
+							<source srcSet={iconPaths.webp} type="image/webp" />
+							<img
+								src={iconPaths.png}
+								alt=""
+								className="feature-icon__img"
+								aria-hidden="true"
+								width="100"
+								height="100"
+								loading="eager"
+								onLoad={() => setImageLoaded(true)}
+								onError={() => setImageError(true)}
+							/>
+						</picture>
+					)}
+					<span
+						className="feature-icon__description"
+						style={{
+							opacity: imageError || !imageLoaded ? 1 : 0,
+							zIndex: imageError || !imageLoaded ? 1 : -1,
+						}}>
+						{iconLabel}
+					</span>
+				</div>
+			</div>
+			<div className="feature-item__content">
+				<h3 className="feature-item__title">{title}</h3>
+				<p className="feature-item__description">{description}</p>
+			</div>
 		</div>
-		<div className="feature-item__content">
-			<h3 className="feature-item__title">{title}</h3>
-			<p className="feature-item__description">{description}</p>
-		</div>
-	</div>
-);
+	);
+};
 
 export default Feature;

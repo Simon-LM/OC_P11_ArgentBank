@@ -126,6 +126,11 @@
 }
 
 .feature-icon {
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: min(func.rem(100), 80vw);
 	height: min(func.rem(100), 80vw);
 	min-width: auto;
@@ -133,21 +138,17 @@
 	border: clamp(0.25rem, 3vw, func.rem(10)) solid var.$light_icon-border;
 	border-radius: 50%;
 	padding: clamp(0.5rem, 2vw, 1rem);
-	position: relative;
-	background-size: contain;
-	background-position: center;
 
-	&--chat {
-		background-repeat: no-repeat;
-		background-image: url("@assets/img/icon-chat_light-mode.png");
-	}
-	&--money {
-		background-repeat: no-repeat;
-		background-image: url("@assets/img/icon-money_light-mode.png");
-	}
-	&--security {
-		background-repeat: no-repeat;
-		background-image: url("@assets/img/icon-security_light-mode.png");
+	&__img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		border-radius: 50%;
+		display: block;
+		position: absolute;
+		inset: 0;
+		padding: clamp(0.5rem, 2vw, 1rem);
+		box-sizing: border-box;
 	}
 
 	&__description {
@@ -157,20 +158,70 @@
 		text-align: center;
 		position: absolute;
 		inset: 0;
-		z-index: -1;
 		border-radius: 50%;
-
-		// font-size: 0.75rem;
 		font-size: clamp(0.5rem, 3vw, 0.75rem);
-
-		// padding: 0.25rem;
 		padding: clamp(0.15rem, 5%, 0.75rem);
-
 		color: var.$color-balanced;
 		background: none;
 		pointer-events: none;
 		margin: 0;
 		@include mix.text-wrap;
-		// background: red;
 	}
 }
+
+// .feature-icon {
+// 	width: min(func.rem(100), 80vw);
+// 	height: min(func.rem(100), 80vw);
+// 	min-width: auto;
+// 	min-height: auto;
+// 	border: clamp(0.25rem, 3vw, func.rem(10)) solid var.$light_icon-border;
+// 	border-radius: 50%;
+// 	padding: clamp(0.5rem, 2vw, 1rem);
+// 	position: relative;
+// 	background-size: contain;
+// 	background-position: center;
+
+// 	&__img {
+// 		width: 100%;
+// 		height: 100%;
+// 		object-fit: contain;
+// 		border-radius: 50%;
+// 	}
+
+// 	// &--chat {
+// 	// 	background-repeat: no-repeat;
+// 	// 	background-image: url("@assets/img/icon-chat_light-mode.png");
+// 	// }
+// 	// &--money {
+// 	// 	background-repeat: no-repeat;
+// 	// 	background-image: url("@assets/img/icon-money_light-mode.png");
+// 	// }
+// 	// &--security {
+// 	// 	background-repeat: no-repeat;
+// 	// 	background-image: url("@assets/img/icon-security_light-mode.png");
+// 	// }
+
+// 	&__description {
+// 		display: flex;
+// 		align-items: center;
+// 		justify-content: center;
+// 		text-align: center;
+// 		position: absolute;
+// 		inset: 0;
+// 		z-index: -1;
+// 		border-radius: 50%;
+
+// 		// font-size: 0.75rem;
+// 		font-size: clamp(0.5rem, 3vw, 0.75rem);
+
+// 		// padding: 0.25rem;
+// 		padding: clamp(0.15rem, 5%, 0.75rem);
+
+// 		color: var.$color-balanced;
+// 		background: none;
+// 		pointer-events: none;
+// 		margin: 0;
+// 		@include mix.text-wrap;
+// 		// background: red;
+// 	}
+// }
