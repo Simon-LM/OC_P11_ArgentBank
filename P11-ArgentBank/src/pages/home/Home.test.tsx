@@ -38,13 +38,49 @@ describe("Home Component", () => {
 		});
 	});
 
-	test("hero image uses modern image formats and correct fallback", () => {
+	test("hero image uses modern image formats and responsive sizes", () => {
 		render(<Home />);
 		const sources = document.querySelectorAll("source");
+
+		// Vérifie les sources AVIF pour différentes tailles d'écran
 		expect(sources[0]).toHaveAttribute("type", "image/avif");
-		expect(sources[1]).toHaveAttribute("type", "image/webp");
+		expect(sources[0]).toHaveAttribute("media", "(max-width: 640px)");
+		expect(sources[0]).toHaveAttribute("srcSet", "/img/bank-tree-640w.avif");
+
+		expect(sources[1]).toHaveAttribute("type", "image/avif");
+		expect(sources[1]).toHaveAttribute("media", "(max-width: 1024px)");
+		expect(sources[1]).toHaveAttribute("srcSet", "/img/bank-tree-1024w.avif");
+
+		expect(sources[2]).toHaveAttribute("type", "image/avif");
+		expect(sources[2]).toHaveAttribute("srcSet", "/img/bank-tree.avif");
+
+		// Vérifie les sources WebP pour différentes tailles d'écran
+		expect(sources[3]).toHaveAttribute("type", "image/webp");
+		expect(sources[3]).toHaveAttribute("media", "(max-width: 640px)");
+		expect(sources[3]).toHaveAttribute("srcSet", "/img/bank-tree-640w.webp");
+
+		expect(sources[4]).toHaveAttribute("type", "image/webp");
+		expect(sources[4]).toHaveAttribute("media", "(max-width: 1024px)");
+		expect(sources[4]).toHaveAttribute("srcSet", "/img/bank-tree-1024w.webp");
+
+		expect(sources[5]).toHaveAttribute("type", "image/webp");
+		expect(sources[5]).toHaveAttribute("srcSet", "/img/bank-tree.webp");
+
+		// Vérifie l'image de fallback JPG avec les attributs nécessaires
 		const img = document.querySelector(".hero__image");
 		expect(img).toHaveAttribute("src", "/img/bank-tree.jpg");
+		expect(img).toHaveAttribute("width", "1440");
+		expect(img).toHaveAttribute("height", "400");
+		expect(img).toHaveAttribute("fetchPriority", "high");
+		expect(img).toHaveAttribute("loading", "eager");
+		expect(img).toHaveAttribute(
+			"srcSet",
+			"/img/bank-tree-640w.jpg 640w, /img/bank-tree-1024w.jpg 1024w, /img/bank-tree.jpg 1440w"
+		);
+		expect(img).toHaveAttribute(
+			"sizes",
+			"(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1440px"
+		);
 	});
 
 	test("shows description if hero image fails to load", () => {
@@ -59,5 +95,18 @@ describe("Home Component", () => {
 		);
 		expect(description).toHaveStyle("opacity: 1");
 		expect(description).toHaveStyle("z-index: 1");
+	});
+
+	test("image description has correct visibility when image loads successfully", () => {
+		render(<Home />);
+		const img = document.querySelector(".hero__image");
+		expect(img).not.toBeNull();
+		if (img) {
+			fireEvent.load(img);
+		}
+		const description = screen.getByText(
+			/A young tree sprout growing in a glass jar filled with coins/
+		);
+		expect(description).toHaveStyle("opacity: 0");
 	});
 });

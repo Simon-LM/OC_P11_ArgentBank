@@ -52,13 +52,40 @@ const Home: React.FC = () => {
 				<div className="hero__image-container">
 					{!heroImageError && (
 						<picture className="hero__picture">
+							<source
+								media="(max-width: 640px)"
+								srcSet="/img/bank-tree-640w.avif"
+								type="image/avif"
+							/>
+							<source
+								media="(max-width: 1024px)"
+								srcSet="/img/bank-tree-1024w.avif"
+								type="image/avif"
+							/>
 							<source srcSet="/img/bank-tree.avif" type="image/avif" />
+
+							<source
+								media="(max-width: 640px)"
+								srcSet="/img/bank-tree-640w.webp"
+								type="image/webp"
+							/>
+							<source
+								media="(max-width: 1024px)"
+								srcSet="/img/bank-tree-1024w.webp"
+								type="image/webp"
+							/>
 							<source srcSet="/img/bank-tree.webp" type="image/webp" />
 							<img
 								src="/img/bank-tree.jpg"
+								srcSet="/img/bank-tree-640w.jpg 640w, /img/bank-tree-1024w.jpg 1024w, /img/bank-tree.jpg 1440w"
+								sizes="(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1440px"
 								alt=""
 								className="hero__image"
 								aria-hidden="true"
+								width="1440"
+								height="400"
+								fetchPriority="high"
+								loading="eager"
 								onError={() => setHeroImageError(true)}
 								onLoad={() => setHeroImageLoaded(true)}
 							/>
