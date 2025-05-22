@@ -4,9 +4,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import autoAlias from "vite-plugin-auto-alias";
 import viteSassDts from "vite-plugin-sass-dts";
-// import { vitest } from "vitest";
-// import fs from "fs";
-// import path from "path";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,7 +18,12 @@ export default defineConfig({
 		viteSassDts({
 			enabledMode: ["development", "production"], // Génère des fichiers .d.ts pour SCSS en dev et prod
 		}),
-		// vitest(),
+		visualizer({
+			open: true, // Ouvre automatiquement le rapport après la construction
+			gzipSize: true, // Affiche la taille compressée avec gzip
+			brotliSize: true, // Affiche la taille compressée avec brotli
+			filename: "dist/stats.html", // Emplacement du rapport
+		}),
 	],
 	build: {
 		rollupOptions: {

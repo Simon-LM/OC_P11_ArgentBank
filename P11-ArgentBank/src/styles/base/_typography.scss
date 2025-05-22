@@ -13,4 +13,49 @@
 		"Open Sans",
 		"Helvetica Neue",
 		sans-serif;
+
+	font-size: 1rem;
+	line-height: 1.5;
+}
+@font-face {
+	font-family: "Nunito";
+	src:
+		local("Nunito"),
+		url(https://fonts.gstatic.com/s/nunito/v26/XRXV3I6Li01BKofIMeaBXso.woff2)
+			format("woff2");
+	font-weight: 400;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Nunito";
+	src:
+		local("Nunito Medium"),
+		url(https://fonts.gstatic.com/s/nunito/v26/XRXV3I6Li01BKofIMeaBXso.woff2)
+			format("woff2");
+	font-weight: 500;
+	font-display: swap;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Nunito";
+	src:
+		local("Nunito SemiBold"),
+		url(https://fonts.gstatic.com/s/nunito/v26/XRXW3I6Li01BKofA6sKUYevI.woff2)
+			format("woff2");
+	font-weight: 600;
+	font-display: swap;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Nunito";
+	src:
+		local("Nunito Bold"),
+		url(https://fonts.gstatic.com/s/nunito/v26/XRXW3I6Li01BKofAjsOUYevI.woff2)
+			format("woff2");
+	font-weight: 700;
+	font-display: swap;
+	font-style: normal;
 }
