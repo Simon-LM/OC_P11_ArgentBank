@@ -6,46 +6,80 @@
 @use "@styles/abstracts/variables" as var;
 
 .hero {
-	background-image: url("/src/assets/img/bank-tree.jpg");
-	background-position: 0 func.rem(-50);
-	background-size: cover;
-	background-repeat: no-repeat;
-	height: func.rem(300);
+	// background-image: url("/src/assets/img/bank-tree.jpg");
+	// background-position: 0 func.rem(-50);
+	// background-size: cover;
+	// background-repeat: no-repeat;
+	// height: func.rem(300);
+	// position: relative;
+
+	// @supports (background-image: url("/src/assets/img/bank-tree.webp")) {
+	// 	background-image: url("/src/assets/img/bank-tree.webp");
+	// }
+
+	// @supports (background-image: url("/src/assets/img/bank-tree.avif")) {
+	// 	background-image: url("/src/assets/img/bank-tree.avif");
+	// }
+
 	position: relative;
-
-	@supports (background-image: url("/src/assets/img/bank-tree.webp")) {
-		background-image: url("/src/assets/img/bank-tree.webp");
-	}
-
-	@supports (background-image: url("/src/assets/img/bank-tree.avif")) {
-		background-image: url("/src/assets/img/bank-tree.avif");
-	}
+	height: func.rem(300);
+	overflow: hidden;
 
 	@media (min-width: func.rem(920)) {
 		height: func.rem(400);
-		background-position: 0% 33%;
+		// background-position: 0% 33%;
+	}
+
+	&__image-container {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+	}
+
+	&__picture {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	&__image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 0 func.rem(-50);
+
+		@media (min-width: func.rem(920)) {
+			object-position: 0% 33%;
+		}
 	}
 
 	&__image-description {
 		position: absolute;
-		z-index: -1;
+		z-index: 0;
 		width: 94vw;
 		width: calc(100% - 5vw);
 		height: 80%;
 		top: 0.5rem;
 		left: 2vw;
-		font-size: 0.9rem;
+		font-size: clamp(0.75rem, calc(0.6rem + 0.8vw), 1.5rem);
+		padding: clamp(1px, calc(0.4rem + 0.6vw), 1rem);
 		outline: func.rem(2) dashed var.$color-balanced;
 		color: var.$color-balanced;
 		box-sizing: border-box;
 		@include mix.text-wrap;
+		transition: opacity 0.3s ease;
 	}
 
 	&__content {
-		position: absolute;
+		position: relative;
+		z-index: 1;
 		top: 4vw;
 		right: 4vw;
 		display: flex;
+		float: right;
 		// display: none;
 		flex-direction: column;
 		max-width: 50vw;

@@ -11,11 +11,17 @@
 		<meta name="theme-color" content="#00bc77" />
 
 		<title>Argent Bank - Home Page</title>
+
 		<link
-			rel="stylesheet"
+			rel="preload"
 			href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-			media="print"
-			onload="this.media='all'" />
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'" />
+		<noscript>
+			<link
+				rel="stylesheet"
+				href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+		</noscript>
 
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,11 +37,18 @@
 				rel="stylesheet" />
 		</noscript>
 
+		<link
+			rel="preload"
+			href="/img/bank-tree.webp"
+			as="image"
+			type="image/webp"
+			fetchpriority="high" />
+
 		<link rel="canonical" href="https://slm-argentbank.vercel.app" />
 		<link rel="apple-touch-icon" href="/src/assets/img/argentBankLogo.svg" />
 
 		<!-- Matomo -->
-		<script>
+		<!-- <script>
 			var _paq = (window._paq = window._paq || []);
 			/* Privacy settings */
 			_paq.push(["disableCookies"]);
@@ -55,7 +68,33 @@
 				g.src = u + "matomo.js";
 				s.parentNode.insertBefore(g, s);
 			})();
+		</script> -->
+
+		<script type="text/javascript">
+			document.addEventListener("DOMContentLoaded", function () {
+				setTimeout(function () {
+					var _paq = (window._paq = window._paq || []);
+					_paq.push(["disableCookies"]);
+					_paq.push(["setSecureCookie", true]);
+					_paq.push(["setRequestMethod", "POST"]);
+					_paq.push(["trackPageView"]);
+					_paq.push(["enableLinkTracking"]);
+
+					var u = "//analytics.lostintab.com/";
+					_paq.push(["setTrackerUrl", u + "matomo.php"]);
+					_paq.push(["setSiteId", "2"]);
+
+					var d = document,
+						g = d.createElement("script"),
+						s = d.getElementsByTagName("script")[0];
+					g.async = true;
+					g.defer = true;
+					g.src = u + "matomo.js";
+					s.parentNode.insertBefore(g, s);
+				}, 2000); // Delay de 2 secondes
+			});
 		</script>
+
 		<!-- End Matomo Code -->
 	</head>
 	<body>

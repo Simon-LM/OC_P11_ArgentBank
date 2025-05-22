@@ -1,39 +1,5 @@
 /** @format */
 
-// interface FeatureProps {
-// 	iconClass: string;
-// 	iconLabel: string;
-// 	title: string;
-// 	description: string;
-// }
-
-// const Feature: React.FC<FeatureProps> = ({
-// 	iconClass,
-// 	iconLabel,
-// 	title,
-// 	description,
-// }) =>
-// (
-// 	<div className="feature-item">
-// 		<div className="feature-item__icon">
-// 			<i className={`feature-icon ${iconClass}`} aria-hidden="true">
-// 				<span className="feature-icon__description">
-// 					<span className="material-symbols-outlined" aria-hidden="true"></span>{" "}
-// 					{iconLabel}
-// 				</span>
-// 			</i>
-// 		</div>
-// 		<div className="feature-item__content">
-// 			<h3 className="feature-item__title">{title}</h3>
-// 			<p className="feature-item__description">{description}</p>
-// 		</div>
-// 	</div>
-// );
-
-// export default Feature;
-
-// // // // // // // // //
-
 import React, { useState } from "react";
 
 interface FeatureProps {
@@ -52,9 +18,9 @@ const Feature: React.FC<FeatureProps> = ({
 	const getIconPaths = () => {
 		const baseName = iconClass.replace("feature-icon--", "");
 		return {
-			png: `/src/assets/img/icon-${baseName}_light-mode.png`,
-			webp: `/src/assets/img/icon-${baseName}_light-mode.webp`,
-			avif: `/src/assets/img/icon-${baseName}_light-mode.avif`,
+			png: `/img/icon-${baseName}_light-mode.png`,
+			webp: `/img/icon-${baseName}_light-mode.webp`,
+			avif: `/img/icon-${baseName}_light-mode.avif`,
 		};
 	};
 
@@ -78,7 +44,8 @@ const Feature: React.FC<FeatureProps> = ({
 								aria-hidden="true"
 								width="100"
 								height="100"
-								loading="eager"
+								loading="lazy"
+								decoding="async"
 								onLoad={() => setImageLoaded(true)}
 								onError={() => setImageError(true)}
 							/>

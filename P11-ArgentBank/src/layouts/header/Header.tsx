@@ -5,9 +5,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
 import { logoutUser } from "../../store/slices/usersSlice";
-import argentBankLogoPng from "../../assets/img/argentBankLogo.png";
-import argentBankLogoWebp from "../../assets/img/argentBankLogo.webp";
-import argentBankLogoAvif from "../../assets/img/argentBankLogo.avif";
 
 const Header: React.FC = () => {
 	const location = useLocation();
@@ -42,15 +39,14 @@ const Header: React.FC = () => {
 					className="header__logo"
 					href={isHomePage ? "/" : "./"}
 					aria-label="Go to home page"
-					// aria-disabled={isHomePage ? "true" : undefined}
 					aria-current={isHomePage ? "page" : undefined}
 					onClick={isHomePage ? (e) => e.preventDefault() : undefined}>
 					<picture>
-						<source srcSet={argentBankLogoAvif} type="image/avif" />
-						<source srcSet={argentBankLogoWebp} type="image/webp" />
+						<source srcSet="/img/argentBankLogo.avif" type="image/avif" />
+						<source srcSet="/img/argentBankLogo.webp" type="image/webp" />
 						<img
 							className="header__logo-image"
-							src={argentBankLogoPng}
+							src="/img/argentBankLogo.png"
 							alt=""
 							width="200"
 							height="38"

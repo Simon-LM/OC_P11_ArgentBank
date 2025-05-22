@@ -2,6 +2,8 @@
 
 import { User } from "../store/slices/usersSlice";
 
+// Supprimer le mock ici, il doit être dans setupTests.ts uniquement
+
 export const usersMockData: User[] = [
 	{
 		id: "1",

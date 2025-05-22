@@ -7,14 +7,14 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	test: {
-		environment: "jsdom", // Utilise jsdom pour simuler le navigateur
-		globals: true, // Permet d'utiliser des globales comme describe, it, expect sans importation
-		setupFiles: "./src/setupTests.ts", // Chemin vers votre fichier de configuration des tests
-		// MODIFIÉ: Cible spécifiquement le dossier __tests__ ET les fichiers de test co-localisés
+		environment: "jsdom", // Uses jsdom to simulate the browser
+		globals: true, // Allows using globals like describe, it, expect without importing
+		setupFiles: "./src/setupTests.ts", // Path to your test configuration file
+		// MODIFIED: Specifically targets the __tests__ folder AND co-located test files
 		include: [
 			"__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-			"src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}", // Ajout pour les tests co-localisés dans src
-			// Ajoutez d'autres chemins ici si vos tests co-localisés sont ailleurs, par exemple :
+			"src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}", // Added for co-located tests in src
+			// Add other paths here if your co-located tests are elsewhere, for example:
 			// "api/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
 		],
 		typecheck: {
