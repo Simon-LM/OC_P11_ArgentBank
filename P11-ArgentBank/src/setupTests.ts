@@ -12,6 +12,21 @@ vi.mock("react-intersection-observer", () => ({
 	}),
 }));
 
+// Mock global pour window.matchMedia
+Object.defineProperty(window, "matchMedia", {
+	writable: true,
+	value: (query: string) => ({
+		matches: false, // Default mock value
+		media: query,
+		onchange: null,
+		addListener: vi.fn(), // Mock addListener
+		removeListener: vi.fn(), // Mock removeListener
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		dispatchEvent: vi.fn(),
+	}),
+});
+
 // // eslint-disable-next-line no-var
 // declare global {
 // 	var vi: typeof vi;

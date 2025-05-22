@@ -42,7 +42,6 @@ describe("Home Component", () => {
 		render(<Home />);
 		const sources = document.querySelectorAll("source");
 
-		// Vérifie les sources AVIF pour différentes tailles d'écran
 		expect(sources[0]).toHaveAttribute("type", "image/avif");
 		expect(sources[0]).toHaveAttribute("media", "(max-width: 640px)");
 		expect(sources[0]).toHaveAttribute("srcSet", "/img/bank-tree-640w.avif");
@@ -54,7 +53,6 @@ describe("Home Component", () => {
 		expect(sources[2]).toHaveAttribute("type", "image/avif");
 		expect(sources[2]).toHaveAttribute("srcSet", "/img/bank-tree.avif");
 
-		// Vérifie les sources WebP pour différentes tailles d'écran
 		expect(sources[3]).toHaveAttribute("type", "image/webp");
 		expect(sources[3]).toHaveAttribute("media", "(max-width: 640px)");
 		expect(sources[3]).toHaveAttribute("srcSet", "/img/bank-tree-640w.webp");
@@ -66,7 +64,6 @@ describe("Home Component", () => {
 		expect(sources[5]).toHaveAttribute("type", "image/webp");
 		expect(sources[5]).toHaveAttribute("srcSet", "/img/bank-tree.webp");
 
-		// Vérifie l'image de fallback JPG avec les attributs nécessaires
 		const img = document.querySelector(".hero__image");
 		expect(img).toHaveAttribute("src", "/img/bank-tree.jpg");
 		expect(img).toHaveAttribute("width", "1440");
