@@ -8,26 +8,48 @@ body {
 }
 
 body {
-	display: flex;
-	flex-direction: column;
+	// display: flex;
+	// flex-direction: column;
+
+	display: block;
 	min-height: 100vh;
 }
 
 #root {
 	display: flex;
 	flex-direction: column;
-	flex: 1;
+	// flex: 1;
 	min-height: 100vh;
+	position: relative;
+}
+
+.header {
+	flex: 0 0 auto;
+	// height: clamp(3.5rem, 5vh + 1rem, 5rem);
 }
 
 #main-content {
+	// display: flex;
+	// flex-direction: column;
+	// flex: 1;
+
+	flex: 1 0 auto;
+	// min-height: calc(
+	// 	100vh - clamp(3.5rem, 5vh + 1rem, 5rem) - clamp(5rem, 10vh + 1rem, 8rem)
+	// );
 	display: flex;
 	flex-direction: column;
-	flex: 1;
+	width: 100%;
 }
 
 .main {
-	flex: 1;
+	// flex: 1;
+	flex: 1 0 auto;
+}
+
+.footer {
+	flex: 0 0 auto;
+	// height: clamp(5rem, 10vh + 1rem, 8rem);
 }
 
 button,

@@ -27,9 +27,13 @@ const Home: React.FC = () => {
 
 	const shouldRenderFeatures = isDesktop || featuresInView;
 
+	const heroContainerStyle = {
+		minHeight: heroImageLoaded ? "auto" : "clamp(15rem, 40vh, 25rem)",
+	};
+
 	return (
 		<div id="main-content" tabIndex={-1}>
-			<div className="hero" data-testid="hero">
+			<div className="hero" style={heroContainerStyle} data-testid="hero">
 				<div className="hero__image-container">
 					{!heroImageError && (
 						<picture className="hero__picture">
@@ -82,6 +86,8 @@ const Home: React.FC = () => {
 								height="400"
 								fetchPriority="high"
 								loading="eager"
+								decoding="async"
+								style={{ opacity: heroImageLoaded ? 1 : 0 }}
 								onError={() => setHeroImageError(true)}
 								onLoad={() => setHeroImageLoaded(true)}
 							/>

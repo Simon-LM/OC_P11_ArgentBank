@@ -9,6 +9,8 @@
 	flex-direction: column;
 	justify-content: center;
 	padding: 2rem 1vw;
+	min-height: clamp(6rem, 75vh + 1rem, 9rem);
+	// min-height: 8.5rem;
 	background-color: var.$light_bg_footer;
 	box-shadow:
 		0 -4px 10px -1px rgba(0, 0, 0, 0.2),
