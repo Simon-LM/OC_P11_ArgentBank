@@ -4,6 +4,11 @@ import React, { useState, lazy, Suspense, useRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import useMediaQuery from "../../hooks/useMediaQuery/useMediaQuery";
 
+interface ImageStyles {
+	opacity: number;
+	transition?: string;
+}
+
 const Features = lazy(() => import("../../components/Features/Features"));
 
 const Home: React.FC = () => {
@@ -30,6 +35,22 @@ const Home: React.FC = () => {
 	const heroContainerStyle = {
 		minHeight: heroImageLoaded ? "auto" : "clamp(15rem, 40vh, 25rem)",
 	};
+
+	const [imageStyles, setImageStyles] = useState<ImageStyles>({
+		opacity: 0,
+	});
+
+	useEffect(() => {
+		if (heroImageLoaded) {
+			const timeout = setTimeout(() => {
+				setImageStyles({
+					opacity: 1,
+					transition: "opacity 0.3s ease-in",
+				});
+			}, 10);
+			return () => clearTimeout(timeout);
+		}
+	}, [heroImageLoaded]);
 
 	return (
 		<div id="main-content" tabIndex={-1}>
@@ -87,9 +108,11 @@ const Home: React.FC = () => {
 								fetchPriority="high"
 								loading="eager"
 								decoding="async"
-								style={{ opacity: heroImageLoaded ? 1 : 0 }}
+								style={imageStyles}
 								onError={() => setHeroImageError(true)}
-								onLoad={() => setHeroImageLoaded(true)}
+								onLoad={() => {
+									requestAnimationFrame(() => setHeroImageLoaded(true));
+								}}
 							/>
 						</picture>
 					)}

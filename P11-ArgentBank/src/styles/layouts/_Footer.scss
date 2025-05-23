@@ -6,11 +6,15 @@
 
 .footer {
 	display: flex;
+	flex: 0 0 auto;
 	flex-direction: column;
 	justify-content: center;
-	padding: 2rem 1vw;
-	min-height: clamp(6rem, 75vh + 1rem, 9rem);
-	// min-height: 8.5rem;
+	padding: 1rem 1vw;
+	min-height: clamp(6rem, 20vh + 1rem, 9rem);
+
+	contain-intrinsic-size: 0 clamp(6rem, 20vh + 1rem, 9rem);
+	contain: layout;
+
 	background-color: var.$light_bg_footer;
 	box-shadow:
 		0 -4px 10px -1px rgba(0, 0, 0, 0.2),

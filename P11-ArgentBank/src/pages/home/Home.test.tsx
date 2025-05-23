@@ -94,16 +94,20 @@ describe("Home Component", () => {
 		expect(description).toHaveStyle("z-index: 1");
 	});
 
-	test("image description has correct visibility when image loads successfully", () => {
+	test("image description has correct visibility when image loads successfully", async () => {
 		render(<Home />);
 		const img = document.querySelector(".hero__image");
 		expect(img).not.toBeNull();
 		if (img) {
 			fireEvent.load(img);
 		}
-		const description = screen.getByText(
-			/A young tree sprout growing in a glass jar filled with coins/
-		);
-		expect(description).toHaveStyle("opacity: 0");
+
+		// Attendre que le style de la description soit mis à jour après le requestAnimationFrame
+		await waitFor(() => {
+			const description = screen.getByText(
+				/A young tree sprout growing in a glass jar filled with coins/
+			);
+			expect(description).toHaveStyle("opacity: 0");
+		});
 	});
 });

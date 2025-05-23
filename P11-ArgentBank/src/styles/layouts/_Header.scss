@@ -33,18 +33,21 @@
 	position: relative;
 	z-index: 10;
 	display: flex;
+	flex: 0 0 auto;
 	flex-direction: row;
 	flex-wrap: wrap-reverse;
 	justify-content: space-between;
 	align-items: center;
 	// width: 100%;
-	min-height: 6rem;
+	// min-height: 6rem;
+	min-height: clamp(3.5rem, 5vh + 1rem, 5rem);
 	// min-height: 4.5rem;
 	// height: 100%;
 	gap: 0.25rem;
 	padding: 0 1.5vw;
 	background-color: var.$light_bg_header;
 	box-sizing: border-box;
+
 	// background: red;
 	box-shadow:
 		0 4px 10px -1px rgba(0, 0, 0, 0.2),
