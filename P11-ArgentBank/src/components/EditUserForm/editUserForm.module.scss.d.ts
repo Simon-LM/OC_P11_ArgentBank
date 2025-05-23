@@ -3,6 +3,7 @@ declare const classNames: {
   readonly "edit-user-form__form": "edit-user-form__form";
   readonly "edit-user-form__disclaimer-box": "edit-user-form__disclaimer-box";
   readonly "edit-user-form__disclaimer": "edit-user-form__disclaimer";
+  readonly "edit-user-form__disclaimer-icon": "edit-user-form__disclaimer-icon";
   readonly "edit-user-form__input-group": "edit-user-form__input-group";
   readonly "edit-user-form__label": "edit-user-form__label";
   readonly "edit-user-form__help-text": "edit-user-form__help-text";

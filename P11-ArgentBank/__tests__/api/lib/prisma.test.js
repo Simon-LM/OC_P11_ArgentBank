@@ -5,8 +5,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // Mock de PrismaClient
 const mockPrismaConstructor = vi.fn();
 vi.mock("@prisma/client", () => ({
-	PrismaClient: function () {
-		return mockPrismaConstructor();
+	default: {
+		// L'export par défaut est un objet
+		PrismaClient: mockPrismaConstructor, // PrismaClient est une propriété de cet objet
 	},
 }));
 
@@ -71,17 +72,17 @@ describe("Prisma Client Singleton", () => {
 		// Configurer l'environnement comme développement
 		process.env.NODE_ENV = "development";
 
-		// Forcer global.prisma à être undefined
-		global.prisma = undefined;
+		// Forcer global._prisma à être undefined (pour correspondre à l'implémentation)
+		global._prisma = undefined;
 
 		// Import du module
-		const { prisma } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
+		const { prisma } = await import("../../../api/lib/prisma.js");
 
 		// Vérifier que PrismaClient a été appelé
 		expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
 		expect(prisma).toBeDefined();
-		// Vérifier que global.prisma est maintenant défini
-		expect(global.prisma).toBeDefined();
+		// Vérifier que global._prisma est maintenant défini
+		expect(global._prisma).toBeDefined();
 	});
 
 	it("should export an object with Prisma client methods", async () => {

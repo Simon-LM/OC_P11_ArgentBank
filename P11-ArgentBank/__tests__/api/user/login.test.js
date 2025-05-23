@@ -152,9 +152,12 @@ describe("Login API Handler", () => {
 		expect(res.status).toHaveBeenCalledWith(500);
 		expect(res.json).toHaveBeenCalledWith({
 			status: 500,
-			message: "Internal server error",
+			message: "Internal server error. Check server logs for details.", // Correspond au message dans login.js
 		});
-		expect(consoleSpy).toHaveBeenCalledWith("Login error:", expect.any(Error));
+		expect(consoleSpy).toHaveBeenCalledWith(
+			"Login error:",
+			expect.objectContaining({ message: "Database error" })
+		);
 		consoleSpy.mockRestore();
 	});
 

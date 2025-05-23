@@ -75,8 +75,24 @@ export const loginUser = async (credentials: LoginCredentials) => {
 		);
 
 		if (!response.ok) {
-			const data = await response.json();
-			throw new Error(`Login failed: ${response.status} - ${data.message}`);
+			// Attempt to read the error message, prioritizing JSON but falling back to text
+			let errorMessage = `Login failed: ${response.status}`;
+			const contentType = response.headers.get("content-type");
+			if (contentType && contentType.includes("application/json")) {
+				try {
+					const errorData = await response.json();
+					errorMessage += ` - ${errorData.message || JSON.stringify(errorData)}`;
+				} catch (_jsonError) {
+					// If JSON parsing fails, try to get text
+					const textError = await response.text();
+					errorMessage += ` - ${textError}`;
+				}
+			} else {
+				// If not JSON, read as text
+				const textError = await response.text();
+				errorMessage += ` - ${textError}`;
+			}
+			throw new Error(errorMessage);
 		}
 
 		// Vérifier que la réponse est au format JSON

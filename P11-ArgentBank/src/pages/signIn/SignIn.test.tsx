@@ -24,10 +24,10 @@ vi.mock("../../utils/authService", () => ({
 	fetchUserProfile: vi.fn(),
 }));
 
-// Mock for useMatomo
+const mockTrackEvent = vi.fn(); // Defined mockTrackEvent here
 vi.mock("../../hooks/useMatomo/useMatomo", () => ({
 	useMatomo: () => ({
-		trackEvent: vi.fn(),
+		trackEvent: mockTrackEvent, // Use the stable mockTrackEvent
 	}),
 }));
 
@@ -50,9 +50,10 @@ const renderSignIn = () => {
 describe("SignIn Component", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		mockTrackEvent.mockClear(); // Clear mockTrackEvent
 	});
 
-	test("handles form submission successfully", async () => {
+	test("handles form submission successfully and updates ARIA live region", async () => {
 		const mockToken = "fake-token";
 		const mockUserProfile = {
 			id: "1",
@@ -95,13 +96,18 @@ describe("SignIn Component", () => {
 				email: "test@example.com",
 				password: "password123",
 			});
+			// Check for success message in ARIA live region
+			expect(screen.getByRole("status")).toHaveTextContent(
+				"Authentication successful. Redirecting to your account."
+			);
 			expect(mockNavigate).toHaveBeenCalledWith("/User");
 		});
 	});
 
-	test("handles login errors", async () => {
-		vi.mocked(authService.loginUser).mockRejectedValue(
-			new Error("Invalid credentials")
+	test("displays 'Authenticating...' message in ARIA live region during submission", async () => {
+		// Mock loginUser to return a promise that never resolves for this test
+		vi.mocked(authService.loginUser).mockImplementation(
+			() => new Promise(() => {})
 		);
 
 		renderSignIn();
@@ -110,17 +116,122 @@ describe("SignIn Component", () => {
 			target: { value: "test@example.com" },
 		});
 		fireEvent.change(screen.getByLabelText("Password", { selector: "input" }), {
+			target: { value: "password123" },
+		});
+
+		fireEvent.click(screen.getByRole("button", { name: /connect/i }));
+
+		// Check for "Authenticating..." message
+		// Need a short waitFor because setIsLoading and setAriaMessage are asynchronous
+		await waitFor(() => {
+			expect(screen.getByRole("status")).toHaveTextContent(
+				/Authenticating your credentials.../i
+			);
+		});
+	});
+
+	test("handles generic login error and updates ARIA attributes", async () => {
+		vi.mocked(authService.loginUser).mockRejectedValue(
+			new Error("Some generic network error") // Triggers default error message
+		);
+
+		renderSignIn();
+		const emailInput = screen.getByLabelText(/email/i);
+		const passwordInput = screen.getByLabelText("Password", {
+			selector: "input",
+		});
+
+		fireEvent.change(emailInput, {
+			target: { value: "test@example.com" },
+		});
+		fireEvent.change(passwordInput, {
 			target: { value: "wrongpassword" },
 		});
 
 		fireEvent.click(screen.getByRole("button", { name: /connect/i }));
 
 		await waitFor(() => {
-			expect(
-				screen.getByText(
-					/Authentication failed. Please check your credentials./i
-				)
-			).toBeInTheDocument();
+			expect(screen.getByRole("status")).toHaveTextContent(
+				/Authentication failed. Please check your credentials./i
+			);
+			// For "Unable to login. Please check your credentials."
+			expect(emailInput).toHaveAttribute("aria-invalid", "false");
+			expect(passwordInput).toHaveAttribute("aria-invalid", "false");
+		});
+	});
+
+	test("handles 401 error from API and updates ARIA attributes", async () => {
+		vi.mocked(authService.loginUser).mockRejectedValue(
+			new Error("Request failed with status code 401")
+		);
+
+		renderSignIn();
+		const emailInput = screen.getByLabelText(/email/i);
+		const passwordInput = screen.getByLabelText("Password", {
+			selector: "input",
+		});
+
+		fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+		fireEvent.change(passwordInput, { target: { value: "anypassword" } });
+		fireEvent.click(screen.getByRole("button", { name: /connect/i }));
+
+		await waitFor(() => {
+			expect(screen.getByRole("status")).toHaveTextContent(
+				/Authentication failed. Please check your credentials./i
+			);
+			// Error message: "Invalid email or password"
+			expect(emailInput).toHaveAttribute("aria-invalid", "true"); // Corrected expectation
+			expect(passwordInput).toHaveAttribute("aria-invalid", "true"); // Corrected expectation
+		});
+	});
+
+	test("handles invalid email error from API and updates ARIA attributes", async () => {
+		vi.mocked(authService.loginUser).mockRejectedValue(
+			new Error("User email not found")
+		);
+
+		renderSignIn();
+		const emailInput = screen.getByLabelText(/email/i);
+		const passwordInput = screen.getByLabelText("Password", {
+			selector: "input",
+		});
+
+		fireEvent.change(emailInput, { target: { value: "invalid@example.com" } });
+		fireEvent.change(passwordInput, { target: { value: "anypassword" } });
+		fireEvent.click(screen.getByRole("button", { name: /connect/i }));
+
+		await waitFor(() => {
+			expect(screen.getByRole("status")).toHaveTextContent(
+				/Authentication failed. Please check your credentials./i
+			);
+			// Error message: "Invalid email address"
+			expect(emailInput).toHaveAttribute("aria-invalid", "true");
+			expect(passwordInput).toHaveAttribute("aria-invalid", "false");
+		});
+	});
+
+	test("handles incorrect password error from API and updates ARIA attributes", async () => {
+		vi.mocked(authService.loginUser).mockRejectedValue(
+			new Error("Incorrect password provided")
+		);
+
+		renderSignIn();
+		const emailInput = screen.getByLabelText(/email/i);
+		const passwordInput = screen.getByLabelText("Password", {
+			selector: "input",
+		});
+
+		fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+		fireEvent.change(passwordInput, { target: { value: "incorrect" } });
+		fireEvent.click(screen.getByRole("button", { name: /connect/i }));
+
+		await waitFor(() => {
+			expect(screen.getByRole("status")).toHaveTextContent(
+				/Authentication failed. Please check your credentials./i
+			);
+			// Error message: "Incorrect password"
+			expect(emailInput).toHaveAttribute("aria-invalid", "false");
+			expect(passwordInput).toHaveAttribute("aria-invalid", "true");
 		});
 	});
 
@@ -146,5 +257,145 @@ describe("SignIn Component", () => {
 		expect(
 			screen.getByText(/tony@stark.com \/ password123/i)
 		).toBeInTheDocument();
+	});
+
+	describe("handles specific login errors and ARIA attributes", () => {
+		const submitFormWithCredentials = (
+			email = "test@example.com",
+			password = "password123"
+		) => {
+			fireEvent.change(screen.getByLabelText(/email/i), {
+				target: { value: email },
+			});
+			fireEvent.change(
+				screen.getByLabelText("Password", { selector: "input" }),
+				{
+					target: { value: password },
+				}
+			);
+			fireEvent.click(screen.getByRole("button", { name: /connect/i }));
+		};
+
+		test("when API returns 401 error, sets correct ARIA attributes", async () => {
+			const errorMessage = "Request failed with status code 401";
+			vi.mocked(authService.loginUser).mockRejectedValue(
+				new Error(errorMessage)
+			);
+			renderSignIn();
+			submitFormWithCredentials();
+
+			await waitFor(() => {
+				expect(
+					screen.getByText(
+						/Authentication failed. Please check your credentials./i
+					)
+				).toBeInTheDocument();
+				const emailInput = screen.getByLabelText(/email/i);
+				const passwordInput = screen.getByLabelText("Password", {
+					selector: "input",
+				});
+				// Error from getErrorMessage will be "Invalid email or password"
+				expect(emailInput).toHaveAttribute("aria-invalid", "true"); // Corrected expectation
+				expect(passwordInput).toHaveAttribute("aria-invalid", "true"); // Corrected expectation
+
+				expect(mockTrackEvent).toHaveBeenCalledWith({
+					// Use mockTrackEvent
+					category: "User",
+					action: "Login",
+					name: `Failed login: ${errorMessage}`,
+				});
+			});
+		});
+
+		test("when error message suggests invalid email, sets correct ARIA attributes", async () => {
+			const errorMessage = "User email not found";
+			vi.mocked(authService.loginUser).mockRejectedValue(
+				new Error(errorMessage)
+			);
+			renderSignIn();
+			submitFormWithCredentials();
+
+			await waitFor(() => {
+				expect(
+					screen.getByText(
+						/Authentication failed. Please check your credentials./i
+					)
+				).toBeInTheDocument();
+				const emailInput = screen.getByLabelText(/email/i);
+				const passwordInput = screen.getByLabelText("Password", {
+					selector: "input",
+				});
+				// Error from getErrorMessage will be "Invalid email address"
+				expect(emailInput).toHaveAttribute("aria-invalid", "true");
+				expect(passwordInput).toHaveAttribute("aria-invalid", "false");
+
+				expect(mockTrackEvent).toHaveBeenCalledWith({
+					// Use mockTrackEvent
+					category: "User",
+					action: "Login",
+					name: `Failed login: ${errorMessage}`,
+				});
+			});
+		});
+
+		test("when error message suggests incorrect password, sets correct ARIA attributes", async () => {
+			const errorMessage = "Incorrect user password";
+			vi.mocked(authService.loginUser).mockRejectedValue(
+				new Error(errorMessage)
+			);
+			renderSignIn();
+			submitFormWithCredentials();
+
+			await waitFor(() => {
+				expect(
+					screen.getByText(
+						/Authentication failed. Please check your credentials./i
+					)
+				).toBeInTheDocument();
+				const emailInput = screen.getByLabelText(/email/i);
+				const passwordInput = screen.getByLabelText("Password", {
+					selector: "input",
+				});
+				// Error from getErrorMessage will be "Incorrect password"
+				expect(emailInput).toHaveAttribute("aria-invalid", "false");
+				expect(passwordInput).toHaveAttribute("aria-invalid", "true");
+
+				expect(mockTrackEvent).toHaveBeenCalledWith({
+					// Use mockTrackEvent
+					category: "User",
+					action: "Login",
+					name: `Failed login: ${errorMessage}`,
+				});
+			});
+		});
+
+		test("when loginUser rejects with a non-Error object", async () => {
+			const errorObject = { message: "A non-error object rejection" };
+			vi.mocked(authService.loginUser).mockRejectedValue(errorObject);
+			renderSignIn();
+			submitFormWithCredentials();
+
+			await waitFor(() => {
+				expect(
+					screen.getByText(
+						/Authentication failed. Please check your credentials./i
+					)
+				).toBeInTheDocument();
+				const emailInput = screen.getByLabelText(/email/i);
+				const passwordInput = screen.getByLabelText("Password", {
+					selector: "input",
+				});
+				// Error will be "An unexpected error occurred"
+				expect(emailInput).toHaveAttribute("aria-invalid", "false");
+				expect(passwordInput).toHaveAttribute("aria-invalid", "false");
+
+				expect(mockTrackEvent).toHaveBeenCalledWith({
+					// Use mockTrackEvent
+					category: "User",
+					action: "Login",
+					name: "Failed login: Unknown error", // As err is not instanceof Error
+				});
+			});
+		});
 	});
 });

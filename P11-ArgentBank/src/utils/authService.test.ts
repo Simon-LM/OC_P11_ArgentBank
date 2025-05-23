@@ -50,10 +50,12 @@ describe("loginUser Function", () => {
 	});
 
 	test("throws an error for invalid credentials", async () => {
+		// Mock de la réponse fetch pour simuler une erreur de connexion
 		(global.fetch as jest.Mock).mockResolvedValueOnce({
 			ok: false,
 			status: 401,
-			json: async () => mockInvalidLoginResponse,
+			headers: new Headers({ "Content-Type": "application/json" }), // Simuler un header JSON
+			json: async () => mockInvalidLoginResponse, // mockInvalidLoginResponse contient { status: 401, message: "invalid signature" }
 		});
 
 		await expect(
@@ -62,6 +64,43 @@ describe("loginUser Function", () => {
 				password: "wrongpass",
 			})
 		).rejects.toThrow("Login failed: 401 - invalid signature");
+	});
+
+	test("throws an error for non-JSON error response", async () => {
+		(global.fetch as jest.Mock).mockResolvedValueOnce({
+			ok: false,
+			status: 500,
+			headers: new Headers({ "Content-Type": "text/html" }), // Simuler un header non-JSON
+			text: async () => "Internal Server Error Page", // Simuler une réponse texte/HTML
+		});
+
+		await expect(
+			loginUser({
+				email: "steve@rogers.com",
+				password: "password123",
+			})
+		).rejects.toThrow("Login failed: 500 - Internal Server Error Page");
+	});
+
+	test("throws a generic error if response.text() also fails", async () => {
+		const fetchMock = global.fetch as jest.Mock;
+		fetchMock.mockResolvedValueOnce({
+			ok: false,
+			status: 503,
+			headers: new Headers({ "Content-Type": "text/html" }),
+			// Simuler l'échec de .json() d'abord, puis de .text()
+			json: vi.fn().mockRejectedValueOnce(new Error("Failed to parse JSON")),
+			text: vi.fn().mockRejectedValueOnce(new Error("Failed to read text")),
+		});
+
+		await expect(
+			loginUser({
+				email: "user@example.com",
+				password: "password",
+			})
+			// L'erreur attendue est celle levée par le dernier catch dans loginUser,
+			// qui est l'erreur originale de text() dans ce cas, car authService la relance.
+		).rejects.toThrow("Failed to read text");
 	});
 });
 

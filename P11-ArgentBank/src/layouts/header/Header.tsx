@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
 import { logoutUser } from "../../store/slices/usersSlice";
+import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 
 const Header: React.FC = () => {
 	const location = useLocation();
@@ -70,20 +71,38 @@ const Header: React.FC = () => {
 								</Link>
 							</li>
 							<li>
-								<button
+								{/* <button
 									onClick={handleSignOut}
 									className="header__nav-item header__nav-button"
 									type="button"
 									aria-label="Sign out and return to home page">
 									<i className="fa fa-sign-out" aria-hidden="true"></i>
 									<span>Sign Out</span>
+								</button> */}
+								<button
+									onClick={handleSignOut}
+									className="header__nav-item header__nav-button"
+									type="button"
+									aria-label="Sign out and return to home page">
+									{/* Remplacer l'icône Font Awesome par le composant React Icon */}
+									<FaSignOutAlt aria-hidden="true" className="nav-icon" />
+									<span>Sign Out</span>
 								</button>
 							</li>
 						</>
 					) : (
 						<li>
-							<Link to="/signin" className="header__nav-item">
+							{/* <Link to="/signin" className="header__nav-item">
 								<i className="fa fa-user-circle" aria-hidden="true"></i>
+								<span>Sign In</span>
+							</Link> */}
+
+							<Link
+								to="/signin"
+								className="header__nav-item"
+								aria-label="Sign In to your account">
+								{/* Remplacer l'icône Font Awesome par le composant React Icon */}
+								<FaUserCircle aria-hidden="true" className="nav-icon" />
 								<span>Sign In</span>
 							</Link>
 						</li>

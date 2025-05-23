@@ -6,28 +6,12 @@
 @use "@styles/abstracts/variables" as var;
 
 .hero {
-	// background-image: url("/src/assets/img/bank-tree.jpg");
-	// background-position: 0 func.rem(-50);
-	// background-size: cover;
-	// background-repeat: no-repeat;
-	// height: func.rem(300);
-	// position: relative;
-
-	// @supports (background-image: url("/src/assets/img/bank-tree.webp")) {
-	// 	background-image: url("/src/assets/img/bank-tree.webp");
-	// }
-
-	// @supports (background-image: url("/src/assets/img/bank-tree.avif")) {
-	// 	background-image: url("/src/assets/img/bank-tree.avif");
-	// }
-
 	position: relative;
-	height: func.rem(300);
+	height: 19rem;
 	overflow: hidden;
 
-	@media (min-width: func.rem(920)) {
-		height: func.rem(400);
-		// background-position: 0% 33%;
+	@media (min-width: 58rem) {
+		height: 25rem;
 	}
 
 	&__image-container {
@@ -51,7 +35,7 @@
 		object-fit: cover;
 		object-position: 0 func.rem(-50);
 
-		@media (min-width: func.rem(920)) {
+		@media (min-width: 58rem) {
 			object-position: 0% 33%;
 		}
 	}
@@ -109,7 +93,7 @@
 	&__text {
 		margin-bottom: 0;
 		font-size: clamp(0.8rem, 2vw, 1.2rem);
-		// @include mix.text-wrap;
+		@include mix.text-wrap;
 		// background: purple;
 	}
 }
