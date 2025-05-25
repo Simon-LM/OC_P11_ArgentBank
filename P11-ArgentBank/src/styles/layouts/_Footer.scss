@@ -9,13 +9,13 @@
 	display: flex;
 	flex: 0 0 auto;
 	flex-direction: column;
-	justify-content: flex-start;
-	padding: 1rem 1vw 0;
+	justify-content: center;
+	padding: 1rem 1vw;
 
-	// height: clamp(6rem, 15vh + 1rem, 8rem);
-	min-height: clamp(6rem, 15vh + 1rem, 8rem);
+	// min-height: clamp(6rem, 15vh + 1rem, 7rem);
+	min-height: clamp(4rem, 10vh, 6rem);
 
-	contain-intrinsic-size: 0 clamp(6rem, 15vh + 1rem, 8rem);
+	contain-intrinsic-size: 0 clamp(5rem, 12vh, 7rem);
 	contain: style;
 
 	background-color: var.$light_bg_footer;
@@ -29,7 +29,7 @@
 	&__text {
 		width: 100%;
 		// height: auto;
-		margin: 0 auto 1rem;
+		margin: 0 auto;
 		padding: 0.5rem 0;
 		text-align: center;
 		color: var.$light_footer_text;
@@ -43,22 +43,34 @@
 		transition: color 0.3s ease;
 		font-weight: 600;
 
-		&:hover {
+		&:hover,
+		&:focus {
 			color: var.$light_footer_link-hover;
+		}
+		&:focus-visible {
+			outline-offset: -0.125rem;
 		}
 	}
 
 	&__privacy {
+		margin-top: 0.5rem;
+
 		&-compact {
+			width: 100%;
+			margin: 0 auto;
+			// padding-top: 0.75rem;
 			text-align: center;
 
-			width: 100%;
-			max-width: 50rem;
-			margin: 0 auto;
+			min-height: clamp(2.5rem, 6vh, 3.5rem);
 
 			border-top: 1px solid var.$light_footer_privacy_border;
-			padding-top: 0.75rem;
 			// background-color: purple;
+
+			transition: min-height 0.3s ease;
+
+			&.expanding {
+				min-height: clamp(3rem, 8vh, 4.5rem);
+			}
 		}
 
 		&-toggle {
@@ -67,46 +79,67 @@
 			color: var.$light_footer_link;
 			font-size: 0.9rem;
 			font-weight: 600;
-			// padding: 0.5rem 1rem;
-			// padding: clamp(0.15rem, 0.5vh, 0.5rem) clamp(0.1rem, 1vw, 1rem);
-			padding: 0.25rem 0.5rem;
+
+			// padding: 0.25rem 0.5rem;
+			padding: clamp(0.5rem, 2vh, 0.75rem) 0.5rem;
+
 			transition: color 0.3s ease;
 			display: inline-flex;
 			align-items: center;
 			@include mix.text-wrap;
 
-			&:hover {
+			&:hover,
+			&:focus {
 				color: var.$light_footer_link-hover;
 			}
 
-			&.open {
-				margin-bottom: 0.75rem;
+			&:focus-visible {
+				outline-offset: -0.125rem;
 			}
+			// &.open {
+			// 	margin-bottom: 0.75rem;
+			// }
 
 			.toggle-icon {
-				// margin-left: 0.5rem;
-				margin-left: clamp(0.1rem, 0.5vw, 0.5rem);
+				// margin-left: clamp(0.1rem, 0.5vw, 0.5rem);
+				margin-left: clamp(0.25rem, 1vw, 0.5rem);
+
 				font-size: 1.1rem;
 				line-height: 1;
+				transition: transform 0.3s ease;
+			}
+			&.open .toggle-icon {
+				transform: rotate(180deg);
 			}
 		}
 
 		&-content {
 			max-height: 0;
 			overflow: hidden;
+
+			opacity: 0;
+			pointer-events: none;
+
 			transition:
 				max-height 0.3s ease-out,
 				opacity 0.2s ease;
-			opacity: 0;
 
 			&.open {
-				max-height: 30rem;
+				// max-height: 30rem;
+				max-height: clamp(25rem, 50vh, 40rem);
+
 				opacity: 1;
+
+				padding: clamp(1rem, 3vw, 2rem) clamp(1px, 2vw, 1rem);
+
+				pointer-events: auto;
 			}
 		}
 
 		&-text {
-			font-size: 0.85rem;
+			// font-size: 0.85rem;
+			font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+
 			line-height: 1.5;
 			color: var.$light_footer_privacy_text;
 			margin: 0.5rem 0;
@@ -118,13 +151,15 @@
 			display: flex;
 			flex-direction: column;
 			align-items: flex-start;
-			max-width: 25rem;
+			// max-width: 30rem;
 			margin: 0 auto;
 			padding-left: clamp(2px, min(0.75vw, 0.5rem), 1rem);
 			text-align: left;
 		}
 		&-item {
-			font-size: 0.85rem;
+			// font-size: 0.85rem;
+			font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+
 			line-height: 1.5;
 			color: var.$light_footer_privacy_text;
 			margin: 0.25rem 0;
@@ -134,21 +169,42 @@
 			margin-right: clamp(1px, min(0.5vw, 0.25rem), 0.5rem);
 		}
 		&-action {
-			display: inline-block;
-			margin-top: 1rem;
+			// display: inline-block;
+			display: block;
+
+			// margin-top: 1rem;
+			margin: clamp(1rem, 3vh, 2rem) 0;
+
+			text-align: center;
+			width: 100%;
 
 			&-link {
+				display: inline-block;
 				color: var.$light_footer_link;
 				text-decoration: none;
 				transition: color 0.3s ease;
-				font-size: 0.85rem;
+
+				// font-size: 0.85rem;
+				font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+
 				font-weight: 700;
-				padding: 0.5rem 1rem;
+
+				// padding: 0.5rem 1rem;
+				padding: clamp(0.5rem, 2vh, 1rem) clamp(1rem, 3vw, 2rem);
 
 				@include mix.text-wrap;
 
-				&:hover {
+				&:hover,
+				&:focus {
 					color: var.$light_footer_link-hover;
+				}
+
+				&:focus-visible {
+					outline-offset: -0.125rem;
+				}
+
+				&[tabindex="-1"] {
+					pointer-events: none;
 				}
 			}
 		}

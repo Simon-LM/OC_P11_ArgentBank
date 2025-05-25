@@ -6,6 +6,16 @@ import React, { useState } from "react";
 const Footer: React.FC = () => {
 	const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
+	const [isExpanding, setIsExpanding] = useState(false);
+
+	const handleToggle = () => {
+		if (!isPrivacyOpen) {
+			setIsExpanding(true);
+			setTimeout(() => setIsExpanding(false), 400);
+		}
+		setIsPrivacyOpen(!isPrivacyOpen);
+	};
+
 	return (
 		<footer
 			className="footer"
@@ -23,10 +33,24 @@ const Footer: React.FC = () => {
 				</a>
 			</p>
 
-			<div className="footer__privacy-compact">
-				<button
+			<div
+				className={`footer__privacy-compact ${isExpanding ? "expanding" : ""} ${isPrivacyOpen ? "open" : ""}`}>
+				{/* <button
 					className={`footer__privacy-toggle ${isPrivacyOpen ? "open" : ""}`}
 					onClick={() => setIsPrivacyOpen(!isPrivacyOpen)}
+					aria-expanded={isPrivacyOpen}
+					aria-controls="privacy-details">
+					{isPrivacyOpen
+						? "Hide Privacy Information"
+						: "Show Privacy Information"}
+					<span className="toggle-icon" aria-hidden="true">
+						{isPrivacyOpen ? "−" : "+"}
+					</span>
+				</button> */}
+
+				<button
+					className={`footer__privacy-toggle ${isPrivacyOpen ? "open" : ""}`}
+					onClick={handleToggle}
 					aria-expanded={isPrivacyOpen}
 					aria-controls="privacy-details">
 					{isPrivacyOpen

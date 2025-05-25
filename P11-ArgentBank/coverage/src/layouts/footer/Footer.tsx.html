@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>65/65</span>
+                <span class='fraction'>74/74</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>65/65</span>
+                <span class='fraction'>74/74</span>
             </div>
         
             
@@ -146,7 +146,31 @@
 <a name='L81'></a><a href='#L81'>81</a>
 <a name='L82'></a><a href='#L82'>82</a>
 <a name='L83'></a><a href='#L83'>83</a>
-<a name='L84'></a><a href='#L84'>84</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -155,6 +179,16 @@
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
@@ -172,6 +206,20 @@
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
@@ -237,6 +285,16 @@ import React, { useState } from "react";
 const Footer: React.FC = () =&gt; {
 	const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 &nbsp;
+	const [isExpanding, setIsExpanding] = useState(false);
+&nbsp;
+	const handleToggle = () =&gt; {
+		if (!isPrivacyOpen) {
+			setIsExpanding(true);
+			setTimeout(() =&gt; setIsExpanding(false), 400);
+		}
+		setIsPrivacyOpen(!isPrivacyOpen);
+	};
+&nbsp;
 	return (
 		&lt;footer
 			className="footer"
@@ -254,10 +312,24 @@ const Footer: React.FC = () =&gt; {
 				&lt;/a&gt;
 			&lt;/p&gt;
 &nbsp;
-			&lt;div className="footer__privacy-compact"&gt;
-				&lt;button
+			&lt;div
+				className={`footer__privacy-compact ${isExpanding ? "expanding" : ""} ${isPrivacyOpen ? "open" : ""}`}&gt;
+				{/* &lt;button
 					className={`footer__privacy-toggle ${isPrivacyOpen ? "open" : ""}`}
 					onClick={() =&gt; setIsPrivacyOpen(!isPrivacyOpen)}
+					aria-expanded={isPrivacyOpen}
+					aria-controls="privacy-details"&gt;
+					{isPrivacyOpen
+						? "Hide Privacy Information"
+						: "Show Privacy Information"}
+					&lt;span className="toggle-icon" aria-hidden="true"&gt;
+						{isPrivacyOpen ? "−" : "+"}
+					&lt;/span&gt;
+				&lt;/button&gt; */}
+&nbsp;
+				&lt;button
+					className={`footer__privacy-toggle ${isPrivacyOpen ? "open" : ""}`}
+					onClick={handleToggle}
 					aria-expanded={isPrivacyOpen}
 					aria-controls="privacy-details"&gt;
 					{isPrivacyOpen
@@ -319,7 +391,7 @@ export default Footer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-25T13:10:33.582Z
+                at 2025-05-25T15:22:08.239Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
