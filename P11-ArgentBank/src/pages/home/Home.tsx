@@ -32,9 +32,9 @@ const Home: React.FC = () => {
 
 	const shouldRenderFeatures = isDesktop || featuresInView;
 
-	const heroContainerStyle = {
-		minHeight: heroImageLoaded ? "auto" : "clamp(15rem, 40vh, 25rem)",
-	};
+	// const heroContainerStyle = {
+	// 	minHeight: heroImageLoaded ? "auto" : "clamp(15rem, 40vh, 25rem)",
+	// };
 
 	const [imageStyles, setImageStyles] = useState<ImageStyles>({
 		opacity: 0,
@@ -54,11 +54,11 @@ const Home: React.FC = () => {
 
 	return (
 		<div id="main-content" tabIndex={-1}>
-			<div className="hero" style={heroContainerStyle} data-testid="hero">
+			<div className="hero" data-testid="hero">
 				<div className="hero__image-container">
 					{!heroImageError && (
 						<picture className="hero__picture">
-							<React.Fragment>
+							{/* <React.Fragment>
 								{isFirstRender && (
 									<link
 										rel="preload"
@@ -69,9 +69,38 @@ const Home: React.FC = () => {
 										}
 										as="image"
 										type="image/avif"
+										
 									/>
 								)}
-							</React.Fragment>
+							</React.Fragment> */}
+
+							{isFirstRender && (
+								<>
+									<link
+										rel="preload"
+										href={
+											isDesktop
+												? "/img/bank-tree.avif"
+												: "/img/bank-tree-640w.avif"
+										}
+										as="image"
+										type="image/avif"
+										fetchPriority="high"
+									/>
+
+									<link
+										rel="preload"
+										href={
+											isDesktop
+												? "/img/bank-tree.webp"
+												: "/img/bank-tree-640w.webp"
+										}
+										as="image"
+										type="image/webp"
+										fetchPriority="high"
+									/>
+								</>
+							)}
 
 							<source
 								media="(max-width: 640px)"
@@ -107,11 +136,14 @@ const Home: React.FC = () => {
 								height="400"
 								fetchPriority="high"
 								loading="eager"
-								decoding="async"
+								decoding="sync"
 								style={imageStyles}
 								onError={() => setHeroImageError(true)}
+								// onLoad={() => {
+								// 	requestAnimationFrame(() => setHeroImageLoaded(true));
+								// }}
 								onLoad={() => {
-									requestAnimationFrame(() => setHeroImageLoaded(true));
+									setHeroImageLoaded(true);
 								}}
 							/>
 						</picture>
