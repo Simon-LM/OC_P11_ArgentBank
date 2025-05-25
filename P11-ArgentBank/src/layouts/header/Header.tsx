@@ -5,7 +5,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
 import { logoutUser } from "../../store/slices/usersSlice";
-import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import LazyIcon from "../../components/LazyIcon/LazyIcon";
 
 const Header: React.FC = () => {
 	const location = useLocation();
@@ -84,8 +84,11 @@ const Header: React.FC = () => {
 									className="header__nav-item header__nav-button"
 									type="button"
 									aria-label="Sign out and return to home page">
-									{/* Remplacer l'icône Font Awesome par le composant React Icon */}
-									<FaSignOutAlt aria-hidden="true" className="nav-icon" />
+									<LazyIcon
+										name="FaSignOutAlt"
+										aria-hidden="true"
+										className="nav-icon"
+									/>
 									<span>Sign Out</span>
 								</button>
 							</li>
@@ -101,8 +104,11 @@ const Header: React.FC = () => {
 								to="/signin"
 								className="header__nav-item"
 								aria-label="Sign In to your account">
-								{/* Remplacer l'icône Font Awesome par le composant React Icon */}
-								<FaUserCircle aria-hidden="true" className="nav-icon" />
+								<LazyIcon
+									name="FaUserCircle"
+									aria-hidden="true"
+									className="nav-icon"
+								/>
 								<span>Sign In</span>
 							</Link>
 						</li>

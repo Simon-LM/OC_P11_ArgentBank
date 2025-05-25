@@ -12,13 +12,9 @@
 	overflow: hidden;
 	aspect-ratio: 1440 / 400;
 
-	contain-intrinsic-size: clamp(15rem, 40vh, 25rem) 100vw;
-	contain: layout style;
-
 	/* Befor loading img */
 	&::before {
 		content: "";
-		z-index: -1;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -51,20 +47,10 @@
 		min-height: 100%;
 		object-fit: cover;
 		object-position: 0 func.rem(-50);
-		// transition: opacity 0.3s ease;
-
-		transform: translateZ(0);
-		will-change: opacity;
+		transition: opacity 0.3s ease;
 
 		@media (min-width: 58rem) {
 			object-position: 0% 33%;
-		}
-
-		opacity: 0;
-		transition: opacity 0.3s ease;
-
-		&.loaded {
-			opacity: 1;
 		}
 	}
 
@@ -83,18 +69,6 @@
 		box-sizing: border-box;
 		@include mix.text-wrap;
 		transition: opacity 0.3s ease;
-
-		opacity: 0;
-
-		&.visible {
-			opacity: 1;
-			z-index: 1;
-		}
-
-		&.hidden {
-			opacity: 0;
-			z-index: 0;
-		}
 	}
 
 	&__content {

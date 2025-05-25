@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import editUserForm from "./editUserForm.module.scss";
 import { usernameBlacklist } from "../../utils/blacklist";
-import { FaInfoCircle } from "react-icons/fa";
+import LazyIcon from "../LazyIcon/LazyIcon";
 
 const schema = z.object({
 	userName: z
@@ -95,7 +95,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 				role="note">
 				<p className={editUserForm["edit-user-form__disclaimer"]}>
 					{/* <i className="fa fa-info-circle" aria-hidden="true"></i>{" "} */}
-					<FaInfoCircle
+					<LazyIcon
+						name="FaInfoCircle"
 						aria-hidden="true"
 						className={editUserForm["edit-user-form__disclaimer-icon"]}
 					/>{" "}

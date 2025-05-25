@@ -28,11 +28,59 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			output: {
-				manualChunks: {
-					vendor: ["react", "react-dom"],
-					features: ["./src/components/Features"],
+				manualChunks: (id) => {
+					// Groupe vendor pour les bibliothèques React principales
+					if (
+						id.includes("node_modules/react") ||
+						id.includes("node_modules/react-dom")
+					) {
+						return "vendor-react";
+					}
+					// Groupe pour Redux et RTK
+					if (
+						id.includes("node_modules/@reduxjs") ||
+						id.includes("node_modules/redux")
+					) {
+						return "vendor-redux";
+					}
+					// Groupe pour React Router
+					if (id.includes("node_modules/react-router")) {
+						return "vendor-router";
+					}
+					// Groupe pour les utilitaires
+					if (
+						id.includes("node_modules/react-hook-form") ||
+						id.includes("node_modules/@hookform") ||
+						id.includes("node_modules/zod")
+					) {
+						return "vendor-forms";
+					}
+					// Groupe pour les icônes (chargement différé)
+					if (id.includes("node_modules/react-icons")) {
+						return "vendor-icons";
+					}
+					// Autres bibliothèques node_modules
+					if (id.includes("node_modules")) {
+						return "vendor-misc";
+					}
 				},
 			},
 		},
+		// Optimisations supplémentaires
+		minify: "terser",
+		terserOptions: {
+			compress: {
+				drop_console: true, // Supprime les console.log en production
+				drop_debugger: true,
+				pure_funcs: ["console.log", "console.info"], // Supprime les fonctions pures
+			},
+		},
+		// Analyse de la taille des bundles
+		reportCompressedSize: true,
+		chunkSizeWarningLimit: 1000,
+	},
+	server: {
+		port: 3000,
+		host: true,
 	},
 });

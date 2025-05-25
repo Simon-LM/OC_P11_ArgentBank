@@ -9,9 +9,9 @@ const isVercelProd = !!process.env.VERCEL_ENV;
 // Configuration commune
 const WINDOW_SIZE = 60 * 60 * 1000;
 const MAX_REQUESTS = {
-	"profile-update": 5,
-	login: 10,
-	default: 20,
+	"profile-update": process.env.NODE_ENV === "development" ? 50 : 5,
+	login: process.env.NODE_ENV === "development" ? 100 : 10,
+	default: process.env.NODE_ENV === "development" ? 200 : 20,
 };
 
 export async function rateLimitMiddleware(req, res, operationType = "default") {

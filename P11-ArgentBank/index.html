@@ -30,6 +30,7 @@
 			type="font/woff2"
 			crossorigin /> -->
 
+		<!-- Preload des ressources critiques -->
 		<link
 			rel="preload"
 			href="/fonts/Nunito-VariableFont_wght.woff2"
@@ -37,6 +38,7 @@
 			type="font/woff2"
 			crossorigin />
 
+		<!-- Preload image critique avec priority -->
 		<link
 			rel="preload"
 			href="/img/bank-tree.webp"
@@ -44,9 +46,13 @@
 			type="image/webp"
 			fetchpriority="high" />
 
+		<!-- DNS Prefetch pour les domaines externes -->
+		<link rel="dns-prefetch" href="//analytics.lostintab.com" />
+
 		<link rel="canonical" href="https://slm-argentbank.vercel.app" />
 		<link rel="apple-touch-icon" href="/src/assets/img/argentBankLogo.svg" />
 
+		<!-- Preload responsive images -->
 		<link
 			rel="preload"
 			href="/img/bank-tree-640w.avif"
@@ -54,9 +60,11 @@
 			type="image/avif"
 			media="(max-width: 640px)" />
 
+		<!-- Analytics avec chargement optimisé -->
 		<script type="text/javascript">
 			document.addEventListener("DOMContentLoaded", function () {
-				setTimeout(function () {
+				// Chargement différé de l'analytics uniquement après interaction utilisateur
+				const loadAnalytics = () => {
 					var _paq = (window._paq = window._paq || []);
 					_paq.push(["disableCookies"]);
 					_paq.push(["setSecureCookie", true]);
@@ -75,7 +83,27 @@
 					g.defer = true;
 					g.src = u + "matomo.js";
 					s.parentNode.insertBefore(g, s);
-				}, 2000); // Delay de 2 secondes
+				};
+
+				// Chargement après interaction ou après 3 secondes
+				let loaded = false;
+				const triggerLoad = () => {
+					if (!loaded) {
+						loaded = true;
+						loadAnalytics();
+					}
+				};
+
+				// Événements d'interaction
+				["mousedown", "touchstart", "scroll", "keydown"].forEach((event) => {
+					document.addEventListener(event, triggerLoad, {
+						once: true,
+						passive: true,
+					});
+				});
+
+				// Fallback après 3 secondes
+				setTimeout(triggerLoad, 3000);
 			});
 		</script>
 

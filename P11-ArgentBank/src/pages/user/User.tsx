@@ -15,7 +15,7 @@ import {
 	SearchTransactionsParams,
 } from "../../store/slices/usersSlice";
 import { updateUserProfile } from "../../utils/authService";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import LazyIcon from "../../components/LazyIcon/LazyIcon";
 import { TransactionType } from "../../types/transaction";
 import TransactionSearch from "../../components/TransactionSearch/TransactionSearch";
 import { useMatomo, isMatomoLoaded } from "../../hooks/useMatomo/useMatomo";
@@ -550,7 +550,7 @@ const User: React.FC = () => {
 														disabled={pagination.page === 1}
 														className={user["pagination__button"]}
 														aria-label="Go to previous page">
-														<FaChevronLeft />
+														<LazyIcon name="FaChevronLeft" />
 													</button>
 												</div>
 
@@ -674,7 +674,7 @@ const User: React.FC = () => {
 														disabled={pagination.page >= pagination.pages}
 														className={user["pagination__button"]}
 														aria-label="Go to next page">
-														<FaChevronRight />
+														<LazyIcon name="FaChevronRight" />
 													</button>
 												</div>
 											</nav>

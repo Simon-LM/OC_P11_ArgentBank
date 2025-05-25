@@ -1,0 +1,10 @@
+{
+  "cookies": [],
+  "storage": {
+    "localStorage": {},
+    "sessionStorage": {
+      "userId": "67ffee54391f55b65fb4544d",
+      "authToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZmZlZTU0MzkxZjU1YjY1ZmI0NTQ0ZCIsImlhdCI6MTc0ODIxNjQzNCwiZXhwIjoxNzQ4MjIwMDM0fQ.yvMwNS3mGRImNhCueTIz9wCtD5GwIqxQYoKjM6ZQlgI"
+    }
+  }
+}

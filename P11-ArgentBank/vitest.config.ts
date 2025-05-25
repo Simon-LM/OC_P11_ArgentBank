@@ -50,6 +50,11 @@ export default defineConfig({
 				"src/pages/**/index.tsx",
 				"src/components/**/index.tsx",
 				"src/index.tsx",
+				// Exclude Lighthouse analysis scripts and reports
+				"lighthouse*.js",
+				"lighthouse*.sh",
+				"lighthouse.config.js",
+				"reports/lighthouse-report.json",
 			],
 		},
 	},

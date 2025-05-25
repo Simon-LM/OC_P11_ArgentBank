@@ -64,7 +64,7 @@ const SignIn: React.FC = () => {
 
 			setAriaMessage("Authentication successful. Redirecting to your account.");
 
-			navigate("/User");
+			navigate("/user");
 		} catch (err) {
 			setAriaMessage("Authentication failed. Please check your credentials.");
 			trackEvent({
@@ -199,3 +199,5 @@ const SignIn: React.FC = () => {
 };
 
 export default SignIn;
+
+// // // // // // // // // // // // // // // // //
