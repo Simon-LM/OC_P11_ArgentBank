@@ -5,15 +5,18 @@
 @use "@styles/abstracts/mixins" as mix;
 
 .footer {
+	position: relative;
 	display: flex;
 	flex: 0 0 auto;
 	flex-direction: column;
-	justify-content: center;
-	padding: 1rem 1vw;
-	min-height: clamp(6rem, 20vh + 1rem, 9rem);
+	justify-content: flex-start;
+	padding: 1rem 1vw 0;
 
-	contain-intrinsic-size: 0 clamp(6rem, 20vh + 1rem, 9rem);
-	contain: layout;
+	// height: clamp(6rem, 15vh + 1rem, 8rem);
+	min-height: clamp(6rem, 15vh + 1rem, 8rem);
+
+	contain-intrinsic-size: 0 clamp(6rem, 15vh + 1rem, 8rem);
+	contain: style;
 
 	background-color: var.$light_bg_footer;
 	box-shadow:
@@ -21,9 +24,13 @@
 		0 -2px 6px -1px rgba(0, 0, 0, 0.15),
 		0 -8px 16px -8px rgba(0, 0, 0, 0.1);
 
+	// background-color: red;
+
 	&__text {
 		width: 100%;
-		margin: 0 auto;
+		// height: auto;
+		margin: 0 auto 1rem;
+		padding: 0.5rem 0;
 		text-align: center;
 		color: var.$light_footer_text;
 		box-sizing: border-box;
@@ -43,12 +50,15 @@
 
 	&__privacy {
 		&-compact {
-			margin: 1rem auto 0;
+			text-align: center;
+
 			width: 100%;
 			max-width: 50rem;
-			text-align: center;
+			margin: 0 auto;
+
 			border-top: 1px solid var.$light_footer_privacy_border;
 			padding-top: 0.75rem;
+			// background-color: purple;
 		}
 
 		&-toggle {
@@ -58,7 +68,8 @@
 			font-size: 0.9rem;
 			font-weight: 600;
 			// padding: 0.5rem 1rem;
-			padding: clamp(0.15rem, 0.5vh, 0.5rem) clamp(0.1rem, 1vw, 1rem);
+			// padding: clamp(0.15rem, 0.5vh, 0.5rem) clamp(0.1rem, 1vw, 1rem);
+			padding: 0.25rem 0.5rem;
 			transition: color 0.3s ease;
 			display: inline-flex;
 			align-items: center;
