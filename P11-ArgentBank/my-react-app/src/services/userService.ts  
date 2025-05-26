@@ -1,8 +1,0 @@
-import mockData from '../data/mockData';
-import { User } from '../models/User';
-
-export const getUsers = (): User[] => {
-    return mockData;
-};
-
-// D'autres fonctions pour gérer les utilisateurs peuvent être ajoutées ici.

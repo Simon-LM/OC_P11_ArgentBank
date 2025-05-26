@@ -90,8 +90,8 @@ describe("Home Component", () => {
 		const description = screen.getByText(
 			/A young tree sprout growing in a glass jar filled with coins/
 		);
-		expect(description).toHaveStyle("opacity: 1");
-		expect(description).toHaveStyle("z-index: 1");
+		expect(description).toHaveClass("visible");
+		expect(description).not.toHaveClass("hidden");
 	});
 
 	test("image description has correct visibility when image loads successfully", async () => {
@@ -102,12 +102,13 @@ describe("Home Component", () => {
 			fireEvent.load(img);
 		}
 
-		// Attendre que le style de la description soit mis à jour après le requestAnimationFrame
+		// Attendre que le style de la description soit mis à jour
 		await waitFor(() => {
 			const description = screen.getByText(
 				/A young tree sprout growing in a glass jar filled with coins/
 			);
-			expect(description).toHaveStyle("opacity: 0");
+			expect(description).toHaveClass("hidden");
+			expect(description).not.toHaveClass("visible");
 		});
 	});
 });
