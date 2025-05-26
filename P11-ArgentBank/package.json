@@ -15,14 +15,15 @@
 		"test:watch": "vitest watch",
 		"typecheck": "tsc --noEmit",
 		"prisma:test": "node -r ts-node/register src/prismaTest.ts",
-		"lighthouse": "npx lighthouse@11.7.1 http://localhost:4173 --output=html --output-path=./reports/lighthouse-report.html --preset=perf --emulated-form-factor=mobile --only-categories=performance,accessibility,best-practices,seo --quiet",
-		"lighthouse:mobile": "npx lighthouse@11.7.1 http://localhost:4173 --output=html --output-path=./reports/mobile-report.html --preset=perf --emulated-form-factor=mobile --only-categories=performance,accessibility,best-practices,seo --quiet",
-		"lighthouse:desktop": "npx lighthouse@11.7.1 http://localhost:4173 --output=html --output-path=./reports/desktop-report.html --preset=perf --emulated-form-factor=desktop --only-categories=performance,accessibility,best-practices,seo --quiet",
-		"lighthouse:json": "npx lighthouse@11.7.1 http://localhost:4173 --output=json --output-path=./reports/lighthouse-report.json --preset=perf --emulated-form-factor=mobile --only-categories=performance,accessibility,best-practices,seo --quiet",
-		"lighthouse:profile": "npx lighthouse@11.7.1 http://localhost:4173/profile --output=html --output-path=./reports/profile-report.html --preset=perf --emulated-form-factor=mobile --only-categories=performance,accessibility,best-practices,seo --quiet",
-		"lighthouse:dev": "npx lighthouse@11.7.1 http://localhost:3000 --output=html --output-path=./reports/dev-report.html --preset=perf --emulated-form-factor=mobile --only-categories=performance --quiet",
-		"lighthouse:suite": "node lighthouse-test-suite.js",
-		"lighthouse:analyze": "node lighthouse-analyzer.js"
+		"lighthouse": "npx lighthouse@11.7.1 http://localhost:4173 --output=html --output-path=./lighthouse/reports/lighthouse-report.html --preset=perf --emulated-form-factor=mobile --only-categories=performance,accessibility,best-practices,seo --quiet",
+		"lighthouse:mobile": "npx lighthouse@11.7.1 http://localhost:4173 --output=html --output-path=./lighthouse/reports/mobile-report.html --preset=perf --emulated-form-factor=mobile --only-categories=performance,accessibility,best-practices,seo --quiet",
+		"lighthouse:desktop": "npx lighthouse@11.7.1 http://localhost:4173 --output=html --output-path=./lighthouse/reports/desktop-report.html --preset=perf --emulated-form-factor=desktop --only-categories=performance,accessibility,best-practices,seo --quiet",
+		"lighthouse:json": "npx lighthouse@11.7.1 http://localhost:4173 --output=json --output-path=./lighthouse/reports/lighthouse-report.json --preset=perf --emulated-form-factor=mobile --only-categories=performance,accessibility,best-practices,seo --quiet",
+		"lighthouse:profile": "npx lighthouse@11.7.1 http://localhost:4173/profile --output=html --output-path=./lighthouse/reports/profile-report.html --preset=perf --emulated-form-factor=mobile --only-categories=performance,accessibility,best-practices,seo --quiet",
+		"lighthouse:dev": "npx lighthouse@11.7.1 http://localhost:3000 --output=html --output-path=./lighthouse/reports/dev-report.html --preset=perf --emulated-form-factor=mobile --only-categories=performance --quiet",
+		"lighthouse:suite": "cd lighthouse && node scripts/lighthouse-test-suite.js",
+		"lighthouse:analyze": "cd lighthouse && node lib/lighthouse-analyzer.js",
+		"lighthouse:performance": "cd lighthouse && node lib/analyze-performance.js"
 	},
 	"prisma": {
 		"seed": "tsx prisma/seed.ts"

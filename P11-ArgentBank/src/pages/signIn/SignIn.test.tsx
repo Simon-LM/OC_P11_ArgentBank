@@ -100,7 +100,7 @@ describe("SignIn Component", () => {
 			expect(screen.getByRole("status")).toHaveTextContent(
 				"Authentication successful. Redirecting to your account."
 			);
-			expect(mockNavigate).toHaveBeenCalledWith("/User");
+			expect(mockNavigate).toHaveBeenCalledWith("/user");
 		});
 	});
 

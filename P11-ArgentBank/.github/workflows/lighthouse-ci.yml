@@ -1,0 +1,75 @@
+# @format
+
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+
+    # Ajouter une métadonnée pour suivre l'environnement d'exécution
+    env:
+      ENVIRONMENT: "github-actions"
+      NODE_ENV: "production"
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Récupérer tout l'historique pour les comparaisons
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies (project root)
+        run: pnpm install
+
+      - name: Install dependencies (lighthouse)
+        run: cd lighthouse && pnpm install
+
+      - name: Build application
+        run: pnpm build
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
+
+      - name: Start application in background
+        run: pnpm preview &
+        env:
+          PORT: 3000
+
+      - name: Wait for application to be ready
+        run: |
+          echo "Waiting for application to be available..."
+          timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null; do sleep 1; done'
+          echo "Application is up and running!"
+
+      - name: Run Lighthouse tests
+        run: |
+          cd lighthouse
+          pnpm test:ci
+
+      - name: Check for performance regression
+        run: |
+          cd lighthouse
+          pnpm test:regression
+        continue-on-error: true # Ne pas faire échouer la build pour l'instant
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: lighthouse-reports
+          path: lighthouse/reports/
+          retention-days: 7

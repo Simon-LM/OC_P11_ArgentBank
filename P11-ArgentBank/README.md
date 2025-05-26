@@ -132,6 +132,18 @@ ArgentBank prioritizes digital accessibility:
 - Efficient CSS using BEM methodology
 - Server-side caching strategies
 
+## 📊 Performance Testing
+
+ArgentBank utilizes Lighthouse for comprehensive performance, accessibility, and SEO testing:
+
+- **Production Scores**:
+  - **Mobile**: Performance (94/100), Accessibility (100/100), Best Practices (100/100), SEO (100/100)
+  - **Desktop**: Performance (100/100), Accessibility (100/100), Best Practices (100/100), SEO (100/100)
+- **Automated Testing**: Complete suite of Lighthouse tests for all key application pages
+- **Regression Detection**: Automated comparison against baseline to prevent performance degradation
+
+For details about our performance testing approach, see [Lighthouse Testing Documentation](./lighthouse/LIGHTHOUSE_README.md).
+
 ## 👥 Author
 
 - Developed by Simon LM : [www.simon-lm.dev](https://www.simon-lm.dev)

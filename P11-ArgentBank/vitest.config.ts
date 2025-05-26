@@ -40,21 +40,23 @@ export default defineConfig({
 				"vite.config.ts",
 				"vitest.config.ts",
 				"eslint.config.js",
-				"scripts/*.js",
+				"scripts/*.js", // Keep this if you have other scripts at the root scripts/ folder
 				"dist/**",
-				"my-react-app/src/data/**",
-				"my-react-app/src/models/**",
+				// Removed my-react-app exclusions
 				"prisma/seed.ts",
 				"src/main.tsx",
 				"src/App.tsx",
 				"src/pages/**/index.tsx",
 				"src/components/**/index.tsx",
 				"src/index.tsx",
-				// Exclude Lighthouse analysis scripts and reports
-				"lighthouse*.js",
-				"lighthouse*.sh",
-				"lighthouse.config.js",
-				"reports/lighthouse-report.json",
+				// Updated Lighthouse exclusions
+				"lighthouse/config/**/*.js",
+				"lighthouse/lib/**/*.js",
+				"lighthouse/scripts/**/*.js",
+				"lighthouse/*.sh",
+				"lighthouse/reports/**", // Exclude all reports
+				"lighthouse.config.js", // Keep this for the root config file if it exists and is picked up
+				// "reports/lighthouse-report.json", // Covered by lighthouse/reports/**
 			],
 		},
 	},

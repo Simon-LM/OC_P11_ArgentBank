@@ -87,7 +87,7 @@ describe("Rate Limit Middleware", () => {
 		});
 
 		it("should block request if over limit for 'login' operation", async () => {
-			const limit = 10; // MAX_REQUESTS.login
+			const limit = 100; // MAX_REQUESTS.login en développement
 			for (let i = 0; i < limit; i++) {
 				await rateLimitMiddlewareInstance(req, res, "login");
 			}
@@ -102,7 +102,7 @@ describe("Rate Limit Middleware", () => {
 
 		it("should reset count after window time passes", async () => {
 			const operation = "profile-update";
-			const limit = 5;
+			const limit = 50; // MAX_REQUESTS.profile-update en développement
 
 			for (let i = 0; i < limit; i++) {
 				await rateLimitMiddlewareInstance(req, res, operation);
@@ -250,11 +250,19 @@ describe("Rate Limit Middleware", () => {
 		consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
 		const unknownOperation = "unknown-op";
-		const defaultLimit = 20;
+		const defaultLimit = 200; // MAX_REQUESTS.default en développement
 
+		// Exécuter exactement defaultLimit requêtes
 		for (let i = 0; i < defaultLimit; i++) {
-			await rateLimitMiddlewareInstance(req, res, unknownOperation);
+			const intermediateResult = await rateLimitMiddlewareInstance(
+				req,
+				res,
+				unknownOperation
+			);
+			expect(intermediateResult).toBe(false); // Toutes les requêtes jusqu'à la limite devraient réussir
 		}
+
+		// La requête qui dépasse la limite devrait être bloquée
 		const result = await rateLimitMiddlewareInstance(
 			req,
 			res,
