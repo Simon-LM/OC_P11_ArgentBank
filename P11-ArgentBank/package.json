@@ -78,6 +78,8 @@
 		"lighthouse": "^11.7.1",
 		"lighthouse-cli": "^0.1.2",
 		"msw": "^2.7.0",
+		"pa11y": "^9.0.0",
+		"pa11y-ci": "^3.1.0",
 		"prettier": "^3.4.2",
 		"puppeteer": "^24.9.0",
 		"redux-mock-store": "^1.5.4",

@@ -458,24 +458,21 @@ const User: React.FC = () => {
 												className={user["transaction-table"]}
 												ref={tableHeadingRef}
 												tabIndex={-1}>
-												{/* <caption className="sr-only">
-													{selectedAccount
-														? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
-														: "Transactions from all accounts"}
-													</caption> */}
 												<caption className="sr-only">
 													{selectedAccount
 														? `Account ending in ${selectedAccount.accountNumber}`
 														: "All accounts"}
 												</caption>
-												{/* <thead className="sr-only">
+												<thead className="sr-only">
 													<tr>
-														<th scope="col">Description</th>
-														<th scope="col">Date and Category</th>
-														<th scope="col">Amount</th>
-														<th scope="col">Notes</th>
+														<th
+															scope="col"
+															aria-label="Transaction details"></th>
+														<th scope="col" aria-label="Date and category"></th>
+														<th scope="col" aria-label="Amount"></th>
+														<th scope="col" aria-label="Notes"></th>
 													</tr>
-												</thead> */}
+												</thead>
 												<tbody>
 													{searchResults.map((tx) => (
 														<tr className={user["transaction-row"]} key={tx.id}>

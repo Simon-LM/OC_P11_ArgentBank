@@ -53,7 +53,7 @@ const Home: React.FC = () => {
 	}, [heroImageLoaded]);
 
 	return (
-		<div id="main-content" tabIndex={-1}>
+		<div tabIndex={-1}>
 			<div className="hero" style={heroContainerStyle} data-testid="hero">
 				<div className="hero__image-container">
 					{!heroImageError && (
