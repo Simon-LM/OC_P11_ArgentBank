@@ -25,6 +25,23 @@ export default defineConfig({
 			filename: "dist/stats.html", // Emplacement du rapport
 		}),
 	],
+	server: {
+		watch: {
+			// Ignore certains dossiers pour éviter trop de surveillance de fichiers
+			ignored: [
+				"**/node_modules/**",
+				"**/dist/**",
+				"**/.git/**",
+				"**/coverage/**",
+				"**/lighthouse/**",
+				"**/Pa11y-backup/**",
+				"**/.vercel/**",
+				"**/.next/**",
+			],
+			// Utilise le polling pour éviter les problèmes de limites de fichiers
+			usePolling: false,
+		},
+	},
 	build: {
 		rollupOptions: {
 			output: {

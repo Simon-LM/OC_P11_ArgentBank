@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1748360395749" clover="3.2.0">
-  <project timestamp="1748360395749" name="All files">
-    <metrics statements="7094" coveredstatements="6686" conditionals="939" coveredconditionals="850" methods="123" coveredmethods="97" elements="8156" coveredelements="7633" complexity="0" loc="7094" ncloc="7094" packages="33" files="60" classes="60"/>
+<coverage generated="1748384842661" clover="3.2.0">
+  <project timestamp="1748384842661" name="All files">
+    <metrics statements="7095" coveredstatements="6687" conditionals="939" coveredconditionals="850" methods="123" coveredmethods="97" elements="8157" coveredelements="7634" complexity="0" loc="7095" ncloc="7095" packages="33" files="60" classes="60"/>
     <package name="__tests__.api">
       <metrics statements="35" coveredstatements="35" conditionals="5" coveredconditionals="5" methods="0" coveredmethods="0"/>
       <file name="ping.test.js" path="/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/__tests__/api/ping.test.js">
@@ -4888,7 +4888,7 @@
       </file>
     </package>
     <package name="src.pages.signIn">
-      <metrics statements="452" coveredstatements="452" conditionals="73" coveredconditionals="73" methods="8" coveredmethods="8"/>
+      <metrics statements="453" coveredstatements="453" conditionals="73" coveredconditionals="73" methods="8" coveredmethods="8"/>
       <file name="SignIn.test.tsx" path="/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/src/pages/signIn/SignIn.test.tsx">
         <metrics statements="307" coveredstatements="307" conditionals="29" coveredconditionals="29" methods="2" coveredmethods="2"/>
         <line num="1" count="1" type="stmt"/>
@@ -5200,7 +5200,7 @@
         <line num="401" count="1" type="stmt"/>
       </file>
       <file name="SignIn.tsx" path="/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/src/pages/signIn/SignIn.tsx">
-        <metrics statements="145" coveredstatements="145" conditionals="44" coveredconditionals="44" methods="6" coveredmethods="6"/>
+        <metrics statements="146" coveredstatements="146" conditionals="44" coveredconditionals="44" methods="6" coveredmethods="6"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
@@ -5339,13 +5339,14 @@
         <line num="185" count="53" type="stmt"/>
         <line num="186" count="53" type="stmt"/>
         <line num="187" count="53" type="stmt"/>
-        <line num="188" count="53" type="cond" truecount="2" falsecount="0"/>
-        <line num="189" count="53" type="stmt"/>
+        <line num="188" count="53" type="stmt"/>
+        <line num="189" count="53" type="cond" truecount="2" falsecount="0"/>
         <line num="190" count="53" type="stmt"/>
-        <line num="196" count="53" type="stmt"/>
+        <line num="191" count="53" type="stmt"/>
         <line num="197" count="53" type="stmt"/>
-        <line num="199" count="53" type="stmt"/>
-        <line num="201" count="1" type="stmt"/>
+        <line num="198" count="53" type="stmt"/>
+        <line num="200" count="53" type="stmt"/>
+        <line num="202" count="1" type="stmt"/>
       </file>
     </package>
     <package name="src.pages.user">

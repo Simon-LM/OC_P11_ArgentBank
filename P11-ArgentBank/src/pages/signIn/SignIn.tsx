@@ -183,6 +183,7 @@ const SignIn: React.FC = () => {
 
 					<button
 						className={signin["signin-form__button"]}
+						type="submit"
 						disabled={isLoading}
 						aria-busy={isLoading}>
 						{isLoading ? "Authenticating..." : "Connect"}
