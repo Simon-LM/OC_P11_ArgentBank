@@ -1,0 +1,23 @@
+🚀 ANALYSE DES RAPPORTS LIGHTHOUSE
+==================================================
+
+📊 MOBILE - http://localhost:3000/
+🕒 27/05/2025 17:21:31
+
+📈 SCORES PAR CATÉGORIE:
+🟡 Performance: 55%
+🟢 Accessibility: 96%
+🟡 Best Practices: 73%
+🟢 SEO: 100%
+
+⚡ CORE WEB VITALS:
+🔴 First Contentful Paint: 11.9 s
+🔴 Largest Contentful Paint: 23.6 s
+🟢 Cumulative Layout Shift: 0.041 (99%)
+🟢 Total Blocking Time: 10 ms (100%)
+🔴 Speed Index: 14.8 s (1%)
+🔴 Time to Interactive: 11.9 s (17%)
+
+🔧 PRINCIPALES OPPORTUNITÉS:
+⚠️  Enable text compression: 12300ms d'économie potentielle
+⚠️  Minify JavaScript: 3900ms d'économie potentielle

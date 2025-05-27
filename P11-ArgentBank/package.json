@@ -14,7 +14,8 @@
 		"test:dev": "vitest --mode development",
 		"test:watch": "vitest watch",
 		"typecheck": "tsc --noEmit",
-		"prisma:test": "node -r ts-node/register src/prismaTest.ts"
+		"prisma:test": "node -r ts-node/register src/prismaTest.ts",
+		"lighthouse": "cd lighthouse && npm run test"
 	},
 	"prisma": {
 		"seed": "tsx prisma/seed.ts"

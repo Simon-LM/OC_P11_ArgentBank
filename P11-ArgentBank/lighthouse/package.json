@@ -1,0 +1,36 @@
+{
+	"name": "lighthouse-suite",
+	"version": "1.0.0",
+	"description": "Suite de tests Lighthouse pour ArgentBank",
+	"type": "module",
+	"scripts": {
+		"test": "node scripts/lighthouse-runner.js",
+		"test:auth": "./scripts/lighthouse-auth-runner.sh",
+		"test:suite": "node scripts/lighthouse-test-suite.js",
+		"test:quick": "./scripts/lighthouse-quick.sh",
+		"test:global": "node scripts/lighthouse-global-report.js",
+		"analyze": "node lib/lighthouse-analyzer.js",
+		"clean": "rm -rf reports/* && mkdir -p reports",
+		"clean:all": "./clean.sh",
+		"archive": "./clean.sh --archive",
+		"test:ci": "node scripts/lighthouse-runner.js --output json --output-path ./reports/ci-report.json",
+		"test:regression": "node lib/lighthouse-regression.js",
+		"install:hooks": "cp scripts/pre-commit-lighthouse.sh ../.git/hooks/pre-commit && chmod +x ../.git/hooks/pre-commit"
+	},
+	"keywords": [
+		"lighthouse",
+		"performance",
+		"testing",
+		"argentbank"
+	],
+	"author": "ArgentBank Team",
+	"license": "MIT",
+	"dependencies": {
+		"chrome-launcher": "^1.2.0",
+		"lighthouse": "^11.0.0",
+		"puppeteer": "^24.9.0"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	}
+}
