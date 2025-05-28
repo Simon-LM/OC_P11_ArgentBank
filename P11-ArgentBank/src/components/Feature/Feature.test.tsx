@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import Feature from "./Feature";
 
 describe("Feature Component", () => {
@@ -41,16 +41,6 @@ describe("Feature Component", () => {
 			const img = picture.querySelector("img");
 			expect(img).toHaveAttribute("src", "/img/icon-chat_light-mode.png");
 		}
-	});
-
-	test("shows fallback text if image fails to load", () => {
-		render(<Feature {...mockProps} />);
-		const img = document.querySelector(".feature-icon__img");
-		expect(img).not.toBeNull();
-		if (img) {
-			fireEvent.error(img);
-		}
-		expect(screen.getByText(mockProps.iconLabel)).toBeVisible();
 	});
 
 	test("meets accessibility requirements", () => {

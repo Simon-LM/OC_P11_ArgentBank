@@ -86,8 +86,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
 			onKeyDown={handleKeyDown}
 			tabIndex={0}
 			ref={containerRef}
-			// aria-label="Edit user information form"
-		>
+			role="region"
+			aria-label="Edit user information form">
 			<h2 id="edit-user-form-title">Edit user info</h2>
 
 			<div

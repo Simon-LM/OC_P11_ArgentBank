@@ -16,6 +16,13 @@ const Feature: React.FC<FeatureProps> = ({
 	description,
 }) => {
 	const getIconPaths = () => {
+		if (!iconClass || typeof iconClass !== "string") {
+			return {
+				png: "/img/icon-default_light-mode.png",
+				webp: "/img/icon-default_light-mode.webp",
+				avif: "/img/icon-default_light-mode.avif",
+			};
+		}
 		const baseName = iconClass.replace("feature-icon--", "");
 		return {
 			png: `/img/icon-${baseName}_light-mode.png`,

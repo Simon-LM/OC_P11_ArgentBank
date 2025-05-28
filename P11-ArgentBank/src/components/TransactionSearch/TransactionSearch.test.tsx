@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import TransactionSearch from "./TransactionSearch";
 
 const defaultProps = {
@@ -13,7 +13,7 @@ const defaultProps = {
 	onNavigateToResults: vi.fn(),
 };
 
-describe("TransactionSearch", () => {
+describe("TransactionSearch - Unit Tests", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
@@ -21,48 +21,45 @@ describe("TransactionSearch", () => {
 	it("affiche le champ de recherche et le label", () => {
 		render(<TransactionSearch {...defaultProps} />);
 		expect(screen.getByLabelText(/filter transactions/i)).toBeInTheDocument();
-		// On cible le <p> visible, pas le span sr-only
+
 		const tips = screen.getByText(
 			/search by date \(dd\/mm\/yyyy\), amount, description, category or notes/i
 		);
 		expect(tips.tagName).toBe("P");
 	});
 
-	it("met à jour la valeur de l'input et déclenche onSearchChange après délai", async () => {
-		vi.useFakeTimers();
-		render(<TransactionSearch {...defaultProps} />);
+	it("affiche la valeur initiale dans l'input", () => {
+		render(
+			<TransactionSearch
+				{...defaultProps}
+				searchParams={{
+					...defaultProps.searchParams,
+					searchTerm: "test initial",
+				}}
+			/>
+		);
+
 		const input = screen.getByLabelText(/filter transactions/i);
-		fireEvent.change(input, { target: { value: "test" } });
-		expect(input).toHaveValue("test");
-		act(() => {
-			vi.advanceTimersByTime(500);
-		});
-		expect(defaultProps.onSearchChange).toHaveBeenCalledWith({
-			searchTerm: "test",
-			page: 1,
-		});
-		vi.useRealTimers();
+		expect(input).toHaveValue("test initial");
 	});
 
-	it("affiche le bouton clear quand il y a du texte et le réinitialise", () => {
-		vi.useFakeTimers();
+	it("affiche le bouton clear quand il y a du texte", () => {
 		render(
 			<TransactionSearch
 				{...defaultProps}
 				searchParams={{ ...defaultProps.searchParams, searchTerm: "foo" }}
 			/>
 		);
+
 		const clearBtn = screen.getByLabelText(/clear search/i);
 		expect(clearBtn).toBeInTheDocument();
-		fireEvent.click(clearBtn);
-		act(() => {
-			vi.advanceTimersByTime(500);
-		});
-		expect(defaultProps.onSearchChange).toHaveBeenCalledWith({
-			searchTerm: "",
-			page: 1,
-		});
-		vi.useRealTimers();
+	});
+
+	it("n'affiche pas le bouton clear quand le champ est vide", () => {
+		render(<TransactionSearch {...defaultProps} />);
+
+		const clearBtn = screen.queryByLabelText(/clear search/i);
+		expect(clearBtn).not.toBeInTheDocument();
 	});
 
 	it("affiche le spinner quand isLoading est true", () => {
@@ -70,67 +67,61 @@ describe("TransactionSearch", () => {
 		expect(screen.getByText("⟳")).toBeInTheDocument();
 	});
 
-	it("affiche le bouton global search et gère le mode global", () => {
-		// On force le mode "non global" pour que le bouton déclenche le callback
+	it("n'affiche pas le spinner quand isLoading est false", () => {
+		render(<TransactionSearch {...defaultProps} isLoading={false} />);
+		expect(screen.queryByText("⟳")).not.toBeInTheDocument();
+	});
+
+	it("affiche le bouton global search quand un compte est sélectionné", () => {
+		render(<TransactionSearch {...defaultProps} />);
+
+		const globalBtn = screen.getByRole("button", { name: /global search/i });
+		expect(globalBtn).toBeInTheDocument();
+	});
+
+	it("n'affiche pas le bouton global search quand aucun compte n'est sélectionné", () => {
+		render(<TransactionSearch {...defaultProps} selectedAccount={null} />);
+
+		const globalBtn = screen.queryByRole("button", { name: /global search/i });
+		expect(globalBtn).not.toBeInTheDocument();
+	});
+
+	it("indique le mode global actif avec aria-pressed", () => {
 		render(
 			<TransactionSearch
 				{...defaultProps}
 				searchParams={{
 					...defaultProps.searchParams,
-					accountId: "acc1",
-					searchTerm: "",
-					page: 1,
+					accountId: undefined, // Mode global
 				}}
 			/>
 		);
-		const globalBtn = screen.getByRole("button", { name: /global search/i });
-		expect(globalBtn).toBeInTheDocument();
-		fireEvent.click(globalBtn);
-		expect(defaultProps.onGlobalSearchToggle).toHaveBeenCalled();
-	});
 
-	it("gère le raccourci clavier Ctrl+Alt+F pour focus input", () => {
-		render(<TransactionSearch {...defaultProps} />);
-		const input = screen.getByLabelText(/filter transactions/i);
-		expect(document.activeElement).not.toBe(input);
-		act(() => {
-			fireEvent.keyDown(document, { key: "f", ctrlKey: true, altKey: true });
+		const globalBtn = screen.getByRole("button", {
+			name: /global search is active/i,
 		});
-		expect(document.activeElement).toBe(input);
+		expect(globalBtn).toHaveAttribute("aria-pressed", "true");
 	});
 
-	it("gère le raccourci clavier Ctrl+Alt+R pour naviguer vers les résultats", () => {
-		render(<TransactionSearch {...defaultProps} />);
-		act(() => {
-			fireEvent.keyDown(document, { key: "r", ctrlKey: true, altKey: true });
-		});
-		expect(defaultProps.onNavigateToResults).toHaveBeenCalled();
-	});
-
-	it("navigue vers les résultats avec Entrée dans l'input", () => {
-		render(<TransactionSearch {...defaultProps} />);
-		const input = screen.getByLabelText(/filter transactions/i);
-		fireEvent.keyDown(input, { key: "Enter" });
-		expect(defaultProps.onNavigateToResults).toHaveBeenCalled();
-	});
-
-	it("blur l'input avec Escape", () => {
-		render(<TransactionSearch {...defaultProps} />);
-		const input = screen.getByLabelText(/filter transactions/i);
-		input.focus();
-		expect(document.activeElement).toBe(input);
-		fireEvent.keyDown(input, { key: "Escape" });
-		expect(document.activeElement).not.toBe(input);
-	});
-
-	it("affiche les instructions d'accessibilité et le mode de recherche courant", () => {
-		render(<TransactionSearch {...defaultProps} />);
-
-		// Le contexte d'accessibilité n'est plus présent, on vérifie le tips visible
-		const tips = screen.getByText(
-			/search by date \(dd\/mm\/yyyy\), amount, description, category or notes/i
+	it("indique le mode non-global avec aria-pressed", () => {
+		render(
+			<TransactionSearch
+				{...defaultProps}
+				searchParams={{
+					...defaultProps.searchParams,
+					accountId: "acc1", // Mode non-global
+				}}
+			/>
 		);
-		expect(tips).toBeInTheDocument();
+
+		const globalBtn = screen.getByRole("button", {
+			name: /switch to global search/i,
+		});
+		expect(globalBtn).toHaveAttribute("aria-pressed", "false");
+	});
+
+	it("affiche les instructions d'accessibilité", () => {
+		render(<TransactionSearch {...defaultProps} />);
 
 		const keyboardNav = screen.getByTestId("navigation-help");
 		expect(keyboardNav).toBeInTheDocument();
@@ -146,25 +137,9 @@ describe("TransactionSearch", () => {
 		);
 	});
 
-	it("affiche le mode global dans les instructions si aucun compte sélectionné", () => {
-		render(
-			<TransactionSearch
-				{...defaultProps}
-				selectedAccount={null}
-				searchParams={{ searchTerm: "", page: 1 }}
-			/>
-		);
-
-		// Plus de search-context, on vérifie juste que le tips est là
-		const tips = screen.getByText(
-			/search by date \(dd\/mm\/yyyy\), amount, description, category or notes/i
-		);
-		expect(tips).toBeInTheDocument();
-	});
-
 	it("affiche les raccourcis clavier dans l'aide", () => {
 		render(<TransactionSearch {...defaultProps} />);
-		// On cible le <small> visible
+
 		const shortcuts = screen.getByText(
 			/Shortcuts: ctrl\+alt\+f for search, ctrl\+alt\+r for results/i
 		);

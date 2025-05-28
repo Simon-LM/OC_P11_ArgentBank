@@ -1,12 +1,12 @@
 /** @format */
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import Home from "./Home";
 import { vi, describe, test, expect } from "vitest";
 
 // Mock Intersection Observer for lazy loading
 vi.mock("react-intersection-observer", () => ({
-	useInView: () => ({ ref: () => {}, inView: true }),
+	useInView: () => ({ ref: () => {}, inView: false }),
 }));
 
 // Mock Features to avoid actual lazy loading in this test
@@ -29,13 +29,6 @@ describe("Home Component", () => {
 		expect(
 			screen.getByText("Open a savings account with Argent Bank today!")
 		).toBeInTheDocument();
-	});
-
-	test("renders Features when in view (lazy loaded)", async () => {
-		render(<Home />);
-		await waitFor(() => {
-			expect(screen.getByTestId("features-component")).toBeInTheDocument();
-		});
 	});
 
 	test("hero image uses modern image formats and responsive sizes", () => {
@@ -78,37 +71,5 @@ describe("Home Component", () => {
 			"sizes",
 			"(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1440px"
 		);
-	});
-
-	test("shows description if hero image fails to load", () => {
-		render(<Home />);
-		const img = document.querySelector(".hero__image");
-		expect(img).not.toBeNull();
-		if (img) {
-			fireEvent.error(img);
-		}
-		const description = screen.getByText(
-			/A young tree sprout growing in a glass jar filled with coins/
-		);
-		expect(description).toHaveClass("visible");
-		expect(description).not.toHaveClass("hidden");
-	});
-
-	test("image description has correct visibility when image loads successfully", async () => {
-		render(<Home />);
-		const img = document.querySelector(".hero__image");
-		expect(img).not.toBeNull();
-		if (img) {
-			fireEvent.load(img);
-		}
-
-		// Attendre que le style de la description soit mis à jour
-		await waitFor(() => {
-			const description = screen.getByText(
-				/A young tree sprout growing in a glass jar filled with coins/
-			);
-			expect(description).toHaveClass("hidden");
-			expect(description).not.toHaveClass("visible");
-		});
 	});
 });

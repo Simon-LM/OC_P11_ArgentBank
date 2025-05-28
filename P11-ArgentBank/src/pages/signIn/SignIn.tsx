@@ -4,12 +4,11 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import signin from "./signin.module.scss";
-// import classNames from "classnames";
+import classNames from "classnames";
 import { loginUser, fetchUserProfile } from "../../utils/authService";
 import { loginUserSuccess, setAuthState } from "../../store/slices/usersSlice";
 import { AppDispatch } from "../../store/Store";
 import { useMatomo } from "../../hooks/useMatomo/useMatomo";
-import { FaUserCircle, FaInfoCircle, FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SignIn: React.FC = () => {
 	const [email, setEmail] = useState("");
@@ -87,26 +86,20 @@ const SignIn: React.FC = () => {
 	return (
 		<div className={signin["signin-page"]}>
 			<section className={signin["signin-form"]}>
-				{/* <i
+				<i
 					className={classNames(
 						"fa",
 						"fa-user-circle",
 						signin["signin-form__icon"]
 					)}
-					aria-hidden="true"></i> */}
-				<FaUserCircle
-					className={signin["signin-form__icon"]}
-					aria-hidden="true"
-				/>
+					aria-hidden="true"></i>
 
 				<h2 id="signin-title" className={signin["signin-form__title"]}>
 					Sign In
 				</h2>
 
 				<p className={signin["signin-form__demo-info"]}>
-					{/* <i className="fa fa-info-circle" aria-hidden="true"></i> */}
-					<FaInfoCircle aria-hidden="true" />
-
+					<i className="fa fa-info-circle" aria-hidden="true"></i>
 					<span>
 						<strong>Demo credentials:</strong>
 						tony@stark.com / password123
@@ -150,7 +143,7 @@ const SignIn: React.FC = () => {
 									error && error.includes("password") ? "true" : "false"
 								}
 							/>
-							{/* <button
+							<button
 								type="button"
 								onClick={() => setShowPassword(!showPassword)}
 								className={signin["signin-form__password-toggle"]}
@@ -158,17 +151,6 @@ const SignIn: React.FC = () => {
 								<i
 									className={`fa ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
 									aria-hidden="true"></i>
-							</button> */}
-							<button
-								type="button"
-								onClick={() => setShowPassword(!showPassword)}
-								className={signin["signin-form__password-toggle"]}
-								aria-label={showPassword ? "Hide password" : "Show password"}>
-								{showPassword ? (
-									<FaEyeSlash aria-hidden="true" />
-								) : (
-									<FaEye aria-hidden="true" />
-								)}
 							</button>
 						</div>
 					</div>
@@ -183,17 +165,16 @@ const SignIn: React.FC = () => {
 
 					<button
 						className={signin["signin-form__button"]}
-						type="submit"
 						disabled={isLoading}
 						aria-busy={isLoading}>
 						{isLoading ? "Authenticating..." : "Connect"}
 					</button>
 				</form>
-				{/* {ariaMessage && (
+				{ariaMessage && (
 					<p className="sr-only" role="status" aria-live="polite">
 						{ariaMessage}
 					</p>
-				)} */}
+				)}
 			</section>
 		</div>
 	);

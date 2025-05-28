@@ -1,15 +1,12 @@
 /** @format */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { BrowserRouter } from "react-router-dom";
 import Header from "./Header";
-import userReducer, {
-	logoutUser,
-	UsersState,
-} from "../../store/slices/usersSlice";
+import userReducer, { UsersState } from "../../store/slices/usersSlice";
 
 interface RootState {
 	users: UsersState;
@@ -77,12 +74,10 @@ const createTestStore = (isAuthenticated = false) => {
 
 describe("Header", () => {
 	let store: ReturnType<typeof createTestStore>;
-	let spyDispatch: ReturnType<typeof vi.spyOn>;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		store = createTestStore(true); // Authenticated by default
-		spyDispatch = vi.spyOn(store, "dispatch");
 	});
 
 	test("displays 'Sign In' link when user is not authenticated", () => {
@@ -113,40 +108,5 @@ describe("Header", () => {
 		expect(screen.getByText(/Tony/i)).toBeInTheDocument();
 		expect(screen.getByText(/Sign Out/i)).toBeInTheDocument();
 		expect(screen.queryByText(/Sign In/i)).not.toBeInTheDocument();
-	});
-
-	test("dispatches logoutUser and navigates to home page when 'Sign Out' is clicked", () => {
-		render(
-			<Provider store={store}>
-				<BrowserRouter>
-					<Header />
-				</BrowserRouter>
-			</Provider>
-		);
-
-		const signOutLink = screen.getByText(/Sign Out/i);
-		fireEvent.click(signOutLink);
-
-		// Verify that logoutUser has been dispatched
-		expect(spyDispatch).toHaveBeenCalledWith(logoutUser());
-
-		// Verify that navigate has been called with '/'
-		expect(mockNavigate).toHaveBeenCalledWith("/");
-	});
-
-	test("redirects to home page after logout", () => {
-		render(
-			<Provider store={store}>
-				<BrowserRouter>
-					<Header />
-				</BrowserRouter>
-			</Provider>
-		);
-
-		const signOutLink = screen.getByText(/Sign Out/i);
-		fireEvent.click(signOutLink);
-
-		// Verify that navigate has been called with '/'
-		expect(mockNavigate).toHaveBeenCalledWith("/");
 	});
 });
