@@ -139,8 +139,41 @@ const User: React.FC = () => {
 				accountId: selectedAccountId || undefined,
 				page: 1,
 			}));
+
+			// Mettre à jour l'URL du navigateur
+			const newUrl = new URL(window.location.href);
+			if (selectedAccountId) {
+				newUrl.searchParams.set("accountId", selectedAccountId);
+			} else {
+				// Si selectedAccountId est null/undefined (par exemple, "All transactions"), le supprimer de l'URL
+				newUrl.searchParams.delete("accountId");
+			}
+			// Utiliser replaceState pour éviter d'ajouter à l'historique du navigateur pour de simples changements de filtre
+			window.history.replaceState({ path: newUrl.href }, "", newUrl.href);
 		}
 	}, [selectedAccountId, searchParams.accountId]);
+
+	useEffect(() => {
+		// Mettre à jour l'URL du navigateur lorsque le terme de recherche change
+		const newUrl = new URL(window.location.href);
+		if (searchParams.searchTerm) {
+			newUrl.searchParams.set("searchTerm", searchParams.searchTerm);
+		} else {
+			newUrl.searchParams.delete("searchTerm");
+		}
+		window.history.replaceState({ path: newUrl.href }, "", newUrl.href);
+	}, [searchParams.searchTerm]);
+
+	useEffect(() => {
+		// Mettre à jour l'URL du navigateur lorsque la page change
+		const newUrl = new URL(window.location.href);
+		if (searchParams.page && searchParams.page > 1) {
+			newUrl.searchParams.set("page", searchParams.page.toString());
+		} else {
+			newUrl.searchParams.delete("page");
+		}
+		window.history.replaceState({ path: newUrl.href }, "", newUrl.href);
+	}, [searchParams.page]);
 
 	useEffect(() => {
 		if (transactionHeadingRef.current && selectedAccountId) {

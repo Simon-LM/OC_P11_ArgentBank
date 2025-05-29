@@ -1,0 +1,12 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"types": ["cypress", "@testing-library/cypress", "cypress-axe"],
+		"strict": true,
+		"noImplicitAny": true,
+		"skipLibCheck": true,
+		"isolatedModules": false
+	},
+	"include": ["**/*.ts", "**/*.cy.ts", "**/*.d.ts", "support/**/*"],
+	"exclude": ["../node_modules", "../dist"]
+}

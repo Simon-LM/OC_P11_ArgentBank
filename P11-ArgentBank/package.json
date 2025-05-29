@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
+		"build:analyze": "vite build && xdg-open dist/stats.html",
 		"vercel-build": "prisma generate && vite build",
 		"build:strict": "tsc -b && vite build",
 		"lint": "eslint .",
@@ -19,7 +20,17 @@
 		"test:a11y": "node Pa11y/run-pa11y-tests.js",
 		"test:a11y-custom": "node Pa11y/run-pa11y-tests.js",
 		"test:a11y-update-port": "node Pa11y/update-port.js",
-		"test:a11y-validate": "node Pa11y/validate-setup.js"
+		"test:a11y-validate": "node Pa11y/validate-setup.js",
+		"cypress:open": "cypress open",
+		"cypress:run": "cypress run",
+		"test:e2e": "cypress run",
+		"test:e2e:headed": "cypress run --headed",
+		"test:e2e:a11y": "cypress run --spec 'cypress/e2e/**/*.cy.ts'",
+		"test:e2e:a11y:report": "cypress run && npx mochawesome-merge cypress/reports/*.json > cypress/reports/merged-report.json && npx marge cypress/reports/merged-report.json --reportDir cypress/reports/html --inline",
+		"test:e2e:report": "cypress run && npx mochawesome-merge cypress/reports/*.json > cypress/reports/merged-report.json && npx marge cypress/reports/merged-report.json --reportDir cypress/reports/html --inline",
+		"cypress:clean": "./cypress/clean-reports.sh",
+		"test:all": "pnpm test && pnpm test:e2e",
+		"test:all:a11y": "pnpm test:a11y && pnpm test:e2e:a11y"
 	},
 	"prisma": {
 		"seed": "tsx prisma/seed.ts"
@@ -52,6 +63,7 @@
 	"devDependencies": {
 		"@axe-core/react": "^4.10.1",
 		"@eslint/js": "^9.9.0",
+		"@testing-library/cypress": "^10.0.3",
 		"@testing-library/dom": "^10.4.0",
 		"@testing-library/jest-dom": "^6.5.0",
 		"@testing-library/react": "^16.0.1",
@@ -69,6 +81,10 @@
 		"@vitest/ui": "2.1.8",
 		"axe-core": "^4.10.3",
 		"chrome-launcher": "^1.2.0",
+		"cypress": "^14.4.0",
+		"cypress-axe": "^1.6.0",
+		"cypress-mochawesome-reporter": "^3.8.2",
+		"cypress-real-events": "^1.14.0",
 		"eslint": "^9.9.0",
 		"eslint-plugin-react-hooks": "^5.1.0-rc.0",
 		"eslint-plugin-react-refresh": "^0.4.9",
@@ -78,6 +94,9 @@
 		"lighthouse": "^11.7.1",
 		"lighthouse-cli": "^0.1.2",
 		"markdownlint-cli": "^0.45.0",
+		"mochawesome": "^7.1.3",
+		"mochawesome-merge": "^5.0.0",
+		"mochawesome-report-generator": "^6.2.0",
 		"msw": "^2.7.0",
 		"pa11y": "^9.0.0",
 		"prettier": "^3.4.2",

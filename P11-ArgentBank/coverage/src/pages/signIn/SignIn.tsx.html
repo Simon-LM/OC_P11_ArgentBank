@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.07% </span>
+                <span class="strong">94.11% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>143/152</span>
+                <span class='fraction'>144/153</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.72% </span>
+                <span class="strong">70% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>24/33</span>
+                <span class='fraction'>21/30</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.07% </span>
+                <span class="strong">94.11% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>143/152</span>
+                <span class='fraction'>144/153</span>
             </div>
         
             
@@ -246,7 +246,9 @@
 <a name='L181'></a><a href='#L181'>181</a>
 <a name='L182'></a><a href='#L182'>182</a>
 <a name='L183'></a><a href='#L183'>183</a>
-<a name='L184'></a><a href='#L184'>184</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -294,6 +296,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -327,7 +330,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -405,19 +408,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
@@ -473,6 +477,7 @@ const SignIn: React.FC = () =&gt; {
 &nbsp;
 	const handleSubmit = async (event: React.FormEvent) =&gt; {
 		event.preventDefault();
+		setError(null); // Réinitialiser les erreurs précédentes
 		setIsLoading(true);
 		setAriaMessage("Authenticating...");
 		try {
@@ -510,7 +515,7 @@ const SignIn: React.FC = () =&gt; {
 <span class="cstat-no" title="statement not covered" >			}</span>
 		} finally {
 			setIsLoading(false);
-			setTimeout(() =&gt; setAriaMessage(null), 3000);
+			// setTimeout(() =&gt; setAriaMessage(null), 3000); // Retiré ou ajusté si l'erreur est affichée
 		}
 	};
 &nbsp;
@@ -586,14 +591,6 @@ const SignIn: React.FC = () =&gt; {
 						&lt;/div&gt;
 					&lt;/div&gt;
 &nbsp;
-					&lt;p className="sr-only" role="status" aria-live="polite"&gt;
-						{isLoading
-							? "Authenticating your credentials..."
-							: ariaMessage
-								? ariaMessage
-								: ""}
-					&lt;/p&gt;
-&nbsp;
 					&lt;button
 						className={signin["signin-form__button"]}
 						disabled={isLoading}
@@ -601,6 +598,15 @@ const SignIn: React.FC = () =&gt; {
 						{isLoading ? "Authenticating..." : "Connect"}
 					&lt;/button&gt;
 				&lt;/form&gt;
+				{error &amp;&amp; (
+					&lt;p
+						id="error-message"
+						className={signin["signin-form__error"]}
+						role="alert"
+						aria-live="assertive"&gt;
+						{error}
+					&lt;/p&gt;
+				)}
 				{ariaMessage &amp;&amp; (
 					&lt;p className="sr-only" role="status" aria-live="polite"&gt;
 						{ariaMessage}
@@ -619,7 +625,7 @@ export default SignIn;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-28T21:41:01.387Z
+                at 2025-05-29T22:11:55.181Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

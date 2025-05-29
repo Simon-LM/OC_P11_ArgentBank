@@ -22,7 +22,8 @@ export default defineConfig({
 			open: true, // Ouvre automatiquement le rapport après la construction
 			gzipSize: true, // Affiche la taille compressée avec gzip
 			brotliSize: true, // Affiche la taille compressée avec brotli
-			filename: "dist/stats.html", // Emplacement du rapport
+			filename: "stats.html", // Emplacement du rapport (dans dist/)
+			emitFile: true, // Force la génération même en mode développement
 		}),
 	],
 	server: {

@@ -26,3 +26,10 @@ dist-ssr
 .env
 .env.example
 .env*.local
+
+# Test reports
+cypress/reports/
+cypress/screenshots/
+cypress/videos/
+coverage/
+lighthouse/reports/

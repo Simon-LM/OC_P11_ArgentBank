@@ -42,6 +42,7 @@ const SignIn: React.FC = () => {
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
+		setError(null); // Réinitialiser les erreurs précédentes
 		setIsLoading(true);
 		setAriaMessage("Authenticating...");
 		try {
@@ -79,7 +80,7 @@ const SignIn: React.FC = () => {
 			}
 		} finally {
 			setIsLoading(false);
-			setTimeout(() => setAriaMessage(null), 3000);
+			// setTimeout(() => setAriaMessage(null), 3000); // Retiré ou ajusté si l'erreur est affichée
 		}
 	};
 
@@ -155,14 +156,6 @@ const SignIn: React.FC = () => {
 						</div>
 					</div>
 
-					<p className="sr-only" role="status" aria-live="polite">
-						{isLoading
-							? "Authenticating your credentials..."
-							: ariaMessage
-								? ariaMessage
-								: ""}
-					</p>
-
 					<button
 						className={signin["signin-form__button"]}
 						disabled={isLoading}
@@ -170,6 +163,15 @@ const SignIn: React.FC = () => {
 						{isLoading ? "Authenticating..." : "Connect"}
 					</button>
 				</form>
+				{error && (
+					<p
+						id="error-message"
+						className={signin["signin-form__error"]}
+						role="alert"
+						aria-live="assertive">
+						{error}
+					</p>
+				)}
 				{ariaMessage && (
 					<p className="sr-only" role="status" aria-live="polite">
 						{ariaMessage}
