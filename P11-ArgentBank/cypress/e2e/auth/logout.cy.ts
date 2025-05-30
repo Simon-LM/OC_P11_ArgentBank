@@ -27,7 +27,7 @@ describe("Déconnexion de l'utilisateur", () => {
 			cy.get("form").contains("button", "Connect").click();
 
 			// Attendre que la redirection vers la page utilisateur soit terminée
-			cy.url().should("include", "/User");
+			cy.url().should("include", "/user");
 
 			// Vérifier que le nom d'utilisateur est affiché dans l'en-tête
 			// Assurez-vous que validUser.userName est défini dans vos fixtures
@@ -60,7 +60,7 @@ describe("Déconnexion de l'utilisateur", () => {
 
 		// Vérifications après la déconnexion
 		cy.url().should("eq", "http://localhost:3000/"); // Doit rediriger vers la page d'accueil
-		cy.url().should("not.include", "/User"); // Ne doit plus être sur la page utilisateur
+		cy.url().should("not.include", "/user"); // Ne doit plus être sur la page utilisateur
 
 		// Test d'accessibilité de la page d'accueil après déconnexion (ignorer les violations de contraste connues)
 		cy.checkA11y(undefined, {

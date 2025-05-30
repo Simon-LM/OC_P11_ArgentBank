@@ -17,7 +17,7 @@ describe("Gestion de Profil Utilisateur", () => {
 				cy.get("input#email").type(validUser.email);
 				cy.get("input#password").type(validUser.password);
 				cy.get("form").contains("button", "Connect").click();
-				cy.url().should("include", "/User"); // S'assurer que la connexion est réussie et redirigée
+				cy.url().should("include", "/user"); // S'assurer que la connexion est réussie et redirigée
 			} else {
 				throw new Error(
 					"Utilisateur valide non trouvé ou informations manquantes dans les fixtures."

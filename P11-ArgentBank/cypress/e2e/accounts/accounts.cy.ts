@@ -25,7 +25,7 @@ describe("Gestion des Comptes Bancaires", () => {
 				cy.get("input#email").type(validUser.email);
 				cy.get("input#password").type(validUser.password);
 				cy.get("form").contains("button", "Connect").click();
-				cy.url().should("include", "/User");
+				cy.url().should("include", "/user");
 			} else {
 				throw new Error(
 					"Utilisateur valide non trouvé ou informations manquantes dans les fixtures."
@@ -114,8 +114,8 @@ describe("Gestion des Comptes Bancaires", () => {
 		// Vérifier que le compte cliqué est marqué comme sélectionné (aria-pressed="true")
 		cy.get("@firstAccount").should("have.attr", "aria-pressed", "true");
 
-		// Vérifier que le chemin de l'URL est toujours /User (avec U majuscule)
-		cy.location("pathname").should("eq", "/User");
+		// Vérifier que le chemin de l'URL est toujours /user (avec u minuscule)
+		cy.location("pathname").should("eq", "/user");
 
 		// Optionnel: vérifier qu'un autre compte n'est pas sélectionné (s'il y en a plus d'un)
 		cy.get('button[class*="account"]').then(($buttons) => {

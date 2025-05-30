@@ -105,7 +105,7 @@ describe("SignIn Component - Integration Tests", () => {
 				email: "test@example.com",
 				password: "password123",
 			});
-			expect(mockNavigate).toHaveBeenCalledWith("/User");
+			expect(mockNavigate).toHaveBeenCalledWith("/user");
 		});
 	});
 

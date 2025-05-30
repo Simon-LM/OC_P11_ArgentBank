@@ -36,14 +36,18 @@ describe("Authentification", () => {
 			},
 		});
 
-		cy.get("input#email").type(validUser.email);
-		cy.get("input#password").type(validUser.password);
+		cy.get('[data-cy="email-input"], input#email').type(validUser.email);
+		cy.get('[data-cy="password-input"], input#password').type(
+			validUser.password
+		);
 
 		// Cibler le bouton par son texte dans le formulaire
-		cy.get("form").contains("button", "Connect").click();
+		cy.get('[data-cy="login-button"], form')
+			.contains("button", "Connect")
+			.click();
 
 		// Vérifications après la connexion
-		cy.url().should("include", "/User");
+		cy.url().should("include", "/user");
 
 		// Test d'accessibilité de la page utilisateur après connexion
 		cy.checkA11y(undefined, {
@@ -79,18 +83,24 @@ describe("Authentification", () => {
 			},
 		});
 
-		cy.get("input#email").type(invalidUser.email);
-		cy.get("input#password").type(invalidUser.password);
-		cy.get("form").contains("button", "Connect").click();
+		cy.get('[data-cy="email-input"], input#email').type(invalidUser.email);
+		cy.get('[data-cy="password-input"], input#password').type(
+			invalidUser.password
+		);
+		cy.get('[data-cy="login-button"], form')
+			.contains("button", "Connect")
+			.click();
 
 		// Vérifications de l'erreur
-		// L'URL ne devrait pas changer ou rediriger vers /User
-		cy.url().should("not.include", "/User");
+		// L'URL ne devrait pas changer ou rediriger vers /user
+		cy.url().should("not.include", "/user");
 		cy.url().should("include", "/signin"); // S'assurer qu'on est toujours sur la page de connexion
 
 		// Vérifier que le message d'erreur spécifique est visible
 		// Ce message vient de la fonction getErrorMessage dans SignIn.tsx pour une erreur 401
-		cy.contains("Invalid email or password").should("be.visible");
+		cy.get("#error-message")
+			.should("be.visible")
+			.and("contain.text", "Invalid email or password");
 
 		// Test d'accessibilité de la page avec le message d'erreur (ignorer les violations de contraste connues)
 		cy.checkA11y(undefined, {
