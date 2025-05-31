@@ -199,10 +199,10 @@ jobs:
 
           # 🔧 FIX: Forcer Vercel à IGNORER complètement la config cloud
           echo "🔧 FORCING Vercel to ignore cloud config and use CWD as project root..."
-          
+
           # Supprimer tout lien avec la config cloud
           rm -rf .vercel 2>/dev/null || true
-          
+
           # Créer un vercel.json minimal qui force le CWD comme racine
           echo '{
             "version": 2,
@@ -219,10 +219,10 @@ jobs:
               }
             ]
           }' > vercel.json
-          
+
           # SOLUTION: Utiliser --cwd pour forcer le répertoire de travail
           echo "🚀 Starting Vercel with forced CWD and local config..."
-          vercel dev --listen 3000 --token $VERCEL_TOKEN --cwd "$(pwd)" &
+          vercel dev --listen 3000 --token $VERCEL_TOKEN --cwd "$(pwd)" --yes &
           VERCEL_PID=$!
           echo "🔢 Vercel dev PID: $VERCEL_PID"
 
