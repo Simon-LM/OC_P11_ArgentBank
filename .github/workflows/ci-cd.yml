@@ -176,14 +176,61 @@ jobs:
 
       - name: 🚀 Start Vercel dev server (for serverless functions)
         working-directory: P11-ArgentBank
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           echo "🚀 Starting Vercel dev server for serverless functions..."
-          echo "📝 SOLUTION: Using 'vercel dev --yes' (Option 1 - no auth required)"
+          echo "📝 SOLUTION: Using 'vercel dev --token' (Option 2 - token auth required)"
           
-          # Option 1: vercel dev --yes (pas d'authentification requise)
-          vercel dev --yes --listen 3000 &
+          # Vérifier que le token Vercel est disponible
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "❌ ERROR: VERCEL_TOKEN secret is not configured!"
+            echo "📋 Please add VERCEL_TOKEN to GitHub Secrets"
+            echo "🔗 Get token from: https://vercel.com/account/tokens"
+            exit 1
+          fi
+          
+          # Option 2: vercel dev --token (authentification par token)
+          vercel dev --listen 3000 --token $VERCEL_TOKEN &
           VERCEL_PID=$!
           echo "🔢 Vercel dev PID: $VERCEL_PID"
+          
+          # Attendre que le serveur soit prêt (augmenté à 45 secondes pour l'auth)
+          echo "⏳ Waiting for Vercel dev server to be ready..."
+          READY=false
+          for i in {1..45}; do
+            if curl -f -s http://localhost:3000 > /dev/null 2>&1; then
+              echo "✅ Vercel dev server ready on http://localhost:3000 (attempt $i/45)"
+              READY=true
+              break
+            fi
+            echo "⏳ Attempt $i/45: Server not ready yet, waiting 2s..."
+            sleep 2
+          done
+
+          # Vérification finale avec debug détaillé
+          if [ "$READY" = false ]; then
+            echo "❌ ERROR: Vercel dev server not responding after 90 seconds!"
+            echo ""
+            echo "🔍 DEBUG INFO:"
+            echo "📝 Vercel process status:"
+            ps aux | grep -E "(vercel|node)" | grep -v grep || echo "No vercel processes found"
+            echo ""
+            echo "🌐 Network status:"
+            netstat -tulnp | grep :3000 || echo "Port 3000 not listening"
+            echo ""
+            echo "📄 Vercel logs (if available):"
+            tail -20 ~/.vercel/logs/* 2>/dev/null || echo "No vercel logs found"
+            echo ""
+            echo "🔍 Project structure check:"
+            ls -la vercel.json api/ 2>/dev/null || echo "Missing vercel.json or api folder"
+            echo ""
+            exit 1
+          fi
+          
+          echo "🎯 Vercel dev server successfully started and responding!"
+          echo "🔗 Server URL: http://localhost:3000"
+          echo "🚀 Ready for Cypress tests with serverless functions support"
           
           # Attendre que le serveur soit prêt (augmenté à 30 secondes)
           echo "⏳ Waiting for Vercel dev server to be ready..."
