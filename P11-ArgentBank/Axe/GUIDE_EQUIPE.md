@@ -82,11 +82,11 @@ Axe/ ✅ Configuré
 
 ```json
 {
-	"test:axe": "vitest run --config Axe/config/vitest.axe.config.ts",
-	"test:axe-watch": "vitest watch --config Axe/config/vitest.axe.config.ts",
-	"test:axe-components": "vitest run --config Axe/config/vitest.axe.config.ts Axe/tests/components",
-	"test:axe-pages": "vitest run --config Axe/config/vitest.axe.config.ts Axe/tests/pages",
-	"test:axe-report": "vitest run --config Axe/config/vitest.axe.config.ts --reporter=verbose"
+  "test:axe": "vitest run --config Axe/config/vitest.axe.config.ts",
+  "test:axe-watch": "vitest watch --config Axe/config/vitest.axe.config.ts",
+  "test:axe-components": "vitest run --config Axe/config/vitest.axe.config.ts Axe/tests/components",
+  "test:axe-pages": "vitest run --config Axe/config/vitest.axe.config.ts Axe/tests/pages",
+  "test:axe-report": "vitest run --config Axe/config/vitest.axe.config.ts --reporter=verbose"
 }
 ```
 
@@ -104,19 +104,19 @@ import "../utils/axe-setup.js";
 expect.extend(toHaveNoViolations);
 
 const MonComposant = () => (
-	<div>
-		<h2>Mon Titre</h2>
-		<p>Mon contenu accessible</p>
-	</div>
+  <div>
+    <h2>Mon Titre</h2>
+    <p>Mon contenu accessible</p>
+  </div>
 );
 
 describe("MonComposant - Tests d'accessibilité", () => {
-	it("ne doit pas avoir de violations", async () => {
-		const { container } = render(<MonComposant />);
+  it("ne doit pas avoir de violations", async () => {
+    const { container } = render(<MonComposant />);
 
-		const results = await axe(container);
-		expect(results).toHaveNoViolations();
-	});
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
 });
 ```
 
@@ -124,16 +124,16 @@ describe("MonComposant - Tests d'accessibilité", () => {
 
 ```tsx
 it("doit avoir des formulaires accessibles", async () => {
-	const { container } = render(<MonFormulaire />);
+  const { container } = render(<MonFormulaire />);
 
-	const results = await axe(container, {
-		rules: {
-			label: { enabled: true },
-			"form-field-multiple-labels": { enabled: true },
-		},
-	});
+  const results = await axe(container, {
+    rules: {
+      label: { enabled: true },
+      "form-field-multiple-labels": { enabled: true },
+    },
+  });
 
-	expect(results).toHaveNoViolations();
+  expect(results).toHaveNoViolations();
 });
 ```
 

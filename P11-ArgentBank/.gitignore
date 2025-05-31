@@ -15,6 +15,9 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea
 .DS_Store
 *.suo
@@ -22,10 +25,40 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.vercel
-.env
-.env.example
-.env*.local
+
+# Fichiers de sauvegarde et temporaires
+*~
+*.tmp
+*.backup
+*.bak
+.*.swp
+.*.swo
+*.autosave
+
+# Sauvegardes VS Code et Copilot
+.vscode/workspaceStorage/
+.vscode/.BROWSERSLISTRC
+.vscode/argv.json
+.history/
+*.backup
+*.bak
+.*.swp
+.*.swo
+*.autosave
+
+# Conflits de package managers
+package-lock.json
+yarn.lock
+
+# Cache VS Code
+.vscode/settings.backup
+.vscode/launch.backup
+.vscode/tasks.backup
+
+# Fichiers temporaires du système
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # Test reports
 cypress/reports/

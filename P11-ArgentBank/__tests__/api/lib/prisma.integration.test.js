@@ -5,94 +5,94 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // Mock de PrismaClient
 const mockPrismaConstructor = vi.fn();
 vi.mock("@prisma/client", () => ({
-	default: {
-		// L'export par défaut est un objet
-		PrismaClient: mockPrismaConstructor, // PrismaClient est une propriété de cet objet
-	},
+  default: {
+    // L'export par défaut est un objet
+    PrismaClient: mockPrismaConstructor, // PrismaClient est une propriété de cet objet
+  },
 }));
 
 describe("Prisma Client Singleton", () => {
-	const originalNodeEnv = process.env.NODE_ENV;
+  const originalNodeEnv = process.env.NODE_ENV;
 
-	beforeEach(() => {
-		// Réinitialiser les mocks et l'état global avant chaque test
-		vi.resetAllMocks();
-		mockPrismaConstructor.mockReturnValue({
-			$connect: vi.fn().mockResolvedValue(undefined),
-			$disconnect: vi.fn().mockResolvedValue(undefined),
-			// Mock d'autres méthodes si nécessaire pour les tests
-		});
+  beforeEach(() => {
+    // Réinitialiser les mocks et l'état global avant chaque test
+    vi.resetAllMocks();
+    mockPrismaConstructor.mockReturnValue({
+      $connect: vi.fn().mockResolvedValue(undefined),
+      $disconnect: vi.fn().mockResolvedValue(undefined),
+      // Mock d'autres méthodes si nécessaire pour les tests
+    });
 
-		// Supprimer l'instance existante dans global si elle existe
-		if (global.prisma) delete global.prisma;
+    // Supprimer l'instance existante dans global si elle existe
+    if (global.prisma) delete global.prisma;
 
-		// Nettoyer le cache des modules pour forcer le rechargement
-		vi.resetModules();
-	});
+    // Nettoyer le cache des modules pour forcer le rechargement
+    vi.resetModules();
+  });
 
-	afterEach(() => {
-		// Restaurer l'environnement original après chaque test
-		process.env.NODE_ENV = originalNodeEnv;
-	});
+  afterEach(() => {
+    // Restaurer l'environnement original après chaque test
+    process.env.NODE_ENV = originalNodeEnv;
+  });
 
-	it("should create a new PrismaClient instance in production environment", async () => {
-		// Configurer l'environnement comme production
-		process.env.NODE_ENV = "production";
+  it("should create a new PrismaClient instance in production environment", async () => {
+    // Configurer l'environnement comme production
+    process.env.NODE_ENV = "production";
 
-		// Importer le module après avoir configuré l'environnement
-		const { prisma } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
+    // Importer le module après avoir configuré l'environnement
+    const { prisma } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
 
-		// Vérifier que PrismaClient a été appelé
-		expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
-		expect(prisma).toBeDefined();
-	});
+    // Vérifier que PrismaClient a été appelé
+    expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
+    expect(prisma).toBeDefined();
+  });
 
-	it("should reuse the same PrismaClient instance in development environment", async () => {
-		// Configurer l'environnement comme développement
-		process.env.NODE_ENV = "development";
+  it("should reuse the same PrismaClient instance in development environment", async () => {
+    // Configurer l'environnement comme développement
+    process.env.NODE_ENV = "development";
 
-		// Premier import
-		const { prisma: prismaFirst } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
-		expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
+    // Premier import
+    const { prisma: prismaFirst } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
+    expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
 
-		// Nettoyer le cache mais garder l'objet global
-		vi.resetModules();
+    // Nettoyer le cache mais garder l'objet global
+    vi.resetModules();
 
-		// Deuxième import - ne devrait pas créer une nouvelle instance
-		const { prisma: prismaSecond } = await import(
-			"../../../api/lib/prisma.js" // MODIFIÉ
-		);
-		expect(mockPrismaConstructor).toHaveBeenCalledTimes(1); // Toujours 1 appel
+    // Deuxième import - ne devrait pas créer une nouvelle instance
+    const { prisma: prismaSecond } = await import(
+      "../../../api/lib/prisma.js" // MODIFIÉ
+    );
+    expect(mockPrismaConstructor).toHaveBeenCalledTimes(1); // Toujours 1 appel
 
-		// Les deux instances devraient pointer vers le même objet
-		expect(prismaFirst).toBe(prismaSecond);
-	});
+    // Les deux instances devraient pointer vers le même objet
+    expect(prismaFirst).toBe(prismaSecond);
+  });
 
-	it("should create new instance if global.prisma is undefined in development", async () => {
-		// Configurer l'environnement comme développement
-		process.env.NODE_ENV = "development";
+  it("should create new instance if global.prisma is undefined in development", async () => {
+    // Configurer l'environnement comme développement
+    process.env.NODE_ENV = "development";
 
-		// Forcer global._prisma à être undefined (pour correspondre à l'implémentation)
-		global._prisma = undefined;
+    // Forcer global._prisma à être undefined (pour correspondre à l'implémentation)
+    global._prisma = undefined;
 
-		// Import du module
-		const { prisma } = await import("../../../api/lib/prisma.js");
+    // Import du module
+    const { prisma } = await import("../../../api/lib/prisma.js");
 
-		// Vérifier que PrismaClient a été appelé
-		expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
-		expect(prisma).toBeDefined();
-		// Vérifier que global._prisma est maintenant défini
-		expect(global._prisma).toBeDefined();
-	});
+    // Vérifier que PrismaClient a été appelé
+    expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
+    expect(prisma).toBeDefined();
+    // Vérifier que global._prisma est maintenant défini
+    expect(global._prisma).toBeDefined();
+  });
 
-	it("should export an object with Prisma client methods", async () => {
-		// Import du module
-		const { prisma } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
+  it("should export an object with Prisma client methods", async () => {
+    // Import du module
+    const { prisma } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
 
-		// Vérifier que l'objet exporté a les méthodes attendues
-		expect(prisma.$connect).toBeDefined();
-		expect(typeof prisma.$connect).toBe("function");
-		expect(prisma.$disconnect).toBeDefined();
-		expect(typeof prisma.$disconnect).toBe("function");
-	});
+    // Vérifier que l'objet exporté a les méthodes attendues
+    expect(prisma.$connect).toBeDefined();
+    expect(typeof prisma.$connect).toBe("function");
+    expect(prisma.$disconnect).toBeDefined();
+    expect(typeof prisma.$disconnect).toBe("function");
+  });
 });

@@ -1,4 +1,3 @@
-
 Object.defineProperty(exports, "__esModule", { value: true });
 
 const {
@@ -23,13 +22,12 @@ const {
   Public,
   getRuntime,
   createParam,
-} = require('./runtime/edge.js')
+} = require("./runtime/edge.js");
 
+const Prisma = {};
 
-const Prisma = {}
-
-exports.Prisma = Prisma
-exports.$Enums = {}
+exports.Prisma = Prisma;
+exports.$Enums = {};
 
 /**
  * Prisma Client JS version: 6.6.0
@@ -37,153 +35,164 @@ exports.$Enums = {}
  */
 Prisma.prismaVersion = {
   client: "6.6.0",
-  engine: "f676762280b54cd07c770017ed3711ddde35f37a"
-}
+  engine: "f676762280b54cd07c770017ed3711ddde35f37a",
+};
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
-Prisma.PrismaClientUnknownRequestError = PrismaClientUnknownRequestError
-Prisma.PrismaClientRustPanicError = PrismaClientRustPanicError
-Prisma.PrismaClientInitializationError = PrismaClientInitializationError
-Prisma.PrismaClientValidationError = PrismaClientValidationError
-Prisma.Decimal = Decimal
+Prisma.PrismaClientUnknownRequestError = PrismaClientUnknownRequestError;
+Prisma.PrismaClientRustPanicError = PrismaClientRustPanicError;
+Prisma.PrismaClientInitializationError = PrismaClientInitializationError;
+Prisma.PrismaClientValidationError = PrismaClientValidationError;
+Prisma.Decimal = Decimal;
 
 /**
  * Re-export of sql-template-tag
  */
-Prisma.sql = sqltag
-Prisma.empty = empty
-Prisma.join = join
-Prisma.raw = raw
-Prisma.validator = Public.validator
+Prisma.sql = sqltag;
+Prisma.empty = empty;
+Prisma.join = join;
+Prisma.raw = raw;
+Prisma.validator = Public.validator;
 
 /**
-* Extensions
-*/
-Prisma.getExtensionContext = Extensions.getExtensionContext
-Prisma.defineExtension = Extensions.defineExtension
+ * Extensions
+ */
+Prisma.getExtensionContext = Extensions.getExtensionContext;
+Prisma.defineExtension = Extensions.defineExtension;
 
 /**
  * Shorthand utilities for JSON filtering
  */
-Prisma.DbNull = objectEnumValues.instances.DbNull
-Prisma.JsonNull = objectEnumValues.instances.JsonNull
-Prisma.AnyNull = objectEnumValues.instances.AnyNull
+Prisma.DbNull = objectEnumValues.instances.DbNull;
+Prisma.JsonNull = objectEnumValues.instances.JsonNull;
+Prisma.AnyNull = objectEnumValues.instances.AnyNull;
 
 Prisma.NullTypes = {
   DbNull: objectEnumValues.classes.DbNull,
   JsonNull: objectEnumValues.classes.JsonNull,
-  AnyNull: objectEnumValues.classes.AnyNull
-}
-
-
-
-
+  AnyNull: objectEnumValues.classes.AnyNull,
+};
 
 /**
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
-  Serializable: 'Serializable'
+  ReadUncommitted: "ReadUncommitted",
+  ReadCommitted: "ReadCommitted",
+  RepeatableRead: "RepeatableRead",
+  Serializable: "Serializable",
 });
 
 exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
-  email: 'email',
-  password: 'password',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  userName: 'userName',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  id: "id",
+  email: "email",
+  password: "password",
+  firstName: "firstName",
+  lastName: "lastName",
+  userName: "userName",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
 };
 
 exports.Prisma.SortOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc",
 };
 
 exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
+  default: "default",
+  insensitive: "insensitive",
 };
 
-
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: "User",
 };
 /**
  * Create the Client
  */
 const config = {
-  "generator": {
-    "name": "client",
-    "provider": {
-      "fromEnvVar": null,
-      "value": "prisma-client-js"
+  generator: {
+    name: "client",
+    provider: {
+      fromEnvVar: null,
+      value: "prisma-client-js",
     },
-    "output": {
-      "value": "/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/src/generated/prisma",
-      "fromEnvVar": null
+    output: {
+      value:
+        "/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/src/generated/prisma",
+      fromEnvVar: null,
     },
-    "config": {
-      "engineType": "library"
+    config: {
+      engineType: "library",
     },
-    "binaryTargets": [
+    binaryTargets: [
       {
-        "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
-        "native": true
-      }
+        fromEnvVar: null,
+        value: "debian-openssl-3.0.x",
+        native: true,
+      },
     ],
-    "previewFeatures": [],
-    "sourceFilePath": "/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/prisma/schema.prisma",
-    "isCustomOutput": true
+    previewFeatures: [],
+    sourceFilePath:
+      "/media/simpnlm329budgie/ef264f95-2d57-4eae-85f9-710bfd4f5fc4/SimonLM329_PUBLIC/GIT/Projet_OC/P11/P11_ArgentBank_Vite-React/P11-ArgentBank/prisma/schema.prisma",
+    isCustomOutput: true,
   },
-  "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+  relativeEnvPaths: {
+    rootEnvPath: null,
+    schemaEnvPath: "../../../.env",
   },
-  "relativePath": "../../../prisma",
-  "clientVersion": "6.6.0",
-  "engineVersion": "f676762280b54cd07c770017ed3711ddde35f37a",
-  "datasourceNames": [
-    "db"
-  ],
-  "activeProvider": "postgresql",
-  "postinstall": false,
-  "inlineDatasources": {
-    "db": {
-      "url": {
-        "fromEnvVar": "DATABASE_URL",
-        "value": null
-      }
-    }
+  relativePath: "../../../prisma",
+  clientVersion: "6.6.0",
+  engineVersion: "f676762280b54cd07c770017ed3711ddde35f37a",
+  datasourceNames: ["db"],
+  activeProvider: "postgresql",
+  postinstall: false,
+  inlineDatasources: {
+    db: {
+      url: {
+        fromEnvVar: "DATABASE_URL",
+        value: null,
+      },
+    },
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  email     String   @unique\n  password  String\n  firstName String\n  lastName  String\n  userName  String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n",
-  "inlineSchemaHash": "4705b5f7b5c29658eddba44038f2da6dfbbf819d6f06372a645d2ddfb52d5103",
-  "copyEngine": true
-}
-config.dirname = '/'
+  inlineSchema:
+    'generator client {\n  provider = "prisma-client-js"\n  output   = "../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n  url      = env("DATABASE_URL")\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  email     String   @unique\n  password  String\n  firstName String\n  lastName  String\n  userName  String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n',
+  inlineSchemaHash:
+    "4705b5f7b5c29658eddba44038f2da6dfbbf819d6f06372a645d2ddfb52d5103",
+  copyEngine: true,
+};
+config.dirname = "/";
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"dbName\":null,\"schema\":null,\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":true,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"String\",\"nativeType\":null,\"default\":{\"name\":\"uuid\",\"args\":[4]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"email\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":true,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"password\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"firstName\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"lastName\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"userName\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"String\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":true,\"type\":\"DateTime\",\"nativeType\":null,\"default\":{\"name\":\"now\",\"args\":[]},\"isGenerated\":false,\"isUpdatedAt\":false},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"isList\":false,\"isRequired\":true,\"isUnique\":false,\"isId\":false,\"isReadOnly\":false,\"hasDefaultValue\":false,\"type\":\"DateTime\",\"nativeType\":null,\"isGenerated\":false,\"isUpdatedAt\":true}],\"primaryKey\":null,\"uniqueFields\":[],\"uniqueIndexes\":[],\"isGenerated\":false}},\"enums\":{},\"types\":{}}")
-defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
-config.engineWasm = undefined
-config.compilerWasm = undefined
+config.runtimeDataModel = JSON.parse(
+  '{"models":{"User":{"dbName":null,"schema":null,"fields":[{"name":"id","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":true,"isReadOnly":false,"hasDefaultValue":true,"type":"String","nativeType":null,"default":{"name":"uuid","args":[4]},"isGenerated":false,"isUpdatedAt":false},{"name":"email","kind":"scalar","isList":false,"isRequired":true,"isUnique":true,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"password","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"firstName","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"lastName","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"userName","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"String","nativeType":null,"isGenerated":false,"isUpdatedAt":false},{"name":"createdAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":true,"type":"DateTime","nativeType":null,"default":{"name":"now","args":[]},"isGenerated":false,"isUpdatedAt":false},{"name":"updatedAt","kind":"scalar","isList":false,"isRequired":true,"isUnique":false,"isId":false,"isReadOnly":false,"hasDefaultValue":false,"type":"DateTime","nativeType":null,"isGenerated":false,"isUpdatedAt":true}],"primaryKey":null,"uniqueFields":[],"uniqueIndexes":[],"isGenerated":false}},"enums":{},"types":{}}',
+);
+defineDmmfProperty(exports.Prisma, config.runtimeDataModel);
+config.engineWasm = undefined;
+config.compilerWasm = undefined;
 
 config.injectableEdgeEnv = () => ({
   parsed: {
-    DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DATABASE_URL || undefined
-  }
-})
+    DATABASE_URL:
+      (typeof globalThis !== "undefined" && globalThis["DATABASE_URL"]) ||
+      (typeof process !== "undefined" &&
+        process.env &&
+        process.env.DATABASE_URL) ||
+      undefined,
+  },
+});
 
-if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {
-  Debug.enable(typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined)
+if (
+  (typeof globalThis !== "undefined" && globalThis["DEBUG"]) ||
+  (typeof process !== "undefined" && process.env && process.env.DEBUG) ||
+  undefined
+) {
+  Debug.enable(
+    (typeof globalThis !== "undefined" && globalThis["DEBUG"]) ||
+      (typeof process !== "undefined" && process.env && process.env.DEBUG) ||
+      undefined,
+  );
 }
 
-const PrismaClient = getPrismaClient(config)
-exports.PrismaClient = PrismaClient
-Object.assign(exports, Prisma)
-
+const PrismaClient = getPrismaClient(config);
+exports.PrismaClient = PrismaClient;
+Object.assign(exports, Prisma);

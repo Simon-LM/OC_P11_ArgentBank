@@ -52,15 +52,15 @@ Total: 9 fichiers de test | 41 tests E2E | 100% avec accessibilité intégrée
 ```javascript
 // ✅ Bon nommage (exemples du projet)
 describe("User Authentication", () => {
-	it("devrait permettre à un utilisateur de se connecter avec des identifiants valides", () => {
-		// ...
-	});
+  it("devrait permettre à un utilisateur de se connecter avec des identifiants valides", () => {
+    // ...
+  });
 });
 
 describe("Transactions Display", () => {
-	it("devrait afficher les transactions par défaut pour le premier compte", () => {
-		// ...
-	});
+  it("devrait afficher les transactions par défaut pour le premier compte", () => {
+    // ...
+  });
 });
 ```
 
@@ -70,22 +70,22 @@ describe("Transactions Display", () => {
 
 ```javascript
 describe("Feature: [Nom de la fonctionnalité]", () => {
-	beforeEach(() => {
-		// Configuration commune (navigation, authentification)
-	});
+  beforeEach(() => {
+    // Configuration commune (navigation, authentification)
+  });
 
-	it("devrait [résultat attendu] quand [condition]", () => {
-		// Test avec vérification d'accessibilité intégrée
-		cy.injectAxe();
+  it("devrait [résultat attendu] quand [condition]", () => {
+    // Test avec vérification d'accessibilité intégrée
+    cy.injectAxe();
 
-		// Actions du test
-		// ...
+    // Actions du test
+    // ...
 
-		// Vérifications d'accessibilité
-		cy.checkA11y(undefined, {
-			rules: { "color-contrast": { enabled: false } },
-		});
-	});
+    // Vérifications d'accessibilité
+    cy.checkA11y(undefined, {
+      rules: { "color-contrast": { enabled: false } },
+    });
+  });
 });
 ```
 
@@ -94,18 +94,18 @@ describe("Feature: [Nom de la fonctionnalité]", () => {
 ```javascript
 // transactions-display.cy.ts
 describe("Transactions Display", () => {
-	beforeEach(function () {
-		this.loginUser();
-		cy.navigateToTransactions();
-	});
+  beforeEach(function () {
+    this.loginUser();
+    cy.navigateToTransactions();
+  });
 
-	it("devrait afficher les transactions par défaut pour le premier compte", function () {
-		cy.injectAxe();
-		cy.get('button[class*="account"]').first().should("be.visible");
-		cy.checkA11y(undefined, {
-			rules: { "color-contrast": { enabled: false } },
-		});
-	});
+  it("devrait afficher les transactions par défaut pour le premier compte", function () {
+    cy.injectAxe();
+    cy.get('button[class*="account"]').first().should("be.visible");
+    cy.checkA11y(undefined, {
+      rules: { "color-contrast": { enabled: false } },
+    });
+  });
 });
 ```
 
@@ -160,24 +160,24 @@ Utilisez des fixtures pour définir des jeux de données réutilisables :
 ```json
 // cypress/fixtures/users.json
 {
-	"validUser": {
-		"email": "tony@stark.com",
-		"password": "password123",
-		"firstName": "Tony",
-		"lastName": "Stark"
-	},
-	"invalidUser": {
-		"email": "invalid@email.com",
-		"password": "wrongpassword"
-	}
+  "validUser": {
+    "email": "tony@stark.com",
+    "password": "password123",
+    "firstName": "Tony",
+    "lastName": "Stark"
+  },
+  "invalidUser": {
+    "email": "invalid@email.com",
+    "password": "wrongpassword"
+  }
 }
 ```
 
 ```javascript
 // Dans le test
 cy.fixture("users").then((users) => {
-	cy.findByLabelText("Email").type(users.validUser.email);
-	cy.findByLabelText("Password").type(users.validUser.password);
+  cy.findByLabelText("Email").type(users.validUser.email);
+  cy.findByLabelText("Password").type(users.validUser.password);
 });
 ```
 
@@ -187,26 +187,26 @@ Pour des tests plus rapides et fiables, utilisez les API pour la configuration e
 
 ```javascript
 describe("Account transactions", () => {
-	beforeEach(() => {
-		// Utiliser l'API pour se connecter (plus rapide que l'UI)
-		cy.request({
-			method: "POST",
-			url: "/api/v1/user/login",
-			body: { email: "tony@stark.com", password: "password123" },
-		}).then((response) => {
-			// Stocker le token
-			localStorage.setItem("token", response.body.body.token);
+  beforeEach(() => {
+    // Utiliser l'API pour se connecter (plus rapide que l'UI)
+    cy.request({
+      method: "POST",
+      url: "/api/v1/user/login",
+      body: { email: "tony@stark.com", password: "password123" },
+    }).then((response) => {
+      // Stocker le token
+      localStorage.setItem("token", response.body.body.token);
 
-			// Visiter la page avec une session déjà établie
-			cy.visit("/account");
-		});
-	});
+      // Visiter la page avec une session déjà établie
+      cy.visit("/account");
+    });
+  });
 
-	it("should display transaction history", () => {
-		// Maintenant tester l'UI
-		cy.findByRole("heading", { name: /transactions/i }).should("be.visible");
-		cy.findAllByTestId("transaction-item").should("have.length.at.least", 1);
-	});
+  it("should display transaction history", () => {
+    // Maintenant tester l'UI
+    cy.findByRole("heading", { name: /transactions/i }).should("be.visible");
+    cy.findAllByTestId("transaction-item").should("have.length.at.least", 1);
+  });
 });
 ```
 
@@ -221,27 +221,27 @@ Définissez des commandes pour les actions répétitives dans `cypress/support/c
 
 // Commande de connexion
 Cypress.Commands.add("login", (email, password) => {
-	cy.visit("/login");
-	cy.findByLabelText("Email").type(email);
-	cy.findByLabelText("Password").type(password);
-	cy.findByRole("button", { name: /sign in/i }).click();
+  cy.visit("/login");
+  cy.findByLabelText("Email").type(email);
+  cy.findByLabelText("Password").type(password);
+  cy.findByRole("button", { name: /sign in/i }).click();
 });
 
 // Commande de connexion via API
 Cypress.Commands.add("loginByApi", (email, password) => {
-	cy.request({
-		method: "POST",
-		url: "/api/v1/user/login",
-		body: { email, password },
-	}).then((response) => {
-		localStorage.setItem("token", response.body.body.token);
-	});
+  cy.request({
+    method: "POST",
+    url: "/api/v1/user/login",
+    body: { email, password },
+  }).then((response) => {
+    localStorage.setItem("token", response.body.body.token);
+  });
 });
 
 // Vérification d'éléments de compte
 Cypress.Commands.add("verifyAccountDetails", (accountName, balance) => {
-	cy.findByText(accountName).should("be.visible");
-	cy.findByText(balance).should("be.visible");
+  cy.findByText(accountName).should("be.visible");
+  cy.findByText(balance).should("be.visible");
 });
 ```
 
@@ -249,15 +249,15 @@ Cypress.Commands.add("verifyAccountDetails", (accountName, balance) => {
 
 ```javascript
 describe("User accounts", () => {
-	beforeEach(() => {
-		cy.loginByApi("tony@stark.com", "password123");
-		cy.visit("/accounts");
-	});
+  beforeEach(() => {
+    cy.loginByApi("tony@stark.com", "password123");
+    cy.visit("/accounts");
+  });
 
-	it("should display correct account information", () => {
-		cy.verifyAccountDetails("Checking (x8349)", "$2,082.79");
-		cy.verifyAccountDetails("Savings (x6712)", "$10,928.42");
-	});
+  it("should display correct account information", () => {
+    cy.verifyAccountDetails("Checking (x8349)", "$2,082.79");
+    cy.verifyAccountDetails("Savings (x6712)", "$10,928.42");
+  });
 });
 ```
 
@@ -296,8 +296,8 @@ Le projet utilise une approche hybride API + UI pour optimiser les performances 
 ```javascript
 // Connexion rapide via API dans beforeEach
 beforeEach(function () {
-	this.loginUser(); // Commande personnalisée optimisée
-	cy.navigateToTransactions();
+  this.loginUser(); // Commande personnalisée optimisée
+  cy.navigateToTransactions();
 });
 ```
 
@@ -320,18 +320,18 @@ Les tests d'accessibilité sont **intégrés dans tous les tests E2E** pour gara
 
 ```typescript
 it("devrait être accessible lors du test", () => {
-	// 1. Injection d'axe-core (OBLIGATOIRE au début de chaque test)
-	cy.injectAxe();
+  // 1. Injection d'axe-core (OBLIGATOIRE au début de chaque test)
+  cy.injectAxe();
 
-	// 2. Actions du test
-	// ...
+  // 2. Actions du test
+  // ...
 
-	// 3. Vérification d'accessibilité
-	cy.checkA11y(undefined, {
-		rules: {
-			"color-contrast": { enabled: false }, // Temporairement désactivé
-		},
-	});
+  // 3. Vérification d'accessibilité
+  cy.checkA11y(undefined, {
+    rules: {
+      "color-contrast": { enabled: false }, // Temporairement désactivé
+    },
+  });
 });
 ```
 

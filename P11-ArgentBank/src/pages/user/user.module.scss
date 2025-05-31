@@ -7,469 +7,469 @@
 @use "@styles/accessibility/accessibility" as acc;
 
 .user {
-	&-page {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		height: 100%;
-		text-align: center;
-		margin: 0 auto;
-		padding: 0.25rem 1vw;
-		padding: clamp(1px, min(0.25vw, 0.25rem), 0.25rem) clamp(2px, 1vw, 1rem);
-		background: var.$light_user_bg;
-		color: var.$light_user_text;
-		box-sizing: border-box;
-	}
+  &-page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    margin: 0 auto;
+    padding: 0.25rem 1vw;
+    padding: clamp(1px, min(0.25vw, 0.25rem), 0.25rem) clamp(2px, 1vw, 1rem);
+    background: var.$light_user_bg;
+    color: var.$light_user_text;
+    box-sizing: border-box;
+  }
 
-	&__title {
-		color: var.$light_user_title;
-		font-size: func.rem(32) !important;
-		margin-bottom: 1rem;
-		font-weight: bold;
-		position: relative;
-		@include mix.text-wrap;
+  &__title {
+    color: var.$light_user_title;
+    font-size: func.rem(32) !important;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    position: relative;
+    @include mix.text-wrap;
 
-		&::after {
-			content: "";
-			display: block;
-			width: func.rem(80);
-			height: func.rem(3);
-			background-color: var.$primary-color;
-			margin: 0.75rem auto 0;
-		}
+    &::after {
+      content: "";
+      display: block;
+      width: func.rem(80);
+      height: func.rem(3);
+      background-color: var.$primary-color;
+      margin: 0.75rem auto 0;
+    }
 
-		&-name {
-			display: block;
-		}
-	}
+    &-name {
+      display: block;
+    }
+  }
 
-	&__edit-button {
-		background-color: var.$light_button-bg;
-		border-color: var.$light_button-border;
-		border-radius: 0.125rem;
-		color: var.$light_button-text;
-		font-weight: bold;
-		width: 92.5%;
-		max-width: 15rem;
-		padding: 0.75rem;
-		margin: 2rem 0;
-		// padding: 0.5rem 1.25rem;
-		padding: clamp(4px, min(0.75vh, 0.55rem), 0.6rem)
-			clamp(2px, min(1.25vw, 1.25rem), 1.25rem);
-		// border-radius: func.rem(4);
-		margin: 1.5rem 0;
-		transition: all 0.2s ease;
+  &__edit-button {
+    background-color: var.$light_button-bg;
+    border-color: var.$light_button-border;
+    border-radius: 0.125rem;
+    color: var.$light_button-text;
+    font-weight: bold;
+    width: 92.5%;
+    max-width: 15rem;
+    padding: 0.75rem;
+    margin: 2rem 0;
+    // padding: 0.5rem 1.25rem;
+    padding: clamp(4px, min(0.75vh, 0.55rem), 0.6rem)
+      clamp(2px, min(1.25vw, 1.25rem), 1.25rem);
+    // border-radius: func.rem(4);
+    margin: 1.5rem 0;
+    transition: all 0.2s ease;
 
-		&:hover {
-			background-color: var.$light_button_bg-hover;
-			border-color: var.$light_button_border-hover;
-		}
-	}
+    &:hover {
+      background-color: var.$light_button_bg-hover;
+      border-color: var.$light_button_border-hover;
+    }
+  }
 
-	&__error {
-		color: var.$color-error;
-		font-weight: bold;
-		margin: 1rem 0;
-	}
+  &__error {
+    color: var.$color-error;
+    font-weight: bold;
+    margin: 1rem 0;
+  }
 }
 
 .section {
-	&__heading {
-		text-align: center;
-		color: var.$light_user_section-heading;
-		font-size: func.rem(22);
-		margin: 2rem 0 1rem;
-		// padding-bottom: 0.5rem;
-		padding-bottom: clamp(1px, min(0.5vh, 0.5rem), 0.5rem);
+  &__heading {
+    text-align: center;
+    color: var.$light_user_section-heading;
+    font-size: func.rem(22);
+    margin: 2rem 0 1rem;
+    // padding-bottom: 0.5rem;
+    padding-bottom: clamp(1px, min(0.5vh, 0.5rem), 0.5rem);
 
-		border-bottom: 0.125rem solid var.$light_section-border;
-		width: 92.5%;
-		max-width: 30rem;
-		margin-left: auto;
-		margin-right: auto;
-		@include mix.text-wrap;
-		// background: red;
+    border-bottom: 0.125rem solid var.$light_section-border;
+    width: 92.5%;
+    max-width: 30rem;
+    margin-left: auto;
+    margin-right: auto;
+    @include mix.text-wrap;
+    // background: red;
 
-		&:focus {
-			outline: 0.125rem solid var.$secondary-color;
-			// padding: 0.25rem;
-			padding: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
-		}
+    &:focus {
+      outline: 0.125rem solid var.$secondary-color;
+      // padding: 0.25rem;
+      padding: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
+    }
 
-		// transition: padding 0.2s ease;
-	}
+    // transition: padding 0.2s ease;
+  }
 
-	&__subheading {
-		font-size: 0.85em;
-		font-weight: normal;
-		// margin-left: 0.5rem;
-		margin-left: clamp(1px, min(0.5vw, 0.5rem), 0.5rem);
-		color: var.$color-gray-700;
-	}
+  &__subheading {
+    font-size: 0.85em;
+    font-weight: normal;
+    // margin-left: 0.5rem;
+    margin-left: clamp(1px, min(0.5vw, 0.5rem), 0.5rem);
+    color: var.$color-gray-700;
+  }
 }
 .accounts-list {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-	width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
 
-	&__item {
-		margin-bottom: 0.75rem;
+  &__item {
+    margin-bottom: 0.75rem;
 
-		&:last-child {
-			margin-bottom: 0;
-		}
+    &:last-child {
+      margin-bottom: 0;
+    }
 
-		// button {
-		// 	width: 100%;
-		// }
-	}
+    // button {
+    // 	width: 100%;
+    // }
+  }
 }
 
 .account {
-	// @include mix.a11y-flex(
-	// 	column,
-	// 	false,
-	// 	"minimal",
-	// 	0.75rem,
-	// 	"92.5%",
-	// 	"space-between",
-	// 	30
-	// );
-	// // // // //
-	display: flex;
-	justify-content: space-between;
-	width: 92.5%;
-	max-width: 30rem;
-	margin: 0 auto;
-	flex-direction: column;
-	box-sizing: border-box;
-	// // // //
-	// padding: calc(0.4rem + 0.75vw);
-	padding: clamp(2px, calc(0.2rem + 0.75vw), calc(0.4rem + 0.75vw));
-	// // // //
+  // @include mix.a11y-flex(
+  // 	column,
+  // 	false,
+  // 	"minimal",
+  // 	0.75rem,
+  // 	"92.5%",
+  // 	"space-between",
+  // 	30
+  // );
+  // // // // //
+  display: flex;
+  justify-content: space-between;
+  width: 92.5%;
+  max-width: 30rem;
+  margin: 0 auto;
+  flex-direction: column;
+  box-sizing: border-box;
+  // // // //
+  // padding: calc(0.4rem + 0.75vw);
+  padding: clamp(2px, calc(0.2rem + 0.75vw), calc(0.4rem + 0.75vw));
+  // // // //
 
-	align-items: center;
-	border: func.rem(1) solid var.$light_account_border;
-	background-color: var.$light_account_bg;
-	color: var.$light_account_text;
-	text-align: left;
-	margin-bottom: 2rem;
-	appearance: none;
-	-webkit-appearance: none;
-	-moz-appearance: none;
+  align-items: center;
+  border: func.rem(1) solid var.$light_account_border;
+  background-color: var.$light_account_bg;
+  color: var.$light_account_text;
+  text-align: left;
+  margin-bottom: 2rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 
-	transition:
-		background-color 0.2s ease-in-out,
-		border-color 0.2s ease-in-out,
-		color 0.2s ease-in-out;
+  transition:
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
 
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-	border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 0.5rem;
 
-	&:hover {
-		background-color: var.$light_account_bg-hover;
-		color: var.$light_account_text-hover;
+  &:hover {
+    background-color: var.$light_account_bg-hover;
+    color: var.$light_account_text-hover;
 
-		.account__amount {
-			color: var.$light_account_text-hover;
-		}
-	}
+    .account__amount {
+      color: var.$light_account_text-hover;
+    }
+  }
 
-	&__selected-tag {
-		display: block;
-		align-self: flex-end;
-		width: fit-content;
-		font-size: 0.75rem;
-		padding: 0.25rem 0.5rem;
-		margin-top: -0.25rem;
-		margin-right: -0.25rem;
-		background-color: var.$light_account_border-selected;
-		color: white;
-		border-radius: 0.125rem;
-	}
+  &__selected-tag {
+    display: block;
+    align-self: flex-end;
+    width: fit-content;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    margin-top: -0.25rem;
+    margin-right: -0.25rem;
+    background-color: var.$light_account_border-selected;
+    color: white;
+    border-radius: 0.125rem;
+  }
 
-	&--selected {
-		border-left: 0.5rem solid var.$light_account_border-selected;
-	}
+  &--selected {
+    border-left: 0.5rem solid var.$light_account_border-selected;
+  }
 
-	&__content {
-		width: 100%;
-		flex: 1;
-	}
+  &__content {
+    width: 100%;
+    flex: 1;
+  }
 
-	&__title {
-		margin: 0;
-		padding: 0;
-		font-size: 1.25rem;
-		font-weight: 500;
-		@include mix.text-wrap;
-	}
+  &__title {
+    margin: 0;
+    padding: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    @include mix.text-wrap;
+  }
 
-	&__amount {
-		margin: 0;
-		font-size: clamp(1.5rem, 5vw, 2.5rem);
-		font-weight: bold;
-		color: var.$light_account-amount_text;
-		margin: 0.5rem 0;
-		@extend %text-wrap;
-		@extend %preserve-numbers;
-	}
+  &__amount {
+    margin: 0;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: bold;
+    color: var.$light_account-amount_text;
+    margin: 0.5rem 0;
+    @extend %text-wrap;
+    @extend %preserve-numbers;
+  }
 
-	&__description {
-		margin: 0;
-		@include mix.text-wrap("break-word");
-	}
+  &__description {
+    margin: 0;
+    @include mix.text-wrap("break-word");
+  }
 
-	&__note {
-		font-size: 1rem;
-		font-style: italic;
-		margin: 0;
-	}
+  &__note {
+    font-size: 1rem;
+    font-style: italic;
+    margin: 0;
+  }
 
-	&__button {
-		display: block;
-		width: 100%;
-		// padding: func.rem(8);
-		padding: clamp(1px, min(0.5vh, 0.5rem), func.rem(8));
-		font-size: 1.1rem;
-		font-weight: bold;
-		margin-top: 1rem;
-		border-color: var.$light_button_border;
-		background-color: var.$light_button_bg;
-		color: var.$light_button_text;
-	}
+  &__button {
+    display: block;
+    width: 100%;
+    // padding: func.rem(8);
+    padding: clamp(1px, min(0.5vh, 0.5rem), func.rem(8));
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    border-color: var.$light_button_border;
+    background-color: var.$light_button_bg;
+    color: var.$light_button_text;
+  }
 }
 
 .transaction-table {
-	width: 92.5%;
-	max-width: 30rem;
-	margin: 0 auto;
-	border-collapse: collapse;
-	border-spacing: 0;
-	display: block;
-	box-sizing: border-box;
-	// background-color: red;
-	tbody {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-	}
+  width: 92.5%;
+  max-width: 30rem;
+  margin: 0 auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  display: block;
+  box-sizing: border-box;
+  // background-color: red;
+  tbody {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 
-	.sr-only {
-		@include acc.sr-only;
-	}
+  .sr-only {
+    @include acc.sr-only;
+  }
 }
 
 .transaction-row {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
-	width: 100%;
-	border-bottom: 1px solid var.$light-transaction-border;
-	margin: 0 0 0.75rem 0;
-	// padding: calc(0.4rem + 0.75vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid var.$light-transaction-border;
+  margin: 0 0 0.75rem 0;
+  // padding: calc(0.4rem + 0.75vw);
 
-	padding: clamp(6px, calc(0.4rem + 0.75vw), calc(0.6rem + 0.75vw));
-	box-sizing: border-box;
-	text-align: left;
-	background-color: var.$light_transaction_bg;
-	// background: palevioletred;
-	&__cell {
-		// padding: 0.25rem 0;
-		padding: clamp(4px, min(0.4vh, 0.4rem), 0.5rem) 0;
-		width: 100%;
-		// background: lightcoral;
+  padding: clamp(6px, calc(0.4rem + 0.75vw), calc(0.6rem + 0.75vw));
+  box-sizing: border-box;
+  text-align: left;
+  background-color: var.$light_transaction_bg;
+  // background: palevioletred;
+  &__cell {
+    // padding: 0.25rem 0;
+    padding: clamp(4px, min(0.4vh, 0.4rem), 0.5rem) 0;
+    width: 100%;
+    // background: lightcoral;
 
-		&--amount {
-			&-credit {
-				text-align: right;
+    &--amount {
+      &-credit {
+        text-align: right;
 
-				.transaction-row__amount {
-					// font-size: 2.05rem;
-					font-size: clamp(1.25rem, calc(1rem + 1.5vw), 2.05rem);
-					border-right: 0.25rem solid var.$color-accent-dark;
-					// padding-right: 0.25rem;
-					padding-right: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
-				}
-			}
+        .transaction-row__amount {
+          // font-size: 2.05rem;
+          font-size: clamp(1.25rem, calc(1rem + 1.5vw), 2.05rem);
+          border-right: 0.25rem solid var.$color-accent-dark;
+          // padding-right: 0.25rem;
+          padding-right: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
+        }
+      }
 
-			&-debit {
-				text-align: left;
+      &-debit {
+        text-align: left;
 
-				.transaction-row__amount {
-					// border-left: 0.25rem solid var.$color-error;
-					border-left: 0.25rem solid var.$secondary-color;
-					// padding-left: 0.25rem;
-					padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
-				}
-			}
-		}
-	}
+        .transaction-row__amount {
+          // border-left: 0.25rem solid var.$color-error;
+          border-left: 0.25rem solid var.$secondary-color;
+          // padding-left: 0.25rem;
+          padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
+        }
+      }
+    }
+  }
 
-	// Éléments de contenu
-	&__title {
-		font-weight: 600;
-		padding: 0;
-		margin: 0;
-		@include mix.text-wrap;
-		// margin-bottom: 0.25rem;
-		// background: lightgoldenrodyellow;
-	}
+  // Éléments de contenu
+  &__title {
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    @include mix.text-wrap;
+    // margin-bottom: 0.25rem;
+    // background: lightgoldenrodyellow;
+  }
 
-	&__meta {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-		font-size: clamp(0.75rem, calc(0.7rem + 0.25vw), 0.9rem);
-		color: var.$light_transaction-meta;
-		border-left: 0.125rem solid transparent;
-		// padding-left: 0.25rem;
-		padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
-		margin: 0;
-		margin-bottom: 0.125rem;
-		gap: 0 0.5rem;
-		@include mix.date-wrap;
-	}
+  &__meta {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    font-size: clamp(0.75rem, calc(0.7rem + 0.25vw), 0.9rem);
+    color: var.$light_transaction-meta;
+    border-left: 0.125rem solid transparent;
+    // padding-left: 0.25rem;
+    padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
+    margin: 0;
+    margin-bottom: 0.125rem;
+    gap: 0 0.5rem;
+    @include mix.date-wrap;
+  }
 
-	&__category-tag {
-		display: inline-block;
-		vertical-align: middle;
-		font-weight: 600;
-		color: var.$primary-color;
-		border: 0.125rem solid var.$primary-color;
-		// padding: 0.1rem 0.5rem;
-		padding: clamp(3px, calc(0.15rem + 0.2vh), 0.2rem)
-			clamp(5px, calc(0.25rem + 0.4vw), 0.6rem);
-		border-radius: 1rem;
-		font-size: 0.6rem;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		@include mix.text-wrap;
-	}
+  &__category-tag {
+    display: inline-block;
+    vertical-align: middle;
+    font-weight: 600;
+    color: var.$primary-color;
+    border: 0.125rem solid var.$primary-color;
+    // padding: 0.1rem 0.5rem;
+    padding: clamp(3px, calc(0.15rem + 0.2vh), 0.2rem)
+      clamp(5px, calc(0.25rem + 0.4vw), 0.6rem);
+    border-radius: 1rem;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    @include mix.text-wrap;
+  }
 
-	&__amount {
-		color: var.$primary-color;
-		font-weight: bold;
-		font-size: clamp(1.25rem, calc(1rem + 1.5vw), 2rem);
-		margin: 0;
-		margin: clamp(6px, 0.4rem, 0.5rem) 0;
-		@extend %text-wrap;
-		@extend %preserve-numbers;
-		// background: lightblue;
-	}
+  &__amount {
+    color: var.$primary-color;
+    font-weight: bold;
+    font-size: clamp(1.25rem, calc(1rem + 1.5vw), 2rem);
+    margin: 0;
+    margin: clamp(6px, 0.4rem, 0.5rem) 0;
+    @extend %text-wrap;
+    @extend %preserve-numbers;
+    // background: lightblue;
+  }
 
-	&__note {
-		font-style: italic;
-		font-size: 0.85rem;
-		color: var.$light_transaction-note;
-		// margin: 0.25rem 0;
-		margin: clamp(6px, 0.35rem, 0.5rem) 0;
-		// padding-left: 0.25rem;
-		padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
+  &__note {
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var.$light_transaction-note;
+    // margin: 0.25rem 0;
+    margin: clamp(6px, 0.35rem, 0.5rem) 0;
+    // padding-left: 0.25rem;
+    padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
 
-		border-left: 0.125rem solid var.$light_transaction-note-border;
-		@include mix.text-wrap;
-		// background: lightsteelblue;
-	}
+    border-left: 0.125rem solid var.$light_transaction-note-border;
+    @include mix.text-wrap;
+    // background: lightsteelblue;
+  }
 }
 
 .pagination {
-	&__nav {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		align-items: center;
-		margin: 2rem auto;
-		gap: 0.5rem;
-		max-width: 90%;
-		// padding: 0 1rem;
-		padding: 0 clamp(2px, min(1vw, 1rem), 1rem);
-	}
+  &__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem auto;
+    gap: 0.5rem;
+    max-width: 90%;
+    // padding: 0 1rem;
+    padding: 0 clamp(2px, min(1vw, 1rem), 1rem);
+  }
 
-	&__controls {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.25rem;
-		justify-content: center;
-	}
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    justify-content: center;
+  }
 
-	&__arrow {
-		flex-shrink: 0;
-		order: 0;
+  &__arrow {
+    flex-shrink: 0;
+    order: 0;
 
-		&--prev {
-			order: 0;
-		}
+    &--prev {
+      order: 0;
+    }
 
-		&--next {
-			order: 2;
-		}
-	}
+    &--next {
+      order: 2;
+    }
+  }
 
-	&__numbers {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.25rem;
-		justify-content: center;
-		order: 1;
-	}
+  &__numbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    justify-content: center;
+    order: 1;
+  }
 
-	&__button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: func.rem(36);
-		height: func.rem(36);
-		// padding: 0 func.rem(8);
-		padding: 0 clamp(1px, min(0.5vw, 0.5rem), func.rem(8));
-		background-color: var.$light_pagination-button_bg;
-		border: func.rem(1) solid var.$light_pagination-button_border;
-		color: var.$light_pagination-button_text;
-		border-radius: 0.125rem;
-		font-weight: bold;
-		@extend %text-wrap;
-		@extend %preserve-numbers;
-		transition:
-			background-color 0.2s,
-			color 0.2s;
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: func.rem(36);
+    height: func.rem(36);
+    // padding: 0 func.rem(8);
+    padding: 0 clamp(1px, min(0.5vw, 0.5rem), func.rem(8));
+    background-color: var.$light_pagination-button_bg;
+    border: func.rem(1) solid var.$light_pagination-button_border;
+    color: var.$light_pagination-button_text;
+    border-radius: 0.125rem;
+    font-weight: bold;
+    @extend %text-wrap;
+    @extend %preserve-numbers;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
 
-		svg {
-			fill: currentColor;
-		}
+    svg {
+      fill: currentColor;
+    }
 
-		&:hover:not(:disabled) {
-			background-color: var.$light_pagination-button_bg-hover;
-			border-color: var.$light_pagination-button_border-hover;
-			color: var.$light_pagination-button_text-hover;
-		}
+    &:hover:not(:disabled) {
+      background-color: var.$light_pagination-button_bg-hover;
+      border-color: var.$light_pagination-button_border-hover;
+      color: var.$light_pagination-button_text-hover;
+    }
 
-		&:disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
-		}
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-		&--current {
-			background-color: var.$light_pagination-button_bg-selected;
-			border-color: var.$light_pagination-button_border-selected;
-			color: var.$light_pagination-button_text-selected;
-			&:hover {
-				cursor: not-allowed;
-			}
-		}
-	}
+    &--current {
+      background-color: var.$light_pagination-button_bg-selected;
+      border-color: var.$light_pagination-button_border-selected;
+      color: var.$light_pagination-button_text-selected;
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
+  }
 
-	&__ellipsis {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: func.rem(36);
-		height: func.rem(36);
-		padding: 0;
-		font-weight: bold;
-		@extend %text-wrap;
-		text-align: center;
-		overflow: hidden;
-	}
+  &__ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: func.rem(36);
+    height: func.rem(36);
+    padding: 0;
+    font-weight: bold;
+    @extend %text-wrap;
+    text-align: center;
+    overflow: hidden;
+  }
 }

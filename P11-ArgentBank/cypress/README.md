@@ -1,274 +1,443 @@
 <!-- @format -->
 
-# Documentation Cypress - ArgentBank
+# Plan d'intégration de Cypress dans ArgentBank
 
-Documentation des tests end-to-end (E2E) Cypress du projet ArgentBank.
+Ce document présente une stratégie pour l'intégration de Cypress comme outil de tests end-to-end (E2E) dans le projet ArgentBank, en complément des tests unitaires et d'intégration existants avec Vitest.
 
 ## 📋 Vue d'ensemble
 
-### Statut Actuel
+### Positionnement dans la stratégie de test
 
-**✅ Production Ready** - 41 tests E2E opérationnels avec tests d'accessibilité intégrés
+```
+                    ┌─────────────────┐
+                    │   Tests E2E     │
+                    │    (Cypress)    │
+                    └────────┬────────┘
+                             │
+                    ┌────────▼────────┐
+                    │Tests d'intégration│
+                    │    (Vitest)     │
+                    └────────┬────────┘
+                             │
+                    ┌────────▼────────┐
+                    │  Tests unitaires │
+                    │     (Vitest)    │
+                    └─────────────────┘
+```
 
-### Couverture de Tests
+### Complémentarité avec les tests existants
 
-| Fonctionnalité                 | Tests        | Statut                   |
-| ------------------------------ | ------------ | ------------------------ |
-| Authentification               | 5 tests      | ✅ Opérationnel          |
-| Profil utilisateur             | 8 tests      | ✅ Opérationnel          |
-| Comptes bancaires              | 3 tests      | ✅ Opérationnel          |
-| Transactions - Affichage       | 3 tests      | ✅ Opérationnel          |
-| Transactions - Fonctionnalités | 3 tests      | ✅ Opérationnel          |
-| Cross-browser                  | 7 tests      | ✅ Opérationnel          |
-| Cas limites                    | 7 tests      | ✅ Opérationnel          |
-| Erreurs réseau                 | 7 tests      | ✅ Opérationnel          |
-| **TOTAL**                      | **41 tests** | **✅ 100% opérationnel** |
+| Type de test | Outil   | Objectif                                           | Focus                           |
+| ------------ | ------- | -------------------------------------------------- | ------------------------------- |
+| Unitaire     | Vitest  | Vérifier les fonctions isolées                     | Comportement individuel         |
+| Intégration  | Vitest  | Vérifier les interactions entre modules            | Workflows internes              |
+| E2E          | Cypress | Vérifier l'application du point de vue utilisateur | Expérience utilisateur complète |
 
-## 🏗️ Structure des Fichiers
+## 🛠️ Installation et configuration
+
+### Installation de Cypress
+
+```bash
+# Installer Cypress comme dépendance de développement
+pnpm add -D cypress
+
+# Installer les plugins recommandés
+pnpm add -D @testing-library/cypress cypress-axe cypress-real-events
+```
+
+### Structure de dossiers proposée
 
 ```
 cypress/
 ├── e2e/                      # Tests E2E organisés par fonctionnalité
 │   ├── auth/
-│   │   ├── login.cy.ts       # Tests de connexion (3 tests)
-│   │   └── logout.cy.ts      # Tests de déconnexion (2 tests)
-│   ├── profile/
-│   │   └── profile.cy.ts     # Tests de profil utilisateur (8 tests)
+│   │   ├── login.cy.js
+│   │   └── logout.cy.js
 │   ├── accounts/
-│   │   └── accounts.cy.ts    # Tests de comptes bancaires (3 tests)
-│   ├── transactions/
-│   │   ├── transactions-display.cy.ts        # Tests d'affichage (3 tests)
-│   │   ├── transactions-functionality.cy.ts  # Tests de fonctionnalités (3 tests)
-│   │   ├── transactions-display.fixed.cy.ts  # Fichier de sauvegarde
-│   │   └── .transactions.cy.ts               # Fichier original de référence
-│   ├── cross-browser/
-│   │   └── cross-browser.cy.ts # Tests multi-navigateurs (6 tests)
-│   ├── edge-cases/
-│   │   └── edge-cases.cy.ts    # Tests de cas limites (4 tests)
-│   └── network/
-│       └── network-errors.cy.ts # Tests d'erreurs réseau (3 tests)
+│   │   ├── view-accounts.cy.js
+│   │   └── account-details.cy.js
+│   └── transactions/
+│       ├── search.cy.js
+│       └── filtering.cy.js
 ├── fixtures/                 # Données de test
-│   ├── users.json            # Utilisateurs de test
-│   ├── accounts.json         # Comptes bancaires de test
-│   └── transactions.json     # Transactions de test
-├── support/                  # Configuration et utilitaires
-│   ├── commands.ts           # Commandes personnalisées Cypress
-│   ├── types.ts              # Types TypeScript centralisés
-│   ├── e2e.ts                # Configuration E2E
-│   └── cypress-axe.d.ts      # Types pour l'accessibilité
-└── doc/                      # Documentation
-    ├── ACCESSIBILITY_TESTS.md
-    ├── BEST_PRACTICES.md
-    ├── E2E_TESTS.md
-    ├── IMPLEMENTATION_STATUS.md
-    ├── INSTALLATION.md
-    ├── MAINTENANCE.md
-    └── TYPESCRIPT_GUIDE.md
+│   ├── users.json
+│   ├── accounts.json
+│   └── transactions.json
+├── support/                  # Helpers et commandes personnalisées
+│   ├── commands.js
+│   ├── auth-commands.js
+│   ├── e2e.js
+│   └── component.js
+└── components/               # Tests de composants isolés (optionnel)
+    ├── Button.cy.js
+    └── TransactionTable.cy.js
 ```
 
-## 🚀 Utilisation
-
-### Scripts NPM disponibles
-
-```bash
-# Tests E2E en mode interactif
-pnpm run cypress:open
-
-# Tests E2E en mode headless
-pnpm run cypress:run
-
-# Tests avec génération de rapport
-pnpm run test:e2e:report
-
-# Tests d'accessibilité avec rapport
-pnpm run test:e2e:a11y:report
-
-# Tests complets (unité + E2E + accessibilité)
-pnpm run test:all:a11y
-```
-
-## 🎯 Bonnes Pratiques Appliquées
-
-### 1. Sélecteurs Robustes et Factorisés
+### Configuration de base
 
 ```typescript
-// Sélecteurs centralisés pour la maintenance
-const selectors = {
-	transactionRow: `${transactionTableSelector} tbody tr[class*="transaction-row_"]`,
-	transactionCell: 'td[class*="transaction-row__cell"]',
-	transactionTitle: 'span[class*="transaction-row__title"]',
-	transactionDate:
-		'p[class*="transaction-row__meta"] span[aria-label*="Date:"]',
-	transactionAmount:
-		'td[class*="transaction-row__cell--amount"] span[class*="transaction-row__amount"]',
-	accountButton: 'button[class*="account"]',
-} as const;
-```
-
-### 2. Fonctions Utilitaires
-
-```typescript
-// Fonction utilitaire pour parser les dates
-const parseTransactionDate = (dateStr: string): Date => {
-	const parts = dateStr.split("/"); // Format DD/MM/YYYY
-	return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
-};
-
-// Fonction utilitaire pour vérifier le tri
-const verifyDateSortingDescending = (dates: string[]): void => {
-	expect(dates.length).to.be.gt(0);
-	const dateObjects = dates.map(parseTransactionDate);
-	for (let i = 0; i < dateObjects.length - 1; i++) {
-		expect(dateObjects[i].getTime()).to.be.gte(
-			dateObjects[i + 1].getTime(),
-			`Date à l'index ${i} (${dates[i]}) devrait être >= à la date à l'index ${i + 1} (${dates[i + 1]})`
-		);
-	}
-};
-```
-
-### 3. Tests d'Accessibilité Intégrés
-
-```typescript
-it("devrait être accessible", () => {
-	// Injecter axe-core pour les tests d'accessibilité
-	cy.injectAxe();
-
-	// Vérifier l'accessibilité globale
-	cy.checkA11y(undefined, {
-		rules: {
-			"color-contrast": { enabled: false }, // Violations connues à traiter
-		},
-	});
-});
-```
-
-## 📊 Architecture des Tests
-
-### Séparation par Responsabilité
-
-1. **transactions-display.cy.ts** (3 tests)
-
-   - Affichage des transactions par défaut
-   - Sélection de compte et mise à jour URL
-   - Tests d'accessibilité de l'affichage
-
-2. **transactions-functionality.cy.ts** (3 tests)
-   - Filtrage par terme de recherche
-   - Affichage des notes et catégories
-   - Navigation et pagination
-
-### Pattern de Setup Optimisé
-
-```typescript
-beforeEach(() => {
-	cy.fixture("users.json").as("usersData");
-
-	// Interceptions API
-	cy.intercept("POST", "/api/user/login").as("loginRequest");
-	cy.intercept("GET", "/api/user/profile").as("profileRequest");
-	cy.intercept("GET", "/api/accounts").as("accountsRequest");
-	cy.intercept("GET", "/api/transactions/search*").as(
-		"searchTransactionsRequest"
-	);
-
-	// Setup de connexion avec fixtures
-	cy.get<User[]>("@usersData").then((usersData) => {
-		const validUser = usersData.find((user) => user.type === "valid");
-		// ... logique de connexion
-	});
-});
-```
-
-## 🔧 Maintenance
-
-### Ajout de Nouveaux Tests
-
-1. **Créer le fichier de test** dans le bon dossier selon la fonctionnalité
-2. **Utiliser les sélecteurs factorisés** existants ou en créer de nouveaux
-3. **Intégrer les tests d'accessibilité** avec `cy.injectAxe()` et `cy.checkA11y()`
-4. **Suivre le pattern de setup** avec fixtures et interceptions API
-
-### Mise à Jour des Sélecteurs
-
-Les sélecteurs sont centralisés dans chaque fichier de test. En cas de changement de structure HTML :
-
-1. Identifier le sélecteur à modifier dans l'objet `selectors`
-2. Mettre à jour la constante correspondante
-3. Vérifier les tests concernés
-
-### Documentation Complète
-
-- [`doc/ACCESSIBILITY_TESTS.md`](./doc/ACCESSIBILITY_TESTS.md) : Guide détaillé des tests d'accessibilité
-- [`doc/IMPLEMENTATION_STATUS.md`](./doc/IMPLEMENTATION_STATUS.md) : Statut complet de l'implémentation
-- [`doc/TYPESCRIPT_GUIDE.md`](./doc/TYPESCRIPT_GUIDE.md) : Guide TypeScript
-- [`doc/E2E_TESTS.md`](./doc/E2E_TESTS.md) : Guide complet des tests E2E
-- [`doc/BEST_PRACTICES.md`](./doc/BEST_PRACTICES.md) : Meilleures pratiques
-- [`doc/INSTALLATION.md`](./doc/INSTALLATION.md) : Guide d'installation
-- [`doc/MAINTENANCE.md`](./doc/MAINTENANCE.md) : Guide de maintenance
-
-## ⚙️ Configuration Technique
-
-### Configuration Cypress (cypress.config.ts)
-
-```typescript
+// cypress.config.ts
 import { defineConfig } from "cypress";
 
 export default defineConfig({
-	e2e: {
-		baseUrl: "http://localhost:5173",
-		specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
-		viewportWidth: 1280,
-		viewportHeight: 720,
-		video: false,
-		screenshotOnRunFailure: true,
-		experimentalRunAllSpecs: true,
-		reporter: "mochawesome",
-		reporterOptions: {
-			reportDir: "cypress/reports",
-			overwrite: false,
-			html: true,
-			json: true,
-		},
-	},
-	env: {
-		apiUrl: "http://localhost:3001/api",
-	},
+  e2e: {
+    baseUrl: "http://localhost:3000", // Mise à jour du port pour Vercel dev
+    specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    video: false,
+    screenshotOnRunFailure: true,
+    experimentalRunAllSpecs: true,
+    // Configuration du reporter pour les tests d'accessibilité
+    reporter: "mochawesome",
+    reporterOptions: {
+      reportDir: "cypress/reports",
+      overwrite: false,
+      html: true,
+      json: true,
+      timestamp: "mmddyyyy_HHMMss",
+    },
+    setupNodeEvents(on, config) {
+      // Configuration pour les tests d'accessibilité et le reporting
+      // Note: Mochawesome sera configuré via les options du reporter
+      return config;
+    },
+  },
+  component: {
+    devServer: {
+      framework: "react",
+      bundler: "vite",
+    },
+    specPattern: "cypress/components/**/*.cy.{js,jsx,ts,tsx}",
+  },
+  env: {
+    apiUrl: "http://localhost:3001/api/v1",
+  },
 });
 ```
 
-### Types TypeScript centralisés (support/types.ts)
+## 🧪 Stratégie de test
 
-```typescript
-export interface User {
-	type: "valid" | "invalid";
-	email: string;
-	password?: string;
-	firstName?: string;
-	lastName?: string;
-	userName?: string;
-}
+### Scénarios prioritaires
 
-export interface Account {
-	id: string;
-	title: string;
-	amount: number;
-	description: string;
-}
+1. **Authentification**
 
-export interface Transaction {
-	id: string;
-	description: string;
-	amount: number;
-	balance: number;
-	date: string;
-	type: string;
-	category: string;
-	notes: string;
+   - Connexion réussie
+   - Échecs de connexion (identifiants incorrects)
+   - Déconnexion
+   - Persistance de session
+
+2. **Gestion de profil**
+
+   - Visualisation des informations de profil
+   - Modification du nom d'utilisateur
+   - Validation des formulaires
+
+3. **Comptes bancaires**
+
+   - Affichage de la liste des comptes
+   - Sélection d'un compte
+   - Vérification des soldes
+
+4. **Transactions**
+   - Recherche de transactions
+   - Filtrage par date/montant/catégorie
+   - Pagination
+   - Affichage des détails
+
+### Approche basée sur les parcours utilisateurs
+
+Pour chaque fonctionnalité, structurer les tests selon les parcours utilisateurs typiques :
+
+```javascript
+// cypress/e2e/auth/login.cy.js
+describe("Login Process", () => {
+  beforeEach(() => {
+    cy.visit("/signin");
+  });
+
+  it("allows a user to log in successfully", () => {
+    cy.fixture("users").then((users) => {
+      const user = users[0];
+      cy.get("[data-testid=email-input]").type(user.email);
+      cy.get("[data-testid=password-input]").type(user.password);
+      cy.get("[data-testid=login-button]").click();
+
+      cy.url().should("include", "/user");
+      cy.get("[data-testid=user-greeting]").should(
+        "contain",
+        `${user.firstName} ${user.lastName}`,
+      );
+    });
+  });
+
+  it("shows error message with incorrect credentials", () => {
+    cy.get("[data-testid=email-input]").type("wrong@example.com");
+    cy.get("[data-testid=password-input]").type("wrongpassword");
+    cy.get("[data-testid=login-button]").click();
+
+    cy.get("[data-testid=error-message]")
+      .should("be.visible")
+      .and("contain", "Invalid credentials");
+  });
+});
+```
+
+## 🔄 Intégration avec le reste de la suite de tests
+
+### Scripts dans package.json
+
+```json
+{
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:e2e": "cypress run",
+    "test:e2e:headed": "cypress run --headed",
+    "test:all": "pnpm test && pnpm test:e2e"
+  }
 }
+```
+
+### Intégration CI/CD
+
+```yaml
+# .github/workflows/e2e-tests.yml
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build app
+        run: pnpm build
+
+      - name: Start server
+        run: pnpm preview &
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+```
+
+## 🧠 Bonnes pratiques
+
+### Structure des tests
+
+```javascript
+// Pattern recommandé
+describe("Feature: Component or Page", () => {
+  beforeEach(() => {
+    // Setup commun (navigation, authentification)
+  });
+
+  context("Given a certain state", () => {
+    beforeEach(() => {
+      // Setup spécifique au contexte
+    });
+
+    it("should behave as expected when action performed", () => {
+      // Arrange (préparation spécifique au test)
+      // Act (actions utilisateur)
+      // Assert (vérifications)
+    });
+  });
+});
+```
+
+### Commandes personnalisées
+
+```javascript
+// cypress/support/auth-commands.js
+Cypress.Commands.add("login", (email, password) => {
+  cy.session([email, password], () => {
+    cy.visit("/signin");
+    cy.get("[data-testid=email-input]").type(email);
+    cy.get("[data-testid=password-input]").type(password);
+    cy.get("[data-testid=login-button]").click();
+    cy.url().should("include", "/user");
+  });
+});
+
+// Usage
+cy.login("tony@stark.com", "password123");
+```
+
+### Gestion des données de test
+
+```javascript
+// cypress/fixtures/users.json
+[
+  {
+    id: "1",
+    email: "tony@stark.com",
+    password: "password123",
+    firstName: "Tony",
+    lastName: "Stark",
+    userName: "Iron",
+  },
+  {
+    id: "2",
+    email: "steve@rogers.com",
+    password: "password456",
+    firstName: "Steve",
+    lastName: "Rogers",
+    userName: "Cap",
+  },
+];
+
+// Usage
+cy.fixture("users").then((users) => {
+  const testUser = users[0];
+  cy.login(testUser.email, testUser.password);
+});
+```
+
+## 🔍 Tests d'accessibilité intégrés
+
+### Avec cypress-axe
+
+```javascript
+// cypress/support/e2e.js
+import "cypress-axe";
+
+// cypress/e2e/accessibility/home.cy.js
+describe("Home Page Accessibility", () => {
+  beforeEach(() => {
+    cy.visit("/");
+    cy.injectAxe();
+  });
+
+  it("has no detectable accessibility violations", () => {
+    cy.checkA11y();
+  });
+
+  it("has no accessibility violations in specific component", () => {
+    cy.checkA11y("[data-testid=header-nav]");
+  });
+});
+```
+
+## 📊 Stratégie de reporting
+
+### Rapports détaillés
+
+```bash
+# Installation de Mochawesome pour des rapports améliorés
+pnpm add -D cypress-mochawesome-reporter
+
+# Configuration dans cypress.config.js
+module.exports = defineConfig({
+  e2e: {
+    // Autres configurations...
+    reporter: 'cypress-mochawesome-reporter',
+    reporterOptions: {
+      charts: true,
+      reportPageTitle: 'ArgentBank E2E Tests',
+      embeddedScreenshots: true,
+      inlineAssets: true,
+    },
+  },
+});
+```
+
+### Dashboard Cypress (optionnel)
+
+```bash
+# Configuration du projet pour le dashboard
+npx cypress open --project-id <your-project-id>
+```
+
+## 🚀 Plan de mise en œuvre
+
+### Phase 1 : Installation et configuration
+
+1. Installer Cypress et les plugins
+2. Configurer l'environnement de base
+3. Créer la structure de dossiers
+4. Ajouter les scripts npm
+
+### Phase 2 : Premiers tests critiques
+
+1. Implémenter les tests d'authentification
+2. Implémenter les tests de profil utilisateur
+3. Créer les commandes personnalisées pour ces scénarios
+
+### Phase 3 : Expansion
+
+1. Implémenter les tests de comptes et transactions
+2. Ajouter les tests d'accessibilité
+3. Intégrer au pipeline CI
+
+### Phase 4 : Optimisation
+
+1. Analyser les performances des tests
+2. Optimiser les tests lents
+3. Améliorer les rapports
+
+## 📝 Documentation
+
+### README.md pour Cypress
+
+Créer un fichier README.md dans le dossier Cypress :
+
+````markdown
+# Tests E2E Cypress - ArgentBank
+
+## 🚀 Démarrage rapide
+
+```bash
+# Ouvrir l'interface Cypress
+pnpm cypress:open
+
+# Exécuter tous les tests en mode headless
+pnpm test:e2e
+```
+````
+
+## 📂 Organisation
+
+- `e2e/` - Tests par fonctionnalité
+- `fixtures/` - Données de test
+- `support/` - Commandes personnalisées
+
+## 🔍 Commandes personnalisées
+
+- `cy.login(email, password)` - Se connecter
+- `cy.checkAccount(accountId)` - Vérifier les détails d'un compte
+- `cy.searchTransactions(criteria)` - Rechercher des transactions
+
 ```
 
 ---
 
-**Dernière mise à jour** : 31 mai 2025  
-**Statut** : ✅ Production Ready - 41 tests opérationnels
+Ce plan fournit une base solide pour l'intégration de Cypress dans le projet ArgentBank, complémentant ainsi les tests Vitest existants pour une couverture de test complète.
+
+**Prochaine étape recommandée** : Commencer par l'installation et la configuration de base de Cypress, puis implémenter les premiers tests d'authentification.
+```

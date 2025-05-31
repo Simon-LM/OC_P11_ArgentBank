@@ -239,13 +239,13 @@ const createTestWrapper = (initialState = {}) => {
 
 ```typescript
 const renderWithContext = (
-	component: React.ReactElement,
-	options: RenderOptions = {}
+  component: React.ReactElement,
+  options: RenderOptions = {},
 ) => {
-	return render(component, {
-		wrapper: createTestWrapper(),
-		...options,
-	});
+  return render(component, {
+    wrapper: createTestWrapper(),
+    ...options,
+  });
 };
 ```
 
@@ -256,18 +256,18 @@ const renderWithContext = (
 ```typescript
 // Mock complet du module
 vi.mock("../../services/apiService", () => ({
-	fetchUserData: vi.fn(),
-	updateUserProfile: vi.fn(),
-	deleteUser: vi.fn(),
+  fetchUserData: vi.fn(),
+  updateUserProfile: vi.fn(),
+  deleteUser: vi.fn(),
 }));
 
 // Mock partiel
 vi.mock("../../services/apiService", async (importOriginal) => {
-	const actual = await importOriginal();
-	return {
-		...actual,
-		fetchUserData: vi.fn(), // Mock seulement cette fonction
-	};
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    fetchUserData: vi.fn(), // Mock seulement cette fonction
+  };
 });
 ```
 
@@ -276,14 +276,14 @@ vi.mock("../../services/apiService", async (importOriginal) => {
 ```typescript
 // Store de test avec état initial
 const createMockStore = (preloadedState = {}) => {
-	return configureStore({
-		reducer: rootReducer,
-		preloadedState,
-		middleware: (getDefaultMiddleware) =>
-			getDefaultMiddleware({
-				serializableCheck: false, // Désactiver pour les tests
-			}),
-	});
+  return configureStore({
+    reducer: rootReducer,
+    preloadedState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false, // Désactiver pour les tests
+      }),
+  });
 };
 ```
 
@@ -293,12 +293,12 @@ const createMockStore = (preloadedState = {}) => {
 // Mock de react-router-dom
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async (importOriginal) => {
-	const actual = await importOriginal();
-	return {
-		...actual,
-		useNavigate: () => mockNavigate,
-		useLocation: () => ({ pathname: "/test" }),
-	};
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useLocation: () => ({ pathname: "/test" }),
+  };
 });
 ```
 

@@ -6,159 +6,159 @@
 @use "@styles/abstracts/placeholders" as *;
 
 .edit-user-form {
-	&__container {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		margin: 0 auto;
-		margin-bottom: 2rem;
-		max-width: min(30rem, 95vw);
-		width: 100%;
-		background: var.$light_editUser-bg;
-		color: var.$light_editUser-text;
-		box-shadow: var.$light_editUser_card-shadow;
-	}
+  &__container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-bottom: 2rem;
+    max-width: min(30rem, 95vw);
+    width: 100%;
+    background: var.$light_editUser-bg;
+    color: var.$light_editUser-text;
+    box-shadow: var.$light_editUser_card-shadow;
+  }
 
-	&__form {
-		display: flex;
-		flex-direction: column;
-		justify-content: left;
-		gap: 1rem;
-		max-width: min(30rem, 95vw);
-		padding: 0 0.5rem;
-	}
+  &__form {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    gap: 1rem;
+    max-width: min(30rem, 95vw);
+    padding: 0 0.5rem;
+  }
 
-	&__disclaimer-box {
-		width: 90%;
-		padding: 0.5rem 1vw;
-		margin: 0 0 1rem;
-		background-color: rgba(255, 217, 0, 0.1);
-		border-left: func.rem(4) solid #ffd900;
-		border-radius: func.rem(4);
-		box-sizing: border-box;
-	}
+  &__disclaimer-box {
+    width: 90%;
+    padding: 0.5rem 1vw;
+    margin: 0 0 1rem;
+    background-color: rgba(255, 217, 0, 0.1);
+    border-left: func.rem(4) solid #ffd900;
+    border-radius: func.rem(4);
+    box-sizing: border-box;
+  }
 
-	&__disclaimer {
-		margin: 0;
-		font-size: 0.9rem;
-		color: var.$color-gray-800;
-		display: flex;
-		align-items: center;
+  &__disclaimer {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var.$color-gray-800;
+    display: flex;
+    align-items: center;
 
-		&-icon {
-			margin-right: 1vw;
-			color: #ffd900;
-			font-size: 1.2rem;
-			flex-shrink: 0;
-		}
+    &-icon {
+      margin-right: 1vw;
+      color: #ffd900;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
 
-		span {
-			@include mix.text-wrap();
-		}
-	}
+    span {
+      @include mix.text-wrap();
+    }
+  }
 
-	&__input-group {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-		align-items: flex-start;
-		justify-content: space-between;
-		align-items: center;
-		gap: 0.25rem;
-		width: 100%;
-	}
+  &__input-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+  }
 
-	&__label {
-		flex: 1 0 8rem;
-		min-width: 8rem;
-		max-width: 12rem;
-		font-weight: bold;
-		padding: 0 0.25rem;
-		text-align: left;
-	}
+  &__label {
+    flex: 1 0 8rem;
+    min-width: 8rem;
+    max-width: 12rem;
+    font-weight: bold;
+    padding: 0 0.25rem;
+    text-align: left;
+  }
 
-	&__help-text {
-		display: block;
-		font-size: 0.85rem;
-		color: var.$color-balanced;
-		margin-top: 0.25rem;
-	}
+  &__help-text {
+    display: block;
+    font-size: 0.85rem;
+    color: var.$color-balanced;
+    margin-top: 0.25rem;
+  }
 
-	&__input-wrapper {
-		flex: 999 1 12rem;
-		min-width: 0;
-	}
+  &__input-wrapper {
+    flex: 999 1 12rem;
+    min-width: 0;
+  }
 
-	&__input {
-		padding: 0.5rem;
-		background-color: var.$light_editUser_input-bg;
-		border: 1px solid var.$light_editUser_input-border;
-		color: var.$light_editUser_input-text;
-		width: 100%;
-		box-sizing: border-box;
+  &__input {
+    padding: 0.5rem;
+    background-color: var.$light_editUser_input-bg;
+    border: 1px solid var.$light_editUser_input-border;
+    color: var.$light_editUser_input-text;
+    width: 100%;
+    box-sizing: border-box;
 
-		&--readonly {
-			background-color: var.$light_editUser_input-readonly-bg;
+    &--readonly {
+      background-color: var.$light_editUser_input-readonly-bg;
 
-			&:active,
-			&:focus-visible {
-				color: var.$color-error !important;
-			}
+      &:active,
+      &:focus-visible {
+        color: var.$color-error !important;
+      }
 
-			&::selection {
-				background: none;
-				color: var.$color-error;
-			}
-		}
-	}
+      &::selection {
+        background: none;
+        color: var.$color-error;
+      }
+    }
+  }
 
-	&__error {
-		color: var.$color-error;
-		font-size: 0.875rem;
-		margin-top: 0.25rem;
-		@include mix.text-wrap();
-	}
+  &__error {
+    color: var.$color-error;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    @include mix.text-wrap();
+  }
 
-	&__button-group {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 1rem;
-		width: 100%;
-		margin-top: 1rem;
-	}
+  &__button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1rem;
+  }
 
-	&__button {
-		flex: 1 1 6rem;
-		max-width: 10rem;
-		border-color: var.$light-button-border;
-		background-color: var.$light-button-bg;
-		color: var.$light-button-text;
-		font-weight: bold;
-		padding: func.rem(10);
-		margin: 1rem 0;
-		border-radius: func.rem(4);
-		white-space: nowrap;
-		height: func.rem(45);
-		display: flex;
-		align-items: center;
-		justify-content: center;
+  &__button {
+    flex: 1 1 6rem;
+    max-width: 10rem;
+    border-color: var.$light-button-border;
+    background-color: var.$light-button-bg;
+    color: var.$light-button-text;
+    font-weight: bold;
+    padding: func.rem(10);
+    margin: 1rem 0;
+    border-radius: func.rem(4);
+    white-space: nowrap;
+    height: func.rem(45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-		&--submit {
-			&:hover,
-			&:focus-visible {
-				background-color: var.$light_button_bg-hover;
-				border-color: var.$light_button_border-hover;
-			}
-		}
+    &--submit {
+      &:hover,
+      &:focus-visible {
+        background-color: var.$light_button_bg-hover;
+        border-color: var.$light_button_border-hover;
+      }
+    }
 
-		&--cancel {
-			&:hover,
-			&:focus-visible {
-				background-color: var.$light_cancel-button_bg-hover;
-				border-color: var.$light_cancel-button_border-hover;
-			}
-		}
-	}
+    &--cancel {
+      &:hover,
+      &:focus-visible {
+        background-color: var.$light_cancel-button_bg-hover;
+        border-color: var.$light_cancel-button_border-hover;
+      }
+    }
+  }
 }

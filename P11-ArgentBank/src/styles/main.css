@@ -86,7 +86,8 @@ a {
   padding: 0.25em;
   cursor: pointer;
 }
-button:hover, button:focus-visible,
+button:hover,
+button:focus-visible,
 a:hover,
 a:focus-visible {
   opacity: 0.85;
@@ -342,4 +343,4 @@ a:focus-visible {
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
-}/*# sourceMappingURL=main.css.map */
+} /*# sourceMappingURL=main.css.map */

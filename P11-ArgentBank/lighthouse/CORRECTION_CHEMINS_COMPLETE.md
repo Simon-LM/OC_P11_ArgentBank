@@ -72,15 +72,15 @@ lighthouse/
 
 ```json
 {
-	"lighthouse": "Audit Lighthouse simple",
-	"lighthouse:mobile": "Audit mobile",
-	"lighthouse:desktop": "Audit desktop",
-	"lighthouse:json": "Génération de rapport JSON",
-	"lighthouse:profile": "Audit de la page profil",
-	"lighthouse:dev": "Audit en mode développement",
-	"lighthouse:suite": "Suite complète de tests",
-	"lighthouse:analyze": "Analyse des rapports JSON",
-	"lighthouse:performance": "Analyse avancée des performances"
+  "lighthouse": "Audit Lighthouse simple",
+  "lighthouse:mobile": "Audit mobile",
+  "lighthouse:desktop": "Audit desktop",
+  "lighthouse:json": "Génération de rapport JSON",
+  "lighthouse:profile": "Audit de la page profil",
+  "lighthouse:dev": "Audit en mode développement",
+  "lighthouse:suite": "Suite complète de tests",
+  "lighthouse:analyze": "Analyse des rapports JSON",
+  "lighthouse:performance": "Analyse avancée des performances"
 }
 ```
 

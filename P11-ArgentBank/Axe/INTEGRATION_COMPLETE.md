@@ -81,9 +81,9 @@ import "../../../Axe/utils/axe-setup.js"; // Setup centralisé
 
 // Test pattern standard
 test("has no accessibility violations", async () => {
-	const { container } = render(<Component />);
-	const results = await axe(container);
-	expect(results).toHaveNoViolations();
+  const { container } = render(<Component />);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
 });
 ```
 

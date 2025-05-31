@@ -2,58 +2,58 @@
 
 html,
 body {
-	margin: 0;
-	padding: 0;
-	height: 100%;
-	overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 body {
-	// display: flex;
-	// flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
 
-	display: block;
-	min-height: 100vh;
+  display: block;
+  min-height: 100vh;
 }
 
 #root {
-	display: flex;
-	flex-direction: column;
-	// flex: 1;
-	min-height: 100vh;
-	position: relative;
-	width: 100%;
-	max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  // flex: 1;
+  min-height: 100vh;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
 }
 
 #main-content {
-	// display: flex;
-	// flex-direction: column;
-	// flex: 1;
+  // display: flex;
+  // flex-direction: column;
+  // flex: 1;
 
-	flex: 1 0 auto;
-	// min-height: calc(
-	// 	100vh - clamp(3.5rem, 5vh + 1rem, 5rem) - clamp(5rem, 10vh + 1rem, 8rem)
-	// );
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	min-height: calc(
-		100vh - clamp(3.5rem, 5vh + 1rem, 5rem) - clamp(5rem, 10vh, 8rem)
-	);
+  flex: 1 0 auto;
+  // min-height: calc(
+  // 	100vh - clamp(3.5rem, 5vh + 1rem, 5rem) - clamp(5rem, 10vh + 1rem, 8rem)
+  // );
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(
+    100vh - clamp(3.5rem, 5vh + 1rem, 5rem) - clamp(5rem, 10vh, 8rem)
+  );
 }
 
 .main {
-	// flex: 1;
-	flex: 1 0 auto;
+  // flex: 1;
+  flex: 1 0 auto;
 }
 
 button,
 a {
-	padding: 0.25em;
-	cursor: pointer;
-	&:hover,
-	&:focus-visible {
-		opacity: 0.85;
-	}
+  padding: 0.25em;
+  cursor: pointer;
+  &:hover,
+  &:focus-visible {
+    opacity: 0.85;
+  }
 }

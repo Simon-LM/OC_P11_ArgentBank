@@ -12,19 +12,19 @@
 //Le mécanisme de saisie principal inclut un dispositif de pointage précis.
 
 @media (pointer: coarse), (any-pointer: coarse) {
-	:focus-visible {
-		outline-width: 0.6rem !important;
-	}
-	.restaurants__heart-like {
-		transform: scale(1.6);
-		&:hover {
-			transform: scale(2);
-		}
-	}
-	.visual-identity__back-arrow a {
-		transform: scale(1.6);
-		&:hover {
-			transform: scale(2);
-		}
-	}
+  :focus-visible {
+    outline-width: 0.6rem !important;
+  }
+  .restaurants__heart-like {
+    transform: scale(1.6);
+    &:hover {
+      transform: scale(2);
+    }
+  }
+  .visual-identity__back-arrow a {
+    transform: scale(1.6);
+    &:hover {
+      transform: scale(2);
+    }
+  }
 }

@@ -8,12 +8,12 @@
  * Utilisée dans tous les tests d'authentification et de profil
  */
 export interface User {
-	type: "valid" | "invalid";
-	email: string;
-	password?: string;
-	firstName?: string;
-	lastName?: string;
-	userName?: string;
+  type: "valid" | "invalid";
+  email: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  userName?: string;
 }
 
 /**
@@ -21,11 +21,11 @@ export interface User {
  * Utilisée dans les tests de comptes et transactions
  */
 export interface Account {
-	id: string;
-	title: string;
-	balance: string;
-	description: string;
-	accountNumber: string;
+  id: string;
+  title: string;
+  balance: string;
+  description: string;
+  accountNumber: string;
 }
 
 /**
@@ -33,11 +33,11 @@ export interface Account {
  * Utilisée dans les tests de transactions
  */
 export interface Transaction {
-	id: string;
-	date: string;
-	description: string;
-	amount: number;
-	balance: number;
-	category?: string;
-	notes?: string;
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  balance: number;
+  category?: string;
+  notes?: string;
 }

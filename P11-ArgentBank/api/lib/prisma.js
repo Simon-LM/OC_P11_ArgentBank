@@ -28,12 +28,12 @@ let prisma;
 // Cette logique permet d'utiliser une seule instance de PrismaClient en développement
 // pour éviter de créer trop de connexions à la base de données.
 if (process.env.NODE_ENV === "production") {
-	prisma = new PrismaClient();
+  prisma = new PrismaClient();
 } else {
-	if (!global._prisma) {
-		global._prisma = new PrismaClient();
-	}
-	prisma = global._prisma;
+  if (!global._prisma) {
+    global._prisma = new PrismaClient();
+  }
+  prisma = global._prisma;
 }
 
 export { prisma };

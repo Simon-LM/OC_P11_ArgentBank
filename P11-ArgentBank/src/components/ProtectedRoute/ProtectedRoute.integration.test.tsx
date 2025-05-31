@@ -20,64 +20,64 @@ import userReducer, { UsersState } from "../../store/slices/usersSlice";
 type LoadingState = "idle" | "loading" | "succeeded" | "failed";
 
 const createMockStore = (isAuthenticated: boolean) => {
-	const initialState: UsersState = {
-		isAuthenticated,
-		currentUser: null,
-		accounts: [],
-		accountsStatus: "idle" as LoadingState,
-		accountsError: null,
-		selectedAccountId: null,
-		transactions: [],
-		transactionsStatus: "idle" as LoadingState,
-		transactionsError: null,
-		searchResults: [],
-		searchStatus: "idle" as LoadingState,
-		searchError: null,
-		pagination: null,
-		currentSortBy: "date",
-		currentSortOrder: "desc",
-	};
+  const initialState: UsersState = {
+    isAuthenticated,
+    currentUser: null,
+    accounts: [],
+    accountsStatus: "idle" as LoadingState,
+    accountsError: null,
+    selectedAccountId: null,
+    transactions: [],
+    transactionsStatus: "idle" as LoadingState,
+    transactionsError: null,
+    searchResults: [],
+    searchStatus: "idle" as LoadingState,
+    searchError: null,
+    pagination: null,
+    currentSortBy: "date",
+    currentSortOrder: "desc",
+  };
 
-	return configureStore({
-		reducer: {
-			users: userReducer,
-		},
-		preloadedState: {
-			users: initialState,
-		},
-	});
+  return configureStore({
+    reducer: {
+      users: userReducer,
+    },
+    preloadedState: {
+      users: initialState,
+    },
+  });
 };
 
 describe("ProtectedRoute - Integration Tests", () => {
-	test("renders the child component when user is authenticated", () => {
-		const store = createMockStore(true);
+  test("renders the child component when user is authenticated", () => {
+    const store = createMockStore(true);
 
-		render(
-			<Provider store={store}>
-				<MemoryRouter>
-					<ProtectedRoute>
-						<div data-testid="protected-content">Protected Content</div>
-					</ProtectedRoute>
-				</MemoryRouter>
-			</Provider>
-		);
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <ProtectedRoute>
+            <div data-testid="protected-content">Protected Content</div>
+          </ProtectedRoute>
+        </MemoryRouter>
+      </Provider>,
+    );
 
-		expect(screen.getByTestId("protected-content")).toBeInTheDocument();
-	});
+    expect(screen.getByTestId("protected-content")).toBeInTheDocument();
+  });
 
-	test("redirects to /signin when user is not authenticated", () => {
-		const store = createMockStore(false);
+  test("redirects to /signin when user is not authenticated", () => {
+    const store = createMockStore(false);
 
-		const { container } = render(
-			<Provider store={store}>
-				<MemoryRouter>
-					<ProtectedRoute>
-						<div data-testid="protected-content">Protected Content</div>
-					</ProtectedRoute>
-				</MemoryRouter>
-			</Provider>
-		);
+    const { container } = render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <ProtectedRoute>
+            <div data-testid="protected-content">Protected Content</div>
+          </ProtectedRoute>
+        </MemoryRouter>
+      </Provider>,
+    );
 
-		expect(container.innerHTML).toBe("");
-	});
+    expect(container.innerHTML).toBe("");
+  });
 });

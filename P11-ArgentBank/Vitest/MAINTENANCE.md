@@ -194,12 +194,12 @@ Ajouter ces scripts à `package.json` :
 
 ```json
 {
-	"scripts": {
-		"test:find-slow": "pnpm test -- --reporter=verbose | grep -B 1 -A 1 'took.*>100ms'",
-		"test:find-flaky": "pnpm test -- --retry=3 --reporter=json | jq '.testResults[] | select(.retry > 0)'",
-		"test:by-file": "node scripts/run-tests-by-size.js",
-		"test:watch-coverage": "pnpm test:coverage -- --watch"
-	}
+  "scripts": {
+    "test:find-slow": "pnpm test -- --reporter=verbose | grep -B 1 -A 1 'took.*>100ms'",
+    "test:find-flaky": "pnpm test -- --retry=3 --reporter=json | jq '.testResults[] | select(.retry > 0)'",
+    "test:by-file": "node scripts/run-tests-by-size.js",
+    "test:watch-coverage": "pnpm test:coverage -- --watch"
+  }
 }
 ```
 

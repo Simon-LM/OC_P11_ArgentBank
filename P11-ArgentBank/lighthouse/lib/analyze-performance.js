@@ -10,94 +10,94 @@ const __dirname = path.dirname(__filename);
 
 // Fonction pour lire et analyser un rapport Lighthouse JSON
 function analyzeLighthouseReport(jsonPath) {
-	try {
-		const reportData = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
+  try {
+    const reportData = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
 
-		const audits = reportData.audits;
-		const categories = reportData.categories;
+    const audits = reportData.audits;
+    const categories = reportData.categories;
 
-		// Extraction des métriques Core Web Vitals
-		const metrics = {
-			// Scores généraux
-			performance: Math.round(categories.performance.score * 100),
-			accessibility: Math.round(categories.accessibility.score * 100),
-			bestPractices: Math.round(categories["best-practices"].score * 100),
-			seo: Math.round(categories.seo.score * 100),
+    // Extraction des métriques Core Web Vitals
+    const metrics = {
+      // Scores généraux
+      performance: Math.round(categories.performance.score * 100),
+      accessibility: Math.round(categories.accessibility.score * 100),
+      bestPractices: Math.round(categories["best-practices"].score * 100),
+      seo: Math.round(categories.seo.score * 100),
 
-			// Core Web Vitals
-			firstContentfulPaint: audits["first-contentful-paint"].numericValue,
-			largestContentfulPaint: audits["largest-contentful-paint"].numericValue,
-			speedIndex: audits["speed-index"].numericValue,
-			totalBlockingTime: audits["total-blocking-time"].numericValue,
-			cumulativeLayoutShift: audits["cumulative-layout-shift"].numericValue,
-			timeToInteractive: audits["interactive"].numericValue,
+      // Core Web Vitals
+      firstContentfulPaint: audits["first-contentful-paint"].numericValue,
+      largestContentfulPaint: audits["largest-contentful-paint"].numericValue,
+      speedIndex: audits["speed-index"].numericValue,
+      totalBlockingTime: audits["total-blocking-time"].numericValue,
+      cumulativeLayoutShift: audits["cumulative-layout-shift"].numericValue,
+      timeToInteractive: audits["interactive"].numericValue,
 
-			// Métriques réseau
-			serverResponseTime: audits["server-response-time"]?.numericValue || 0,
+      // Métriques réseau
+      serverResponseTime: audits["server-response-time"]?.numericValue || 0,
 
-			// Opportunités d'amélioration
-			opportunities: [],
-		};
+      // Opportunités d'amélioration
+      opportunities: [],
+    };
 
-		// Extraction des opportunités d'amélioration principales
-		const opportunityAudits = [
-			"render-blocking-resources",
-			"unused-css-rules",
-			"unused-javascript",
-			"modern-image-formats",
-			"uses-optimized-images",
-			"uses-text-compression",
-			"efficient-animated-content",
-		];
+    // Extraction des opportunités d'amélioration principales
+    const opportunityAudits = [
+      "render-blocking-resources",
+      "unused-css-rules",
+      "unused-javascript",
+      "modern-image-formats",
+      "uses-optimized-images",
+      "uses-text-compression",
+      "efficient-animated-content",
+    ];
 
-		opportunityAudits.forEach((auditId) => {
-			const audit = audits[auditId];
-			if (audit && audit.details && audit.details.overallSavingsMs > 0) {
-				metrics.opportunities.push({
-					id: auditId,
-					title: audit.title,
-					description: audit.description,
-					savings: audit.details.overallSavingsMs,
-					score: audit.score,
-				});
-			}
-		});
+    opportunityAudits.forEach((auditId) => {
+      const audit = audits[auditId];
+      if (audit && audit.details && audit.details.overallSavingsMs > 0) {
+        metrics.opportunities.push({
+          id: auditId,
+          title: audit.title,
+          description: audit.description,
+          savings: audit.details.overallSavingsMs,
+          score: audit.score,
+        });
+      }
+    });
 
-		// Tri des opportunités par impact
-		metrics.opportunities.sort((a, b) => b.savings - a.savings);
+    // Tri des opportunités par impact
+    metrics.opportunities.sort((a, b) => b.savings - a.savings);
 
-		return metrics;
-	} catch (error) {
-		console.error(
-			`Erreur lors de l'analyse du rapport ${jsonPath}:`,
-			error.message
-		);
-		return null;
-	}
+    return metrics;
+  } catch (error) {
+    console.error(
+      `Erreur lors de l'analyse du rapport ${jsonPath}:`,
+      error.message,
+    );
+    return null;
+  }
 }
 
 // Fonction pour formater les métriques en milliseconds
 function formatMs(ms) {
-	return ms < 1000 ? `${Math.round(ms)}ms` : `${(ms / 1000).toFixed(1)}s`;
+  return ms < 1000 ? `${Math.round(ms)}ms` : `${(ms / 1000).toFixed(1)}s`;
 }
 
 // Fonction pour évaluer les performances selon les seuils Google
 function evaluateMetric(metricName, value) {
-	const thresholds = {
-		firstContentfulPaint: { good: 1800, needs: 3000 },
-		largestContentfulPaint: { good: 2500, needs: 4000 },
-		speedIndex: { good: 3400, needs: 5800 },
-		totalBlockingTime: { good: 200, needs: 600 },
-		cumulativeLayoutShift: { good: 0.1, needs: 0.25 },
-		timeToInteractive: { good: 3800, needs: 7300 },
-	};
+  const thresholds = {
+    firstContentfulPaint: { good: 1800, needs: 3000 },
+    largestContentfulPaint: { good: 2500, needs: 4000 },
+    speedIndex: { good: 3400, needs: 5800 },
+    totalBlockingTime: { good: 200, needs: 600 },
+    cumulativeLayoutShift: { good: 0.1, needs: 0.25 },
+    timeToInteractive: { good: 3800, needs: 7300 },
+  };
 
-	const threshold = thresholds[metricName];
-	if (!threshold) return "❓";
+  const threshold = thresholds[metricName];
+  if (!threshold) return "❓";
 
-	if (value <= threshold.good) return "🟢";
-	if (value <= threshold.needs) return "🟡";
-	return "🔴";
+  if (value <= threshold.good) return "🟢";
+  if (value <= threshold.needs) return "🟡";
+  return "🔴";
 }
 
 // Analyse des rapports
@@ -110,94 +110,94 @@ const reportsDir = path.join(__dirname, "../reports");
 const mobileJsonPath = path.join(reportsDir, "mobile-dev-optimized.json");
 let mobileMetrics = null;
 if (fs.existsSync(mobileJsonPath)) {
-	console.log("\n📱 RAPPORT MOBILE");
-	console.log("-".repeat(30));
+  console.log("\n📱 RAPPORT MOBILE");
+  console.log("-".repeat(30));
 
-	mobileMetrics = analyzeLighthouseReport(mobileJsonPath);
-	if (mobileMetrics) {
-		console.log(`🎯 Score Performance: ${mobileMetrics.performance}/100`);
-		console.log(`♿ Score Accessibilité: ${mobileMetrics.accessibility}/100`);
-		console.log(`✅ Bonnes Pratiques: ${mobileMetrics.bestPractices}/100`);
-		console.log(`🔍 Score SEO: ${mobileMetrics.seo}/100\n`);
+  mobileMetrics = analyzeLighthouseReport(mobileJsonPath);
+  if (mobileMetrics) {
+    console.log(`🎯 Score Performance: ${mobileMetrics.performance}/100`);
+    console.log(`♿ Score Accessibilité: ${mobileMetrics.accessibility}/100`);
+    console.log(`✅ Bonnes Pratiques: ${mobileMetrics.bestPractices}/100`);
+    console.log(`🔍 Score SEO: ${mobileMetrics.seo}/100\n`);
 
-		console.log("📊 Core Web Vitals:");
-		console.log(
-			`  ${evaluateMetric("firstContentfulPaint", mobileMetrics.firstContentfulPaint)} First Contentful Paint: ${formatMs(mobileMetrics.firstContentfulPaint)}`
-		);
-		console.log(
-			`  ${evaluateMetric("largestContentfulPaint", mobileMetrics.largestContentfulPaint)} Largest Contentful Paint: ${formatMs(mobileMetrics.largestContentfulPaint)}`
-		);
-		console.log(
-			`  ${evaluateMetric("speedIndex", mobileMetrics.speedIndex)} Speed Index: ${formatMs(mobileMetrics.speedIndex)}`
-		);
-		console.log(
-			`  ${evaluateMetric("totalBlockingTime", mobileMetrics.totalBlockingTime)} Total Blocking Time: ${formatMs(mobileMetrics.totalBlockingTime)}`
-		);
-		console.log(
-			`  ${evaluateMetric("cumulativeLayoutShift", mobileMetrics.cumulativeLayoutShift)} Cumulative Layout Shift: ${mobileMetrics.cumulativeLayoutShift.toFixed(3)}`
-		);
-		console.log(
-			`  ${evaluateMetric("timeToInteractive", mobileMetrics.timeToInteractive)} Time to Interactive: ${formatMs(mobileMetrics.timeToInteractive)}`
-		);
+    console.log("📊 Core Web Vitals:");
+    console.log(
+      `  ${evaluateMetric("firstContentfulPaint", mobileMetrics.firstContentfulPaint)} First Contentful Paint: ${formatMs(mobileMetrics.firstContentfulPaint)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("largestContentfulPaint", mobileMetrics.largestContentfulPaint)} Largest Contentful Paint: ${formatMs(mobileMetrics.largestContentfulPaint)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("speedIndex", mobileMetrics.speedIndex)} Speed Index: ${formatMs(mobileMetrics.speedIndex)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("totalBlockingTime", mobileMetrics.totalBlockingTime)} Total Blocking Time: ${formatMs(mobileMetrics.totalBlockingTime)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("cumulativeLayoutShift", mobileMetrics.cumulativeLayoutShift)} Cumulative Layout Shift: ${mobileMetrics.cumulativeLayoutShift.toFixed(3)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("timeToInteractive", mobileMetrics.timeToInteractive)} Time to Interactive: ${formatMs(mobileMetrics.timeToInteractive)}`,
+    );
 
-		if (mobileMetrics.opportunities.length > 0) {
-			console.log("\n🚀 Principales Opportunités d'Amélioration:");
-			mobileMetrics.opportunities.slice(0, 5).forEach((opp, index) => {
-				console.log(
-					`  ${index + 1}. ${opp.title} (${formatMs(opp.savings)} économisées)`
-				);
-			});
-		}
-	}
+    if (mobileMetrics.opportunities.length > 0) {
+      console.log("\n🚀 Principales Opportunités d'Amélioration:");
+      mobileMetrics.opportunities.slice(0, 5).forEach((opp, index) => {
+        console.log(
+          `  ${index + 1}. ${opp.title} (${formatMs(opp.savings)} économisées)`,
+        );
+      });
+    }
+  }
 } else {
-	console.log("\n📱 RAPPORT MOBILE: Fichier JSON non trouvé");
+  console.log("\n📱 RAPPORT MOBILE: Fichier JSON non trouvé");
 }
 
 // Analyse du rapport desktop
 const desktopJsonPath = path.join(reportsDir, "desktop-dev-optimized.json");
 let desktopMetrics = null;
 if (fs.existsSync(desktopJsonPath)) {
-	console.log("\n🖥️ RAPPORT DESKTOP");
-	console.log("-".repeat(30));
+  console.log("\n🖥️ RAPPORT DESKTOP");
+  console.log("-".repeat(30));
 
-	desktopMetrics = analyzeLighthouseReport(desktopJsonPath);
-	if (desktopMetrics) {
-		console.log(`🎯 Score Performance: ${desktopMetrics.performance}/100`);
-		console.log(`♿ Score Accessibilité: ${desktopMetrics.accessibility}/100`);
-		console.log(`✅ Bonnes Pratiques: ${desktopMetrics.bestPractices}/100`);
-		console.log(`🔍 Score SEO: ${desktopMetrics.seo}/100\n`);
+  desktopMetrics = analyzeLighthouseReport(desktopJsonPath);
+  if (desktopMetrics) {
+    console.log(`🎯 Score Performance: ${desktopMetrics.performance}/100`);
+    console.log(`♿ Score Accessibilité: ${desktopMetrics.accessibility}/100`);
+    console.log(`✅ Bonnes Pratiques: ${desktopMetrics.bestPractices}/100`);
+    console.log(`🔍 Score SEO: ${desktopMetrics.seo}/100\n`);
 
-		console.log("📊 Core Web Vitals:");
-		console.log(
-			`  ${evaluateMetric("firstContentfulPaint", desktopMetrics.firstContentfulPaint)} First Contentful Paint: ${formatMs(desktopMetrics.firstContentfulPaint)}`
-		);
-		console.log(
-			`  ${evaluateMetric("largestContentfulPaint", desktopMetrics.largestContentfulPaint)} Largest Contentful Paint: ${formatMs(desktopMetrics.largestContentfulPaint)}`
-		);
-		console.log(
-			`  ${evaluateMetric("speedIndex", desktopMetrics.speedIndex)} Speed Index: ${formatMs(desktopMetrics.speedIndex)}`
-		);
-		console.log(
-			`  ${evaluateMetric("totalBlockingTime", desktopMetrics.totalBlockingTime)} Total Blocking Time: ${formatMs(desktopMetrics.totalBlockingTime)}`
-		);
-		console.log(
-			`  ${evaluateMetric("cumulativeLayoutShift", desktopMetrics.cumulativeLayoutShift)} Cumulative Layout Shift: ${desktopMetrics.cumulativeLayoutShift.toFixed(3)}`
-		);
-		console.log(
-			`  ${evaluateMetric("timeToInteractive", desktopMetrics.timeToInteractive)} Time to Interactive: ${formatMs(desktopMetrics.timeToInteractive)}`
-		);
+    console.log("📊 Core Web Vitals:");
+    console.log(
+      `  ${evaluateMetric("firstContentfulPaint", desktopMetrics.firstContentfulPaint)} First Contentful Paint: ${formatMs(desktopMetrics.firstContentfulPaint)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("largestContentfulPaint", desktopMetrics.largestContentfulPaint)} Largest Contentful Paint: ${formatMs(desktopMetrics.largestContentfulPaint)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("speedIndex", desktopMetrics.speedIndex)} Speed Index: ${formatMs(desktopMetrics.speedIndex)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("totalBlockingTime", desktopMetrics.totalBlockingTime)} Total Blocking Time: ${formatMs(desktopMetrics.totalBlockingTime)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("cumulativeLayoutShift", desktopMetrics.cumulativeLayoutShift)} Cumulative Layout Shift: ${desktopMetrics.cumulativeLayoutShift.toFixed(3)}`,
+    );
+    console.log(
+      `  ${evaluateMetric("timeToInteractive", desktopMetrics.timeToInteractive)} Time to Interactive: ${formatMs(desktopMetrics.timeToInteractive)}`,
+    );
 
-		if (desktopMetrics.opportunities.length > 0) {
-			console.log("\n🚀 Principales Opportunités d'Amélioration:");
-			desktopMetrics.opportunities.slice(0, 5).forEach((opp, index) => {
-				console.log(
-					`  ${index + 1}. ${opp.title} (${formatMs(opp.savings)} économisées)`
-				);
-			});
-		}
-	}
+    if (desktopMetrics.opportunities.length > 0) {
+      console.log("\n🚀 Principales Opportunités d'Amélioration:");
+      desktopMetrics.opportunities.slice(0, 5).forEach((opp, index) => {
+        console.log(
+          `  ${index + 1}. ${opp.title} (${formatMs(opp.savings)} économisées)`,
+        );
+      });
+    }
+  }
 } else {
-	console.log("\n🖥️ RAPPORT DESKTOP: Fichier JSON non trouvé");
+  console.log("\n🖥️ RAPPORT DESKTOP: Fichier JSON non trouvé");
 }
 
 // Création d'un rapport de synthèse
@@ -222,7 +222,7 @@ Cette analyse présente les résultats des tests de performance Lighthouse effec
 `;
 
 if (mobileMetrics) {
-	summaryContent += `
+  summaryContent += `
 ## 📱 Performances Mobile
 
 ### Scores Lighthouse
@@ -244,17 +244,17 @@ if (mobileMetrics) {
 ### 🚀 Recommandations d'Optimisation Mobile
 
 `;
-	if (mobileMetrics.opportunities.length > 0) {
-		mobileMetrics.opportunities.slice(0, 3).forEach((opp, index) => {
-			summaryContent += `${index + 1}. **${opp.title}** - Gain potentiel: ${formatMs(opp.savings)}\n`;
-		});
-	} else {
-		summaryContent += "Aucune optimisation majeure identifiée pour mobile!\n";
-	}
+  if (mobileMetrics.opportunities.length > 0) {
+    mobileMetrics.opportunities.slice(0, 3).forEach((opp, index) => {
+      summaryContent += `${index + 1}. **${opp.title}** - Gain potentiel: ${formatMs(opp.savings)}\n`;
+    });
+  } else {
+    summaryContent += "Aucune optimisation majeure identifiée pour mobile!\n";
+  }
 }
 
 if (desktopMetrics) {
-	summaryContent += `
+  summaryContent += `
 ## 🖥️ Performances Desktop
 
 ### Scores Lighthouse
@@ -276,13 +276,13 @@ if (desktopMetrics) {
 ### 🚀 Recommandations d'Optimisation Desktop
 
 `;
-	if (desktopMetrics.opportunities.length > 0) {
-		desktopMetrics.opportunities.slice(0, 3).forEach((opp, index) => {
-			summaryContent += `${index + 1}. **${opp.title}** - Gain potentiel: ${formatMs(opp.savings)}\n`;
-		});
-	} else {
-		summaryContent += "Aucune optimisation majeure identifiée pour desktop!\n";
-	}
+  if (desktopMetrics.opportunities.length > 0) {
+    desktopMetrics.opportunities.slice(0, 3).forEach((opp, index) => {
+      summaryContent += `${index + 1}. **${opp.title}** - Gain potentiel: ${formatMs(opp.savings)}\n`;
+    });
+  } else {
+    summaryContent += "Aucune optimisation majeure identifiée pour desktop!\n";
+  }
 }
 
 summaryContent += `

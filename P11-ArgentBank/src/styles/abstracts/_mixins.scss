@@ -1,50 +1,50 @@
 /** @format */
 
 @mixin text-wrap($break-mode: "break-word") {
-	overflow-wrap: break-word;
+  overflow-wrap: break-word;
 
-	@if $break-mode == "break-all" {
-		word-break: break-all;
-	} @else if $break-mode == "break-word" {
-		word-break: break-word;
-	} @else if $break-mode == "normal" {
-		word-break: normal;
-	}
+  @if $break-mode == "break-all" {
+    word-break: break-all;
+  } @else if $break-mode == "break-word" {
+    word-break: break-word;
+  } @else if $break-mode == "normal" {
+    word-break: normal;
+  }
 
-	hyphens: auto;
-	max-width: 100%;
+  hyphens: auto;
+  max-width: 100%;
 }
 
 @mixin date-wrap {
-	overflow-wrap: break-word;
-	word-break: break-word;
-	hyphens: auto;
-	max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
 
-	white-space: pre-wrap;
+  white-space: pre-wrap;
 
-	&::after {
-		content: "";
-		display: inline-block;
-		width: 0;
-		height: 0;
-	}
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+  }
 
-	&::before {
-		content: "";
-		word-break: break-all;
-	}
+  &::before {
+    content: "";
+    word-break: break-all;
+  }
 
-	word-spacing: 0.05em;
+  word-spacing: 0.05em;
 
-	text-replace: "/" "/ ";
+  text-replace: "/" "/ ";
 }
 
 @mixin number-format($tabular: true) {
-	@if $tabular {
-		font-variant-numeric: tabular-nums;
-		font-feature-settings: "tnum";
-	}
+  @if $tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
 }
 
 /**
@@ -52,34 +52,34 @@
  * Utilise des pseudo-éléments pour créer un "cadre" flexible
  */
 @mixin inner-spacing(
-	$horizontal-px: 4,
-	$vertical-px: 8,
-	$vw-factor: 0.5,
-	$max-spacing-px: 24
+  $horizontal-px: 4,
+  $vertical-px: 8,
+  $vw-factor: 0.5,
+  $max-spacing-px: 24
 ) {
-	// Position relative pour le conteneur parent
-	position: relative;
+  // Position relative pour le conteneur parent
+  position: relative;
 
-	// Pseudo-élément qui servira de "coussin interne"
-	&::before {
-		content: "";
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		// Créer le cadre intérieur (l'inverse du padding)
-		pointer-events: none; // Ne pas interférer avec les clics
-		box-shadow: inset 0 0 0
-			min(calc(#{$horizontal-px}px + #{$vw-factor}vw), #{$max-spacing-px}px);
-	}
+  // Pseudo-élément qui servira de "coussin interne"
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    // Créer le cadre intérieur (l'inverse du padding)
+    pointer-events: none; // Ne pas interférer avec les clics
+    box-shadow: inset 0 0 0
+      min(calc(#{$horizontal-px}px + #{$vw-factor}vw), #{$max-spacing-px}px);
+  }
 
-	// Conteneur pour le contenu réel
-	& > * {
-		// S'assurer que tout le contenu est à l'intérieur du "coussin"
-		margin: min(calc(#{$vertical-px}px + #{$vw-factor}vw), #{$max-spacing-px}px)
-			min(calc(#{$horizontal-px}px + #{$vw-factor}vw), #{$max-spacing-px}px);
-	}
+  // Conteneur pour le contenu réel
+  & > * {
+    // S'assurer que tout le contenu est à l'intérieur du "coussin"
+    margin: min(calc(#{$vertical-px}px + #{$vw-factor}vw), #{$max-spacing-px}px)
+      min(calc(#{$horizontal-px}px + #{$vw-factor}vw), #{$max-spacing-px}px);
+  }
 }
 
 /**
@@ -88,91 +88,91 @@
  * - Conçu pour gérer les zooms extrêmes sans padding
  */
 @mixin a11y-flex(
-	$direction: row,
-	$wrap: true,
-	$inline-gap: "minimal",
-	$block-gap: 0.5rem,
-	$width: null,
-	$content-alignment: null,
-	$max-width-rem: null,
-	$break-mode: "break-word",
-	$text-wrap: true
+  $direction: row,
+  $wrap: true,
+  $inline-gap: "minimal",
+  $block-gap: 0.5rem,
+  $width: null,
+  $content-alignment: null,
+  $max-width-rem: null,
+  $break-mode: "break-word",
+  $text-wrap: true
 ) {
-	display: flex;
-	flex-direction: $direction;
+  display: flex;
+  flex-direction: $direction;
 
-	@if $wrap == true {
-		flex-wrap: wrap;
-	}
+  @if $wrap == true {
+    flex-wrap: wrap;
+  }
 
-	// Protection essentielle contre débordement
-	& > * {
-		min-width: 0;
+  // Protection essentielle contre débordement
+  & > * {
+    min-width: 0;
 
-		// Application de text-wrap aux enfants si activé
-		@if $text-wrap == true {
-			overflow-wrap: break-word;
+    // Application de text-wrap aux enfants si activé
+    @if $text-wrap == true {
+      overflow-wrap: break-word;
 
-			@if $break-mode == "break-all" {
-				word-break: break-all;
-			} @else if $break-mode == "break-word" {
-				word-break: break-word;
-			} @else if $break-mode == "normal" {
-				word-break: normal;
-			}
+      @if $break-mode == "break-all" {
+        word-break: break-all;
+      } @else if $break-mode == "break-word" {
+        word-break: break-word;
+      } @else if $break-mode == "normal" {
+        word-break: normal;
+      }
 
-			hyphens: auto;
-			max-width: 100%;
-		}
-	}
+      hyphens: auto;
+      max-width: 100%;
+    }
+  }
 
-	// Gap horizontal/inline - peut être très petit pour les zooms extrêmes
-	@if $inline-gap == "minimal" {
-		column-gap: max(1px, 0.25vw); // Absolument minimal
-	} @else if $inline-gap == "tight" {
-		column-gap: max(2px, 0.5vw); // Serré mais visible
-	} @else if $inline-gap == "standard" {
-		column-gap: max(4px, 0.75vw); // Standard
-	} @else if $inline-gap == "wide" {
-		column-gap: max(8px, 1vw); // Large
-	} @else {
-		column-gap: $inline-gap; // Valeur personnalisée
-	}
+  // Gap horizontal/inline - peut être très petit pour les zooms extrêmes
+  @if $inline-gap == "minimal" {
+    column-gap: max(1px, 0.25vw); // Absolument minimal
+  } @else if $inline-gap == "tight" {
+    column-gap: max(2px, 0.5vw); // Serré mais visible
+  } @else if $inline-gap == "standard" {
+    column-gap: max(4px, 0.75vw); // Standard
+  } @else if $inline-gap == "wide" {
+    column-gap: max(8px, 1vw); // Large
+  } @else {
+    column-gap: $inline-gap; // Valeur personnalisée
+  }
 
-	// Gap vertical/block - peut rester en rem, moins problématique
-	row-gap: $block-gap;
+  // Gap vertical/block - peut rester en rem, moins problématique
+  row-gap: $block-gap;
 
-	// Largeur si spécifiée
-	@if $width != null {
-		@if type-of($width) == "string" {
-			width: $width; // Pour "92.5%" par exemple
-		} @else {
-			width: min(100% - 4px, #{$width}rem);
-		}
-		margin-inline: auto;
-	}
+  // Largeur si spécifiée
+  @if $width != null {
+    @if type-of($width) == "string" {
+      width: $width; // Pour "92.5%" par exemple
+    } @else {
+      width: min(100% - 4px, #{$width}rem);
+    }
+    margin-inline: auto;
+  }
 
-	// Largeur maximale si spécifiée, indépendante de la largeur
-	@if $max-width-rem != null {
-		max-width: #{$max-width-rem}rem;
-	}
+  // Largeur maximale si spécifiée, indépendante de la largeur
+  @if $max-width-rem != null {
+    max-width: #{$max-width-rem}rem;
+  }
 
-	// Alignements optionnels
-	@if $content-alignment != null {
-		@if $content-alignment == "space-between" {
-			justify-content: space-between;
-		} @else if $content-alignment == "center" {
-			justify-content: center;
-		} @else if $content-alignment == "start" {
-			justify-content: flex-start;
-		} @else if $content-alignment == "end" {
-			justify-content: flex-end;
-		} @else {
-			justify-content: $content-alignment;
-		}
-	}
+  // Alignements optionnels
+  @if $content-alignment != null {
+    @if $content-alignment == "space-between" {
+      justify-content: space-between;
+    } @else if $content-alignment == "center" {
+      justify-content: center;
+    } @else if $content-alignment == "start" {
+      justify-content: flex-start;
+    } @else if $content-alignment == "end" {
+      justify-content: flex-end;
+    } @else {
+      justify-content: $content-alignment;
+    }
+  }
 
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 // // // // // // // // // // // // // // // // // //

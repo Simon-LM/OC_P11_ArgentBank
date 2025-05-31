@@ -22,121 +22,121 @@ const mockDispatch = vi.fn();
 
 // Configuration du store Redux pour les tests
 const mockStore = configureStore({
-	reducer: {
-		users: () => ({ isAuthenticated: true }),
-	},
+  reducer: {
+    users: () => ({ isAuthenticated: true }),
+  },
 });
 
 // Mock de react-redux
 vi.mock("react-redux", async () => {
-	const actual = await vi.importActual("react-redux");
-	return {
-		...actual,
-		useDispatch: () => mockDispatch,
-	};
+  const actual = await vi.importActual("react-redux");
+  return {
+    ...actual,
+    useDispatch: () => mockDispatch,
+  };
 });
 
 const TestWrapper = ({ children }: { children: ReactNode }) => (
-	<Provider store={mockStore}>{children}</Provider>
+  <Provider store={mockStore}>{children}</Provider>
 );
 
 describe("useSessionTimeout - Integration Tests", () => {
-	const TEST_TIMEOUT = 5000;
+  const TEST_TIMEOUT = 5000;
 
-	beforeEach(() => {
-		vi.useFakeTimers();
-		mockDispatch.mockClear();
-	});
+  beforeEach(() => {
+    vi.useFakeTimers();
+    mockDispatch.mockClear();
+  });
 
-	afterEach(() => {
-		vi.useRealTimers();
-		vi.restoreAllMocks();
-	});
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
-	test("déclenche logoutUser après le délai spécifié", () => {
-		renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
-			wrapper: TestWrapper,
-		});
+  test("déclenche logoutUser après le délai spécifié", () => {
+    renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
+      wrapper: TestWrapper,
+    });
 
-		vi.advanceTimersByTime(TEST_TIMEOUT);
+    vi.advanceTimersByTime(TEST_TIMEOUT);
 
-		expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
-	});
+    expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
+  });
 
-	test("réinitialise le timer sur mousemove", () => {
-		renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
-			wrapper: TestWrapper,
-		});
+  test("réinitialise le timer sur mousemove", () => {
+    renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
+      wrapper: TestWrapper,
+    });
 
-		// Avance de 3 secondes
-		vi.advanceTimersByTime(3000);
+    // Avance de 3 secondes
+    vi.advanceTimersByTime(3000);
 
-		// Simule un mouvement de souris
-		window.dispatchEvent(new MouseEvent("mousemove"));
+    // Simule un mouvement de souris
+    window.dispatchEvent(new MouseEvent("mousemove"));
 
-		// Avance de 3 secondes supplémentaires
-		vi.advanceTimersByTime(3000);
+    // Avance de 3 secondes supplémentaires
+    vi.advanceTimersByTime(3000);
 
-		// Ne devrait pas être déconnecté
-		expect(mockDispatch).not.toHaveBeenCalled();
+    // Ne devrait pas être déconnecté
+    expect(mockDispatch).not.toHaveBeenCalled();
 
-		// Avance jusqu'à la fin du nouveau délai
-		vi.advanceTimersByTime(2000);
-		expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
-	});
+    // Avance jusqu'à la fin du nouveau délai
+    vi.advanceTimersByTime(2000);
+    expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
+  });
 
-	test("réinitialise le timer sur keydown", () => {
-		renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
-			wrapper: TestWrapper,
-		});
+  test("réinitialise le timer sur keydown", () => {
+    renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
+      wrapper: TestWrapper,
+    });
 
-		// Avance de 3 secondes
-		vi.advanceTimersByTime(3000);
+    // Avance de 3 secondes
+    vi.advanceTimersByTime(3000);
 
-		// Simule une frappe clavier (keydown)
-		window.dispatchEvent(new KeyboardEvent("keydown"));
+    // Simule une frappe clavier (keydown)
+    window.dispatchEvent(new KeyboardEvent("keydown"));
 
-		// Avance de 3 secondes supplémentaires
-		vi.advanceTimersByTime(3000);
+    // Avance de 3 secondes supplémentaires
+    vi.advanceTimersByTime(3000);
 
-		// Ne devrait pas être déconnecté
-		expect(mockDispatch).not.toHaveBeenCalled();
+    // Ne devrait pas être déconnecté
+    expect(mockDispatch).not.toHaveBeenCalled();
 
-		// Avance jusqu'à la fin du nouveau délai
-		vi.advanceTimersByTime(2000);
-		expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
-	});
+    // Avance jusqu'à la fin du nouveau délai
+    vi.advanceTimersByTime(2000);
+    expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
+  });
 
-	test("nettoie les event listeners au démontage", () => {
-		const { unmount } = renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
-			wrapper: TestWrapper,
-		});
+  test("nettoie les event listeners au démontage", () => {
+    const { unmount } = renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
+      wrapper: TestWrapper,
+    });
 
-		const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
+    const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
 
-		unmount();
+    unmount();
 
-		expect(removeEventListenerSpy).toHaveBeenCalledTimes(5);
-		expect(removeEventListenerSpy).toHaveBeenCalledWith(
-			"mousemove",
-			expect.any(Function)
-		);
-		expect(removeEventListenerSpy).toHaveBeenCalledWith(
-			"mousedown",
-			expect.any(Function)
-		);
-		expect(removeEventListenerSpy).toHaveBeenCalledWith(
-			"keydown",
-			expect.any(Function)
-		);
-		expect(removeEventListenerSpy).toHaveBeenCalledWith(
-			"touchstart",
-			expect.any(Function)
-		);
-		expect(removeEventListenerSpy).toHaveBeenCalledWith(
-			"focus",
-			expect.any(Function),
-			true
-		);
-	});
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(5);
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      "mousemove",
+      expect.any(Function),
+    );
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      "mousedown",
+      expect.any(Function),
+    );
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      "keydown",
+      expect.any(Function),
+    );
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      "touchstart",
+      expect.any(Function),
+    );
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      "focus",
+      expect.any(Function),
+      true,
+    );
+  });
 });

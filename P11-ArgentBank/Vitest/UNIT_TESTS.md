@@ -55,17 +55,17 @@ import { describe, it, expect } from "vitest";
 import { formatCurrency } from "./formatCurrency";
 
 describe("formatCurrency", () => {
-	it("formats positive numbers correctly", () => {
-		expect(formatCurrency(1234.56)).toBe("1,234.56 €");
-	});
+  it("formats positive numbers correctly", () => {
+    expect(formatCurrency(1234.56)).toBe("1,234.56 €");
+  });
 
-	it("formats negative numbers correctly", () => {
-		expect(formatCurrency(-1234.56)).toBe("-1,234.56 €");
-	});
+  it("formats negative numbers correctly", () => {
+    expect(formatCurrency(-1234.56)).toBe("-1,234.56 €");
+  });
 
-	it("handles zero", () => {
-		expect(formatCurrency(0)).toBe("0.00 €");
-	});
+  it("handles zero", () => {
+    expect(formatCurrency(0)).toBe("0.00 €");
+  });
 });
 ```
 
@@ -80,12 +80,12 @@ import { describe, it, expect } from "vitest";
 import { useAuth } from "./useAuth";
 
 describe("useAuth Hook", () => {
-	it("returns initial auth state", () => {
-		const { result } = renderHook(() => useAuth());
+  it("returns initial auth state", () => {
+    const { result } = renderHook(() => useAuth());
 
-		expect(result.current.isAuthenticated).toBe(false);
-		expect(result.current.user).toBeNull();
-	});
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(result.current.user).toBeNull();
+  });
 });
 ```
 
@@ -95,37 +95,37 @@ describe("useAuth Hook", () => {
 
 ```typescript
 describe("ComponentName", () => {
-	// Tests de rendu
-	describe("Rendering", () => {
-		it("renders without crashing", () => {
-			// Test basique de rendu
-		});
+  // Tests de rendu
+  describe("Rendering", () => {
+    it("renders without crashing", () => {
+      // Test basique de rendu
+    });
 
-		it("displays correct content", () => {
-			// Test du contenu affiché
-		});
-	});
+    it("displays correct content", () => {
+      // Test du contenu affiché
+    });
+  });
 
-	// Tests d'interaction
-	describe("User Interactions", () => {
-		it("handles user input", () => {
-			// Test des interactions utilisateur
-		});
-	});
+  // Tests d'interaction
+  describe("User Interactions", () => {
+    it("handles user input", () => {
+      // Test des interactions utilisateur
+    });
+  });
 
-	// Tests de props
-	describe("Props", () => {
-		it("applies custom className", () => {
-			// Test des props personnalisées
-		});
-	});
+  // Tests de props
+  describe("Props", () => {
+    it("applies custom className", () => {
+      // Test des props personnalisées
+    });
+  });
 
-	// Tests de cas d'erreur
-	describe("Error Cases", () => {
-		it("handles invalid props gracefully", () => {
-			// Test de gestion d'erreurs
-		});
-	});
+  // Tests de cas d'erreur
+  describe("Error Cases", () => {
+    it("handles invalid props gracefully", () => {
+      // Test de gestion d'erreurs
+    });
+  });
 });
 ```
 
@@ -142,8 +142,8 @@ describe("ComponentName", () => {
 ```typescript
 // Mock d'une librairie externe
 vi.mock("react-router-dom", () => ({
-	useNavigate: vi.fn(),
-	useLocation: vi.fn(() => ({ pathname: "/test" })),
+  useNavigate: vi.fn(),
+  useLocation: vi.fn(() => ({ pathname: "/test" })),
 }));
 ```
 
@@ -151,9 +151,9 @@ vi.mock("react-router-dom", () => ({
 
 ```typescript
 const mockProps = {
-	onSubmit: vi.fn(),
-	onCancel: vi.fn(),
-	isLoading: false,
+  onSubmit: vi.fn(),
+  onCancel: vi.fn(),
+  isLoading: false,
 };
 ```
 
@@ -163,11 +163,11 @@ const mockProps = {
 
 ```typescript
 import {
-	render,
-	screen,
-	fireEvent,
-	waitFor,
-	within,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
 } from "@testing-library/react";
 ```
 

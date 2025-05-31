@@ -1,15 +1,15 @@
 [
-	{
-		"type": "valid",
-		"email": "tony@stark.com",
-		"password": "password123",
-		"firstName": "Tony",
-		"lastName": "Stark",
-		"userName": "Iron"
-	},
-	{
-		"type": "invalid",
-		"email": "intruder@example.com",
-		"password": "wrongpassword"
-	}
+  {
+    "type": "valid",
+    "email": "tony@stark.com",
+    "password": "password123",
+    "firstName": "Tony",
+    "lastName": "Stark",
+    "userName": "Iron"
+  },
+  {
+    "type": "invalid",
+    "email": "intruder@example.com",
+    "password": "wrongpassword"
+  }
 ]

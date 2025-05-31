@@ -17,87 +17,87 @@ import App from "./App";
 
 // Définir RootState
 interface RootState {
-	users: UsersState;
+  users: UsersState;
 }
 
 // Store mock avec le state correct
 const createTestStore = (isAuthenticated = false) => {
-	const preloadedState: RootState = {
-		users: {
-			isAuthenticated,
-			currentUser: isAuthenticated
-				? {
-						id: "123",
-						userName: "Tony",
-						firstName: "Tony",
-						lastName: "Stark",
-						email: "tony@stark.com",
-						createdAt: new Date().toISOString(),
-						updatedAt: new Date().toISOString(),
-						accounts: [
-							{
-								accountName: "Argent Bank Checking",
-								accountNumber: "x8349",
-								balance: "$2,082.79",
-								balanceType: "Available Balance",
-							},
-						],
-					}
-				: null,
-			accounts: [],
-			accountsStatus: "idle",
-			accountsError: null,
-			selectedAccountId: null,
-			transactions: [],
-			transactionsStatus: "idle",
-			transactionsError: null,
-			searchResults: [],
-			searchStatus: "idle",
-			searchError: null,
-			pagination: null,
-			currentSortBy: "date",
-			currentSortOrder: "desc",
-		},
-	};
+  const preloadedState: RootState = {
+    users: {
+      isAuthenticated,
+      currentUser: isAuthenticated
+        ? {
+            id: "123",
+            userName: "Tony",
+            firstName: "Tony",
+            lastName: "Stark",
+            email: "tony@stark.com",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            accounts: [
+              {
+                accountName: "Argent Bank Checking",
+                accountNumber: "x8349",
+                balance: "$2,082.79",
+                balanceType: "Available Balance",
+              },
+            ],
+          }
+        : null,
+      accounts: [],
+      accountsStatus: "idle",
+      accountsError: null,
+      selectedAccountId: null,
+      transactions: [],
+      transactionsStatus: "idle",
+      transactionsError: null,
+      searchResults: [],
+      searchStatus: "idle",
+      searchError: null,
+      pagination: null,
+      currentSortBy: "date",
+      currentSortOrder: "desc",
+    },
+  };
 
-	return configureStore({
-		reducer: {
-			users: userReducer,
-		},
-		preloadedState,
-	});
+  return configureStore({
+    reducer: {
+      users: userReducer,
+    },
+    preloadedState,
+  });
 };
 
 describe("App - Integration Tests", () => {
-	let store: ReturnType<typeof createTestStore>;
+  let store: ReturnType<typeof createTestStore>;
 
-	beforeEach(() => {
-		store = createTestStore();
-	});
+  beforeEach(() => {
+    store = createTestStore();
+  });
 
-	test("redirige vers Error404 pour une route invalide", async () => {
-		window.history.pushState({}, "", "/invalid");
+  test("redirige vers Error404 pour une route invalide", async () => {
+    window.history.pushState({}, "", "/invalid");
 
-		render(
-			<Provider store={store}>
-				<App />
-			</Provider>
-		);
+    render(
+      <Provider store={store}>
+        <App />
+      </Provider>,
+    );
 
-		expect(await screen.findByText(/404/i)).toBeInTheDocument();
-	});
+    expect(await screen.findByText(/404/i)).toBeInTheDocument();
+  });
 
-	test("protège la route /user sans authentification", async () => {
-		const unauthenticatedStore = createTestStore(false);
+  test("protège la route /user sans authentification", async () => {
+    const unauthenticatedStore = createTestStore(false);
 
-		window.history.pushState({}, "", "/user");
+    window.history.pushState({}, "", "/user");
 
-		render(
-			<Provider store={unauthenticatedStore}>
-				<App />
-			</Provider>
-		);
+    render(
+      <Provider store={unauthenticatedStore}>
+        <App />
+      </Provider>,
+    );
 
-		expect(await screen.findByText(/Sign In/i)).toBeInTheDocument();
-	});
+    expect(await screen.findByText(/Sign In/i)).toBeInTheDocument();
+  });
 });

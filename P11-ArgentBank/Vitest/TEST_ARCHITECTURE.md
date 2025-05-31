@@ -74,21 +74,21 @@ src/
 ```typescript
 // vitest.config.ts
 export default defineConfig({
-	test: {
-		environment: "jsdom",
-		setupFiles: ["./src/setupTests.ts"],
-		globals: true,
-		css: true,
-		coverage: {
-			reporter: ["text", "html", "json"],
-			exclude: [
-				"node_modules/",
-				"src/setupTests.ts",
-				"**/*.d.ts",
-				"**/*.config.*",
-			],
-		},
-	},
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./src/setupTests.ts"],
+    globals: true,
+    css: true,
+    coverage: {
+      reporter: ["text", "html", "json"],
+      exclude: [
+        "node_modules/",
+        "src/setupTests.ts",
+        "**/*.d.ts",
+        "**/*.config.*",
+      ],
+    },
+  },
 });
 ```
 
@@ -101,24 +101,24 @@ import { vi } from "vitest";
 
 // Mock des APIs globales
 Object.defineProperty(window, "matchMedia", {
-	writable: true,
-	value: vi.fn().mockImplementation((query) => ({
-		matches: false,
-		media: query,
-		onchange: null,
-		addListener: vi.fn(),
-		removeListener: vi.fn(),
-		addEventListener: vi.fn(),
-		removeEventListener: vi.fn(),
-		dispatchEvent: vi.fn(),
-	})),
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 });
 
 // Mock de IntersectionObserver
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-	observe: vi.fn(),
-	disconnect: vi.fn(),
-	unobserve: vi.fn(),
+  observe: vi.fn(),
+  disconnect: vi.fn(),
+  unobserve: vi.fn(),
 }));
 ```
 
@@ -137,23 +137,23 @@ hookName.test.ts                 # Tests de hooks
 
 ```typescript
 describe("ComponentName", () => {
-	// Groupe logique 1
-	describe("Rendering", () => {
-		it("renders without crashing", () => {});
-		it("displays correct content when props change", () => {});
-	});
+  // Groupe logique 1
+  describe("Rendering", () => {
+    it("renders without crashing", () => {});
+    it("displays correct content when props change", () => {});
+  });
 
-	// Groupe logique 2
-	describe("User Interactions", () => {
-		it("calls callback when button is clicked", () => {});
-		it("updates state when input changes", () => {});
-	});
+  // Groupe logique 2
+  describe("User Interactions", () => {
+    it("calls callback when button is clicked", () => {});
+    it("updates state when input changes", () => {});
+  });
 
-	// Groupe logique 3
-	describe("Edge Cases", () => {
-		it("handles empty data gracefully", () => {});
-		it("shows error message when API fails", () => {});
-	});
+  // Groupe logique 3
+  describe("Edge Cases", () => {
+    it("handles empty data gracefully", () => {});
+    it("shows error message when API fails", () => {});
+  });
 });
 ```
 
@@ -241,30 +241,30 @@ export const renderWithProviders = (
 ```typescript
 // test-factories.ts
 export const createMockUser = (overrides = {}) => ({
-	id: "1",
-	firstName: "John",
-	lastName: "Doe",
-	email: "john.doe@example.com",
-	userName: "johndoe",
-	...overrides,
+  id: "1",
+  firstName: "John",
+  lastName: "Doe",
+  email: "john.doe@example.com",
+  userName: "johndoe",
+  ...overrides,
 });
 
 export const createMockAccount = (overrides = {}) => ({
-	id: "1",
-	type: "Checking",
-	accountNumber: "12345",
-	balance: 1000.0,
-	...overrides,
+  id: "1",
+  type: "Checking",
+  accountNumber: "12345",
+  balance: 1000.0,
+  ...overrides,
 });
 
 export const createMockTransaction = (overrides = {}) => ({
-	id: "1",
-	description: "Test Transaction",
-	amount: -25.5,
-	date: "2025-05-29",
-	type: "DEBIT",
-	category: "Food",
-	...overrides,
+  id: "1",
+  description: "Test Transaction",
+  amount: -25.5,
+  date: "2025-05-29",
+  type: "DEBIT",
+  category: "Food",
+  ...overrides,
 });
 ```
 
@@ -273,26 +273,26 @@ export const createMockTransaction = (overrides = {}) => ({
 ```typescript
 // custom-matchers.ts
 export const customMatchers = {
-	toBeLoadingState: (received: any) => {
-		const pass = received.status === "loading";
-		return {
-			message: () =>
-				`expected ${received} ${pass ? "not " : ""}to be in loading state`,
-			pass,
-		};
-	},
+  toBeLoadingState: (received: any) => {
+    const pass = received.status === "loading";
+    return {
+      message: () =>
+        `expected ${received} ${pass ? "not " : ""}to be in loading state`,
+      pass,
+    };
+  },
 
-	toHaveFormError: (received: HTMLElement, fieldName: string) => {
-		const errorElement = received.querySelector(
-			`[data-testid="${fieldName}-error"]`
-		);
-		const pass = errorElement !== null;
-		return {
-			message: () =>
-				`expected form ${pass ? "not " : ""}to have error for field ${fieldName}`,
-			pass,
-		};
-	},
+  toHaveFormError: (received: HTMLElement, fieldName: string) => {
+    const errorElement = received.querySelector(
+      `[data-testid="${fieldName}-error"]`,
+    );
+    const pass = errorElement !== null;
+    return {
+      message: () =>
+        `expected form ${pass ? "not " : ""}to have error for field ${fieldName}`,
+      pass,
+    };
+  },
 };
 ```
 
@@ -330,9 +330,9 @@ vi.mock('../../services/apiService', async (importOriginal) => {
 ```typescript
 // Mock de service avec différents états
 const mockApiService = {
-	fetchUser: vi.fn(),
-	updateUser: vi.fn(),
-	deleteUser: vi.fn(),
+  fetchUser: vi.fn(),
+  updateUser: vi.fn(),
+  deleteUser: vi.fn(),
 };
 
 // Setup pour succès
@@ -410,15 +410,15 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 // Setup/teardown optimisé
 describe("Component", () => {
-	let mockFn: MockedFunction<any>;
+  let mockFn: MockedFunction<any>;
 
-	beforeEach(() => {
-		mockFn = vi.fn();
-	});
+  beforeEach(() => {
+    mockFn = vi.fn();
+  });
 
-	afterEach(() => {
-		vi.clearAllMocks();
-	});
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 });
 ```
 

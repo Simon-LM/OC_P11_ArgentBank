@@ -39,28 +39,28 @@ import { MemoryRouter } from "react-router-dom";
 import Error404 from "./Error404";
 
 describe("Error404 Component", () => {
-	test("renders 404 page", () => {
-		const component = (
-			<MemoryRouter>
-				<Error404 />
-			</MemoryRouter>
-		);
+  test("renders 404 page", () => {
+    const component = (
+      <MemoryRouter>
+        <Error404 />
+      </MemoryRouter>
+    );
 
-		// On peut vérifier l'élément sans `render`
-		expect(component.props.children.type.name).toBe("Error404");
-	});
+    // On peut vérifier l'élément sans `render`
+    expect(component.props.children.type.name).toBe("Error404");
+  });
 
-	// test("redirects to Error404 when accessing an unknown route", () => {
-	// 	const component = (
-	// 		<MemoryRouter initialEntries={["/unknown"]}>
-	// 			<Error404 />
-	// 		</MemoryRouter>
-	// 	);
+  // test("redirects to Error404 when accessing an unknown route", () => {
+  // 	const component = (
+  // 		<MemoryRouter initialEntries={["/unknown"]}>
+  // 			<Error404 />
+  // 		</MemoryRouter>
+  // 	);
 
-	// 	// Vérifiez la présence de certains éléments textuels dans le JSX
-	// 	const errorMessage = "Oups, La page que vous demandez n'existe pas.";
-	// 	expect(JSON.stringify(component)).toContain(errorMessage);
-	// });
+  // 	// Vérifiez la présence de certains éléments textuels dans le JSX
+  // 	const errorMessage = "Oups, La page que vous demandez n'existe pas.";
+  // 	expect(JSON.stringify(component)).toContain(errorMessage);
+  // });
 });
 
 // // // // // // // // // // // // // //

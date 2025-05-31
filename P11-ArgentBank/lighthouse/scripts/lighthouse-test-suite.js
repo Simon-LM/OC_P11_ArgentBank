@@ -12,168 +12,168 @@ const __dirname = path.dirname(__filename);
 
 // Fonction pour générer un horodatage
 function generateTimestamp() {
-	const now = new Date();
-	return now
-		.toISOString()
-		.replace(/T/, "_")
-		.replace(/:/g, "-")
-		.replace(/\..+/, "");
+  const now = new Date();
+  return now
+    .toISOString()
+    .replace(/T/, "_")
+    .replace(/:/g, "-")
+    .replace(/\..+/, "");
 }
 
 // Configuration des tests à effectuer
 const testSuites = [
-	{
-		name: "Accueil - Mobile",
-		url: "http://localhost:3000",
-		mobile: true,
-		outputPath: "../reports/home-mobile.html",
-	},
-	{
-		name: "Accueil - Desktop",
-		url: "http://localhost:3000",
-		mobile: false,
-		outputPath: "../reports/home-desktop.html",
-	},
-	{
-		name: "Connexion - Mobile",
-		url: "http://localhost:3000/sign-in",
-		mobile: true,
-		outputPath: "../reports/signin-mobile.html",
-	},
-	{
-		name: "Connexion - Desktop",
-		url: "http://localhost:3000/sign-in",
-		mobile: false,
-		outputPath: "../reports/signin-desktop.html",
-	},
-	{
-		name: "Profil - Mobile",
-		url: "http://localhost:3000/user",
-		mobile: true,
-		outputPath: "../reports/profile-mobile.html",
-	},
-	{
-		name: "Profil - Desktop",
-		url: "http://localhost:3000/user",
-		mobile: false,
-		outputPath: "../reports/profile-desktop.html",
-	},
+  {
+    name: "Accueil - Mobile",
+    url: "http://localhost:3000",
+    mobile: true,
+    outputPath: "../reports/home-mobile.html",
+  },
+  {
+    name: "Accueil - Desktop",
+    url: "http://localhost:3000",
+    mobile: false,
+    outputPath: "../reports/home-desktop.html",
+  },
+  {
+    name: "Connexion - Mobile",
+    url: "http://localhost:3000/sign-in",
+    mobile: true,
+    outputPath: "../reports/signin-mobile.html",
+  },
+  {
+    name: "Connexion - Desktop",
+    url: "http://localhost:3000/sign-in",
+    mobile: false,
+    outputPath: "../reports/signin-desktop.html",
+  },
+  {
+    name: "Profil - Mobile",
+    url: "http://localhost:3000/user",
+    mobile: true,
+    outputPath: "../reports/profile-mobile.html",
+  },
+  {
+    name: "Profil - Desktop",
+    url: "http://localhost:3000/user",
+    mobile: false,
+    outputPath: "../reports/profile-desktop.html",
+  },
 ];
 
 async function runTestSuite() {
-	console.log("🧪 DÉMARRAGE DE LA SUITE DE TESTS LIGHTHOUSE");
-	console.log("=============================================\n");
+  console.log("🧪 DÉMARRAGE DE LA SUITE DE TESTS LIGHTHOUSE");
+  console.log("=============================================\n");
 
-	// Générer un horodatage pour cette session de tests
-	const timestamp = generateTimestamp();
-	console.log(`📅 Session de tests: ${timestamp}\n`);
+  // Générer un horodatage pour cette session de tests
+  const timestamp = generateTimestamp();
+  console.log(`📅 Session de tests: ${timestamp}\n`);
 
-	// Créer le dossier reports s'il n'existe pas
-	try {
-		await fs.mkdir(path.join(__dirname, "..", "reports"), { recursive: true });
-	} catch (error) {
-		// Le dossier existe déjà
-	}
+  // Créer le dossier reports s'il n'existe pas
+  try {
+    await fs.mkdir(path.join(__dirname, "..", "reports"), { recursive: true });
+  } catch (error) {
+    // Le dossier existe déjà
+  }
 
-	const results = [];
+  const results = [];
 
-	for (const test of testSuites) {
-		console.log(`\n🔄 Test: ${test.name}`);
-		console.log(`📱 Mode: ${test.mobile ? "Mobile" : "Desktop"}`);
-		console.log(`🌐 URL: ${test.url}`);
-		console.log("----------------------------------------");
+  for (const test of testSuites) {
+    console.log(`\n🔄 Test: ${test.name}`);
+    console.log(`📱 Mode: ${test.mobile ? "Mobile" : "Desktop"}`);
+    console.log(`🌐 URL: ${test.url}`);
+    console.log("----------------------------------------");
 
-		try {
-			// Générer un nom de fichier avec horodatage
-			const filename = `${test.name.toLowerCase().replace(/\s+/g, "-")}-${timestamp}.html`;
-			const timestampedOutputPath = path.join(
-				__dirname,
-				"..",
-				"reports",
-				filename
-			);
+    try {
+      // Générer un nom de fichier avec horodatage
+      const filename = `${test.name.toLowerCase().replace(/\s+/g, "-")}-${timestamp}.html`;
+      const timestampedOutputPath = path.join(
+        __dirname,
+        "..",
+        "reports",
+        filename,
+      );
 
-			// Simuler les arguments de ligne de commande
-			const originalArgv = process.argv;
-			process.argv = [
-				"node",
-				"lighthouse-runner.js",
-				"--url",
-				test.url,
-				"--output-path",
-				timestampedOutputPath,
-				test.mobile ? "--mobile" : "--desktop",
-			];
+      // Simuler les arguments de ligne de commande
+      const originalArgv = process.argv;
+      process.argv = [
+        "node",
+        "lighthouse-runner.js",
+        "--url",
+        test.url,
+        "--output-path",
+        timestampedOutputPath,
+        test.mobile ? "--mobile" : "--desktop",
+      ];
 
-			const startTime = Date.now();
-			await runLighthouse();
-			const duration = Date.now() - startTime;
+      const startTime = Date.now();
+      await runLighthouse();
+      const duration = Date.now() - startTime;
 
-			results.push({
-				...test,
-				outputPath: filename, // Stocker seulement le nom du fichier pour l'index
-				timestampedPath: timestampedOutputPath,
-				status: "success",
-				duration: Math.round(duration / 1000),
-			});
+      results.push({
+        ...test,
+        outputPath: filename, // Stocker seulement le nom du fichier pour l'index
+        timestampedPath: timestampedOutputPath,
+        status: "success",
+        duration: Math.round(duration / 1000),
+      });
 
-			// Restaurer les arguments
-			process.argv = originalArgv;
+      // Restaurer les arguments
+      process.argv = originalArgv;
 
-			console.log(
-				`✅ Test ${test.name} terminé en ${Math.round(duration / 1000)}s`
-			);
-			console.log(`📄 Rapport: ${filename}`);
-		} catch (error) {
-			console.error(`❌ Erreur lors du test ${test.name}:`, error.message);
-			results.push({
-				...test,
-				status: "error",
-				error: error.message,
-			});
-		}
+      console.log(
+        `✅ Test ${test.name} terminé en ${Math.round(duration / 1000)}s`,
+      );
+      console.log(`📄 Rapport: ${filename}`);
+    } catch (error) {
+      console.error(`❌ Erreur lors du test ${test.name}:`, error.message);
+      results.push({
+        ...test,
+        status: "error",
+        error: error.message,
+      });
+    }
 
-		// Pause entre les tests pour éviter la surcharge
-		if (testSuites.indexOf(test) < testSuites.length - 1) {
-			console.log("⏳ Pause de 3 secondes...");
-			await new Promise((resolve) => setTimeout(resolve, 3000));
-		}
-	}
+    // Pause entre les tests pour éviter la surcharge
+    if (testSuites.indexOf(test) < testSuites.length - 1) {
+      console.log("⏳ Pause de 3 secondes...");
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    }
+  }
 
-	// Résumé final
-	console.log("\n📊 RÉSUMÉ DE LA SUITE DE TESTS");
-	console.log("===============================");
+  // Résumé final
+  console.log("\n📊 RÉSUMÉ DE LA SUITE DE TESTS");
+  console.log("===============================");
 
-	const successful = results.filter((r) => r.status === "success");
-	const failed = results.filter((r) => r.status === "error");
+  const successful = results.filter((r) => r.status === "success");
+  const failed = results.filter((r) => r.status === "error");
 
-	console.log(`✅ Tests réussis: ${successful.length}/${results.length}`);
-	console.log(`❌ Tests échoués: ${failed.length}/${results.length}`);
+  console.log(`✅ Tests réussis: ${successful.length}/${results.length}`);
+  console.log(`❌ Tests échoués: ${failed.length}/${results.length}`);
 
-	if (successful.length > 0) {
-		console.log("\n🟢 TESTS RÉUSSIS:");
-		successful.forEach((test) => {
-			console.log(`   • ${test.name} (${test.duration}s) → ${test.outputPath}`);
-		});
-	}
+  if (successful.length > 0) {
+    console.log("\n🟢 TESTS RÉUSSIS:");
+    successful.forEach((test) => {
+      console.log(`   • ${test.name} (${test.duration}s) → ${test.outputPath}`);
+    });
+  }
 
-	if (failed.length > 0) {
-		console.log("\n🔴 TESTS ÉCHOUÉS:");
-		failed.forEach((test) => {
-			console.log(`   • ${test.name}: ${test.error}`);
-		});
-	}
+  if (failed.length > 0) {
+    console.log("\n🔴 TESTS ÉCHOUÉS:");
+    failed.forEach((test) => {
+      console.log(`   • ${test.name}: ${test.error}`);
+    });
+  }
 
-	console.log(
-		`\n📁 Tous les rapports sont disponibles dans le dossier './lighthouse/reports/'`
-	);
+  console.log(
+    `\n📁 Tous les rapports sont disponibles dans le dossier './lighthouse/reports/'`,
+  );
 
-	// Créer un fichier index.html pour naviguer facilement entre les rapports
-	await createReportsIndex(successful, timestamp);
+  // Créer un fichier index.html pour naviguer facilement entre les rapports
+  await createReportsIndex(successful, timestamp);
 }
 
 async function createReportsIndex(successfulTests, timestamp) {
-	const indexHtml = `
+  const indexHtml = `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -272,8 +272,8 @@ async function createReportsIndex(successfulTests, timestamp) {
     
     <div class="reports-grid">
         ${successfulTests
-					.map(
-						(test) => `
+          .map(
+            (test) => `
             <div class="report-card">
                 <div class="report-title">
                     ${test.name}
@@ -290,9 +290,9 @@ async function createReportsIndex(successfulTests, timestamp) {
                     📄 Voir le rapport
                 </a>
             </div>
-        `
-					)
-					.join("")}
+        `,
+          )
+          .join("")}
     </div>
     
     <div style="margin-top: 40px; text-align: center; color: #666;">
@@ -304,28 +304,28 @@ async function createReportsIndex(successfulTests, timestamp) {
 </html>
   `;
 
-	const indexPath = path.join(
-		__dirname,
-		"..",
-		"reports",
-		`index-${timestamp}.html`
-	);
-	await fs.writeFile(indexPath, indexHtml.trim());
+  const indexPath = path.join(
+    __dirname,
+    "..",
+    "reports",
+    `index-${timestamp}.html`,
+  );
+  await fs.writeFile(indexPath, indexHtml.trim());
 
-	// Créer également un index général (sans timestamp)
-	const generalIndexPath = path.join(__dirname, "..", "reports", "index.html");
-	await fs.writeFile(generalIndexPath, indexHtml.trim());
+  // Créer également un index général (sans timestamp)
+  const generalIndexPath = path.join(__dirname, "..", "reports", "index.html");
+  await fs.writeFile(generalIndexPath, indexHtml.trim());
 
-	console.log(`📄 Index des rapports créé: index-${timestamp}.html`);
-	console.log("📄 Index général créé: index.html");
+  console.log(`📄 Index des rapports créé: index-${timestamp}.html`);
+  console.log("📄 Index général créé: index.html");
 }
 
 // Exécuter la suite si appelé directement
 if (import.meta.url === `file://${process.argv[1]}`) {
-	runTestSuite().catch((error) => {
-		console.error("❌ Erreur lors de l'exécution de la suite:", error);
-		process.exit(1);
-	});
+  runTestSuite().catch((error) => {
+    console.error("❌ Erreur lors de l'exécution de la suite:", error);
+    process.exit(1);
+  });
 }
 
 export default runTestSuite;

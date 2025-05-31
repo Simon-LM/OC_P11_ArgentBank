@@ -8,9 +8,9 @@ import store from "./store/Store";
 import "./styles/main.scss";
 
 createRoot(document.getElementById("root")!).render(
-	<StrictMode>
-		<Provider store={store}>
-			<App />
-		</Provider>
-	</StrictMode>
+  <StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </StrictMode>,
 );

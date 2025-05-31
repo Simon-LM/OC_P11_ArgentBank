@@ -5,133 +5,133 @@ import { writeFileSync, mkdirSync } from "fs";
 import { resolve, dirname } from "path";
 
 export class AxeReporter {
-	constructor(outputDir = "Axe/reports") {
-		this.outputDir = outputDir;
-		this.ensureDirectoryExists();
-	}
+  constructor(outputDir = "Axe/reports") {
+    this.outputDir = outputDir;
+    this.ensureDirectoryExists();
+  }
 
-	ensureDirectoryExists() {
-		try {
-			mkdirSync(resolve(this.outputDir, "html"), { recursive: true });
-			mkdirSync(resolve(this.outputDir, "json"), { recursive: true });
-		} catch (error) {
-			console.error("Error creating report directories:", error);
-		}
-	}
+  ensureDirectoryExists() {
+    try {
+      mkdirSync(resolve(this.outputDir, "html"), { recursive: true });
+      mkdirSync(resolve(this.outputDir, "json"), { recursive: true });
+    } catch (error) {
+      console.error("Error creating report directories:", error);
+    }
+  }
 
-	// Générer un rapport JSON détaillé
-	generateJSONReport(results, metadata = {}) {
-		const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-		const filename = `axe-report-${timestamp}.json`;
+  // Générer un rapport JSON détaillé
+  generateJSONReport(results, metadata = {}) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `axe-report-${timestamp}.json`;
 
-		const report = {
-			metadata: {
-				timestamp: new Date().toISOString(),
-				project: "ArgentBank",
-				tool: "Axe-core",
-				version: "4.10.3",
-				...metadata,
-			},
-			summary: {
-				total:
-					results.violations.length +
-					results.passes.length +
-					results.incomplete.length,
-				violations: results.violations.length,
-				passes: results.passes.length,
-				incomplete: results.incomplete.length,
-				inapplicable: results.inapplicable.length,
-			},
-			results: results,
-			analysis: this.analyzeResults(results),
-		};
+    const report = {
+      metadata: {
+        timestamp: new Date().toISOString(),
+        project: "ArgentBank",
+        tool: "Axe-core",
+        version: "4.10.3",
+        ...metadata,
+      },
+      summary: {
+        total:
+          results.violations.length +
+          results.passes.length +
+          results.incomplete.length,
+        violations: results.violations.length,
+        passes: results.passes.length,
+        incomplete: results.incomplete.length,
+        inapplicable: results.inapplicable.length,
+      },
+      results: results,
+      analysis: this.analyzeResults(results),
+    };
 
-		const filepath = resolve(this.outputDir, "json", filename);
-		writeFileSync(filepath, JSON.stringify(report, null, 2));
+    const filepath = resolve(this.outputDir, "json", filename);
+    writeFileSync(filepath, JSON.stringify(report, null, 2));
 
-		return { filepath, filename, report };
-	}
+    return { filepath, filename, report };
+  }
 
-	// Générer un rapport HTML lisible
-	generateHTMLReport(results, metadata = {}) {
-		const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-		const filename = `axe-report-${timestamp}.html`;
+  // Générer un rapport HTML lisible
+  generateHTMLReport(results, metadata = {}) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `axe-report-${timestamp}.html`;
 
-		const html = this.createHTMLTemplate(results, metadata);
-		const filepath = resolve(this.outputDir, "html", filename);
+    const html = this.createHTMLTemplate(results, metadata);
+    const filepath = resolve(this.outputDir, "html", filename);
 
-		writeFileSync(filepath, html);
+    writeFileSync(filepath, html);
 
-		return { filepath, filename };
-	}
+    return { filepath, filename };
+  }
 
-	// Analyser les résultats pour des insights
-	analyzeResults(results) {
-		const violationsByImpact = results.violations.reduce((acc, violation) => {
-			acc[violation.impact] = (acc[violation.impact] || 0) + 1;
-			return acc;
-		}, {});
+  // Analyser les résultats pour des insights
+  analyzeResults(results) {
+    const violationsByImpact = results.violations.reduce((acc, violation) => {
+      acc[violation.impact] = (acc[violation.impact] || 0) + 1;
+      return acc;
+    }, {});
 
-		const violationsByRule = results.violations.reduce((acc, violation) => {
-			acc[violation.id] = (acc[violation.id] || 0) + 1;
-			return acc;
-		}, {});
+    const violationsByRule = results.violations.reduce((acc, violation) => {
+      acc[violation.id] = (acc[violation.id] || 0) + 1;
+      return acc;
+    }, {});
 
-		const topViolations = Object.entries(violationsByRule)
-			.sort(([, a], [, b]) => b - a)
-			.slice(0, 5);
+    const topViolations = Object.entries(violationsByRule)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5);
 
-		return {
-			violationsByImpact,
-			violationsByRule,
-			topViolations,
-			compliance: {
-				score: this.calculateComplianceScore(results),
-				level: this.determineComplianceLevel(results),
-			},
-		};
-	}
+    return {
+      violationsByImpact,
+      violationsByRule,
+      topViolations,
+      compliance: {
+        score: this.calculateComplianceScore(results),
+        level: this.determineComplianceLevel(results),
+      },
+    };
+  }
 
-	// Calculer un score de conformité
-	calculateComplianceScore(results) {
-		const total = results.violations.length + results.passes.length;
-		if (total === 0) return 100;
+  // Calculer un score de conformité
+  calculateComplianceScore(results) {
+    const total = results.violations.length + results.passes.length;
+    if (total === 0) return 100;
 
-		const weightedViolations = results.violations.reduce((sum, violation) => {
-			const weights = { critical: 4, serious: 3, moderate: 2, minor: 1 };
-			return sum + (weights[violation.impact] || 1);
-		}, 0);
+    const weightedViolations = results.violations.reduce((sum, violation) => {
+      const weights = { critical: 4, serious: 3, moderate: 2, minor: 1 };
+      return sum + (weights[violation.impact] || 1);
+    }, 0);
 
-		const maxPossibleScore = total * 4; // Si toutes les règles étaient critical
-		const score = Math.max(
-			0,
-			((maxPossibleScore - weightedViolations) / maxPossibleScore) * 100
-		);
+    const maxPossibleScore = total * 4; // Si toutes les règles étaient critical
+    const score = Math.max(
+      0,
+      ((maxPossibleScore - weightedViolations) / maxPossibleScore) * 100,
+    );
 
-		return Math.round(score * 100) / 100;
-	}
+    return Math.round(score * 100) / 100;
+  }
 
-	// Déterminer le niveau de conformité
-	determineComplianceLevel(results) {
-		const criticalViolations = results.violations.filter(
-			(v) => v.impact === "critical"
-		).length;
-		const seriousViolations = results.violations.filter(
-			(v) => v.impact === "serious"
-		).length;
+  // Déterminer le niveau de conformité
+  determineComplianceLevel(results) {
+    const criticalViolations = results.violations.filter(
+      (v) => v.impact === "critical",
+    ).length;
+    const seriousViolations = results.violations.filter(
+      (v) => v.impact === "serious",
+    ).length;
 
-		if (criticalViolations > 0) return "Non-conforme";
-		if (seriousViolations > 5) return "Partiellement conforme";
-		if (seriousViolations > 0) return "Conforme avec réserves";
-		return "Pleinement conforme";
-	}
+    if (criticalViolations > 0) return "Non-conforme";
+    if (seriousViolations > 5) return "Partiellement conforme";
+    if (seriousViolations > 0) return "Conforme avec réserves";
+    return "Pleinement conforme";
+  }
 
-	// Template HTML pour les rapports
-	createHTMLTemplate(results, metadata) {
-		const timestamp = new Date().toLocaleString("fr-FR");
-		const analysis = this.analyzeResults(results);
+  // Template HTML pour les rapports
+  createHTMLTemplate(results, metadata) {
+    const timestamp = new Date().toLocaleString("fr-FR");
+    const analysis = this.analyzeResults(results);
 
-		return `
+    return `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -186,12 +186,12 @@ export class AxeReporter {
     <h2>📊 Niveau de conformité : ${analysis.compliance.level}</h2>
     
     ${
-			results.violations.length > 0
-				? `
+      results.violations.length > 0
+        ? `
     <h2>❌ Violations d'accessibilité</h2>
     ${results.violations
-			.map(
-				(violation) => `
+      .map(
+        (violation) => `
     <div class="violation violation-${violation.impact}">
       <h3>${violation.id} - ${violation.impact.toUpperCase()}</h3>
       <p><strong>Description:</strong> ${violation.description}</p>
@@ -199,12 +199,12 @@ export class AxeReporter {
       <p><strong>Éléments affectés:</strong> ${violation.nodes.length}</p>
       <a href="${violation.helpUrl}" target="_blank">📖 En savoir plus</a>
     </div>
+    `,
+      )
+      .join("")}
     `
-			)
-			.join("")}
-    `
-				: "<h2>✅ Aucune violation détectée !</h2>"
-		}
+        : "<h2>✅ Aucune violation détectée !</h2>"
+    }
     
     <h2>📈 Analyse détaillée</h2>
     <pre>${JSON.stringify(analysis, null, 2)}</pre>
@@ -215,23 +215,23 @@ export class AxeReporter {
   </div>
 </body>
 </html>`;
-	}
+  }
 
-	// Générer un rapport de synthèse pour CI/CD
-	generateCISummary(results) {
-		const analysis = this.analyzeResults(results);
+  // Générer un rapport de synthèse pour CI/CD
+  generateCISummary(results) {
+    const analysis = this.analyzeResults(results);
 
-		return {
-			success: results.violations.length === 0,
-			score: analysis.compliance.score,
-			level: analysis.compliance.level,
-			violations: results.violations.length,
-			critical: results.violations.filter((v) => v.impact === "critical")
-				.length,
-			serious: results.violations.filter((v) => v.impact === "serious").length,
-			summary: `Axe: ${results.violations.length} violations, score: ${analysis.compliance.score}%`,
-		};
-	}
+    return {
+      success: results.violations.length === 0,
+      score: analysis.compliance.score,
+      level: analysis.compliance.level,
+      violations: results.violations.length,
+      critical: results.violations.filter((v) => v.impact === "critical")
+        .length,
+      serious: results.violations.filter((v) => v.impact === "serious").length,
+      summary: `Axe: ${results.violations.length} violations, score: ${analysis.compliance.score}%`,
+    };
+  }
 }
 
 export default AxeReporter;

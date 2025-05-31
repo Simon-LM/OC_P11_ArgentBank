@@ -1,13 +1,13 @@
 /** @format */
 
 %text-wrap {
-	overflow-wrap: break-word;
-	word-break: break-all;
-	hyphens: auto;
-	max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  hyphens: auto;
+  max-width: 100%;
 }
 
 %preserve-numbers {
-	font-variant-numeric: tabular-nums;
-	font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }

@@ -12,31 +12,31 @@ expect.extend(toHaveNoViolations);
 
 // Mock pour window.matchMedia requis pour jsdom
 if (typeof window !== "undefined") {
-	Object.defineProperty(window, "matchMedia", {
-		writable: true,
-		value: (query: string) => ({
-			matches: false,
-			media: query,
-			onchange: null,
-			addListener: () => {}, // deprecated
-			removeListener: () => {}, // deprecated
-			addEventListener: () => {},
-			removeEventListener: () => {},
-			dispatchEvent: () => {},
-		}),
-	});
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {}, // deprecated
+      removeListener: () => {}, // deprecated
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => {},
+    }),
+  });
 
-	// Mock pour IntersectionObserver requis pour certains composants
-	if (!globalThis.IntersectionObserver) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(globalThis as any).IntersectionObserver = class MockIntersectionObserver {
-			constructor(_callback: unknown, _options?: unknown) {
-				// Mock implementation
-			}
+  // Mock pour IntersectionObserver requis pour certains composants
+  if (!globalThis.IntersectionObserver) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (globalThis as any).IntersectionObserver = class MockIntersectionObserver {
+      constructor(_callback: unknown, _options?: unknown) {
+        // Mock implementation
+      }
 
-			observe() {}
-			unobserve() {}
-			disconnect() {}
-		};
-	}
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  }
 }

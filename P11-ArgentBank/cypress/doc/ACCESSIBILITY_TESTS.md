@@ -34,18 +34,18 @@ import "cypress-axe";
 
 ```typescript
 export default defineConfig({
-	e2e: {
-		// Configuration du reporter pour les tests d'accessibilité
-		reporter: "mochawesome",
-		reporterOptions: {
-			reportDir: "cypress/reports",
-			overwrite: false,
-			html: true,
-			json: true,
-			timestamp: "mmddyyyy_HHMMss",
-		},
-		// ...autres configurations
-	},
+  e2e: {
+    // Configuration du reporter pour les tests d'accessibilité
+    reporter: "mochawesome",
+    reporterOptions: {
+      reportDir: "cypress/reports",
+      overwrite: false,
+      html: true,
+      json: true,
+      timestamp: "mmddyyyy_HHMMss",
+    },
+    // ...autres configurations
+  },
 });
 ```
 
@@ -77,16 +77,16 @@ cypress/
 
 ```typescript
 it("devrait être accessible", () => {
-	// Injecter axe-core
-	cy.injectAxe();
+  // Injecter axe-core
+  cy.injectAxe();
 
-	// Tester l'accessibilité avec configuration personnalisée
-	cy.checkA11y(undefined, {
-		rules: {
-			// Ignorer les violations de contraste connues
-			"color-contrast": { enabled: false },
-		},
-	});
+  // Tester l'accessibilité avec configuration personnalisée
+  cy.checkA11y(undefined, {
+    rules: {
+      // Ignorer les violations de contraste connues
+      "color-contrast": { enabled: false },
+    },
+  });
 });
 ```
 
@@ -94,22 +94,22 @@ it("devrait être accessible", () => {
 
 ```typescript
 it("devrait être accessible avec navigation clavier", () => {
-	cy.injectAxe();
+  cy.injectAxe();
 
-	// Test d'accessibilité initial
-	cy.checkA11y(undefined, {
-		rules: {
-			"color-contrast": { enabled: false },
-		},
-	});
+  // Test d'accessibilité initial
+  cy.checkA11y(undefined, {
+    rules: {
+      "color-contrast": { enabled: false },
+    },
+  });
 
-	// Tester l'accessibilité avec focus sur un élément
-	cy.get('button[class*="account"]').first().focus();
-	cy.checkA11y(undefined, {
-		rules: {
-			"color-contrast": { enabled: false },
-		},
-	});
+  // Tester l'accessibilité avec focus sur un élément
+  cy.get('button[class*="account"]').first().focus();
+  cy.checkA11y(undefined, {
+    rules: {
+      "color-contrast": { enabled: false },
+    },
+  });
 });
 ```
 
@@ -150,12 +150,12 @@ pnpm run test:e2e:clean
 
 ```json
 {
-	"scripts": {
-		"test:e2e:a11y": "cypress run --spec 'cypress/e2e/**/*.cy.ts'",
-		"test:e2e:a11y:report": "cypress run --spec 'cypress/e2e/**/*.cy.ts' && pnpm run test:e2e:merge-reports",
-		"test:e2e:merge-reports": "mochawesome-merge cypress/reports/mochawesome_*.json > cypress/reports/merged-report.json && marge cypress/reports/merged-report.json --reportDir cypress/reports/html",
-		"test:e2e:clean": "bash cypress/clean-reports.sh"
-	}
+  "scripts": {
+    "test:e2e:a11y": "cypress run --spec 'cypress/e2e/**/*.cy.ts'",
+    "test:e2e:a11y:report": "cypress run --spec 'cypress/e2e/**/*.cy.ts' && pnpm run test:e2e:merge-reports",
+    "test:e2e:merge-reports": "mochawesome-merge cypress/reports/mochawesome_*.json > cypress/reports/merged-report.json && marge cypress/reports/merged-report.json --reportDir cypress/reports/html",
+    "test:e2e:clean": "bash cypress/clean-reports.sh"
+  }
 }
 ```
 
@@ -190,31 +190,31 @@ Nodes: 2
 ```typescript
 // Tests d'accessibilité intégrés
 it("devrait permettre à un utilisateur de se connecter", function () {
-	cy.injectAxe();
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
+  cy.injectAxe();
+  cy.checkA11y(undefined, {
+    rules: { "color-contrast": { enabled: false } },
+  });
 
-	// ...logique de test de connexion
+  // ...logique de test de connexion
 
-	// Test après connexion
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
+  // Test après connexion
+  cy.checkA11y(undefined, {
+    rules: { "color-contrast": { enabled: false } },
+  });
 });
 
 it("devrait être accessible sur la page de connexion", () => {
-	cy.injectAxe();
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
+  cy.injectAxe();
+  cy.checkA11y(undefined, {
+    rules: { "color-contrast": { enabled: false } },
+  });
 
-	// Tests de focus
-	cy.get("input#email").focus();
-	cy.checkA11y();
+  // Tests de focus
+  cy.get("input#email").focus();
+  cy.checkA11y();
 
-	cy.get("input#password").focus();
-	cy.checkA11y();
+  cy.get("input#password").focus();
+  cy.checkA11y();
 });
 ```
 
@@ -222,18 +222,18 @@ it("devrait être accessible sur la page de connexion", () => {
 
 ```typescript
 it("devrait être accessible sur la page des comptes", () => {
-	cy.injectAxe();
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
+  cy.injectAxe();
+  cy.checkA11y(undefined, {
+    rules: { "color-contrast": { enabled: false } },
+  });
 
-	// Test d'accessibilité des boutons de compte
-	cy.get('button[class*="account"]').first().focus();
-	cy.checkA11y();
+  // Test d'accessibilité des boutons de compte
+  cy.get('button[class*="account"]').first().focus();
+  cy.checkA11y();
 
-	// Test après sélection du compte
-	cy.get('button[class*="account"]').first().click();
-	cy.checkA11y();
+  // Test après sélection du compte
+  cy.get('button[class*="account"]').first().click();
+  cy.checkA11y();
 });
 ```
 
@@ -241,23 +241,23 @@ it("devrait être accessible sur la page des comptes", () => {
 
 ```typescript
 it("devrait être accessible sur la page des transactions", () => {
-	cy.injectAxe();
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
+  cy.injectAxe();
+  cy.checkA11y(undefined, {
+    rules: { "color-contrast": { enabled: false } },
+  });
 
-	// Test du tableau de transactions
-	cy.get('table[class*="transaction-table"]').should("be.visible");
-	cy.checkA11y();
+  // Test du tableau de transactions
+  cy.get('table[class*="transaction-table"]').should("be.visible");
+  cy.checkA11y();
 
-	// Test conditionnel de la pagination (éviter les boutons désactivés)
-	cy.get('button[class*="pagination"]').then(($buttons) => {
-		const enabledButtons = $buttons.filter(":not(:disabled)");
-		if (enabledButtons.length > 0) {
-			cy.wrap(enabledButtons.first()).focus();
-			cy.checkA11y();
-		}
-	});
+  // Test conditionnel de la pagination (éviter les boutons désactivés)
+  cy.get('button[class*="pagination"]').then(($buttons) => {
+    const enabledButtons = $buttons.filter(":not(:disabled)");
+    if (enabledButtons.length > 0) {
+      cy.wrap(enabledButtons.first()).focus();
+      cy.checkA11y();
+    }
+  });
 });
 ```
 
@@ -274,11 +274,11 @@ it("devrait être accessible sur la page des transactions", () => {
 ```typescript
 // ✅ Bon : Vérification conditionnelle
 cy.get('button[class*="pagination"]').then(($buttons) => {
-	const enabledButtons = $buttons.filter(":not(:disabled)");
-	if (enabledButtons.length > 0) {
-		cy.wrap(enabledButtons.first()).focus();
-		cy.checkA11y();
-	}
+  const enabledButtons = $buttons.filter(":not(:disabled)");
+  if (enabledButtons.length > 0) {
+    cy.wrap(enabledButtons.first()).focus();
+    cy.checkA11y();
+  }
 });
 
 // ❌ Mauvais : Tentative de focus sur un élément désactivé
@@ -290,10 +290,10 @@ cy.get('button[class*="pagination"]').first().focus(); // Peut échouer
 ```typescript
 // Configuration recommandée pour ignorer les violations connues
 const a11yConfig = {
-	rules: {
-		"color-contrast": { enabled: false }, // Temporairement désactivé
-		// Ajouter d'autres règles selon les besoins
-	},
+  rules: {
+    "color-contrast": { enabled: false }, // Temporairement désactivé
+    // Ajouter d'autres règles selon les besoins
+  },
 };
 
 cy.checkA11y(undefined, a11yConfig);

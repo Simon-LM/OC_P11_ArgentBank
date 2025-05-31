@@ -5,168 +5,168 @@
 @use "@styles/abstracts/mixins" as mix;
 
 .transaction-search {
-	width: 92.5%;
-	max-width: 30rem;
-	margin: 0 auto;
-	margin-bottom: 1rem;
-	// padding: 1rem 1vw;
-	padding: calc(0.4rem + 0.75vw);
-	background-color: var.$transaction-search-bg;
-	border-radius: 0.25rem;
-	border: 1px solid var.$transaction-search-border;
-	box-sizing: border-box;
-	// background-color: purple;
+  width: 92.5%;
+  max-width: 30rem;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  // padding: 1rem 1vw;
+  padding: calc(0.4rem + 0.75vw);
+  background-color: var.$transaction-search-bg;
+  border-radius: 0.25rem;
+  border: 1px solid var.$transaction-search-border;
+  box-sizing: border-box;
+  // background-color: purple;
 
-	&__label {
-		display: block;
-		margin-bottom: 0.5rem;
-		font-weight: 600;
-		color: var.$transaction-search-label-color;
-		@include mix.text-wrap;
-		// background: red;
-	}
+  &__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var.$transaction-search-label-color;
+    @include mix.text-wrap;
+    // background: red;
+  }
 
-	&__search-row {
-		display: flex;
-		flex-wrap: wrap;
-		min-width: 0; // not sure
-		align-items: center;
-		gap: 0.5rem;
-	}
+  &__search-row {
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 0; // not sure
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-	&__search-tips {
-		font-size: 0.75rem;
-		color: var.$transaction-search-help-text-color;
-		margin-top: 0.25rem;
-		margin-bottom: 0.5rem;
-		font-style: italic;
-		@include mix.text-wrap;
-	}
+  &__search-tips {
+    font-size: 0.75rem;
+    color: var.$transaction-search-help-text-color;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+    @include mix.text-wrap;
+  }
 
-	&__container {
-		position: relative;
-		display: flex;
-		align-items: center;
-		flex: 1;
-		flex: 3 0 60%;
-		min-width: 0;
-	}
+  &__container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    flex: 3 0 60%;
+    min-width: 0;
+  }
 
-	&__input {
-		margin: auto 0;
-		padding: 0;
-		// min-width: 4rem;
-		min-width: 0;
-		width: 100%;
-		// max-width: 75vw;
-		// padding: 0.5rem 1vw;
-		padding: calc(0.3rem + 0.5vw);
-		border: 1px solid var.$transaction-search-input-border;
-		border-radius: 0.25rem;
-		font-size: 1rem;
+  &__input {
+    margin: auto 0;
+    padding: 0;
+    // min-width: 4rem;
+    min-width: 0;
+    width: 100%;
+    // max-width: 75vw;
+    // padding: 0.5rem 1vw;
+    padding: calc(0.3rem + 0.5vw);
+    border: 1px solid var.$transaction-search-input-border;
+    border-radius: 0.25rem;
+    font-size: 1rem;
 
-		&:focus {
-			outline: none;
-			border-color: var.$transaction-search-input-focus-border;
-			box-shadow: 0 0 0 2px var.$transaction-search-input-focus-shadow;
-		}
+    &:focus {
+      outline: none;
+      border-color: var.$transaction-search-input-focus-border;
+      box-shadow: 0 0 0 2px var.$transaction-search-input-focus-shadow;
+    }
 
-		&--error {
-			border-color: var.$color-error;
-		}
+    &--error {
+      border-color: var.$color-error;
+    }
 
-		&::-webkit-search-cancel-button,
-		&::-webkit-search-decoration {
-			-webkit-appearance: none;
-			appearance: none;
-			display: none;
-		}
-	}
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+      appearance: none;
+      display: none;
+    }
+  }
 
-	&__button {
-		position: absolute;
-		right: 1vw;
-		top: 50%;
-		transform: translateY(-50%);
-		background: none;
-		border: none;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: func.rem(24);
-		height: func.rem(24);
-		color: var.$transaction-search-button-color;
+  &__button {
+    position: absolute;
+    right: 1vw;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: func.rem(24);
+    height: func.rem(24);
+    color: var.$transaction-search-button-color;
 
-		svg {
-			display: block;
-		}
+    svg {
+      display: block;
+    }
 
-		&:hover {
-			color: var.$transaction-search-button-hover-color;
-		}
-	}
+    &:hover {
+      color: var.$transaction-search-button-hover-color;
+    }
+  }
 
-	&__global-button {
-		flex: 1 1 auto;
-		// width: 100%;
-		// padding: 0.5rem 1vw;
-		padding: calc(0.3rem + 0.5vw);
-		background-color: transparent;
-		border: 1px solid var.$transaction-search-scope-button-border;
-		border-radius: 0.25rem;
-		font-size: 0.875rem;
-		color: var.$transaction-search-scope-button-color;
-		transition: all 0.2s ease;
-		// white-space: nowrap;
+  &__global-button {
+    flex: 1 1 auto;
+    // width: 100%;
+    // padding: 0.5rem 1vw;
+    padding: calc(0.3rem + 0.5vw);
+    background-color: transparent;
+    border: 1px solid var.$transaction-search-scope-button-border;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    color: var.$transaction-search-scope-button-color;
+    transition: all 0.2s ease;
+    // white-space: nowrap;
 
-		&:hover {
-			background-color: var.$transaction-search-scope-button-hover-bg;
-			color: var.$transaction-search-scope-button-hover-text;
-		}
+    &:hover {
+      background-color: var.$transaction-search-scope-button-hover-bg;
+      color: var.$transaction-search-scope-button-hover-text;
+    }
 
-		&--active {
-			background-color: var.$transaction-search-scope-button-active-bg;
-			border-color: var.$transaction-search-scope-button-active-bg;
-			color: var.$transaction-search-scope-button-active-color;
-			font-weight: 500;
-		}
-	}
+    &--active {
+      background-color: var.$transaction-search-scope-button-active-bg;
+      border-color: var.$transaction-search-scope-button-active-bg;
+      color: var.$transaction-search-scope-button-active-color;
+      font-weight: 500;
+    }
+  }
 
-	&__spinner {
-		position: absolute;
-		right: 2.5rem;
-		top: 50%;
-		transform: translateY(-50%);
-		animation: spin 1s linear infinite;
-		color: var.$transaction-search-spinner-color;
-	}
+  &__spinner {
+    position: absolute;
+    right: 2.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: spin 1s linear infinite;
+    color: var.$transaction-search-spinner-color;
+  }
 
-	&__error-message {
-		color: var.$color-error;
-		font-size: 0.875rem;
-		margin-top: 0.25rem;
-	}
+  &__error-message {
+    color: var.$color-error;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
 
-	&__help-text {
-		font-size: 0.875rem;
-		color: var.$transaction-search-help-text-color;
-		margin-bottom: 0.5rem;
-		margin-top: -0.25rem;
-	}
+  &__help-text {
+    font-size: 0.875rem;
+    color: var.$transaction-search-help-text-color;
+    margin-bottom: 0.5rem;
+    margin-top: -0.25rem;
+  }
 
-	&__keyboard-shortcuts {
-		margin-top: 0.5rem;
-		margin-bottom: 0;
-		font-size: 0.85rem;
-		color: var.$transaction-search-help-text-color;
-	}
+  &__keyboard-shortcuts {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    color: var.$transaction-search-help-text-color;
+  }
 }
 
 @keyframes spin {
-	from {
-		transform: translateY(-50%) rotate(0deg);
-	}
-	to {
-		transform: translateY(-50%) rotate(360deg);
-	}
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
 }

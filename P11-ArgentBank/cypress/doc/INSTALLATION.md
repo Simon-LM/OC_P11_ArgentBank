@@ -44,17 +44,17 @@ cypress/
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
-	e2e: {
-		baseUrl: "http://localhost:5173", // URL de base de l'application
-		viewportWidth: 1280,
-		viewportHeight: 720,
-		video: false, // Désactiver l'enregistrement vidéo par défaut
-		screenshotOnRunFailure: true,
-		specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
-		setupNodeEvents(on, config) {
-			// Hooks d'événements de Node
-		},
-	},
+  e2e: {
+    baseUrl: "http://localhost:5173", // URL de base de l'application
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    video: false, // Désactiver l'enregistrement vidéo par défaut
+    screenshotOnRunFailure: true,
+    specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
+    setupNodeEvents(on, config) {
+      // Hooks d'événements de Node
+    },
+  },
 });
 ```
 
@@ -70,10 +70,10 @@ import "@testing-library/cypress/add-commands";
 
 // Commandes personnalisées supplémentaires
 Cypress.Commands.add("login", (username, password) => {
-	cy.visit("/login");
-	cy.findByLabelText("Email").type(username);
-	cy.findByLabelText("Password").type(password);
-	cy.findByRole("button", { name: /sign in/i }).click();
+  cy.visit("/login");
+  cy.findByLabelText("Email").type(username);
+  cy.findByLabelText("Password").type(password);
+  cy.findByRole("button", { name: /sign in/i }).click();
 });
 ```
 
@@ -88,25 +88,25 @@ Pour tester sur différents environnements (développement, staging, production)
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
-	e2e: {
-		env: {
-			apiUrl: "http://localhost:3001/api/v1",
-		},
-		setupNodeEvents(on, config) {
-			// Modification de la configuration en fonction de l'environnement
-			const environment = config.env.environment || "development";
+  e2e: {
+    env: {
+      apiUrl: "http://localhost:3001/api/v1",
+    },
+    setupNodeEvents(on, config) {
+      // Modification de la configuration en fonction de l'environnement
+      const environment = config.env.environment || "development";
 
-			// Charger les variables d'environnement spécifiques
-			config.env = {
-				...config.env,
-				...(environment === "production"
-					? { apiUrl: "https://argentbank-api.example.com/api/v1" }
-					: {}),
-			};
+      // Charger les variables d'environnement spécifiques
+      config.env = {
+        ...config.env,
+        ...(environment === "production"
+          ? { apiUrl: "https://argentbank-api.example.com/api/v1" }
+          : {}),
+      };
 
-			return config;
-		},
-	},
+      return config;
+    },
+  },
 });
 ```
 
@@ -115,30 +115,30 @@ module.exports = defineConfig({
 ```javascript
 // cypress/support/e2e.js
 beforeEach(() => {
-	// Restaurer les cookies entre les tests pour maintenir la session
-	cy.restoreLocalStorage();
+  // Restaurer les cookies entre les tests pour maintenir la session
+  cy.restoreLocalStorage();
 });
 
 afterEach(() => {
-	// Sauvegarder les cookies après chaque test
-	cy.saveLocalStorage();
+  // Sauvegarder les cookies après chaque test
+  cy.saveLocalStorage();
 });
 
 // Commandes pour sauvegarder/restaurer le localStorage
 Cypress.Commands.add("saveLocalStorage", () => {
-	cy.window().then((win) => {
-		Object.keys(win.localStorage).forEach((key) => {
-			cy.setLocalStorage(key, win.localStorage[key]);
-		});
-	});
+  cy.window().then((win) => {
+    Object.keys(win.localStorage).forEach((key) => {
+      cy.setLocalStorage(key, win.localStorage[key]);
+    });
+  });
 });
 
 Cypress.Commands.add("restoreLocalStorage", () => {
-	cy.getLocalStorageSnapshot().then((snapshot) => {
-		Object.keys(snapshot).forEach((key) => {
-			cy.setLocalStorage(key, snapshot[key]);
-		});
-	});
+  cy.getLocalStorageSnapshot().then((snapshot) => {
+    Object.keys(snapshot).forEach((key) => {
+      cy.setLocalStorage(key, snapshot[key]);
+    });
+  });
 });
 ```
 
@@ -208,13 +208,13 @@ Ajoutez ces scripts dans votre `package.json` :
 
 ```json
 {
-	"scripts": {
-		"cy:open": "cypress open",
-		"cy:run": "cypress run",
-		"cy:run:chrome": "cypress run --browser chrome",
-		"cy:run:firefox": "cypress run --browser firefox",
-		"test:e2e": "start-server-and-test dev http://localhost:5173 cy:run"
-	}
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:run:chrome": "cypress run --browser chrome",
+    "cy:run:firefox": "cypress run --browser firefox",
+    "test:e2e": "start-server-and-test dev http://localhost:5173 cy:run"
+  }
 }
 ```
 
@@ -240,7 +240,7 @@ Ajoutez ces scripts dans votre `package.json` :
 3. **Accès à l'application** : Utilisez `cy.window()` pour accéder à l'objet window
    ```javascript
    cy.window().then((win) => {
-   	console.log("État Redux :", win.store.getState());
+     console.log("État Redux :", win.store.getState());
    });
    ```
 

@@ -15,10 +15,10 @@ import Features from "./Features";
 import "../../../Axe/utils/axe-setup.js";
 
 describe("Features - Integration Tests", () => {
-	// Tests d'accessibilité
-	test("has no accessibility violations", async () => {
-		const { container } = render(<Features />);
-		const results = await axe(container);
-		expect(results).toHaveNoViolations();
-	});
+  // Tests d'accessibilité
+  test("has no accessibility violations", async () => {
+    const { container } = render(<Features />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
 });

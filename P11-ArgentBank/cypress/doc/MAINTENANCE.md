@@ -40,10 +40,10 @@ cy.get(".account-card").eq(2).find(".view-button").click();
 
 // ✅ Après: Sélecteur robuste basé sur le contenu ou les attributs
 cy.findByRole("heading", { name: "Savings Account" })
-	.closest('[data-testid="account-card"]')
-	.within(() => {
-		cy.findByRole("button", { name: /view transactions/i }).click();
-	});
+  .closest('[data-testid="account-card"]')
+  .within(() => {
+    cy.findByRole("button", { name: /view transactions/i }).click();
+  });
 ```
 
 ### Monitoring des performances
@@ -62,28 +62,28 @@ const path = require("path");
 
 // Lire les rapports de test
 const reports = JSON.parse(
-	fs.readFileSync(path.join(__dirname, "../cypress/results/results.json"))
+  fs.readFileSync(path.join(__dirname, "../cypress/results/results.json")),
 );
 
 // Analyser les temps d'exécution
 const slowTests = reports.results
-	.filter((test) => test.duration > 5000)
-	.map((test) => ({
-		title: test.title.join(" > "),
-		duration: test.duration,
-		file: test.file,
-	}));
+  .filter((test) => test.duration > 5000)
+  .map((test) => ({
+    title: test.title.join(" > "),
+    duration: test.duration,
+    file: test.file,
+  }));
 
 console.log("Tests lents (>5s):", slowTests);
 
 // Analyser les échecs
 const flaky = reports.results
-	.filter((test) => test.attempts.length > 1)
-	.map((test) => ({
-		title: test.title.join(" > "),
-		attempts: test.attempts.length,
-		file: test.file,
-	}));
+  .filter((test) => test.attempts.length > 1)
+  .map((test) => ({
+    title: test.title.join(" > "),
+    attempts: test.attempts.length,
+    file: test.file,
+  }));
 
 console.log("Tests instables (nécessitant plusieurs tentatives):", flaky);
 ```
@@ -107,14 +107,14 @@ cy.screenshot("after-login"); // Capture une image
 
 // Capture l'état du DOM à un moment spécifique
 cy.document().then((doc) => {
-	const html = doc.documentElement.outerHTML;
-	cy.writeFile("cypress/debug/dom-state.html", html);
+  const html = doc.documentElement.outerHTML;
+  cy.writeFile("cypress/debug/dom-state.html", html);
 });
 
 // Capture l'état de l'application
 cy.window().then((win) => {
-	const state = win.store.getState();
-	cy.writeFile("cypress/debug/app-state.json", JSON.stringify(state, null, 2));
+  const state = win.store.getState();
+  cy.writeFile("cypress/debug/app-state.json", JSON.stringify(state, null, 2));
 });
 ```
 
@@ -161,26 +161,26 @@ cy.findByText("Account Summary").should("be.visible");
 ```javascript
 // ❌ Avant: Code répété dans plusieurs tests
 it("test one", () => {
-	cy.visit("/login");
-	cy.findByLabelText("Email").type("user1@example.com");
-	cy.findByLabelText("Password").type("password123");
-	cy.findByRole("button", { name: /sign in/i }).click();
-	cy.url().should("include", "/profile");
+  cy.visit("/login");
+  cy.findByLabelText("Email").type("user1@example.com");
+  cy.findByLabelText("Password").type("password123");
+  cy.findByRole("button", { name: /sign in/i }).click();
+  cy.url().should("include", "/profile");
 });
 
 // ✅ Après: Commande personnalisée
 // cypress/support/commands.js
 Cypress.Commands.add("loginAndVerify", (email, password) => {
-	cy.visit("/login");
-	cy.findByLabelText("Email").type(email);
-	cy.findByLabelText("Password").type(password);
-	cy.findByRole("button", { name: /sign in/i }).click();
-	cy.url().should("include", "/profile");
+  cy.visit("/login");
+  cy.findByLabelText("Email").type(email);
+  cy.findByLabelText("Password").type(password);
+  cy.findByRole("button", { name: /sign in/i }).click();
+  cy.url().should("include", "/profile");
 });
 
 // Test simplifié
 it("test one", () => {
-	cy.loginAndVerify("user1@example.com", "password123");
+  cy.loginAndVerify("user1@example.com", "password123");
 });
 ```
 
@@ -191,48 +191,48 @@ Créez des modèles de test pour les scénarios courants :
 ```javascript
 // cypress/support/test-patterns.js
 export const accountOperationPattern = ({
-	operationType,
-	accountType,
-	amount,
-	expectedBalance,
+  operationType,
+  accountType,
+  amount,
+  expectedBalance,
 }) => {
-	cy.loginByApi("user@example.com", "password");
-	cy.visit("/accounts");
+  cy.loginByApi("user@example.com", "password");
+  cy.visit("/accounts");
 
-	cy.findByText(accountType)
-		.closest('[data-testid="account-card"]')
-		.within(() => {
-			cy.findByRole("button", { name: new RegExp(operationType, "i") }).click();
-		});
+  cy.findByText(accountType)
+    .closest('[data-testid="account-card"]')
+    .within(() => {
+      cy.findByRole("button", { name: new RegExp(operationType, "i") }).click();
+    });
 
-	cy.findByLabelText("Amount").type(amount);
-	cy.findByRole("button", { name: /confirm/i }).click();
+  cy.findByLabelText("Amount").type(amount);
+  cy.findByRole("button", { name: /confirm/i }).click();
 
-	cy.findByText("Transaction successful").should("be.visible");
-	cy.findByText(expectedBalance).should("be.visible");
+  cy.findByText("Transaction successful").should("be.visible");
+  cy.findByText(expectedBalance).should("be.visible");
 };
 
 // Dans un test
 import { accountOperationPattern } from "../support/test-patterns";
 
 describe("Account operations", () => {
-	it("should make a deposit", () => {
-		accountOperationPattern({
-			operationType: "deposit",
-			accountType: "Checking",
-			amount: "500",
-			expectedBalance: "$2,582.79",
-		});
-	});
+  it("should make a deposit", () => {
+    accountOperationPattern({
+      operationType: "deposit",
+      accountType: "Checking",
+      amount: "500",
+      expectedBalance: "$2,582.79",
+    });
+  });
 
-	it("should make a withdrawal", () => {
-		accountOperationPattern({
-			operationType: "withdraw",
-			accountType: "Savings",
-			amount: "200",
-			expectedBalance: "$10,728.42",
-		});
-	});
+  it("should make a withdrawal", () => {
+    accountOperationPattern({
+      operationType: "withdraw",
+      accountType: "Savings",
+      amount: "200",
+      expectedBalance: "$10,728.42",
+    });
+  });
 });
 ```
 
@@ -256,32 +256,32 @@ Priorisez l'ajout de tests en fonction de l'importance business :
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
-	e2e: {
-		setupNodeEvents(on, config) {
-			// Multi-navigateur dans CI uniquement
-			if (process.env.CI) {
-				// Force tous les tests à s'exécuter sur plusieurs navigateurs
-				config.browsers = [
-					{ name: "chrome", family: "chromium" },
-					{ name: "firefox", family: "firefox" },
-					{ name: "edge", family: "chromium" },
-				];
-			}
-			return config;
-		},
-	},
+  e2e: {
+    setupNodeEvents(on, config) {
+      // Multi-navigateur dans CI uniquement
+      if (process.env.CI) {
+        // Force tous les tests à s'exécuter sur plusieurs navigateurs
+        config.browsers = [
+          { name: "chrome", family: "chromium" },
+          { name: "firefox", family: "firefox" },
+          { name: "edge", family: "chromium" },
+        ];
+      }
+      return config;
+    },
+  },
 });
 ```
 
 ```json
 // package.json
 {
-	"scripts": {
-		"cy:chrome": "cypress run --browser chrome",
-		"cy:firefox": "cypress run --browser firefox",
-		"cy:edge": "cypress run --browser edge",
-		"cy:all-browsers": "npm run cy:chrome && npm run cy:firefox && npm run cy:edge"
-	}
+  "scripts": {
+    "cy:chrome": "cypress run --browser chrome",
+    "cy:firefox": "cypress run --browser firefox",
+    "cy:edge": "cypress run --browser edge",
+    "cy:all-browsers": "npm run cy:chrome && npm run cy:firefox && npm run cy:edge"
+  }
 }
 ```
 
@@ -292,19 +292,19 @@ module.exports = defineConfig({
 ```javascript
 // Mesure du temps de chargement
 cy.visit("/dashboard", {
-	onBeforeLoad: (win) => {
-		win.performance.mark("start-loading");
-	},
-	onLoad: (win) => {
-		win.performance.mark("end-loading");
-		win.performance.measure("page-load", "start-loading", "end-loading");
-	},
+  onBeforeLoad: (win) => {
+    win.performance.mark("start-loading");
+  },
+  onLoad: (win) => {
+    win.performance.mark("end-loading");
+    win.performance.measure("page-load", "start-loading", "end-loading");
+  },
 }).then(() => {
-	cy.window().then((win) => {
-		const measure = win.performance.getEntriesByName("page-load")[0];
-		cy.task("log", `Dashboard loaded in ${measure.duration}ms`);
-		expect(measure.duration).to.be.lessThan(3000); // <3s
-	});
+  cy.window().then((win) => {
+    const measure = win.performance.getEntriesByName("page-load")[0];
+    cy.task("log", `Dashboard loaded in ${measure.duration}ms`);
+    expect(measure.duration).to.be.lessThan(3000); // <3s
+  });
 });
 ```
 
@@ -315,11 +315,11 @@ cy.visit("/dashboard", {
 cy.visit("/login");
 cy.injectAxe();
 cy.checkA11y(null, {
-	rules: {
-		"color-contrast": { enabled: true },
-		"heading-order": { enabled: true },
-		label: { enabled: true },
-	},
+  rules: {
+    "color-contrast": { enabled: true },
+    "heading-order": { enabled: true },
+    label: { enabled: true },
+  },
 });
 
 // Vérification de la navigation au clavier
@@ -350,31 +350,31 @@ const path = require("path");
 
 // Lire les rapports de test des dernières exécutions
 const getReportData = () => {
-	const reportsDir = path.join(__dirname, "../cypress/reports/historical");
-	const files = fs.readdirSync(reportsDir).filter((f) => f.endsWith(".json"));
+  const reportsDir = path.join(__dirname, "../cypress/reports/historical");
+  const files = fs.readdirSync(reportsDir).filter((f) => f.endsWith(".json"));
 
-	return files.map((file) => {
-		const data = JSON.parse(fs.readFileSync(path.join(reportsDir, file)));
-		return {
-			date: file.replace(".json", ""),
-			totalTests: data.results.length,
-			passed: data.results.filter((r) => r.state === "passed").length,
-			failed: data.results.filter((r) => r.state === "failed").length,
-			flaky: data.results.filter((r) => r.attempts.length > 1).length,
-			duration: data.results.reduce((sum, r) => sum + r.duration, 0) / 1000,
-		};
-	});
+  return files.map((file) => {
+    const data = JSON.parse(fs.readFileSync(path.join(reportsDir, file)));
+    return {
+      date: file.replace(".json", ""),
+      totalTests: data.results.length,
+      passed: data.results.filter((r) => r.state === "passed").length,
+      failed: data.results.filter((r) => r.state === "failed").length,
+      flaky: data.results.filter((r) => r.attempts.length > 1).length,
+      duration: data.results.reduce((sum, r) => sum + r.duration, 0) / 1000,
+    };
+  });
 };
 
 // Générer un rapport HTML
 const generateDashboard = (data) => {
-	// Logique de génération de tableau de bord
-	// ...
-	const dashboardHtml = `<html><body>Dashboard content based on data</body></html>`; // Placeholder
-	fs.writeFileSync(
-		path.join(__dirname, "../cypress/reports/dashboard.html"),
-		dashboardHtml
-	);
+  // Logique de génération de tableau de bord
+  // ...
+  const dashboardHtml = `<html><body>Dashboard content based on data</body></html>`; // Placeholder
+  fs.writeFileSync(
+    path.join(__dirname, "../cypress/reports/dashboard.html"),
+    dashboardHtml,
+  );
 };
 
 const data = getReportData();
@@ -477,14 +477,14 @@ Documentez chaque test avec des commentaires clairs :
  * Dépendances: aucun serveur mock nécessaire, utilise l'API réelle
  */
 describe("Authentication", () => {
-	/**
-	 * Test de connexion réussie
-	 * Scénario: L'utilisateur entre des identifiants valides et est redirigé
-	 * Données: Utilise le compte 'tony@stark.com' (voir fixtures/users.json)
-	 */
-	it("should login with valid credentials", () => {
-		// ...test code
-	});
+  /**
+   * Test de connexion réussie
+   * Scénario: L'utilisateur entre des identifiants valides et est redirigé
+   * Données: Utilise le compte 'tony@stark.com' (voir fixtures/users.json)
+   */
+  it("should login with valid credentials", () => {
+    // ...test code
+  });
 });
 ```
 
@@ -553,7 +553,7 @@ cy.route("POST", "/api/login", "fixture:login-success.json").as("login");
 // ✅ Nouvelle méthode (Cypress 10+)
 cy.intercept("GET", "/api/users", { fixture: "users.json" }).as("getUsers");
 cy.intercept("POST", "/api/login", { fixture: "login-success.json" }).as(
-	"login"
+  "login",
 );
 ```
 

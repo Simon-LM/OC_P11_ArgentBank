@@ -9,57 +9,57 @@ import userReducer from "../../store/slices/usersSlice";
 
 // Mock for useMatomo
 vi.mock("../../hooks/useMatomo/useMatomo", () => ({
-	useMatomo: () => ({
-		trackEvent: vi.fn(),
-	}),
+  useMatomo: () => ({
+    trackEvent: vi.fn(),
+  }),
 }));
 
 describe("SignIn Component", () => {
-	test("handles password visibility toggle", () => {
-		const store = configureStore({
-			reducer: {
-				users: userReducer,
-			},
-		});
+  test("handles password visibility toggle", () => {
+    const store = configureStore({
+      reducer: {
+        users: userReducer,
+      },
+    });
 
-		render(
-			<Provider store={store}>
-				<MemoryRouter>
-					<SignIn />
-				</MemoryRouter>
-			</Provider>
-		);
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <SignIn />
+        </MemoryRouter>
+      </Provider>,
+    );
 
-		const passwordField = screen.getByLabelText("Password", {
-			selector: "input",
-		});
-		expect(passwordField).toHaveAttribute("type", "password");
+    const passwordField = screen.getByLabelText("Password", {
+      selector: "input",
+    });
+    expect(passwordField).toHaveAttribute("type", "password");
 
-		fireEvent.click(screen.getByLabelText(/show password/i));
-		expect(passwordField).toHaveAttribute("type", "text");
+    fireEvent.click(screen.getByLabelText(/show password/i));
+    expect(passwordField).toHaveAttribute("type", "text");
 
-		fireEvent.click(screen.getByLabelText(/hide password/i));
-		expect(passwordField).toHaveAttribute("type", "password");
-	});
+    fireEvent.click(screen.getByLabelText(/hide password/i));
+    expect(passwordField).toHaveAttribute("type", "password");
+  });
 
-	test("displays demo information", () => {
-		const store = configureStore({
-			reducer: {
-				users: userReducer,
-			},
-		});
+  test("displays demo information", () => {
+    const store = configureStore({
+      reducer: {
+        users: userReducer,
+      },
+    });
 
-		render(
-			<Provider store={store}>
-				<MemoryRouter>
-					<SignIn />
-				</MemoryRouter>
-			</Provider>
-		);
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <SignIn />
+        </MemoryRouter>
+      </Provider>,
+    );
 
-		expect(screen.getByText(/Demo credentials/i)).toBeInTheDocument();
-		expect(
-			screen.getByText(/tony@stark.com \/ password123/i)
-		).toBeInTheDocument();
-	});
+    expect(screen.getByText(/Demo credentials/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/tony@stark.com \/ password123/i),
+    ).toBeInTheDocument();
+  });
 });
