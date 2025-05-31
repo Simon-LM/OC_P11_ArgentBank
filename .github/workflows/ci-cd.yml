@@ -191,7 +191,8 @@ jobs:
           fi
 
           # Option 2: vercel dev --token (authentification par token)
-          vercel dev --listen 3000 --token $VERCEL_TOKEN &
+          # 🔧 FIX: Use current directory (.) to avoid double P11-ArgentBank path
+          vercel dev --listen 3000 --token $VERCEL_TOKEN . &
           VERCEL_PID=$!
           echo "🔢 Vercel dev PID: $VERCEL_PID"
 
