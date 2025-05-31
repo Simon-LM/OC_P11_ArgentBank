@@ -168,19 +168,31 @@ jobs:
           name: production-build
           path: P11-ArgentBank/dist/
 
-      - name: 🚀 Start production server
+      - name: 🚀 Start production server (Vite preview)
         working-directory: P11-ArgentBank
         run: |
-          echo "🚀 Starting production server..."
+          echo "🚀 Starting Vite preview server for Cypress tests..."
           pnpm run preview &
           sleep 10
 
-          # Vérifier que le serveur répond
+          # Attendre que le serveur soit prêt
+          echo "⏳ Waiting for Vite preview server to be ready..."
+          for i in {1..30}; do
+            if curl -f http://localhost:4173 > /dev/null 2>&1; then
+              echo "✅ Vite preview server ready on http://localhost:4173"
+              break
+            fi
+            echo "⏳ Attempt $i/30: Server not ready yet, waiting..."
+            sleep 2
+          done
+
+          # Vérification finale
           if ! curl -f http://localhost:4173 > /dev/null 2>&1; then
-            echo "❌ ERROR: Server not responding!"
+            echo "❌ ERROR: Vite preview server not responding after 60 seconds!"
+            echo "🔍 Checking running processes:"
+            ps aux | grep vite
             exit 1
           fi
-          echo "✅ Production server started on http://localhost:4173"
 
       - name: 🌐 Run Cypress E2E Tests (with Axe)
         working-directory: P11-ArgentBank
