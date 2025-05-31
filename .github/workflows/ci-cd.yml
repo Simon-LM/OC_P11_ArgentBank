@@ -197,8 +197,14 @@ jobs:
             echo "📝 Renamed vercel.json → vercel-only-prod.json for dev mode"
           fi
 
+          # 🔧 FIX: Créer une configuration Vercel locale pour éviter les conflits cloud
+          echo "🔧 Creating local Vercel configuration to bypass cloud config..."
+          rm -rf .vercel 2>/dev/null || true
+          echo '{"version": 2}' > vercel.json
+          
           # Option 2: vercel dev --token (authentification par token)
-          vercel dev --listen 3000 --token $VERCEL_TOKEN &
+          # Forcer le mode local avec --local-config
+          vercel dev --listen 3000 --token $VERCEL_TOKEN --local-config vercel.json &
           VERCEL_PID=$!
           echo "🔢 Vercel dev PID: $VERCEL_PID"
 
