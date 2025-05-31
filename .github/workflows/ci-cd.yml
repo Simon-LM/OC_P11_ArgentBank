@@ -9,7 +9,7 @@ on:
     branches: [main]
 
 env:
-  NODE_VERSION: "20"
+  NODE_VERSION: "18"
   PNPM_VERSION: "8"
   NOTIFICATION_EMAIL: "alerts@lostintab.com"
 
