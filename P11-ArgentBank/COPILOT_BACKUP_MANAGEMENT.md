@@ -8,11 +8,10 @@
 
 1. [Problème Initial](#-problème-initial)
 2. [Solutions Implémentées](#-solutions-implémentées)
-3. [Installation et Configuration](#-installation-et-configuration)
-4. [Utilisation Quotidienne](#-utilisation-quotidienne)
-5. [Résolution des Problèmes](#-résolution-des-problèmes)
-6. [Architecture Technique](#-architecture-technique)
-7. [FAQ](#-faq)
+3. [Flux de Travail Recommandé](#-flux-de-travail-recommandé)
+4. [Résolution des Conflits Courants](#-résolution-des-conflits-courants)
+5. [Commandes Rapides](#-commandes-rapides)
+6. [Bonnes Pratiques](#-bonnes-pratiques)
 
 ---
 
