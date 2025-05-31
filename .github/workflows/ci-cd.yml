@@ -206,7 +206,7 @@ jobs:
           # Créer un vercel.json minimal qui force le CWD comme racine
           echo '{
             "version": 2,
-            "name": "argentbank-dev",
+            "name": "argentbank.dev",
             "functions": {
               "api/**/*.js": {
                 "runtime": "nodejs18.x"
