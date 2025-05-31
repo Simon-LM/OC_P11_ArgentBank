@@ -190,8 +190,14 @@ jobs:
             exit 1
           fi
 
+          # 🔧 FIX: Renommer vercel.json temporairement (comme en local)
+          # vercel dev n'aime pas la config production, exactement comme en développement local
+          if [ -f "vercel.json" ]; then
+            mv vercel.json vercel-only-prod.json
+            echo "📝 Renamed vercel.json → vercel-only-prod.json for dev mode"
+          fi
+
           # Option 2: vercel dev --token (authentification par token)
-          # 🔧 FIX: Removed conflicting vercel.json files (root + prisma)
           vercel dev --listen 3000 --token $VERCEL_TOKEN &
           VERCEL_PID=$!
           echo "🔢 Vercel dev PID: $VERCEL_PID"
