@@ -39,18 +39,24 @@ jobs:
           cache: "pnpm"
 
       - name: 📥 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cd P11-ArgentBank
+          pnpm install --frozen-lockfile
 
       - name: 🔨 Build production
         id: build
         run: |
           echo "🔨 Building production build..."
+          cd P11-ArgentBank
           pnpm run build
           echo "✅ Build completed"
 
       - name: 🔍 Detect blank pages
         run: |
           echo "🔍 Checking for blank pages in production build..."
+
+          # Naviguer vers le dossier du projet
+          cd P11-ArgentBank
 
           # Vérifier que dist/ existe
           if [ ! -d "dist" ]; then
@@ -88,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: production-build
-          path: dist/
+          path: P11-ArgentBank/dist/
           retention-days: 30
 
   # ===============================================
@@ -115,11 +121,14 @@ jobs:
           cache: "pnpm"
 
       - name: 📥 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cd P11-ArgentBank
+          pnpm install --frozen-lockfile
 
       - name: 🧪 Run unit tests
         run: |
           echo "🧪 Running Vitest unit tests..."
+          cd P11-ArgentBank
           pnpm run test:unit
           echo "✅ Unit tests completed"
 
@@ -147,17 +156,20 @@ jobs:
           cache: "pnpm"
 
       - name: 📥 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cd P11-ArgentBank
+          pnpm install --frozen-lockfile
 
       - name: 📤 Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: production-build
-          path: dist/
+          path: P11-ArgentBank/dist/
 
       - name: 🚀 Start production server
         run: |
           echo "🚀 Starting production server..."
+          cd P11-ArgentBank
           pnpm run preview &
           sleep 10
 
@@ -174,20 +186,21 @@ jobs:
           echo "Focus: Authentication/Login (route critique)"
 
           # Cypress inclut déjà cypress-axe pour l'accessibilité
+          cd P11-ArgentBank
           pnpm run test:e2e:ci
           echo "✅ Cypress E2E tests with Axe completed"
 
       - name: ♿ Run Pa11y Accessibility Tests (100% required)
         run: |
           echo "♿ Running Pa11y accessibility tests (100% score required)..."
-          cd Pa11y
+          cd P11-ArgentBank/Pa11y
           node run-pa11y-tests.js
           echo "✅ Pa11y accessibility tests completed (100% requirement)"
 
       - name: 🔍 Run Lighthouse Audits (100% accessibility required)
         run: |
           echo "🔍 Running Lighthouse audits..."
-          cd lighthouse
+          cd P11-ArgentBank/lighthouse
           ./run.sh
           echo "✅ Lighthouse audits completed (100% accessibility requirement)"
 
@@ -197,9 +210,9 @@ jobs:
         with:
           name: test-reports
           path: |
-            cypress/reports/
-            Pa11y/screenshots/
-            lighthouse/reports/
+            P11-ArgentBank/cypress/reports/
+            P11-ArgentBank/Pa11y/screenshots/
+            P11-ArgentBank/lighthouse/reports/
           retention-days: 30
 
   # ===============================================

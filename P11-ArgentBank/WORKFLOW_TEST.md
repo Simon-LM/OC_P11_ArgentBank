@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # 🧪 Test des Workflows CI/CD
 
 Ce fichier sert à tester le bon fonctionnement des workflows GitHub Actions.
@@ -13,6 +15,13 @@ Ce fichier sert à tester le bon fonctionnement des workflows GitHub Actions.
 - Destination : `alerts@lostintab.com`
 - Authentification : Token SMTP ProtonMail
 
+## 🚀 Status :
+
+- ✅ Workflows créés et configurés
+- ⏳ En attente de reconnaissance par GitHub Actions
+- 📧 Secrets ProtonMail configurés
+
 ---
 
-_Fichier créé le : {{ date }}_
+_Fichier créé le : 31 mai 2025_
+_Dernière mise à jour : 31 mai 2025_
