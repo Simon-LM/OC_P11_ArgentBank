@@ -7,7 +7,7 @@
 Pipel### 3. 🌐 E2E & Accessibility Tests
 
 - **Vercel Dev Server** : `vercel dev --token` (Option 2 - token auth)
-- **Cypress E2E** avec focus auth/login  
+- **Cypress E2E** avec focus auth/login
 - **Cypress-Axe** intégration accessibilité
 - **Pa11y** tests (100% score requis)
 - **Lighthouse** audits (100% accessibilité)Hub Actions complet avec validation de build, tests d'accessibilité, et notifications email via ProtonMail SMTP.
