@@ -1,0 +1,61 @@
+{
+  "files.autoSave": "onFocusChange",
+  "files.autoSaveDelay": 1000,
+  "files.hotExit": "off",
+  "workbench.editor.restoreViewState": false,
+  "workbench.editor.enablePreview": false,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "git.autoStash": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": false,
+    "plaintext": false
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.git": true,
+    "**/coverage": true,
+    "**/cypress/reports": true,
+    "**/cypress/screenshots": true,
+    "**/cypress/videos": true,
+    "**/lighthouse/reports": true,
+    "**/.vercel": true,
+    "**/*.log": true,
+    "**/.vscode/workspaceStorage": true,
+    "**/.history": true,
+    "**/*.backup": true,
+    "**/*.bak": true,
+    "**/*.autosave": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/cypress/reports": true,
+    "**/lighthouse/reports": true,
+    "**/.vscode/workspaceStorage": true,
+    "**/.history": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.vscode/workspaceStorage/**": true,
+    "**/.history/**": true
+  },
+  "npm.packageManager": "pnpm",
+  "typescript.preferences.useAliasesForRenames": false,
+  "typescript.updateImportsOnFileMove.enabled": "always"
+}

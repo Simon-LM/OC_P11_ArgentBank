@@ -1,0 +1,22 @@
+{
+  "projectId": "prj_4kEXVWjzQPnryLSBh8ESrUyAiLTC",
+  "orgId": "team_GxFkKw0gw04KLOSezINs1eQB",
+  "settings": {
+    "framework": "vite",
+    "devCommand": "vite --port $PORT",
+    "buildCommand": "vite build",
+    "outputDirectory": "dist",
+    "installCommand": "pnpm install",
+    "public": true,
+    "skipVercelAuth": true,
+    "authentication": {
+      "required": false
+    },
+    "functions": {
+      "api/**/*": {
+        "memory": 1024,
+        "maxDuration": 10
+      }
+    }
+  }
+}
