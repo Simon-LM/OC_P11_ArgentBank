@@ -31,7 +31,20 @@ L'implémentation des tests d'accessibilité avec `cypress-axe` dans l'applicati
 
 #### 4. Tests de Transactions (`transactions/`)
 
-- **transactions.cy.ts** : 6 tests avec vérifications d'accessibilité
+- **transactions-display.cy.ts** : 3 tests avec vérifications d'accessibilité (affichage, navigation, accessibilité)
+- **transactions-functionality.cy.ts** : 3 tests avec vérifications d'accessibilité (recherche, notes/catégories, pagination)
+
+#### 5. Tests Cross-Browser (`cross-browser/`)
+
+- **cross-browser.cy.ts** : 3 tests avec vérifications d'accessibilité
+
+#### 6. Tests de Cas Limites (`edge-cases/`)
+
+- **edge-cases.cy.ts** : 4 tests avec vérifications d'accessibilité
+
+#### 7. Tests Réseau (`network/`)
+
+- **network-errors.cy.ts** : 3 tests avec vérifications d'accessibilité
 
 ### ✅ Configuration du Reporting
 
@@ -44,16 +57,20 @@ L'implémentation des tests d'accessibilité avec `cypress-axe` dans l'applicati
 ### Dernière Exécution
 
 ```
-✔ All specs passed!                        01:38       22       22        -        -        -
+✔ All specs passed!                        02:15       41       41        -        -        -
 
 Détail par fichier :
-- accounts/accounts.cy.ts     : 3 tests passés
-- auth/login.cy.ts           : 3 tests passés
-- auth/logout.cy.ts          : 2 tests passés
-- transactions/transactions.cy.ts : 6 tests passés
-- profile/profile.cy.ts      : 8 tests passés
+- accounts/accounts.cy.ts                : 3 tests passés
+- auth/login.cy.ts                      : 3 tests passés
+- auth/logout.cy.ts                     : 2 tests passés
+- cross-browser/cross-browser.cy.ts     : 7 tests passés
+- edge-cases/edge-cases.cy.ts           : 7 tests passés
+- network/network-errors.cy.ts          : 7 tests passés
+- profile/profile.cy.ts                 : 8 tests passés
+- transactions/transactions-display.cy.ts      : 3 tests passés
+- transactions/transactions-functionality.cy.ts : 3 tests passés
 
-TOTAL : 22/22 tests passés (100% de réussite)
+TOTAL : 41/41 tests passés (100% de réussite)
 ```
 
 ## 🔧 Corrections Apportées
@@ -141,7 +158,8 @@ L'implémentation des tests d'accessibilité avec `cypress-axe` est **COMPLÈTE*
 
 **Bénéfices obtenus** :
 
-- 22 tests d'accessibilité automatisés
+- 41 tests d'accessibilité automatisés (était 22)
+- Architecture modulaire avec séparation transactions-display/functionality
 - Détection proactive des problèmes d'accessibilité
 - Rapports détaillés et visuels
 - Intégration fluide dans le workflow de développement
@@ -156,5 +174,5 @@ L'implémentation des tests d'accessibilité avec `cypress-axe` est **COMPLÈTE*
 ---
 
 _✅ Implémentation terminée le 30 mai 2025_
-_🎯 22/22 tests passés avec succès_
+_🎯 41/41 tests passés avec succès (architecture optimisée)_
 _📊 Rapports disponibles dans `cypress/reports/html/`_

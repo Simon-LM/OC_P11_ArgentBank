@@ -7,6 +7,14 @@
 		"skipLibCheck": true,
 		"isolatedModules": false
 	},
-	"include": ["**/*.ts", "**/*.cy.ts", "**/*.d.ts", "support/**/*"],
+	"include": [
+		"**/*.ts",
+		"**/*.cy.ts",
+		"**/*.d.ts",
+		"support/**/*",
+		"e2e/edge-cases/.edge-cases-fixed.cy.ts",
+		"e2e/transactions/.transactions.cy.ts",
+		"e2e/transactions/.transactions-display.fixed.cy.ts"
+	],
 	"exclude": ["../node_modules", "../dist"]
 }

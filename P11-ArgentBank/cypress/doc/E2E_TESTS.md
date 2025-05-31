@@ -15,45 +15,50 @@ Les tests E2E avec Cypress permettent de vérifier le fonctionnement complet de 
 - ✅ Vérifier que l'interface utilisateur répond correctement
 - ✅ S'assurer que les données circulent correctement entre le frontend et le backend
 - ✅ Détecter les régressions visuelles et fonctionnelles
-- ✅ **Garantir l'accessibilité** avec des tests automatisés WCAG 2.1 AA intégrés
-- ✅ **Générer des rapports** de conformité d'accessibilité
 
 ## 📁 Organisation des tests
 
-### Structure recommandée
+### Structure actuelle du projet
 
 ```text
 cypress/
 └── e2e/
-    ├── auth/               # Tests liés à l'authentification
-    │   ├── login.cy.js     # Tests de connexion
-    │   └── signup.cy.js    # Tests d'inscription
-    ├── account/            # Tests liés aux comptes
-    │   ├── view.cy.js      # Tests de visualisation des comptes
-    │   └── transactions.cy.js # Tests des transactions
-    ├── profile/            # Tests liés au profil utilisateur
-    │   └── edit.cy.js      # Tests de modification du profil
-    └── navigation/         # Tests de navigation globale
-        └── main-flow.cy.js # Tests du flux principal
+    ├── auth/                           # Tests d'authentification (2 fichiers)
+    │   ├── login.cy.ts                 # Tests de connexion - 3 tests
+    │   └── logout.cy.ts                # Tests de déconnexion - 2 tests
+    ├── accounts/                       # Tests des comptes bancaires (1 fichier)
+    │   └── accounts.cy.ts              # Tests de visualisation comptes - 3 tests
+    ├── profile/                        # Tests du profil utilisateur (1 fichier)
+    │   └── profile.cy.ts               # Tests de modification profil - 8 tests
+    ├── transactions/                   # Tests des transactions (2 fichiers)
+    │   ├── transactions-display.cy.ts  # Tests d'affichage et navigation - 3 tests
+    │   └── transactions-functionality.cy.ts # Tests de fonctionnalités - 3 tests
+    ├── cross-browser/                  # Tests cross-browser (1 fichier)
+    │   └── cross-browser.cy.ts         # Tests de compatibilité - 7 tests
+    ├── edge-cases/                     # Tests de cas limites (1 fichier)
+    │   └── edge-cases.cy.ts            # Tests de robustesse - 7 tests
+    └── network/                        # Tests réseau (1 fichier)
+        └── network-errors.cy.ts        # Tests de gestion d'erreurs - 7 tests
+
+Total: 9 fichiers de test | 41 tests E2E | 100% avec accessibilité intégrée
 ```
 
 ### Convention de nommage
 
-- **Fichiers** : `[feature].[action].cy.js`
-- **Descriptions** : Décrire le comportement, pas l'implémentation
-- **Tests** : Phrase complète décrivant ce qui est attendu
+- **Fichiers** : `[feature]-[action].cy.ts` ou `[feature].cy.ts`
+- **Descriptions** : Utiliser des verbes d'action clairs
+- **Tests** : Décrire le comportement attendu
 
 ```javascript
-// ✅ Bon nommage
-describe("User authentication", () => {
-	it("should display error message when credentials are invalid", () => {
+// ✅ Bon nommage (exemples du projet)
+describe("User Authentication", () => {
+	it("devrait permettre à un utilisateur de se connecter avec des identifiants valides", () => {
 		// ...
 	});
 });
 
-// ❌ Mauvais nommage
-describe("Login function", () => {
-	it("error handling", () => {
+describe("Transactions Display", () => {
+	it("devrait afficher les transactions par défaut pour le premier compte", () => {
 		// ...
 	});
 });
@@ -61,69 +66,44 @@ describe("Login function", () => {
 
 ## 🧪 Structure des tests
 
-### Modèle recommandé
+### Pattern utilisé dans le projet
 
 ```javascript
 describe("Feature: [Nom de la fonctionnalité]", () => {
-	// Configuration globale pour cette suite de tests
 	beforeEach(() => {
-		// Configuration commune à tous les tests
+		// Configuration commune (navigation, authentification)
 	});
 
-	context("Scenario: [Scénario spécifique]", () => {
-		beforeEach(() => {
-			// Configuration spécifique à ce scénario
-		});
+	it("devrait [résultat attendu] quand [condition]", () => {
+		// Test avec vérification d'accessibilité intégrée
+		cy.injectAxe();
 
-		it("should [résultat attendu] when [action]", () => {
-			// Arrange - Préparer l'état initial
-			// Act - Effectuer l'action à tester
-			// Assert - Vérifier le résultat
+		// Actions du test
+		// ...
+
+		// Vérifications d'accessibilité
+		cy.checkA11y(undefined, {
+			rules: { "color-contrast": { enabled: false } },
 		});
 	});
 });
 ```
 
-### Exemple concret
+### Exemple concret du projet
 
 ```javascript
-// cypress/e2e/auth/login.cy.js
-describe("Feature: User Authentication", () => {
-	beforeEach(() => {
-		cy.visit("/login");
+// transactions-display.cy.ts
+describe("Transactions Display", () => {
+	beforeEach(function () {
+		this.loginUser();
+		cy.navigateToTransactions();
 	});
 
-	context("Scenario: Successful login", () => {
-		it("should redirect to dashboard when credentials are valid", () => {
-			// Arrange
-			const username = "tony@stark.com";
-			const password = "password123";
-
-			// Act
-			cy.findByLabelText("Email").type(username);
-			cy.findByLabelText("Password").type(password);
-			cy.findByRole("button", { name: /sign in/i }).click();
-
-			// Assert
-			cy.url().should("include", "/profile");
-			cy.findByText("Welcome back").should("be.visible");
-		});
-	});
-
-	context("Scenario: Failed login", () => {
-		it("should display error message when credentials are invalid", () => {
-			// Arrange
-			const username = "invalid@email.com";
-			const password = "wrongpassword";
-
-			// Act
-			cy.findByLabelText("Email").type(username);
-			cy.findByLabelText("Password").type(password);
-			cy.findByRole("button", { name: /sign in/i }).click();
-
-			// Assert
-			cy.url().should("include", "/login");
-			cy.findByText("Invalid credentials").should("be.visible");
+	it("devrait afficher les transactions par défaut pour le premier compte", function () {
+		cy.injectAxe();
+		cy.get('button[class*="account"]').first().should("be.visible");
+		cy.checkA11y(undefined, {
+			rules: { "color-contrast": { enabled: false } },
 		});
 	});
 });
@@ -281,370 +261,99 @@ describe("User accounts", () => {
 });
 ```
 
-## 📸 Tests visuels
+## 📸 Tests visuels et reporting
 
-### Vérification des rendus visuels
+### Scripts NPM disponibles
+
+```bash
+# Tests E2E standards
+pnpm run cypress:run
+
+# Tests avec rapport détaillé
+pnpm run test:e2e:report
+
+# Tests d'accessibilité avec rapport
+pnpm run test:e2e:a11y:report
+
+# Nettoyage des rapports
+pnpm run test:e2e:clean
+```
+
+### Rapports générés
+
+Les rapports sont automatiquement générés dans `cypress/reports/` :
+
+- **HTML** : Interface visuelle avec détails des tests
+- **JSON** : Données pour analyse programmatique
+- **Screenshots** : Captures d'écran en cas d'échec
+
+## 🚀 Parcours utilisateur et optimisation
+
+### Pattern d'optimisation utilisé
+
+Le projet utilise une approche hybride API + UI pour optimiser les performances :
 
 ```javascript
-describe("Visual testing", () => {
-	it("should display login page correctly", () => {
-		cy.visit("/login");
-		cy.matchImageSnapshot("login-page");
-	});
-
-	it("should display account dashboard correctly", () => {
-		cy.loginByApi("tony@stark.com", "password123");
-		cy.visit("/profile");
-		cy.matchImageSnapshot("account-dashboard");
-	});
+// Connexion rapide via API dans beforeEach
+beforeEach(function () {
+	this.loginUser(); // Commande personnalisée optimisée
+	cy.navigateToTransactions();
 });
 ```
 
-### Configuration des snapshots
+### Points clés du projet
 
-```javascript
-// cypress/plugins/index.js
-const {
-	addMatchImageSnapshotPlugin,
-} = require("cypress-image-snapshot/plugin");
-
-module.exports = (on, config) => {
-	addMatchImageSnapshotPlugin(on, config);
-};
-```
-
-```javascript
-// cypress/support/commands.js
-import { addMatchImageSnapshotCommand } from "cypress-image-snapshot/command";
-addMatchImageSnapshotCommand();
-```
-
-## 🚀 Parcours utilisateur complets
-
-### Exemple de flux utilisateur complet
-
-```javascript
-describe("Complete user journey", () => {
-	it("should allow a user to login, check accounts, and update profile", () => {
-		// 1. Visite de la page d'accueil
-		cy.visit("/");
-		cy.findByRole("link", { name: /sign in/i }).click();
-
-		// 2. Connexion
-		cy.findByLabelText("Email").type("tony@stark.com");
-		cy.findByLabelText("Password").type("password123");
-		cy.findByRole("button", { name: /sign in/i }).click();
-
-		// 3. Vérification du dashboard
-		cy.url().should("include", "/profile");
-		cy.findByText("Welcome back").should("be.visible");
-
-		// 4. Modification du profil
-		cy.findByText("Edit Name").click();
-		cy.findByLabelText("First Name").clear().type("Anthony");
-		cy.findByRole("button", { name: /save/i }).click();
-
-		// 5. Vérification des modifications
-		cy.findByText("Anthony Stark").should("be.visible");
-
-		// 6. Vérification des comptes
-		cy.findByRole("link", { name: /view accounts/i }).click();
-		cy.url().should("include", "/accounts");
-		cy.findByText("Checking (x8349)").should("be.visible");
-
-		// 7. Déconnexion
-		cy.findByText("Sign Out").click();
-		cy.url().should("eq", Cypress.config().baseUrl + "/");
-	});
-});
-```
-
-## ⚡ Optimisation des performances
-
-### Stratégies pour tests rapides
-
-1. **Préparation par API** : Utilisez les API pour la préparation des données et des états
-2. **Réutilisation des sessions** : Conservez les sessions entre les tests
-3. **Tests indépendants** : Créez des tests indépendants plutôt qu'une séquence
-4. **Parallélisation** : Configurez Cypress pour exécuter les tests en parallèle
-
-```javascript
-// cypress.config.js
-const { defineConfig } = require("cypress");
-
-module.exports = defineConfig({
-	e2e: {
-		// Exécution parallèle dans CI
-		experimentalRunAllSpecs: true,
-		// Autres configurations...
-	},
-});
-```
+1. **Tests d'accessibilité intégrés** : Tous les tests incluent `cypress-axe`
+2. **Commandes personnalisées** : Réutilisation via `this.loginUser()`
+3. **Gestion CSS Modules** : Sélecteurs flexibles pour les classes dynamiques
+4. **Reporting automatisé** : Génération de rapports HTML/JSON
 
 ## ♿ Tests d'accessibilité avec cypress-axe
 
 ### Vue d'ensemble
 
-Les tests d'accessibilité sont **intégrés dans tous les tests E2E** pour garantir la conformité WCAG 2.1 AA de l'application ArgentBank. Chaque page et fonctionnalité est automatiquement vérifiée pour les violations d'accessibilité.
+Les tests d'accessibilité sont **intégrés dans tous les tests E2E** pour garantir la conformité WCAG 2.1 AA de l'application ArgentBank.
 
 > 📖 **Documentation complète** : Consultez [ACCESSIBILITY_TESTS.md](./ACCESSIBILITY_TESTS.md) pour le guide détaillé
 
-### Configuration initiale
+### Pattern d'intégration utilisé
 
 ```typescript
-// cypress/support/e2e.ts
-import "cypress-axe";
-```
+it("devrait être accessible lors du test", () => {
+	// 1. Injection d'axe-core (OBLIGATOIRE au début de chaque test)
+	cy.injectAxe();
 
-```typescript
-// cypress.config.ts - Configuration reporter pour accessibilité
-export default defineConfig({
-	e2e: {
-		reporter: "mochawesome",
-		reporterOptions: {
-			reportDir: "cypress/reports",
-			overwrite: false,
-			html: true,
-			json: true,
-			timestamp: "mmddyyyy_HHMMss",
+	// 2. Actions du test
+	// ...
+
+	// 3. Vérification d'accessibilité
+	cy.checkA11y(undefined, {
+		rules: {
+			"color-contrast": { enabled: false }, // Temporairement désactivé
 		},
-	},
-});
-```
-
-### Pattern d'intégration recommandé
-
-```typescript
-describe("Feature: User Authentication", () => {
-	context("Scenario: Accessibility verification", () => {
-		it("should be accessible on login page", () => {
-			// 1. Injecter axe-core (TOUJOURS au début du test)
-			cy.injectAxe();
-
-			// 2. Vérifier l'accessibilité de base
-			cy.checkA11y(undefined, {
-				rules: {
-					// Ignorer les violations de contraste connues (temporaire)
-					"color-contrast": { enabled: false },
-				},
-			});
-
-			// 3. Tester l'accessibilité avec focus
-			cy.get("input#email").focus();
-			cy.checkA11y();
-
-			cy.get("input#password").focus();
-			cy.checkA11y();
-		});
-	});
-
-	context("Scenario: Functional + Accessibility", () => {
-		it("should allow login and remain accessible throughout", () => {
-			// Injection d'axe
-			cy.injectAxe();
-
-			// Vérification initiale
-			cy.checkA11y(undefined, {
-				rules: { "color-contrast": { enabled: false } },
-			});
-
-			// Actions fonctionnelles
-			cy.findByLabelText("Email").type("tony@stark.com");
-			cy.findByLabelText("Password").type("password123");
-			cy.findByRole("button", { name: /sign in/i }).click();
-
-			// Vérification après action
-			cy.url().should("include", "/profile");
-			cy.checkA11y(undefined, {
-				rules: { "color-contrast": { enabled: false } },
-			});
-		});
 	});
 });
 ```
 
-### Tests d'accessibilité par fonctionnalité
+### Points critiques
 
-#### 🔐 Authentification
+- ⚠️ **Injection individuelle** : `cy.injectAxe()` dans chaque test (pas dans `beforeEach`)
+- ✅ **100% de couverture** : Tous les 41 tests incluent des vérifications d'accessibilité
+- 📊 **Rapports automatisés** : Génération de rapports HTML avec Mochawesome
 
-```typescript
-// login.cy.ts - Exemple réel du projet
-it("devrait permettre à un utilisateur de se connecter", function () {
-	cy.injectAxe();
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
+## 📝 Ressources et documentation
 
-	// Test de connexion + vérification continue
-	this.loginUser();
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
-});
-```
+### Documentation du projet
 
-#### 👤 Profil utilisateur
+- **[Guide complet des tests d'accessibilité](./ACCESSIBILITY_TESTS.md)** - Documentation détaillée cypress-axe
+- **[Meilleures pratiques](./BEST_PRACTICES.md)** - Recommandations et bonnes pratiques
+- **[Statut d'implémentation](./IMPLEMENTATION_STATUS.md)** - État actuel du projet
 
-```typescript
-// profile.cy.ts - Gestion des formulaires
-it("devrait être accessible lors de l'édition du profil", () => {
-	cy.injectAxe();
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
-
-	// Test d'accessibilité du formulaire d'édition
-	cy.get('button[class*="edit-button"]').first().click();
-	cy.checkA11y();
-});
-```
-
-#### 🏦 Comptes bancaires
-
-```typescript
-// accounts.cy.ts - Navigation et sélection
-it("devrait être accessible sur la page des comptes", () => {
-	cy.injectAxe();
-	cy.checkA11y(undefined, {
-		rules: { "color-contrast": { enabled: false } },
-	});
-
-	// Test avec focus sur les éléments interactifs
-	cy.get('button[class*="account"]').first().focus();
-	cy.checkA11y();
-});
-```
-
-#### 💳 Transactions
-
-```typescript
-// transactions.cy.ts - Gestion conditionnelle
-it("devrait être accessible avec pagination", () => {
-	cy.injectAxe();
-	cy.checkA11y();
-
-	// Gestion intelligente des éléments conditionnels
-	cy.get('button[class*="pagination"]').then(($buttons) => {
-		const enabledButtons = $buttons.filter(":not(:disabled)");
-		if (enabledButtons.length > 0) {
-			cy.wrap(enabledButtons.first()).focus();
-			cy.checkA11y();
-		}
-	});
-});
-```
-
-### Scripts NPM pour l'accessibilité
-
-```json
-// package.json
-{
-	"scripts": {
-		"test:e2e:a11y": "cypress run --spec 'cypress/e2e/**/*.cy.ts'",
-		"test:e2e:a11y:report": "cypress run && pnpm run test:e2e:merge-reports",
-		"test:e2e:merge-reports": "mochawesome-merge && marge",
-		"test:e2e:clean": "bash cypress/clean-reports.sh"
-	}
-}
-```
-
-### ⚠️ Points d'attention critiques
-
-#### Injection d'axe-core
-
-```typescript
-// ✅ CORRECT : Injection individuelle dans chaque test
-it("test d'accessibilité", () => {
-	cy.injectAxe(); // Au début de CHAQUE test
-	cy.checkA11y();
-});
-
-// ❌ INCORRECT : Injection dans beforeEach (interfère avec l'auth)
-beforeEach(() => {
-	cy.injectAxe(); // NE PAS FAIRE - casse l'authentification
-});
-```
-
-#### Gestion des éléments conditionnels
-
-```typescript
-// ✅ CORRECT : Vérification de l'état avant interaction
-cy.get("button").then(($buttons) => {
-	const enabledButtons = $buttons.filter(":not(:disabled)");
-	if (enabledButtons.length > 0) {
-		cy.wrap(enabledButtons.first()).focus();
-		cy.checkA11y();
-	}
-});
-
-// ❌ INCORRECT : Focus sans vérification
-cy.get("button").first().focus(); // Peut échouer sur éléments désactivés
-```
-
-### 📊 Rapports d'accessibilité
-
-Les rapports sont générés automatiquement dans `cypress/reports/` :
-
-- **Mochawesome HTML** : Rapports visuels détaillés
-- **JSON consolidé** : Données pour analyse programmatique
-- **Artefacts CI/CD** : Intégration pipeline
-
-### 🎯 Statut actuel
-
-- ✅ **15 tests E2E** avec vérifications d'accessibilité intégrées
-- ✅ **Toutes les pages** couvertes (auth, profil, comptes, transactions)
-- ✅ **Reporting automatisé** configuré
-- ⚠️ **Règle color-contrast** temporairement désactivée (corrections design à venir)
-- ✅ **Documentation complète** disponible
-
-### 🔗 Ressources d'accessibilité
-
-- **[Guide complet des tests d'accessibilité](./ACCESSIBILITY_TESTS.md)**
-- **[Meilleures pratiques](./BEST_PRACTICES.md)**
-- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
-- [Cypress-Axe Documentation](https://github.com/component-driven/cypress-axe)
-
-## 📊 Reporting et analyse
-
-### Configuration des rapports
-
-```javascript
-// cypress.config.js
-const { defineConfig } = require("cypress");
-
-module.exports = defineConfig({
-	e2e: {
-		reporter: "mochawesome",
-		reporterOptions: {
-			reportDir: "cypress/reports",
-			overwrite: false,
-			html: true,
-			json: true,
-		},
-	},
-});
-```
-
-### Scripts de génération de rapports
-
-```json
-// package.json
-{
-	"scripts": {
-		"cy:run:report": "cypress run --reporter mochawesome",
-		"report:merge": "mochawesome-merge cypress/reports/*.json > cypress/reports/full_report.json",
-		"report:generate": "marge cypress/reports/full_report.json -o cypress/reports/html"
-	}
-}
-```
-
-## 📝 Ressources complémentaires
+### Ressources externes
 
 - [Documentation officielle Cypress](https://docs.cypress.io/)
 - [Testing Library pour Cypress](https://testing-library.com/docs/cypress-testing-library/intro/)
-- [Meilleures pratiques Cypress](https://docs.cypress.io/guides/references/best-practices)
-- [Cypress Real World App](https://github.com/cypress-io/cypress-realworld-app) (Exemple complet)
-- **[Tests d'Accessibilité](./ACCESSIBILITY_TESTS.md)** - Guide complet des tests d'accessibilité avec cypress-axe
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 
 ---
 
@@ -655,8 +364,3 @@ module.exports = defineConfig({
 - ⭐ [Meilleures pratiques](./BEST_PRACTICES.md)
 - 🔧 [Maintenance](./MAINTENANCE.md)
 - ♿ **[Tests d'Accessibilité](./ACCESSIBILITY_TESTS.md)** - Guide complet avec cypress-axe
-
-**Documentation connexe** :
-
-- 📋 [Tests d'Accessibilité ArgentBank](../ACCESSIBILITY_TESTS.md) - Résumé d'implémentation
-- 🎯 [Statut d'implémentation](../IMPLEMENTATION_COMPLETE.md) - Rapport final

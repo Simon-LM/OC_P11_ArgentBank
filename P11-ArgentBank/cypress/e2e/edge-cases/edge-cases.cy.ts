@@ -1,5 +1,4 @@
 /** @format */
-// cypress/e2e/edge-cases/edge-cases.cy.ts
 
 import type { User } from "../../support/types";
 

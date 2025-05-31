@@ -66,7 +66,9 @@ cypress/
     ├── profile/
     │   └── profile.cy.ts        # Tests de profil + accessibilité
     └── transactions/
-        └── transactions.cy.ts   # Tests de transactions + accessibilité
+        └── transactions/            # Tests des transactions + accessibilité
+            ├── transactions-display.cy.ts      # Tests d'affichage
+            └── transactions-functionality.cy.ts # Tests de fonctionnalités
 ```
 
 ## 🔧 Utilisation de cypress-axe
@@ -235,7 +237,7 @@ it("devrait être accessible sur la page des comptes", () => {
 });
 ```
 
-### Page des transactions (`transactions.cy.ts`)
+### Page des transactions (`transactions-display.cy.ts` et `transactions-functionality.cy.ts`)
 
 ```typescript
 it("devrait être accessible sur la page des transactions", () => {
