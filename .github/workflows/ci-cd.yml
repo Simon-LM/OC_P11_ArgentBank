@@ -197,14 +197,32 @@ jobs:
             echo "📝 Renamed vercel.json → vercel-only-prod.json for dev mode"
           fi
 
-          # 🔧 FIX: Créer une configuration Vercel locale pour éviter les conflits cloud
-          echo "🔧 Creating local Vercel configuration to bypass cloud config..."
-          rm -rf .vercel 2>/dev/null || true
-          echo '{"version": 2}' > vercel.json
+          # 🔧 FIX: Forcer Vercel à IGNORER complètement la config cloud
+          echo "🔧 FORCING Vercel to ignore cloud config and use CWD as project root..."
           
-          # Option 2: vercel dev --token (authentification par token)
-          # Forcer le mode local avec --local-config
-          vercel dev --listen 3000 --token $VERCEL_TOKEN --local-config vercel.json &
+          # Supprimer tout lien avec la config cloud
+          rm -rf .vercel 2>/dev/null || true
+          
+          # Créer un vercel.json minimal qui force le CWD comme racine
+          echo '{
+            "version": 2,
+            "name": "argentbank-dev",
+            "functions": {
+              "api/**/*.js": {
+                "runtime": "nodejs18.x"
+              }
+            },
+            "builds": [
+              {
+                "src": "api/**/*.js",
+                "use": "@vercel/node"
+              }
+            ]
+          }' > vercel.json
+          
+          # SOLUTION: Utiliser --cwd pour forcer le répertoire de travail
+          echo "🚀 Starting Vercel with forced CWD and local config..."
+          vercel dev --listen 3000 --token $VERCEL_TOKEN --cwd "$(pwd)" &
           VERCEL_PID=$!
           echo "🔢 Vercel dev PID: $VERCEL_PID"
 
