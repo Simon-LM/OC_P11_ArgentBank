@@ -79,7 +79,8 @@ workflow_dispatch: # Via GitHub Actions UI
 
 ### 3. 🌐 E2E & Accessibility Tests
 
-- **Cypress E2E** avec focus auth/login
+- **Vercel Dev Server** : `vercel dev --yes` (Option 1 - no auth)
+- **Cypress E2E** avec focus auth/login  
 - **Cypress-Axe** intégration accessibilité
 - **Pa11y** tests (100% score requis)
 - **Lighthouse** audits (100% accessibilité)

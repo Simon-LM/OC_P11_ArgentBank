@@ -43,6 +43,9 @@ jobs:
         working-directory: P11-ArgentBank
         run: pnpm install --no-frozen-lockfile
 
+      - name: 🌐 Install Vercel CLI globally
+        run: npm install -g vercel
+
       - name: 🔨 Build production
         id: build
         working-directory: P11-ArgentBank
@@ -158,6 +161,9 @@ jobs:
         working-directory: P11-ArgentBank
         run: pnpm install --no-frozen-lockfile
 
+      - name: 🌐 Install Vercel CLI globally
+        run: npm install -g vercel
+
       - name: 🔧 Install Cypress binary
         working-directory: P11-ArgentBank
         run: npx cypress install
@@ -168,31 +174,53 @@ jobs:
           name: production-build
           path: P11-ArgentBank/dist/
 
-      - name: 🚀 Start production server (Vite preview)
+      - name: 🚀 Start Vercel dev server (for serverless functions)
         working-directory: P11-ArgentBank
         run: |
-          echo "🚀 Starting Vite preview server for Cypress tests..."
-          pnpm run preview &
-          sleep 10
-
-          # Attendre que le serveur soit prêt
-          echo "⏳ Waiting for Vite preview server to be ready..."
+          echo "🚀 Starting Vercel dev server for serverless functions..."
+          echo "📝 SOLUTION: Using 'vercel dev --yes' (Option 1 - no auth required)"
+          
+          # Option 1: vercel dev --yes (pas d'authentification requise)
+          vercel dev --yes --listen 3000 &
+          VERCEL_PID=$!
+          echo "🔢 Vercel dev PID: $VERCEL_PID"
+          
+          # Attendre que le serveur soit prêt (augmenté à 30 secondes)
+          echo "⏳ Waiting for Vercel dev server to be ready..."
+          READY=false
           for i in {1..30}; do
-            if curl -f http://localhost:4173 > /dev/null 2>&1; then
-              echo "✅ Vite preview server ready on http://localhost:4173"
+            if curl -f -s http://localhost:3000 > /dev/null 2>&1; then
+              echo "✅ Vercel dev server ready on http://localhost:3000 (attempt $i/30)"
+              READY=true
               break
             fi
-            echo "⏳ Attempt $i/30: Server not ready yet, waiting..."
+            echo "⏳ Attempt $i/30: Server not ready yet, waiting 2s..."
             sleep 2
           done
 
-          # Vérification finale
-          if ! curl -f http://localhost:4173 > /dev/null 2>&1; then
-            echo "❌ ERROR: Vite preview server not responding after 60 seconds!"
-            echo "🔍 Checking running processes:"
-            ps aux | grep vite
+          # Vérification finale avec debug détaillé
+          if [ "$READY" = false ]; then
+            echo "❌ ERROR: Vercel dev server not responding after 60 seconds!"
+            echo ""
+            echo "🔍 DEBUG INFO:"
+            echo "📝 Vercel process status:"
+            ps aux | grep -E "(vercel|node)" | grep -v grep || echo "No vercel processes found"
+            echo ""
+            echo "🌐 Network status:"
+            netstat -tulnp | grep :3000 || echo "Port 3000 not listening"
+            echo ""
+            echo "📄 Vercel logs (last 20 lines):"
+            tail -20 ~/.vercel/logs/* 2>/dev/null || echo "No vercel logs found"
+            echo ""
+            echo "🔍 Current directory contents:"
+            ls -la
+            echo ""
             exit 1
           fi
+          
+          echo "🎯 Vercel dev server successfully started and responding!"
+          echo "🔗 Server URL: http://localhost:3000"
+          echo "🚀 Ready for Cypress tests with serverless functions support"
 
       - name: 🌐 Run Cypress E2E Tests (with Axe)
         working-directory: P11-ArgentBank

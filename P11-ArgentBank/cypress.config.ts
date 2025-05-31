@@ -4,7 +4,7 @@ import { defineConfig } from "cypress";
 
 export default defineConfig({
   e2e: {
-    baseUrl: "http://localhost:4173", // Port Vite preview server (pour les tests CI/CD)
+    baseUrl: "http://localhost:3000", // Port Vercel dev server (nécessaire pour les fonctions serverless)
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     viewportWidth: 1280,
     viewportHeight: 720,
