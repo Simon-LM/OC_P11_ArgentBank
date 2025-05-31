@@ -41,7 +41,7 @@ jobs:
 
       - name: 📥 Install dependencies
         working-directory: P11-ArgentBank
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 🔨 Build production
         id: build
@@ -121,7 +121,7 @@ jobs:
 
       - name: 📥 Install dependencies
         working-directory: P11-ArgentBank
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 🧪 Run unit tests
         working-directory: P11-ArgentBank
@@ -156,7 +156,7 @@ jobs:
 
       - name: 📥 Install dependencies
         working-directory: P11-ArgentBank
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 📤 Download build artifacts
         uses: actions/download-artifact@v4

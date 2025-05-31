@@ -1,0 +1,18 @@
+{
+	"version": 2,
+	"buildCommand": "cd P11-ArgentBank && pnpm run vercel-build",
+	"outputDirectory": "P11-ArgentBank/dist",
+	"installCommand": "cd P11-ArgentBank && pnpm install",
+	"devCommand": "cd P11-ArgentBank && pnpm run dev",
+	"framework": "vite",
+	"rewrites": [
+		{ "source": "/robots.txt", "destination": "/robots.txt" },
+		{ "source": "/sitemap.xml", "destination": "/sitemap.xml" },
+		{ "source": "/(.*)", "destination": "/index.html" }
+	],
+	"functions": {
+		"P11-ArgentBank/api/**/*.js": {
+			"runtime": "nodejs18.x"
+		}
+	}
+}
