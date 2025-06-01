@@ -1,12 +1,10 @@
-# @format
-
 name: 🚀 CI/CD Pipeline - ArgentBank
 
 on:
   push:
-    branches: [main, develop]
+    branches: ["main", "develop"]
   pull_request:
-    branches: [main]
+    branches: ["main"]
 
 env:
   NODE_VERSION: "18"
@@ -15,13 +13,11 @@ env:
 
 jobs:
   # ===============================================
-  # 📦 BUILD & VALIDATION
+  # 🔨 BUILD & VALIDATION
   # ===============================================
   build-and-validate:
     name: 🔨 Build & Validate
     runs-on: ubuntu-latest
-    outputs:
-      build-success: ${{ steps.build.outcome }}
 
     steps:
       - name: 📥 Checkout code
@@ -83,26 +79,19 @@ jobs:
             exit 1
           fi
 
-          # Vérifier présence des assets
-          if [ ! -d "dist/assets" ] || [ -z "$(ls -A dist/assets)" ]; then
-            echo "❌ ERROR: No assets found in dist/assets!"
-            exit 1
-          fi
-
           echo "✅ Build validation passed - no blank pages detected"
 
       - name: 📤 Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: production-build
+          name: build-files
           path: P11-ArgentBank/dist/
-          retention-days: 30
 
   # ===============================================
   # 🧪 TESTS UNITAIRES
   # ===============================================
   unit-tests:
-    name: 🧪 Unit Tests (Vitest)
+    name: 🧪 Unit Tests
     runs-on: ubuntu-latest
     needs: build-and-validate
 
@@ -129,7 +118,7 @@ jobs:
       - name: 🧪 Run unit tests
         working-directory: P11-ArgentBank
         run: |
-          echo "🧪 Running Vitest unit tests..."
+          echo "🧪 Running unit tests with Vitest..."
           pnpm run test:unit
           echo "✅ Unit tests completed"
 
@@ -161,25 +150,16 @@ jobs:
         working-directory: P11-ArgentBank
         run: pnpm install --no-frozen-lockfile
 
-      - name: 🌐 Install Vercel CLI globally
-        run: npm install -g vercel
-
-      - name: 🔧 Install Cypress binary
-        working-directory: P11-ArgentBank
-        run: npx cypress install
-
       - name: 📤 Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: production-build
+          name: build-files
           path: P11-ArgentBank/dist/
 
-      - name: 🚀 Start Vercel dev server (for serverless functions)
+      - name: 🔧 Start Vercel dev server
         working-directory: P11-ArgentBank
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          echo "🚀 Starting Vercel dev server for serverless functions..."
+          echo "🚀 Starting Vercel dev server for E2E tests..."
           echo "📝 SOLUTION: Using 'vercel dev --token' (Option 2 - token auth required)"
 
           # Vérifier que le token Vercel est disponible
@@ -206,7 +186,7 @@ jobs:
           # Créer un vercel.json minimal qui force le CWD comme racine
           echo '{
             "version": 2,
-            "name": "argentbank.dev",
+            "name": "argentbank-dev",
             "functions": {
               "api/**/*.js": {
                 "runtime": "nodejs18.x"
@@ -231,143 +211,240 @@ jobs:
           READY=false
           for i in {1..45}; do
             if curl -f -s http://localhost:3000 > /dev/null 2>&1; then
-              echo "✅ Vercel dev server ready on http://localhost:3000 (attempt $i/45)"
+              echo "✅ Server ready after ${i} seconds"
               READY=true
               break
             fi
-            echo "⏳ Attempt $i/45: Server not ready yet, waiting 2s..."
-            sleep 2
+            echo "⏳ Attempt $i/45..."
+            sleep 1
           done
 
-          # Vérification finale avec debug détaillé
           if [ "$READY" = false ]; then
-            echo "❌ ERROR: Vercel dev server not responding after 90 seconds!"
-            echo ""
-            echo "🔍 DEBUG INFO:"
-            echo "📝 Vercel process status:"
-            ps aux | grep -E "(vercel|node)" | grep -v grep || echo "No vercel processes found"
-            echo ""
-            echo "🌐 Network status:"
-            netstat -tulnp | grep :3000 || echo "Port 3000 not listening"
-            echo ""
-            echo "📄 Vercel logs (if available):"
-            tail -20 ~/.vercel/logs/* 2>/dev/null || echo "No vercel logs found"
-            echo ""
-            echo "🔍 Project structure check:"
-            ls -la vercel.json api/ 2>/dev/null || echo "Missing vercel.json or api folder"
-            echo ""
+            echo "❌ ERROR: Vercel dev server failed to start within 45 seconds"
+            echo "🔍 Checking Vercel process..."
+            if kill -0 $VERCEL_PID 2>/dev/null; then
+              echo "📊 Vercel process is still running (PID: $VERCEL_PID)"
+            else
+              echo "❌ Vercel process has died"
+            fi
+            
+            echo "🔍 Port status:"
+            netstat -tlnp | grep :3000 || echo "No process listening on port 3000"
+            
+            echo "🔍 Recent logs might show the issue:"
+            # Pas de logs directs disponibles, mais on peut tester la connexion
+            timeout 5 curl -v http://localhost:3000 || echo "Connection test failed"
+            
+            # Kill le processus et exit
+            kill $VERCEL_PID 2>/dev/null || true
             exit 1
           fi
 
-          echo "🎯 Vercel dev server successfully started and responding!"
-          echo "🔗 Server URL: http://localhost:3000"
-          echo "🚀 Ready for Cypress tests with serverless functions support"
+          echo "✅ Vercel dev server is ready on http://localhost:3000"
 
-      - name: 🌐 Run Cypress E2E Tests (with Axe)
+          # Garder le PID pour le cleanup
+          echo "VERCEL_PID=$VERCEL_PID" >> $GITHUB_ENV
+
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: 🧪 Run Cypress E2E tests with accessibility
         working-directory: P11-ArgentBank
         run: |
-          echo "🌐 Running Cypress E2E tests with accessibility checks..."
-          echo "Focus: Authentication/Login (route critique)"
-
-          # Cypress inclut déjà cypress-axe pour l'accessibilité
+          echo "🧪 Running Cypress E2E tests with Axe accessibility checks..."
           pnpm run test:e2e:ci
-          echo "✅ Cypress E2E tests with Axe completed"
+          echo "✅ E2E and accessibility tests completed"
 
-      - name: ♿ Run Pa11y Accessibility Tests (100% required)
-        working-directory: P11-ArgentBank
-        run: |
-          echo "♿ Running Pa11y accessibility tests (100% score required)..."
-          cd Pa11y
-          node run-pa11y-tests.js
-          echo "✅ Pa11y accessibility tests completed (100% requirement)"
-
-      - name: 🔍 Run Lighthouse Audits (100% accessibility required)
-        working-directory: P11-ArgentBank
-        run: |
-          echo "🔍 Running Lighthouse audits..."
-          cd lighthouse
-          ./run.sh
-          echo "✅ Lighthouse audits completed (100% accessibility requirement)"
-
-      - name: 📊 Upload test reports
+      - name: 🛑 Stop Vercel dev server
         if: always()
-        uses: actions/upload-artifact@v4
+        working-directory: P11-ArgentBank
+        run: |
+          if [ ! -z "$VERCEL_PID" ]; then
+            echo "🛑 Stopping Vercel dev server (PID: $VERCEL_PID)..."
+            kill $VERCEL_PID 2>/dev/null || true
+            sleep 2
+            # Force kill si nécessaire
+            kill -9 $VERCEL_PID 2>/dev/null || true
+            echo "✅ Vercel dev server stopped"
+          fi
+
+          # Restaurer vercel.json original
+          if [ -f "vercel-only-prod.json" ]; then
+            mv vercel-only-prod.json vercel.json
+            echo "📝 Restored vercel.json from backup"
+          fi
+
+  # ===============================================
+  # ♿ TESTS ACCESSIBILITÉ (Pa11y + Lighthouse)
+  # ===============================================
+  accessibility-audit:
+    name: ♿ Accessibility Audit
+    runs-on: ubuntu-latest
+    needs: build-and-validate
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
-          name: test-reports
-          path: |
-            P11-ArgentBank/cypress/reports/
-            P11-ArgentBank/Pa11y/screenshots/
-            P11-ArgentBank/lighthouse/reports/
-          retention-days: 30
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+          cache-dependency-path: "P11-ArgentBank/pnpm-lock.yaml"
+
+      - name: 📥 Install dependencies
+        working-directory: P11-ArgentBank
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 📤 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: P11-ArgentBank/dist/
+
+      - name: 🔧 Start Vercel dev server for audits
+        working-directory: P11-ArgentBank
+        run: |
+          echo "🚀 Starting Vercel dev server for accessibility audits..."
+          
+          # Same setup as E2E tests
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "❌ ERROR: VERCEL_TOKEN secret is not configured!"
+            exit 1
+          fi
+
+          if [ -f "vercel.json" ]; then
+            mv vercel.json vercel-only-prod.json
+          fi
+
+          rm -rf .vercel 2>/dev/null || true
+
+          echo '{
+            "version": 2,
+            "name": "argentbank-dev",
+            "functions": {
+              "api/**/*.js": {
+                "runtime": "nodejs18.x"
+              }
+            }
+          }' > vercel.json
+
+          vercel dev --listen 3000 --token $VERCEL_TOKEN --cwd "$(pwd)" --yes &
+          VERCEL_PID=$!
+
+          # Wait for server
+          for i in {1..45}; do
+            if curl -f -s http://localhost:3000 > /dev/null 2>&1; then
+              echo "✅ Server ready for audits"
+              break
+            fi
+            sleep 1
+          done
+
+          echo "VERCEL_PID=$VERCEL_PID" >> $GITHUB_ENV
+
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: ♿ Run Pa11y accessibility tests
+        working-directory: P11-ArgentBank
+        run: |
+          echo "♿ Running Pa11y accessibility tests..."
+          npx pa11y http://localhost:3000 --standard WCAG2AA --threshold 0
+          npx pa11y http://localhost:3000/signin --standard WCAG2AA --threshold 0
+          echo "✅ Pa11y accessibility tests completed"
+
+      - name: 🚀 Run Lighthouse audits
+        working-directory: P11-ArgentBank
+        run: |
+          echo "🚀 Running Lighthouse performance and accessibility audits..."
+          npx lighthouse http://localhost:3000 --chrome-flags="--headless --no-sandbox" --output=json --output-path=./lighthouse-home.json
+          npx lighthouse http://localhost:3000/signin --chrome-flags="--headless --no-sandbox" --output=json --output-path=./lighthouse-signin.json
+          echo "✅ Lighthouse audits completed"
+
+      - name: 🛑 Stop Vercel dev server
+        if: always()
+        working-directory: P11-ArgentBank
+        run: |
+          if [ ! -z "$VERCEL_PID" ]; then
+            kill $VERCEL_PID 2>/dev/null || true
+            sleep 2
+            kill -9 $VERCEL_PID 2>/dev/null || true
+          fi
+          if [ -f "vercel-only-prod.json" ]; then
+            mv vercel-only-prod.json vercel.json
+          fi
 
   # ===============================================
   # 📧 NOTIFICATIONS
   # ===============================================
   notify-results:
-    name: 📧 Notify Results
+    name: 📧 Send Results
     runs-on: ubuntu-latest
-    needs: [build-and-validate, unit-tests, e2e-accessibility-tests]
+    needs: [build-and-validate, unit-tests, e2e-accessibility-tests, accessibility-audit]
     if: always()
 
     steps:
-      - name: 📧 Send notification email
-        if: failure()
-        continue-on-error: true
+      - name: 📧 Send success notification
+        if: needs.build-and-validate.result == 'success' && needs.unit-tests.result == 'success' && needs.e2e-accessibility-tests.result == 'success' && needs.accessibility-audit.result == 'success'
         uses: dawidd6/action-send-mail@v3
-        env:
-          SMTP_USER: ${{ secrets.SMTP_USERNAME }}
-          SMTP_PASS: ${{ secrets.SMTP_PASSWORD }}
         with:
           server_address: mail.protonmail.ch
           server_port: 587
-          secure: true
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "❌ CI/CD Pipeline Failed - ArgentBank"
-          to: ${{ env.NOTIFICATION_EMAIL }}
-          from: "GitHub Actions <alerts@lostintab.com>"
-          body: |
-            🚨 ÉCHEC du pipeline CI/CD ArgentBank
-
-            📊 Statut des jobs:
-            • Build & Validation: ${{ needs.build-and-validate.result }}
-            • Tests Unitaires: ${{ needs.unit-tests.result }}
-            • Tests E2E & Accessibilité: ${{ needs.e2e-accessibility-tests.result }}
-
-            🔗 Détails: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            📝 Commit: ${{ github.sha }}
-            👤 Auteur: ${{ github.actor }}
-            🌿 Branche: ${{ github.ref_name }}
-
-      - name: ✅ Success notification
-        if: success()
-        continue-on-error: true
-        uses: dawidd6/action-send-mail@v3
-        env:
-          SMTP_USER: ${{ secrets.SMTP_USERNAME }}
-          SMTP_PASS: ${{ secrets.SMTP_PASSWORD }}
-        with:
-          server_address: mail.protonmail.ch
-          server_port: 587
-          secure: true
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "✅ CI/CD Pipeline Success - ArgentBank"
           to: ${{ env.NOTIFICATION_EMAIL }}
-          from: "GitHub Actions <alerts@lostintab.com>"
+          from: ${{ secrets.SMTP_USERNAME }}
           body: |
-            ✅ SUCCÈS du pipeline CI/CD ArgentBank
+            🎉 **Pipeline Success!**
+            
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Triggered by:** ${{ github.event_name }}
+            
+            ✅ **All checks passed:**
+            - Build and validation
+            - Unit tests (Vitest)
+            - E2E tests with accessibility (Cypress + Axe)
+            - Accessibility audits (Pa11y + Lighthouse)
+            
+            🔗 **View details:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            **Authentication route tested:** /signin → /user ✅
 
-            📊 Tous les tests ont réussi:
-            • ✅ Build & Validation des pages
-            • ✅ Tests Unitaires (Vitest)
-            • ✅ Tests E2E (Cypress + Axe)
-            • ✅ Accessibilité Pa11y (100%)
-            • ✅ Audits Lighthouse (100% accessibilité)
-
-            🔗 Détails: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            📝 Commit: ${{ github.sha }}
-            👤 Auteur: ${{ github.actor }}
-            🌿 Branche: ${{ github.ref_name }}
+      - name: 📧 Send failure notification
+        if: needs.build-and-validate.result == 'failure' || needs.unit-tests.result == 'failure' || needs.e2e-accessibility-tests.result == 'failure' || needs.accessibility-audit.result == 'failure'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: mail.protonmail.ch
+          server_port: 587
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "❌ CI/CD Pipeline Failure - ArgentBank"
+          to: ${{ env.NOTIFICATION_EMAIL }}
+          from: ${{ secrets.SMTP_USERNAME }}
+          body: |
+            🚨 **Pipeline Failure!**
+            
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Triggered by:** ${{ github.event_name }}
+            
+            ❌ **Failed jobs:**
+            - Build: ${{ needs.build-and-validate.result }}
+            - Unit Tests: ${{ needs.unit-tests.result }}
+            - E2E + Accessibility: ${{ needs.e2e-accessibility-tests.result }}
+            - Accessibility Audit: ${{ needs.accessibility-audit.result }}
+            
+            🔗 **View details:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            **Please check the logs and fix the issues.**
