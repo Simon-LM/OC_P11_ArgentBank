@@ -35,10 +35,16 @@
     "clean:copilot": "bash scripts/clean-copilot-backups.sh",
     "sync": "bash scripts/sync-vscode.sh",
     "sync:pnpm": "bash scripts/sync-pnpm.sh",
-    "pre-commit": "bash scripts/clean-copilot-backups.sh && bash scripts/sync-pnpm.sh && pnpm run lint:check && pnpm run format",
-    "commit-ready": "pnpm run clean:copilot && pnpm run sync:pnpm && git status",
+    "pre-commit": "bash scripts/clean-copilot-backups.sh && bash scripts/sync-pnpm.sh && bash scripts/vercel-config.sh prod && pnpm run lint:check && pnpm run format",
+    "commit-ready": "pnpm vercel:config prod && git status",
+    "clean:manual": "pnpm run clean:copilot && pnpm run sync:pnpm && echo '✅ Nettoyage manuel terminé'",
     "format": "prettier --write .",
-    "lint:check": "eslint . --max-warnings 0"
+    "lint:check": "eslint . --max-warnings 0",
+    "vercel:dev": "bash scripts/vercel-config.sh dev && vercel dev",
+    "vercel:prod": "bash scripts/vercel-config.sh prod && vercel --prod",
+    "vercel:config": "bash scripts/vercel-config.sh",
+    "vercel:clean": "bash scripts/vercel-config.sh clean",
+    "vercel:commit": "bash scripts/vercel-config.sh prod && echo '✅ vercel.json restauré pour le commit'"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
