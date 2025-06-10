@@ -1,32 +1,60 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.node.json"
+    "files": [],
+    "references": [
+        {
+            "path": "./tsconfig.app.json"
+        },
+        {
+            "path": "./tsconfig.node.json"
+        }
+    ],
+    "compilerOptions": {
+        "baseUrl": "src",
+        "types": [
+            "vitest/globals",
+            "@testing-library/jest-dom",
+            "@prisma/client"
+        ],
+        "jsx": "react-jsx",
+        "module": "esnext",
+        "target": "esnext",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "@assets/*": [
+                "src/assets/*"
+            ],
+            "@components/*": [
+                "src/components/*"
+            ],
+            "@hooks/*": [
+                "src/hooks/*"
+            ],
+            "@layouts/*": [
+                "src/layouts/*"
+            ],
+            "@pages/*": [
+                "src/pages/*"
+            ],
+            "@store/*": [
+                "src/store/*"
+            ],
+            "@styles/*": [
+                "src/styles/*"
+            ],
+            "@types/*": [
+                "src/types/*"
+            ],
+            "@utils/*": [
+                "src/utils/*"
+            ],
+            "@generated/*": [
+                "src/generated/*"
+            ],
+            "@mockData/*": [
+                "src/mockData/*"
+            ]
+        }
     }
-  ],
-  "compilerOptions": {
-    "baseUrl": "src",
-    "types": ["vitest/globals", "@testing-library/jest-dom", "@prisma/client"],
-    "jsx": "react-jsx",
-    "module": "esnext",
-    "target": "esnext",
-    "paths": {
-      "@/*": ["src/*"],
-      "@assets/*": ["src/assets/*"],
-      "@components/*": ["src/components/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@layouts/*": ["src/layouts/*"],
-      "@pages/*": ["src/pages/*"],
-      "@store/*": ["src/store/*"],
-      "@styles/*": ["src/styles/*"],
-      "@types/*": ["src/types/*"],
-      "@utils/*": ["src/utils/*"],
-      "@generated/*": ["src/generated/*"],
-      "@mockData/*": ["src/mockData/*"]
-    }
-  }
 }

@@ -66,3 +66,10 @@ cypress/screenshots/
 cypress/videos/
 coverage/
 lighthouse/reports/
+
+# Fichiers CSS générés automatiquement par les plugins
+# (on utilise uniquement les .scss pour les CSS modules)
+src/styles/main.css
+src/styles/main.css.map
+*.css.map
+!normalize.css
