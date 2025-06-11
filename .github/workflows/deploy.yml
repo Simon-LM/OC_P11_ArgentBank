@@ -67,10 +67,9 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          echo "=== Deploying with Vercel automation ==="
+          echo "=== Deploying Preview with explicit token ==="
           echo "Current directory: $(pwd)"
-          echo "Files present: $(ls -la)"
-          pnpm run vercel:prod
+          pnpm run vercel:deploy:preview
 
   deploy-production:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -129,5 +128,5 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          echo "=== Deploying to production with automation ==="
-          pnpm run vercel:prod
+          echo "=== Deploying to production with explicit token ==="
+          pnpm run vercel:deploy:production

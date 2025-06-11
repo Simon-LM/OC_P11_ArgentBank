@@ -43,6 +43,9 @@
     "lint:check": "eslint . --max-warnings 0",
     "vercel:dev": "bash scripts/vercel-config.sh dev && vercel dev",
     "vercel:prod": "bash scripts/vercel-config.sh prod && vercel --prod",
+    "vercel:deploy": "bash scripts/vercel-deploy.sh",
+    "vercel:deploy:preview": "bash scripts/vercel-deploy.sh preview",
+    "vercel:deploy:production": "bash scripts/vercel-deploy.sh production",
     "vercel:config": "bash scripts/vercel-config.sh",
     "vercel:clean": "bash scripts/vercel-config.sh clean",
     "vercel:commit": "bash scripts/vercel-config.sh prod && echo '✅ vercel.json restauré pour le commit'"
