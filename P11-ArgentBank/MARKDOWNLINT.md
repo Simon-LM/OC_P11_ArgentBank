@@ -13,6 +13,8 @@ Les règles suivantes ont été désactivées car elles ne posent pas de problè
 - **MD024** : Titres dupliqués (acceptable dans différentes sections)
 - **MD026** : Ponctuation dans les titres (les ":" sont courants et acceptables)
 - **MD031** : Lignes vides autour des blocs de code (pas critique pour la lisibilité)
+- **MD032** : Lignes vides autour des listes (pas critique pour GitHub)
+- **MD034** : URLs nues dans les tableaux (acceptable sur GitHub, liens cliquables)
 - **MD036** : Emphase utilisée comme titre (acceptable dans certains contextes)
 - **MD037** : Espaces dans les marqueurs d'emphase (bien géré par GitHub)
 - **MD040** : Langue des blocs de code (pas toujours nécessaire)
