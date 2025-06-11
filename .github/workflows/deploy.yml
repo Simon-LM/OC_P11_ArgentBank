@@ -68,7 +68,8 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           echo "=== Deploying with Vercel automation ==="
-          cd P11-ArgentBank
+          echo "Current directory: $(pwd)"
+          echo "Files present: $(ls -la)"
           pnpm run vercel:prod
 
   deploy-production:
