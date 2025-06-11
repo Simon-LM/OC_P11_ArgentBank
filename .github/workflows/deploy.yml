@@ -61,10 +61,35 @@ jobs:
       - name: Restore vercel.json for deployment
         run: pnpm vercel:config prod
 
+      - name: Debug - Check files and config
+        working-directory: .
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "=== Current directory structure ==="
+          ls -la
+          echo "=== P11-ArgentBank directory ==="
+          ls -la P11-ArgentBank/
+          echo "=== Vercel config content ==="
+          cat P11-ArgentBank/vercel.json || echo "No vercel.json found"
+          echo "=== Environment variables ==="
+          echo "VERCEL_ORG_ID length: ${#VERCEL_ORG_ID}"
+          echo "VERCEL_PROJECT_ID length: ${#VERCEL_PROJECT_ID}"
+          echo "VERCEL_TOKEN length: ${#VERCEL_TOKEN}"
+
       - name: Deploy to Vercel Preview
         working-directory: .
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npx vercel --token=${{ secrets.VERCEL_TOKEN }} --yes
+          npx vercel --token=${{ secrets.VERCEL_TOKEN }} \
+            --org-id=${{ secrets.VERCEL_ORG_ID }} \
+            --project-id=${{ secrets.VERCEL_PROJECT_ID }} \
+            --force
 
   deploy-production:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -119,5 +144,13 @@ jobs:
 
       - name: Deploy to Vercel Production
         working-directory: .
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npx vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
+          npx vercel --token=${{ secrets.VERCEL_TOKEN }} \
+            --org-id=${{ secrets.VERCEL_ORG_ID }} \
+            --project-id=${{ secrets.VERCEL_PROJECT_ID }} \
+            --prod \
+            --force
