@@ -7,7 +7,21 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  {
+    ignores: [
+      "dist",
+      "coverage/**",
+      "src/generated/**",
+      "cypress/support/cypress-axe.d.ts",
+      "lighthouse/reports/**",
+      "Axe/reports/**",
+      "cypress/reports/**",
+      "cypress/screenshots/**",
+      "cypress/videos/**",
+      "node_modules/**",
+      ".pnpm-store/**",
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
