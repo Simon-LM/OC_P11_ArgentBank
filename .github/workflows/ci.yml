@@ -47,7 +47,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: pnpm prisma generate
+        run: |
+          export DATABASE_URL="file:./dev.db"
+          pnpm prisma generate
 
       - name: Run ESLint
         run: pnpm run lint
@@ -89,7 +91,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: pnpm prisma generate
+        run: |
+          export DATABASE_URL="file:./dev.db"
+          pnpm prisma generate
 
       - name: Run TypeScript check
         run: pnpm run typecheck
@@ -131,7 +135,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: pnpm prisma generate
+        run: |
+          export DATABASE_URL="file:./dev.db"
+          pnpm prisma generate
 
       - name: Run tests
         run: pnpm run test
@@ -173,13 +179,15 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: pnpm prisma generate
+        run: |
+          export DATABASE_URL="file:./dev.db"
+          pnpm prisma generate
 
       - name: Build project
         run: pnpm run build
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-files
           path: P11-ArgentBank/dist/
