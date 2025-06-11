@@ -48,7 +48,7 @@ jobs:
 
       - name: Generate Prisma client
         run: |
-          export DATABASE_URL="file:./dev.db"
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
           pnpm prisma generate
 
       - name: Run ESLint
@@ -92,7 +92,7 @@ jobs:
 
       - name: Generate Prisma client
         run: |
-          export DATABASE_URL="file:./dev.db"
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
           pnpm prisma generate
 
       - name: Run TypeScript check
@@ -136,7 +136,7 @@ jobs:
 
       - name: Generate Prisma client
         run: |
-          export DATABASE_URL="file:./dev.db"
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
           pnpm prisma generate
 
       - name: Run tests
@@ -180,7 +180,7 @@ jobs:
 
       - name: Generate Prisma client
         run: |
-          export DATABASE_URL="file:./dev.db"
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
           pnpm prisma generate
 
       - name: Build project
