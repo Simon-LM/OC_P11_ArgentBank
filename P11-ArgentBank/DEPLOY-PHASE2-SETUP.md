@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # 🚀 Phase 2 : Configuration Déploiement Automatique Vercel
 
 ## 📋 Secrets GitHub requis
