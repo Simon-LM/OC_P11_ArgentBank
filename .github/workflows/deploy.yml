@@ -61,13 +61,15 @@ jobs:
       - name: Restore vercel.json for deployment
         run: pnpm vercel:config prod
 
-      - name: Deploy to Vercel Preview
+      - name: Deploy to Vercel Preview using automation
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npx vercel --yes
+          echo "=== Deploying with Vercel automation ==="
+          cd P11-ArgentBank
+          pnpm run vercel:prod
 
   deploy-production:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -126,4 +128,5 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npx vercel --prod --yes
+          echo "=== Deploying to production with automation ==="
+          pnpm run vercel:prod
