@@ -34,6 +34,7 @@
     "clean": "bash scripts/clean-before-commit.sh",
     "clean:copilot": "bash scripts/clean-copilot-backups.sh",
     "sync": "bash scripts/sync-vscode.sh",
+    "vercel:secrets": "bash scripts/get-vercel-secrets.sh",
     "sync:pnpm": "bash scripts/sync-pnpm.sh",
     "pre-commit": "bash scripts/clean-copilot-backups.sh && bash scripts/sync-pnpm.sh && bash scripts/vercel-config.sh prod && pnpm run lint:check && pnpm run format",
     "commit-ready": "pnpm vercel:config prod && git status",
