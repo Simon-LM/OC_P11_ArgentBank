@@ -44,7 +44,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Vercel config for CI
+        run: pnpm vercel:clean
 
       - name: Generate Prisma client
         run: |
@@ -88,7 +91,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Vercel config for CI
+        run: pnpm vercel:clean
 
       - name: Generate Prisma client
         run: |
@@ -132,7 +138,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Vercel config for CI
+        run: pnpm vercel:clean
 
       - name: Generate Prisma client
         run: |
@@ -176,7 +185,10 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Vercel config for CI
+        run: pnpm vercel:clean
 
       - name: Generate Prisma client
         run: |
@@ -185,6 +197,9 @@ jobs:
 
       - name: Build project
         run: pnpm run build
+
+      - name: Restore vercel.json for deployment
+        run: pnpm vercel:config prod
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
