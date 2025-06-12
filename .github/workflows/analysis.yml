@@ -1,5 +1,7 @@
 # @format
 
+# Test: Trigger CI workflow after pnpm registry issues resolved
+
 name: 📊 Analysis
 
 on:
