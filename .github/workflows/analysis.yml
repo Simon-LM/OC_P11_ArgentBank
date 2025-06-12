@@ -17,7 +17,7 @@ jobs:
   coverage:
     name: 📊 Coverage Report
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -30,8 +30,8 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'pnpm'
+          node-version: "18"
+          cache: "pnpm"
           cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
@@ -41,10 +41,10 @@ jobs:
         run: |
           export DATABASE_URL="postgresql://user:password@localhost:5432/test"
           pnpm exec prisma generate
-        
+
       - name: 📊 Run tests with coverage
         run: pnpm run test:coverage
-        
+
       - name: 📤 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -52,7 +52,7 @@ jobs:
           files: ./coverage/clover.xml
           fail_ci_if_error: false
           verbose: true
-          
+
       - name: 💬 Comment PR with coverage
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -60,7 +60,7 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
+
             try {
               const coveragePath = path.join('P11-ArgentBank', 'coverage', 'coverage-summary.json');
               const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
@@ -93,7 +93,7 @@ jobs:
   bundle-analysis:
     name: 📦 Bundle Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -106,8 +106,8 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'pnpm'
+          node-version: "18"
+          cache: "pnpm"
           cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
@@ -131,7 +131,7 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
+
             try {
               const distPath = path.join('P11-ArgentBank', 'dist');
               const statsPath = path.join(distPath, 'stats.json');
@@ -182,7 +182,7 @@ jobs:
   security-audit:
     name: 🔒 Security Audit
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -195,8 +195,8 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'pnpm'
+          node-version: "18"
+          cache: "pnpm"
           cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
@@ -206,10 +206,10 @@ jobs:
         run: |
           echo "## 🔒 Security Audit Report" > security-report.md
           echo "" >> security-report.md
-          
+
           # pnpm audit with JSON output
           pnpm audit --json > audit.json || true
-          
+
           # Check if there are vulnerabilities
           if [ -s audit.json ]; then
             echo "### Vulnerabilities Found:" >> security-report.md
@@ -219,7 +219,7 @@ jobs:
           else
             echo "✅ No vulnerabilities found!" >> security-report.md
           fi
-          
+
           # Check for outdated packages
           echo "" >> security-report.md
           echo "### Outdated Packages:" >> security-report.md
@@ -244,7 +244,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            
+
             try {
               const report = fs.readFileSync('P11-ArgentBank/security-report.md', 'utf8');
               
