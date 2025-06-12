@@ -1,6 +1,6 @@
 # @format
 
-# Test: Trigger CI workflow after pnpm registry issues resolved
+# Test: Retry CI workflow after npm registry outage
 
 name: 📊 Analysis
 
