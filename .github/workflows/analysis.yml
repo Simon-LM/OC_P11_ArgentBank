@@ -1,0 +1,259 @@
+# @format
+
+name: 📊 Analysis
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: P11-ArgentBank
+
+jobs:
+  coverage:
+    name: 📊 Coverage Report
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🗃️ Generate Prisma Client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/test"
+          pnpm exec prisma generate
+        
+      - name: 📊 Run tests with coverage
+        run: pnpm run test:coverage
+        
+      - name: 📤 Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: P11-ArgentBank/coverage
+          files: ./coverage/clover.xml
+          fail_ci_if_error: false
+          verbose: true
+          
+      - name: 💬 Comment PR with coverage
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              const coveragePath = path.join('P11-ArgentBank', 'coverage', 'coverage-summary.json');
+              const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+              
+              const total = coverage.total;
+              const coveragePercent = total.lines.pct;
+              
+              const comment = `## 📊 Coverage Report
+              
+              | Metric | Coverage |
+              |--------|----------|
+              | Lines | ${total.lines.pct}% (${total.lines.covered}/${total.lines.total}) |
+              | Functions | ${total.functions.pct}% (${total.functions.covered}/${total.functions.total}) |
+              | Branches | ${total.branches.pct}% (${total.branches.covered}/${total.branches.total}) |
+              | Statements | ${total.statements.pct}% (${total.statements.covered}/${total.statements.total}) |
+              
+              ${coveragePercent >= 80 ? '✅' : coveragePercent >= 60 ? '⚠️' : '❌'} **Overall Coverage: ${coveragePercent}%**
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              console.log('Coverage file not found or invalid:', error.message);
+            }
+
+  bundle-analysis:
+    name: 📦 Bundle Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🗃️ Generate Prisma Client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/test"
+          pnpm exec prisma generate
+
+      - name: 🏗️ Build project
+        run: pnpm run build
+
+      - name: 📦 Analyze bundle size
+        run: pnpm run build:analyze
+        continue-on-error: true
+
+      - name: 📊 Bundle size report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              const distPath = path.join('P11-ArgentBank', 'dist');
+              const statsPath = path.join(distPath, 'stats.json');
+              
+              // Calculate total bundle size
+              let totalSize = 0;
+              const files = fs.readdirSync(distPath, { withFileTypes: true });
+              
+              const bundleInfo = files
+                .filter(file => file.isFile() && (file.name.endsWith('.js') || file.name.endsWith('.css')))
+                .map(file => {
+                  const filePath = path.join(distPath, file.name);
+                  const stats = fs.statSync(filePath);
+                  totalSize += stats.size;
+                  return {
+                    name: file.name,
+                    size: (stats.size / 1024).toFixed(2) + ' KB'
+                  };
+                });
+              
+              const totalSizeKB = (totalSize / 1024).toFixed(2);
+              const isLarge = totalSize > 1024 * 1024; // > 1MB
+              
+              const comment = `## 📦 Bundle Analysis
+              
+              **Total Bundle Size: ${totalSizeKB} KB** ${isLarge ? '⚠️ Large bundle detected' : '✅'}
+              
+              ### Main Files:
+              ${bundleInfo.map(file => `- **${file.name}**: ${file.size}`).join('\n')}
+              
+              ${isLarge ? '\n⚠️ Consider code splitting or lazy loading for better performance.' : ''}
+              `;
+              
+              if (context.payload.pull_request) {
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+              }
+              
+              console.log(comment);
+            } catch (error) {
+              console.log('Bundle analysis failed:', error.message);
+            }
+
+  security-audit:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔍 Run security audit
+        run: |
+          echo "## 🔒 Security Audit Report" > security-report.md
+          echo "" >> security-report.md
+          
+          # pnpm audit with JSON output
+          pnpm audit --json > audit.json || true
+          
+          # Check if there are vulnerabilities
+          if [ -s audit.json ]; then
+            echo "### Vulnerabilities Found:" >> security-report.md
+            echo "\`\`\`json" >> security-report.md
+            head -20 audit.json >> security-report.md
+            echo "\`\`\`" >> security-report.md
+          else
+            echo "✅ No vulnerabilities found!" >> security-report.md
+          fi
+          
+          # Check for outdated packages
+          echo "" >> security-report.md
+          echo "### Outdated Packages:" >> security-report.md
+          pnpm outdated --long > outdated.txt || true
+          if [ -s outdated.txt ]; then
+            echo "\`\`\`" >> security-report.md
+            head -10 outdated.txt >> security-report.md
+            echo "\`\`\`" >> security-report.md
+          else
+            echo "✅ All packages are up to date!" >> security-report.md
+          fi
+
+      - name: 📤 Upload security report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: P11-ArgentBank/security-report.md
+
+      - name: 💬 Comment PR with security summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const report = fs.readFileSync('P11-ArgentBank/security-report.md', 'utf8');
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: report
+              });
+            } catch (error) {
+              console.log('Security report not found:', error.message);
+            }

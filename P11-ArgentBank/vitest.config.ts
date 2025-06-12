@@ -21,6 +21,9 @@ export default defineConfig({
       tsconfig: "./tsconfig.json",
     },
     coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html", "clover", "json-summary"],
+      reportsDirectory: "./coverage",
       exclude: [
         "api/lib/blacklist.js",
         "src/mockData/users.ts",

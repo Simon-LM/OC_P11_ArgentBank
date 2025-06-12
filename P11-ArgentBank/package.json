@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:dev": "vitest --mode development",
     "test:watch": "vitest watch",
     "typecheck": "tsc --noEmit",
