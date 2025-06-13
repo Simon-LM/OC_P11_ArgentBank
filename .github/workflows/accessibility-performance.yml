@@ -2,9 +2,6 @@
 
 name: ♿ Accessibility & Performance
 
-# Test comment: verify workflow is in stable state
-# Added test comment to verify we are back to the correct workflow state
-
 permissions:
   contents: read
   pull-requests: write
@@ -70,25 +67,23 @@ jobs:
       - name: 🔧 Setup Vercel for production deployment
         run: pnpm run vercel:config prod
 
-      - name: 🚀 Deploy to Vercel Preview
+      - name: 🚀 Deploy to Vercel Production
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
         run: |
-          echo "=== Deploying Preview with explicit token ==="
+          echo "=== Deploying to production with vercel --prod ==="
           echo "Current directory: $(pwd)"
-          pnpm run vercel:deploy:preview
+          echo "Root Directory configured: P11-ArgentBank"
 
-          # Use production URL that we know exists
-          PREVIEW_URL="https://slm-argentbank.vercel.app"
-           
-          echo "VERCEL_PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
-          echo "Preview URL: $PREVIEW_URL"
+          # Deploy to production using vercel CLI directly
+          vercel --prod --yes --token $VERCEL_TOKEN
 
-      - name: 🧹 Clean vercel.json after deployment
-        run: pnpm run vercel:clean
+          # Set the production URL for Cypress tests
+          PRODUCTION_URL="https://slm-argentbank.vercel.app"
+          echo "VERCEL_PREVIEW_URL=$PRODUCTION_URL" >> $GITHUB_ENV
+          echo "Production URL: $PRODUCTION_URL"
 
       - name: 🏃 Run Cypress E2E tests
         env:
@@ -224,7 +219,7 @@ jobs:
           {
             "ci": {
               "collect": {
-                "url": ["http://localhost:4173", "http://localhost:4173/sign-in"],
+                "url": ["http://localhost:4173", "http://localhost:4173/signin"],
                 "startServerCommand": "",
                 "numberOfRuns": 3
               },
@@ -384,7 +379,7 @@ jobs:
 
           # Test Sign-in page
           echo "Testing Sign-in page..."
-          if pa11y http://localhost:4173/sign-in --reporter json > pa11y-signin.json 2>&1; then
+          if pa11y http://localhost:4173/signin --reporter json > pa11y-signin.json 2>&1; then
             issues_count=$(jq length pa11y-signin.json 2>/dev/null || echo "0")
             if [ "$issues_count" = "0" ]; then
               echo "- 🔐 **Sign-in Page**: ✅ No accessibility issues found" >> pa11y-summary.md

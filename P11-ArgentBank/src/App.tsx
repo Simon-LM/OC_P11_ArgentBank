@@ -41,7 +41,7 @@ function AppContent() {
         if (location.pathname.toLowerCase() !== "/user") {
           let pageTitle = "Argent Bank - Home";
 
-          if (location.pathname === "/signIn") {
+          if (location.pathname === "/signin") {
             pageTitle = "Argent Bank - Sign In";
           } else if (location.pathname === "/user") {
             pageTitle = "Argent Bank - User Dashboard";
