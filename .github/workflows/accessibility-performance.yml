@@ -64,21 +64,18 @@ jobs:
       - name: 📦 Install Vercel CLI
         run: npm install -g vercel@latest
 
-      - name: 🔧 Setup Vercel for production deployment
-        run: pnpm run vercel:config prod
-
-      - name: 🚀 Deploy to Vercel Production
+      - name: Deploy to Vercel Production
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          echo "=== Deploying to production with vercel --prod ==="
+          echo "=== Deploying to production with pnpm run vercel:prod ==="
           echo "Current directory: $(pwd)"
           echo "Root Directory configured: P11-ArgentBank"
 
-          # Deploy to production using vercel CLI directly
-          vercel --prod --yes --token $VERCEL_TOKEN
+          # Deploy using the integrated script (creates vercel.json + deploys)
+          pnpm run vercel:prod
 
           # Set the production URL for Cypress tests
           PRODUCTION_URL="https://slm-argentbank.vercel.app"
