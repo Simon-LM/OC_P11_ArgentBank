@@ -69,7 +69,7 @@ function AppContent() {
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/signin" element={<SignIn />} />
             <Route
               path="/user"
               element={

@@ -12,7 +12,7 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
-        cy.visit("/signIn");
+        cy.visit("/signin");
         cy.get("input#email").type(validUser.email);
         cy.get("input#password").type(validUser.password);
         cy.get("form").contains("button", "Connect").click();

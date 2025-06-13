@@ -29,7 +29,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
-        cy.visit("/signIn");
+        cy.visit("/signin");
 
         // Injecter axe-core pour les tests d'accessibilité après le chargement de la page
         cy.injectAxe();
@@ -75,7 +75,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
         // Connexion
-        cy.visit("/signIn");
+        cy.visit("/signin");
         cy.get('[data-cy="email-input"], input#email').type(validUser.email);
         cy.get('[data-cy="password-input"], input#password').type(
           validUser.password,
@@ -120,7 +120,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
         // Connexion
-        cy.visit("/signIn");
+        cy.visit("/signin");
         cy.get('[data-cy="email-input"], input#email').type(validUser.email);
         cy.get('[data-cy="password-input"], input#password').type(
           validUser.password,
@@ -186,7 +186,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
         // Connexion
-        cy.visit("/signIn");
+        cy.visit("/signin");
         cy.get('[data-cy="email-input"], input#email').type(validUser.email);
         cy.get('[data-cy="password-input"], input#password').type(
           validUser.password,
@@ -251,7 +251,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
-        cy.visit("/signIn");
+        cy.visit("/signin");
 
         // Injecter axe-core après le chargement de la page
         cy.injectAxe();
@@ -269,7 +269,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
         cy.wait("@loginNetworkError");
 
         // Vérifier que l'utilisateur reste sur la page de connexion
-        cy.url().should("include", "/signIn");
+        cy.url().should("include", "/signin");
 
         // Vérifier qu'un message d'erreur est affiché (si implémenté)
         cy.get('[data-cy="error-message"], .error, [class*="error"]').should(
@@ -298,7 +298,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
     });
 
     // Page de connexion
-    cy.visit("/signIn");
+    cy.visit("/signin");
     cy.injectAxe();
     cy.checkA11y(undefined, {
       rules: {
@@ -337,7 +337,7 @@ describe("Tests Cross-Browser - Compatibilité Mobile", () => {
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
-        cy.visit("/signIn");
+        cy.visit("/signin");
 
         // Injecter axe-core pour les tests d'accessibilité après le chargement de la page
         cy.injectAxe();
