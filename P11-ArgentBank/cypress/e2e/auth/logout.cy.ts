@@ -21,7 +21,7 @@ describe("Déconnexion de l'utilisateur", () => {
       }
 
       // Visiter la page de connexion
-      cy.visit("/signin");
+      cy.visit("/signIn");
       cy.get("input#email").type(validUser.email);
       cy.get("input#password").type(validUser.password);
       cy.get("form").contains("button", "Connect").click();

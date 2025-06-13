@@ -8,7 +8,7 @@ import type { User } from "../../support/types";
 describe("Authentification", () => {
   beforeEach(() => {
     // Visiter la page de connexion avant chaque test de ce bloc
-    cy.visit("/signin");
+    cy.visit("/signIn");
     // Charger les fixtures utilisateur
     cy.fixture<User[]>("users.json").as("usersData");
   });
@@ -94,7 +94,7 @@ describe("Authentification", () => {
     // Vérifications de l'erreur
     // L'URL ne devrait pas changer ou rediriger vers /user
     cy.url().should("not.include", "/user");
-    cy.url().should("include", "/signin"); // S'assurer qu'on est toujours sur la page de connexion
+    cy.url().should("include", "/signIn"); // S'assurer qu'on est toujours sur la page de connexion
 
     // Vérifier que le message d'erreur spécifique est visible
     // Ce message vient de la fonction getErrorMessage dans SignIn.tsx pour une erreur 401

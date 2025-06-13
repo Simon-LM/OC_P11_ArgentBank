@@ -24,7 +24,7 @@ describe("Gestion des erreurs réseau", () => {
         throw new Error("Utilisateur valide introuvable dans les fixtures");
       }
 
-      cy.visit("/signin");
+      cy.visit("/signIn");
 
       // Injecter axe pour les tests d'accessibilité
       cy.injectAxe();
@@ -52,7 +52,7 @@ describe("Gestion des erreurs réseau", () => {
         .and("contain.text", "Unable to login. Please check your credentials.");
 
       // Vérifier que l'utilisateur reste sur la page de connexion
-      cy.url().should("include", "/signin");
+      cy.url().should("include", "/signIn");
 
       // Test d'accessibilité avec message d'erreur
       cy.checkA11y(undefined, {
@@ -85,7 +85,7 @@ describe("Gestion des erreurs réseau", () => {
         body: { error: "Internal server error" },
       }).as("profileError");
 
-      cy.visit("/signin");
+      cy.visit("/signIn");
 
       // Connexion
       cy.get('[data-cy="email-input"], input#email').type(validUser.email);
@@ -149,7 +149,7 @@ describe("Gestion des erreurs réseau", () => {
         body: { error: "Service unavailable" },
       }).as("accountsError");
 
-      cy.visit("/signin");
+      cy.visit("/signIn");
 
       // Connexion
       cy.get('[data-cy="email-input"], input#email').type(validUser.email);
@@ -186,7 +186,7 @@ describe("Gestion des erreurs réseau", () => {
         forceNetworkError: true,
       }).as("loginTimeout");
 
-      cy.visit("/signin");
+      cy.visit("/signIn");
 
       cy.get('[data-cy="email-input"], input#email').type(validUser.email);
       cy.get('[data-cy="password-input"], input#password').type(
@@ -227,7 +227,7 @@ describe("Gestion des erreurs réseau", () => {
         },
       }).as("slowLogin");
 
-      cy.visit("/signin");
+      cy.visit("/signIn");
 
       cy.get('[data-cy="email-input"], input#email').type(validUser.email);
       cy.get('[data-cy="password-input"], input#password').type(
@@ -324,7 +324,7 @@ describe("Gestion des erreurs réseau", () => {
         body: { error: "Database connection failed" },
       }).as("transactionsSearchError");
 
-      cy.visit("/signin");
+      cy.visit("/signIn");
 
       // Se connecter
       cy.get('[data-cy="email-input"], input#email').type(validUser.email);
@@ -367,7 +367,7 @@ describe("Gestion des erreurs réseau", () => {
         forceNetworkError: true,
       }).as("loginNetworkError");
 
-      cy.visit("/signin");
+      cy.visit("/signIn");
 
       cy.get('[data-cy="email-input"], input#email').type(validUser.email);
       cy.get('[data-cy="password-input"], input#password').type(
