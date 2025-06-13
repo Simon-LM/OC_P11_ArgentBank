@@ -63,16 +63,25 @@ jobs:
       - name: 🏗️ Build application
         run: pnpm run build
 
+      - name: 🔧 Setup Vercel for production deployment
+        run: pnpm run vercel:config prod
+
+      - name: 🚀 Deploy to Vercel Preview
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          DEPLOY_OUTPUT=$(vercel --yes 2>&1)
+          PREVIEW_URL=$(echo "$DEPLOY_OUTPUT" | grep -o 'https://[^[:space:]]*\.vercel\.app')
+          echo "VERCEL_PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
+
+      - name: 🧹 Clean vercel.json after deployment
+        run: pnpm run vercel:clean
+
       - name: 🏃 Run Cypress E2E tests
         uses: cypress-io/github-action@v6
         with:
-          working-directory: P11-ArgentBank
-          start: pnpm run preview
-          wait-on: "http://localhost:4173"
-          wait-on-timeout: 120
-          browser: chrome
-          spec: "cypress/e2e/**/*.cy.ts"
-          config: baseUrl=http://localhost:4173
+          install: false
+          config: baseUrl=${{ env.VERCEL_PREVIEW_URL }}
 
       - name: 📤 Upload Cypress screenshots
         uses: actions/upload-artifact@v4
