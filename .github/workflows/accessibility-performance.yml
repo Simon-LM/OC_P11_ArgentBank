@@ -63,6 +63,9 @@ jobs:
       - name: 🏗️ Build application
         run: pnpm run build
 
+      - name: 📦 Install Vercel CLI
+        run: npm install -g vercel@latest
+
       - name: 🔧 Setup Vercel for production deployment
         run: pnpm run vercel:config prod
 
