@@ -41,7 +41,7 @@ function AppContent() {
         if (location.pathname.toLowerCase() !== "/user") {
           let pageTitle = "Argent Bank - Home";
 
-          if (location.pathname === "/signIn") {
+          if (location.pathname === "/signin") {
             pageTitle = "Argent Bank - Sign In";
           } else if (location.pathname === "/user") {
             pageTitle = "Argent Bank - User Dashboard";
@@ -69,7 +69,7 @@ function AppContent() {
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/signin" element={<SignIn />} />
             <Route
               path="/user"
               element={
