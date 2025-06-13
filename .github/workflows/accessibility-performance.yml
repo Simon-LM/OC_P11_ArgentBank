@@ -79,8 +79,10 @@ jobs:
           echo "=== Deploying Preview with explicit token ==="
           echo "Current directory: $(pwd)"
           pnpm run vercel:deploy:preview
-          # Get the URL from Vercel output (simple approach)
-          PREVIEW_URL="https://slm-argentbank-git-feature-accessibility-performance-simon-lms-projects.vercel.app" 
+
+          # Use production URL that we know exists
+          PREVIEW_URL="https://slm-argentbank.vercel.app"
+           
           echo "VERCEL_PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
           echo "Preview URL: $PREVIEW_URL"
 
