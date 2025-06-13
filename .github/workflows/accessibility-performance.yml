@@ -77,7 +77,9 @@ jobs:
           # Setup vercel.json for production (without deploying)
           pnpm run vercel:config prod
 
-          # Deploy to production with explicit token
+          # Deploy to production with explicit token from repo root
+          cd ..
+          echo "Changed to repo root: $(pwd)"
           vercel --prod --yes --token $VERCEL_TOKEN
 
           # Set the production URL for Cypress tests
