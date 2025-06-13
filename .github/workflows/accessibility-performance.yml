@@ -2,6 +2,8 @@
 
 name: ♿ Accessibility & Performance
 
+# Test comment: verify workflow is in stable state
+
 permissions:
   contents: read
   pull-requests: write
