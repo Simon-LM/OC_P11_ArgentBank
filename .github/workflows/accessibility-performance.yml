@@ -39,8 +39,19 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 
+      - name: 📦 Cache Cypress binary
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
+
+      - name: 🔧 Install Cypress binary
+        run: pnpm exec cypress install
 
       - name: 🗃️ Generate Prisma Client
         run: |
