@@ -88,10 +88,11 @@ jobs:
         run: pnpm run vercel:clean
 
       - name: 🏃 Run Cypress E2E tests
-        uses: cypress-io/github-action@v6
-        with:
-          install: false
-          config: baseUrl=${{ env.VERCEL_PREVIEW_URL }}
+        env:
+          CYPRESS_BASE_URL: ${{ env.VERCEL_PREVIEW_URL }}
+        run: |
+          echo "Running Cypress E2E tests against: $CYPRESS_BASE_URL"
+          pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
 
       - name: 📤 Upload Cypress screenshots
         uses: actions/upload-artifact@v4
