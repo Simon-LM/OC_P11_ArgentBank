@@ -3,6 +3,7 @@
 name: ♿ Accessibility & Performance
 
 # Test comment: verify workflow is in stable state
+# Added test comment to verify we are back to the correct workflow state
 
 permissions:
   contents: read
