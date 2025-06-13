@@ -72,10 +72,16 @@ jobs:
       - name: 🚀 Deploy to Vercel Preview
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
         run: |
-          DEPLOY_OUTPUT=$(vercel --yes 2>&1)
+          echo "=== Deploying Preview with explicit token ==="
+          echo "Current directory: $(pwd)"
+          DEPLOY_OUTPUT=$(pnpm run vercel:deploy:preview 2>&1)
           PREVIEW_URL=$(echo "$DEPLOY_OUTPUT" | grep -o 'https://[^[:space:]]*\.vercel\.app')
           echo "VERCEL_PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
+          echo "Preview URL: $PREVIEW_URL"
 
       - name: 🧹 Clean vercel.json after deployment
         run: pnpm run vercel:clean
