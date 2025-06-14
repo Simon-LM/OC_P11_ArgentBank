@@ -1,0 +1,209 @@
+# @format
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: P11-ArgentBank
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Vercel config for CI
+        run: pnpm vercel:clean
+
+      - name: Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm prisma generate
+
+      - name: Run ESLint
+        run: pnpm run lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: P11-ArgentBank
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Vercel config for CI
+        run: pnpm vercel:clean
+
+      - name: Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm prisma generate
+
+      - name: Run TypeScript check
+        run: pnpm run typecheck
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: P11-ArgentBank
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Vercel config for CI
+        run: pnpm vercel:clean
+
+      - name: Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm prisma generate
+
+      - name: Run tests
+        run: pnpm run test
+
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: P11-ArgentBank
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Vercel config for CI
+        run: pnpm vercel:clean
+
+      - name: Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm prisma generate
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Restore vercel.json for deployment
+        run: pnpm vercel:config prod
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: P11-ArgentBank/dist/
+          retention-days: 1

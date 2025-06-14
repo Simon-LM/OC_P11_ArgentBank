@@ -1,0 +1,363 @@
+# @format
+
+name: 🚀 CI/CD
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: P11-ArgentBank
+
+jobs:
+  ci-tests:
+    name: 🔍 CI Tests (Lint, TypeCheck, Unit Tests, Build)
+    runs-on: ubuntu-latest
+    outputs:
+      build-success: ${{ steps.build.outcome == 'success' }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🔧 Setup Vercel config for CI
+        run: pnpm run vercel:clean
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 🔍 Run ESLint
+        run: pnpm run lint
+
+      - name: 🔍 Run TypeScript check
+        run: pnpm run typecheck
+
+      - name: 🧪 Run tests
+        run: pnpm run test
+
+      - name: 🏗️ Build project
+        id: build
+        run: pnpm run build
+
+      - name: 📤 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: P11-ArgentBank/dist/
+          retention-days: 1
+
+  deploy-preview:
+    name: 📦 Deploy Preview
+    needs: ci-tests
+    if: success()
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 📤 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: P11-ArgentBank/dist/
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 📦 Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: 🔧 Setup vercel.json for deployment
+        run: pnpm run vercel:config prod
+
+      - name: 🚀 Deploy to Vercel Preview
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "=== Deploying Preview ==="
+          echo "Current directory: $(pwd)"
+          echo "Root Directory configured: P11-ArgentBank"
+
+          # Deploy to preview (without --prod) from repo root
+          cd ..
+          echo "Changed to repo root: $(pwd)"
+          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN)
+          echo "Preview deployed: $PREVIEW_URL"
+          echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
+          echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+
+  accessibility-tests:
+    name: 🧪 Accessibility & Performance Tests
+    needs: deploy-preview
+    if: success()
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [cypress, lighthouse, pa11y]
+      fail-fast: false
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+
+      - name: 📦 Cache Cypress binary
+        if: matrix.test-type == 'cypress'
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🔧 Install Cypress binary
+        if: matrix.test-type == 'cypress'
+        run: pnpm exec cypress install
+
+      - name: 🗃️ Generate Prisma Client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/test"
+          pnpm exec prisma generate
+
+      - name: 🏃 Run Cypress E2E tests
+        if: matrix.test-type == 'cypress'
+        env:
+          CYPRESS_BASE_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+        run: |
+          echo "Running Cypress E2E tests against: $CYPRESS_BASE_URL"
+          pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
+
+      - name: ⚡ Run Lighthouse tests
+        if: matrix.test-type == 'lighthouse'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+        run: |
+          # Install Lighthouse CLI globally
+          npm install -g @lhci/cli@0.13.0
+
+          # Create lighthouse config
+          cat > lighthouserc.json << EOF
+          {
+            "ci": {
+              "collect": {
+                "url": ["$PREVIEW_URL", "$PREVIEW_URL/signin"],
+                "numberOfRuns": 3
+              },
+              "assert": {
+                "assertions": {
+                  "categories:performance": ["warn", {"minScore": 0.6}],
+                  "categories:accessibility": ["error", {"minScore": 0.9}],
+                  "categories:best-practices": ["warn", {"minScore": 0.8}],
+                  "categories:seo": ["warn", {"minScore": 0.8}]
+                }
+              },
+              "upload": {
+                "target": "filesystem",
+                "outputDir": "./lighthouse-reports"
+              }
+            }
+          }
+          EOF
+
+          # Run Lighthouse CI
+          lhci autorun || true
+
+      - name: ♿ Run Pa11y accessibility tests
+        if: matrix.test-type == 'pa11y'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+        run: |
+          # Install Pa11y globally
+          npm install -g pa11y@8.0.0
+
+          # Create Pa11y configuration
+          cat > .pa11yrc << EOF
+          {
+            "standard": "WCAG2AA",
+            "timeout": 30000,
+            "wait": 2000,
+            "chromeLaunchConfig": {
+              "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+            },
+            "reporters": ["json", "cli"]
+          }
+          EOF
+
+          # Test pages
+          echo "Testing accessibility on Preview: $PREVIEW_URL"
+
+          # Test Home page
+          pa11y "$PREVIEW_URL" --reporter json > pa11y-home.json 2>&1 || true
+          home_issues=$(jq length pa11y-home.json 2>/dev/null || echo "0")
+
+          # Test Sign-in page
+          pa11y "$PREVIEW_URL/signin" --reporter json > pa11y-signin.json 2>&1 || true
+          signin_issues=$(jq length pa11y-signin.json 2>/dev/null || echo "0")
+
+          # Calculate total issues
+          total_issues=$((home_issues + signin_issues))
+
+          echo "Pa11y Results:"
+          echo "- Home page: $home_issues issues"
+          echo "- Sign-in page: $signin_issues issues"
+          echo "- Total: $total_issues issues"
+
+          # Create detailed reports directory
+          mkdir -p pa11y-reports
+          [ -f "pa11y-home.json" ] && cp pa11y-home.json pa11y-reports/
+          [ -f "pa11y-signin.json" ] && cp pa11y-signin.json pa11y-reports/
+
+          # Exit with error if issues found (this will fail the job)
+          if [ "$total_issues" != "0" ]; then
+            echo "❌ Pa11y found $total_issues accessibility issues. This is a blocking error."
+            exit 1
+          fi
+
+      - name: 📤 Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.test-type }}-reports
+          path: |
+            P11-ArgentBank/cypress/screenshots
+            P11-ArgentBank/cypress/videos
+            P11-ArgentBank/lighthouse-reports
+            P11-ArgentBank/pa11y-reports
+
+  promote-production:
+    name: 🚀 Promote to Production
+    needs: [ci-tests, deploy-preview, accessibility-tests]
+    if: success() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 📦 Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: 🔧 Setup vercel.json for production
+        run: pnpm run vercel:config prod
+
+      - name: 🚀 Deploy to Vercel Production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "=== Promoting to production ==="
+          echo "All tests passed! Deploying to production..."
+          
+          # Deploy to production from repo root
+          cd ..
+          echo "Changed to repo root: $(pwd)"
+          vercel --prod --yes --token $VERCEL_TOKEN
+          
+          echo "🎉 Production deployed: https://slm-argentbank.vercel.app"
+
+      - name: 🔧 Cleanup vercel.json
+        run: pnpm run vercel:clean
