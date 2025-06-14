@@ -204,12 +204,41 @@ jobs:
           export DATABASE_URL="postgresql://user:password@localhost:5432/test"
           pnpm exec prisma generate
 
+      - name: 🔍 Test Preview API availability
+        if: matrix.test-type == 'cypress'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+        run: |
+          echo "Testing API on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be fully ready
+          echo "Waiting for Preview deployment to be fully ready..."
+          sleep 15
+
+          # Test ping endpoint
+          echo "Testing ping endpoint..."
+          curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
+            echo "Let's check if the base URL responds..."
+            curl -I "$PREVIEW_URL" --max-time 10 || echo "Base URL also failed"
+            exit 1
+          }
+
+          echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
+
       - name: 🏃 Run Cypress E2E tests
         if: matrix.test-type == 'cypress'
         env:
           CYPRESS_BASE_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          CI: true
         run: |
           echo "Running Cypress E2E tests against: $CYPRESS_BASE_URL"
+          echo "API will be accessible at: $CYPRESS_BASE_URL/api"
+
+          # Additional wait to ensure stability
+          echo "Final wait for application stability..."
+          sleep 5
+
           pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
 
       - name: ⚡ Run Lighthouse tests
@@ -217,6 +246,18 @@ jobs:
         env:
           PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
         run: |
+          echo "Running Lighthouse tests on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be ready
+          echo "Waiting for Preview to be ready..."
+          sleep 10
+
+          # Test Preview URL accessibility
+          curl -f "$PREVIEW_URL" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ Preview URL not accessible: $PREVIEW_URL"
+            exit 1
+          }
+
           # Install Lighthouse CLI globally
           npm install -g @lhci/cli@0.13.0
 
@@ -252,6 +293,18 @@ jobs:
         env:
           PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
         run: |
+          echo "Running Pa11y accessibility tests on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be ready
+          echo "Waiting for Preview to be ready..."
+          sleep 10
+
+          # Test Preview URL accessibility
+          curl -f "$PREVIEW_URL" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ Preview URL not accessible: $PREVIEW_URL"
+            exit 1
+          }
+
           # Install Pa11y globally
           npm install -g pa11y@8.0.0
 
