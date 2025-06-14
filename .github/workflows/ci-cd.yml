@@ -351,12 +351,12 @@ jobs:
         run: |
           echo "=== Promoting to production ==="
           echo "All tests passed! Deploying to production..."
-          
+
           # Deploy to production from repo root
           cd ..
           echo "Changed to repo root: $(pwd)"
           vercel --prod --yes --token $VERCEL_TOKEN
-          
+
           echo "🎉 Production deployed: https://slm-argentbank.vercel.app"
 
       - name: 🔧 Cleanup vercel.json
