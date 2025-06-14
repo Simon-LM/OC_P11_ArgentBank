@@ -342,18 +342,30 @@ jobs:
           pa11y "$PREVIEW_URL/signin" --reporter json > pa11y-signin.json 2>&1 || true
           signin_issues=$(jq length pa11y-signin.json 2>/dev/null || echo "0")
 
+          # Test User page (diagnostic test - may fail if authentication required)
+          pa11y "$PREVIEW_URL/user" --reporter json > pa11y-user.json 2>&1 || true
+          user_issues=$(jq length pa11y-user.json 2>/dev/null || echo "0")
+
+          # Test 404 page
+          pa11y "$PREVIEW_URL/404" --reporter json > pa11y-404.json 2>&1 || true
+          notfound_issues=$(jq length pa11y-404.json 2>/dev/null || echo "0")
+
           # Calculate total issues
-          total_issues=$((home_issues + signin_issues))
+          total_issues=$((home_issues + signin_issues + user_issues + notfound_issues))
 
           echo "Pa11y Results:"
           echo "- Home page: $home_issues issues"
           echo "- Sign-in page: $signin_issues issues"
+          echo "- User page: $user_issues issues (diagnostic test)"
+          echo "- 404 page: $notfound_issues issues"
           echo "- Total: $total_issues issues"
 
           # Create detailed reports directory
           mkdir -p pa11y-reports
           [ -f "pa11y-home.json" ] && cp pa11y-home.json pa11y-reports/
           [ -f "pa11y-signin.json" ] && cp pa11y-signin.json pa11y-reports/
+          [ -f "pa11y-user.json" ] && cp pa11y-user.json pa11y-reports/
+          [ -f "pa11y-404.json" ] && cp pa11y-404.json pa11y-reports/
 
           # Exit with error if issues found (this will fail the job)
           if [ "$total_issues" != "0" ]; then
