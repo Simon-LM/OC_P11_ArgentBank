@@ -208,7 +208,7 @@ jobs:
         if: matrix.test-type == 'cypress'
         env:
           PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
           echo "Testing API on Preview: $PREVIEW_URL"
 
@@ -218,10 +218,10 @@ jobs:
 
           # Test ping endpoint
           echo "Testing ping endpoint..."
-          curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "Authorization: Bearer $VERCEL_TOKEN" --max-time 30 --retry 3 --retry-delay 5 || {
+          curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
             echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
             echo "Let's check if the base URL responds..."
-            curl -I "$PREVIEW_URL" -H "Authorization: Bearer $VERCEL_TOKEN" --max-time 10 || echo "Base URL also failed"
+            curl -I "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 10 || echo "Base URL also failed"
             exit 1
           }
 
@@ -231,6 +231,7 @@ jobs:
         if: matrix.test-type == 'cypress'
         env:
           CYPRESS_BASE_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           CI: true
         run: |
           echo "Running Cypress E2E tests against: $CYPRESS_BASE_URL"
@@ -246,7 +247,7 @@ jobs:
         if: matrix.test-type == 'lighthouse'
         env:
           PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
           echo "Running Lighthouse tests on Preview: $PREVIEW_URL"
 
@@ -255,7 +256,7 @@ jobs:
           sleep 10
 
           # Test Preview URL accessibility
-          curl -f "$PREVIEW_URL" -H "Authorization: Bearer $VERCEL_TOKEN" --max-time 30 --retry 3 --retry-delay 5 || {
+          curl -f "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
             echo "❌ Preview URL not accessible: $PREVIEW_URL"
             exit 1
           }
@@ -294,7 +295,7 @@ jobs:
         if: matrix.test-type == 'pa11y'
         env:
           PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
           echo "Running Pa11y accessibility tests on Preview: $PREVIEW_URL"
 
@@ -303,7 +304,7 @@ jobs:
           sleep 10
 
           # Test Preview URL accessibility
-          curl -f "$PREVIEW_URL" -H "Authorization: Bearer $VERCEL_TOKEN" --max-time 30 --retry 3 --retry-delay 5 || {
+          curl -f "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
             echo "❌ Preview URL not accessible: $PREVIEW_URL"
             exit 1
           }

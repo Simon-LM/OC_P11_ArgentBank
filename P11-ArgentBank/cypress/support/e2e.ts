@@ -33,6 +33,20 @@ import "cypress-real-events/support";
 // Import Mochawesome Reporter
 import "cypress-mochawesome-reporter/register";
 
+// Configuration globale pour contourner la protection Vercel en CI
+const isCI = Cypress.env("CI") === "true" || Cypress.env("CI") === true;
+const vercelBypassSecret = Cypress.env("VERCEL_AUTOMATION_BYPASS_SECRET");
+
+if (isCI && vercelBypassSecret) {
+  beforeEach(() => {
+    // Intercepter toutes les requêtes pour ajouter les headers de contournement Vercel
+    cy.intercept("**", (req) => {
+      req.headers["x-vercel-protection-bypass"] = vercelBypassSecret;
+      req.headers["x-vercel-set-bypass-cookie"] = "true";
+    });
+  });
+}
+
 // Optionnel : si vous voulez que cy.injectAxe() soit appelé automatiquement avant chaque test
 // beforeEach(() => {
 //   cy.injectAxe();
