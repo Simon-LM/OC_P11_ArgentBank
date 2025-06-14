@@ -14,6 +14,16 @@ import type { User } from "../../support/types";
 
 describe("Gestion des Comptes Bancaires", () => {
   beforeEach(() => {
+    // 🔧 DEBUG LOGS
+    cy.log("🔧 [Test Debug] Starting accounts test");
+    cy.log("🔧 [Test Debug] CI env: " + Cypress.env("CI"));
+    cy.log(
+      "🔧 [Test Debug] VERCEL_AUTOMATION_BYPASS_SECRET: " +
+        (Cypress.env("VERCEL_AUTOMATION_BYPASS_SECRET")
+          ? "***PRESENT***"
+          : "NOT_FOUND"),
+    );
+
     // Charger les fixtures utilisateur
     cy.fixture("users.json").as("usersData");
 
@@ -21,6 +31,7 @@ describe("Gestion des Comptes Bancaires", () => {
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
+        cy.log("🔧 [Test Debug] About to visit /signin");
         cy.visit("/signin");
         cy.get("input#email").type(validUser.email);
         cy.get("input#password").type(validUser.password);

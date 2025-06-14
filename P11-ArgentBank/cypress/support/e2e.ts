@@ -37,14 +37,36 @@ import "cypress-mochawesome-reporter/register";
 const isCI = Cypress.env("CI") === "true" || Cypress.env("CI") === true;
 const vercelBypassSecret = Cypress.env("VERCEL_AUTOMATION_BYPASS_SECRET");
 
+// 🔧 DEBUG LOGS pour diagnostiquer le problème Vercel
+console.log("🔧 [Cypress Debug] Environment variables:");
+console.log("  - CI:", Cypress.env("CI"));
+console.log("  - isCI:", isCI);
+console.log(
+  "  - VERCEL_AUTOMATION_BYPASS_SECRET:",
+  vercelBypassSecret ? "***SECRET_CONFIGURED***" : "NOT_FOUND",
+);
+console.log("  - All Cypress env:", Object.keys(Cypress.env()));
+
 if (isCI && vercelBypassSecret) {
+  console.log(
+    "🔧 [Cypress Debug] Vercel bypass ENABLED - setting up interceptor",
+  );
   beforeEach(() => {
     // Intercepter toutes les requêtes pour ajouter les headers de contournement Vercel
     cy.intercept("**", (req) => {
+      console.log("🔧 [Cypress Debug] Intercepting request to:", req.url);
+      console.log(
+        "🔧 [Cypress Debug] Original headers:",
+        Object.keys(req.headers),
+      );
       req.headers["x-vercel-protection-bypass"] = vercelBypassSecret;
       req.headers["x-vercel-set-bypass-cookie"] = "true";
+      console.log("🔧 [Cypress Debug] Added Vercel bypass headers");
     });
   });
+} else {
+  console.log("🔧 [Cypress Debug] Vercel bypass NOT enabled");
+  console.log("  - Reason: isCI=", isCI, ", hasSecret=", !!vercelBypassSecret);
 }
 
 // Optionnel : si vous voulez que cy.injectAxe() soit appelé automatiquement avant chaque test
