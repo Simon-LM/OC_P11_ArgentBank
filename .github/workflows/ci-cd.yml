@@ -1,5 +1,9 @@
 # @format
 
+# Unified CI/CD Workflow with Vercel Protection Bypass for Automation
+# This workflow uses VERCEL_AUTOMATION_BYPASS_SECRET to access protected Preview deployments
+# Last updated: June 14, 2025 - Testing new Vercel authentication system
+
 name: 🚀 CI/CD
 
 permissions:

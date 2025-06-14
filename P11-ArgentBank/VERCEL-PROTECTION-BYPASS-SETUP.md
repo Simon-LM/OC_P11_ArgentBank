@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # Configuration du Contournement de Protection Vercel
 
 ## Problème Identifié
