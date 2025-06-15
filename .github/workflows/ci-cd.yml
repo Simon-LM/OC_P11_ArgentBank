@@ -415,13 +415,9 @@ jobs:
             };
             
             if (useAuth) {
-              console.log(`🔐 USING AUTH SCRIPT: ${authScript}`);
-              options.authScript = authScript;
-              
-              // Pass environment variables to the auth script
-              if (!process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
-                console.log('⚠️  WARNING: VERCEL_AUTOMATION_BYPASS_SECRET not found in environment');
-              }
+              console.log(`🔐 USING AUTH SCRIPT WITH SHARED SESSION: ${authScript}`);
+              // Use a shared browser instance with authentication
+              return await runPa11yTestWithAuth(url, options);
             }
             
             try {
@@ -448,6 +444,78 @@ jobs:
               console.error(`❌ Error testing ${url} ${useAuth ? '(with auth)' : '(without auth)'}:`, error.message);
               console.error(`🔍 Error details:`, error);
               return [];
+            }
+          }
+
+          async function runPa11yTestWithAuth(url, baseOptions) {
+            console.log(`🔐 Starting authentication flow for ${url}...`);
+            
+            const puppeteer = require('puppeteer');
+            const authScriptFunction = require(authScript);
+            
+            const browser = await puppeteer.launch({
+              args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+              headless: true
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers if available
+              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+              if (bypassSecret) {
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': bypassSecret
+                });
+              }
+              
+              // Execute authentication
+              console.log(`🔐 Executing authentication script for ${url}...`);
+              await authScriptFunction(page, { page: url });
+              
+              // Now run Pa11y on the authenticated page
+              console.log(`🧪 Running Pa11y on authenticated page: ${url}`);
+              
+              const htmlcs = require('pa11y/lib/runners/htmlcs');
+              
+              // Inject Pa11y and run tests on the current authenticated page
+              await page.addScriptTag({
+                url: 'https://squizlabs.github.io/HTML_CodeSniffer/build/HTMLCS.js'
+              });
+              
+              const results = await page.evaluate((standard) => {
+                return new Promise((resolve) => {
+                  window.HTMLCS.process(standard, document, (results) => {
+                    const issues = results.map(issue => ({
+                      code: issue.code,
+                      context: issue.element.outerHTML?.substring(0, 200) || '',
+                      message: issue.msg,
+                      selector: window.HTMLCS.util.getElementSelector(issue.element),
+                      type: issue.type === 1 ? 'error' : issue.type === 2 ? 'warning' : 'notice',
+                      typeCode: issue.type
+                    }));
+                    resolve(issues);
+                  });
+                });
+              }, baseOptions.standard || 'WCAG2AA');
+              
+              // Filter for errors only (WCAG violations)
+              const errors = results.filter(issue => issue.type === 'error');
+              
+              console.log(`📊 Pa11y found ${errors.length} accessibility issues on authenticated ${url}`);
+              
+              if (errors.length > 0) {
+                console.log(`📋 Issues details for ${url}:`);
+                errors.forEach((issue, index) => {
+                  console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
+                  console.log(`      Selector: ${issue.selector}`);
+                });
+              }
+              
+              return errors;
+              
+            } finally {
+              await browser.close();
             }
           }
 
