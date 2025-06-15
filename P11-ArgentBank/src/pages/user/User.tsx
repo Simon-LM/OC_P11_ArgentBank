@@ -324,6 +324,19 @@ const User: React.FC = () => {
               )}
             </h2>
 
+            {/* Test element for Pa11y contrast detection */}
+            <div
+              style={{
+                backgroundColor: "#ffffff",
+                color: "#f0f0f0",
+                padding: "10px",
+                margin: "10px 0",
+                fontSize: "14px",
+              }}
+            >
+              This is a test element with poor contrast for Pa11y detection
+            </div>
+
             <div>
               {isEditing ? (
                 <EditUserForm

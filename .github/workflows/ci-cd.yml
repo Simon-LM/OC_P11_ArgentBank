@@ -503,26 +503,86 @@ jobs:
               };
               
               console.log(`🔍 Running Pa11y on saved authenticated HTML...`);
-              const results = await pa11y(`file://${process.cwd()}/${tempFilePath}`, pa11yOptions);
+              
+              // Analyze the HTML content first
+              console.log(`🔍 ANALYZING HTML CONTENT:`);
+              const hasUserTitle = pageHtml.includes('user__title') || pageHtml.includes('Welcome back');
+              const hasAccountSection = pageHtml.includes('account') || pageHtml.includes('Account');
+              const hasBalance = pageHtml.includes('$') || pageHtml.includes('Available Balance');
+              console.log(`   - Contains user title: ${hasUserTitle}`);
+              console.log(`   - Contains account section: ${hasAccountSection}`);
+              console.log(`   - Contains balance info: ${hasBalance}`);
+              
+              // Extract the main content sections for analysis
+              const bodyMatch = pageHtml.match(/<body[^>]*>(.*?)<\/body>/s);
+              if (bodyMatch) {
+                const bodyContent = bodyMatch[1];
+                console.log(`🔍 BODY CONTENT SAMPLE (first 500 chars):`);
+                console.log(bodyContent.substring(0, 500));
+              }
+              
+              // Test both approaches: static HTML file and live page
+              console.log(`🔍 APPROACH 1: Testing saved HTML file...`);
+              const staticResults = await pa11y(`file://${process.cwd()}/${tempFilePath}`, pa11yOptions);
+              const staticErrors = Array.isArray(staticResults) ? staticResults : [];
+              console.log(`📊 Static HTML analysis: ${staticErrors.length} issues found`);
+              
+              console.log(`🔍 APPROACH 2: Testing live authenticated session...`);
+              // Create new page for live testing
+              const livePage = await page.browser().newPage();
+              
+              // Set same headers and session
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                await livePage.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                });
+              }
+              
+              // Copy cookies from authenticated session
+              const cookies = await page.cookies();
+              await livePage.setCookie(...cookies);
+              
+              // Navigate to user page with existing session
+              await livePage.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
+              await livePage.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 5000 });
+              
+              // Run Pa11y on live page using the already authenticated browser
+              const liveOptions = {
+                ...pa11yOptions,
+                browser: page.browser(),
+                page: livePage
+              };
+              
+              const liveResults = await pa11y(url, liveOptions);
+              const liveErrors = Array.isArray(liveResults) ? liveResults : [];
+              console.log(`📊 Live page analysis: ${liveErrors.length} issues found`);
+              
+              await livePage.close();
               
               // Clean up temp file
               fs.unlinkSync(tempFilePath);
               
-              const errors = Array.isArray(results) ? results : [];
+              // Use the approach that found more issues (more likely to be accurate)
+              const finalResults = liveErrors.length > staticErrors.length ? liveResults : staticResults;
+              const finalErrors = Array.isArray(finalResults) ? finalResults : [];
               
-              console.log(`📊 Pa11y found ${errors.length} accessibility issues on authenticated ${url}`);
+              console.log(`📊 FINAL RESULT: ${finalErrors.length} accessibility issues on authenticated ${url}`);
+              console.log(`📊 (Selected ${liveErrors.length > staticErrors.length ? 'live page' : 'static HTML'} approach)`);
               
-              if (errors.length > 0) {
+              if (finalErrors.length > 0) {
                 console.log(`📋 Issues details for ${url}:`);
-                errors.forEach((issue, index) => {
+                finalErrors.forEach((issue, index) => {
                   console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
                   if (issue.selector) {
                     console.log(`      Selector: ${issue.selector}`);
                   }
+                  if (issue.context) {
+                    console.log(`      Context: ${issue.context.substring(0, 100)}...`);
+                  }
                 });
               }
               
-              return errors;
+              return finalErrors;
               
             } catch (error) {
               await browser.close();
