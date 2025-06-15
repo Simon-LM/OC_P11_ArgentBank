@@ -483,24 +483,34 @@ jobs:
                 url: 'https://squizlabs.github.io/HTML_CodeSniffer/build/HTMLCS.js'
               });
               
+              // Wait for HTMLCS to be available
+              await page.waitForFunction('typeof window.HTMLCS !== "undefined"', { timeout: 10000 });
+              
               const results = await page.evaluate((standard) => {
                 return new Promise((resolve) => {
-                  window.HTMLCS.process(standard, document, (results) => {
-                    const issues = results.map(issue => ({
-                      code: issue.code,
-                      context: issue.element.outerHTML?.substring(0, 200) || '',
-                      message: issue.msg,
-                      selector: window.HTMLCS.util.getElementSelector(issue.element),
-                      type: issue.type === 1 ? 'error' : issue.type === 2 ? 'warning' : 'notice',
-                      typeCode: issue.type
-                    }));
-                    resolve(issues);
+                  const messages = [];
+                  
+                  // Custom callback to collect messages
+                  window.HTMLCS.process(standard, document, function(msg) {
+                    if (msg.type === window.HTMLCS.ERROR) {
+                      messages.push({
+                        code: msg.code,
+                        context: msg.element?.outerHTML?.substring(0, 200) || '',
+                        message: msg.msg,
+                        selector: window.HTMLCS.util?.getElementSelector(msg.element) || 'unknown',
+                        type: 'error',
+                        typeCode: msg.type
+                      });
+                    }
+                  }, function() {
+                    // Process complete callback
+                    resolve(messages);
                   });
                 });
               }, baseOptions.standard || 'WCAG2AA');
               
               // Filter for errors only (WCAG violations)
-              const errors = results.filter(issue => issue.type === 'error');
+              const errors = results || [];
               
               console.log(`📊 Pa11y found ${errors.length} accessibility issues on authenticated ${url}`);
               
