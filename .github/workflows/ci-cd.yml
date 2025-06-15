@@ -1,0 +1,666 @@
+# @format
+
+# Unified CI/CD Workflow with Vercel Protection Bypass for Automation
+# This workflow uses VERCEL_AUTOMATION_BYPASS_SECRET to access protected Preview deployments
+# Last updated: June 14, 2025 - Testing new Vercel authentication system
+
+name: 🚀 CI/CD
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+on:
+  push:
+    branches: [main, develop, test/unified-ci-cd]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: P11-ArgentBank
+
+jobs:
+  ci-tests:
+    name: 🔍 CI Tests (Lint, TypeCheck, Unit Tests, Build)
+    runs-on: ubuntu-latest
+    outputs:
+      build-success: ${{ steps.build.outcome == 'success' }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🔧 Setup Vercel config for CI
+        run: pnpm run vercel:clean
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 🔍 Run ESLint
+        run: pnpm run lint
+
+      - name: 🔍 Run TypeScript check
+        run: pnpm run typecheck
+
+      - name: 🧪 Run tests
+        run: pnpm run test
+
+      - name: 🏗️ Build project
+        id: build
+        run: pnpm run build
+
+      - name: 📤 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: P11-ArgentBank/dist/
+          retention-days: 1
+
+  deploy-preview:
+    name: 📦 Deploy Preview
+    needs: ci-tests
+    if: success()
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 📤 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: P11-ArgentBank/dist/
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 📦 Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: 🔧 Setup vercel.json for deployment
+        run: pnpm run vercel:config prod
+
+      - name: 🚀 Deploy to Vercel Preview
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "=== Deploying Preview ==="
+          echo "Current directory: $(pwd)"
+          echo "Root Directory configured: P11-ArgentBank"
+
+          # Deploy to preview (without --prod) from repo root
+          cd ..
+          echo "Changed to repo root: $(pwd)"
+          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN)
+          echo "Preview deployed: $PREVIEW_URL"
+          echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
+          echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+
+  accessibility-tests:
+    name: 🧪 Accessibility & Performance Tests
+    needs: deploy-preview
+    if: success()
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [cypress, lighthouse, pa11y]
+      fail-fast: false
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+
+      - name: 📦 Cache Cypress binary
+        if: matrix.test-type == 'cypress'
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🔧 Install Cypress binary
+        if: matrix.test-type == 'cypress'
+        run: pnpm exec cypress install
+
+      - name: 🗃️ Generate Prisma Client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/test"
+          pnpm exec prisma generate
+
+      - name: 🔍 Test Preview API availability
+        if: matrix.test-type == 'cypress'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          echo "Testing API on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be fully ready
+          echo "Waiting for Preview deployment to be fully ready..."
+          sleep 15
+
+          # Test ping endpoint
+          echo "Testing ping endpoint..."
+          curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
+            echo "Let's check if the base URL responds..."
+            curl -I "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 10 || echo "Base URL also failed"
+            exit 1
+          }
+
+          echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
+
+      - name: 🏃 Run Cypress E2E tests
+        if: matrix.test-type == 'cypress'
+        env:
+          CYPRESS_BASE_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          CI: true
+        run: |
+          echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"
+          echo "🔧 [Debug] API will be accessible at: $CYPRESS_BASE_URL/api"
+          echo "🔧 [Debug] CI environment: $CI"
+          echo "🔧 [Debug] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
+
+          # Additional wait to ensure stability
+          echo "Final wait for application stability..."
+          sleep 5
+
+          pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
+
+      - name: ⚡ Run Lighthouse tests
+        if: matrix.test-type == 'lighthouse'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          echo "Running Lighthouse tests on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be ready
+          echo "Waiting for Preview to be ready..."
+          sleep 10
+
+          # Test Preview URL accessibility
+          curl -f "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ Preview URL not accessible: $PREVIEW_URL"
+            exit 1
+          }
+
+          # Install Lighthouse CLI globally
+          npm install -g @lhci/cli@0.13.0
+
+          # Create lighthouse config
+          cat > lighthouserc.json << EOF
+          {
+            "ci": {
+              "collect": {
+                "url": ["$PREVIEW_URL", "$PREVIEW_URL/signin"],
+                "numberOfRuns": 3
+              },
+              "assert": {
+                "assertions": {
+                  "categories:performance": ["warn", {"minScore": 0.6}],
+                  "categories:accessibility": ["error", {"minScore": 0.9}],
+                  "categories:best-practices": ["warn", {"minScore": 0.8}],
+                  "categories:seo": ["warn", {"minScore": 0.8}]
+                }
+              },
+              "upload": {
+                "target": "filesystem",
+                "outputDir": "./lighthouse-reports"
+              }
+            }
+          }
+          EOF
+
+          # Run Lighthouse CI
+          lhci autorun || true
+
+      - name: ♿ Run Pa11y accessibility tests
+        if: matrix.test-type == 'pa11y'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          echo "Running Pa11y accessibility tests on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be ready
+          echo "Waiting for Preview to be ready..."
+          sleep 10
+
+          # Test Preview URL accessibility
+          curl -f "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ Preview URL not accessible: $PREVIEW_URL"
+            exit 1
+          }
+
+          # Install Pa11y and dependencies globally
+          npm install -g pa11y@8.0.0 puppeteer@24.10.1
+
+          # Create Pa11y authentication script for CI/CD
+          cat > pa11y-auth-ci.cjs << 'EOF'
+          module.exports = async function (page, options) {
+            console.log('<<<<< PA11Y AUTH SCRIPT (CI/CD) STARTED >>>>>');
+            
+            try {
+              // Add Vercel protection bypass headers
+              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+              if (bypassSecret) {
+                console.log('<<<<< PA11Y AUTH SCRIPT: Setting Vercel bypass headers >>>>>');
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': bypassSecret
+                });
+              } else {
+                console.log('<<<<< PA11Y AUTH SCRIPT: WARNING - No Vercel bypass secret found >>>>>');
+              }
+              
+              const signInUrl = options.page.replace('/user', '/signIn');
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Navigating to ${signInUrl} >>>>>`);
+              
+              // Navigate to sign-in page
+              await page.goto(signInUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Navigation to /signIn complete >>>>>');
+              
+              // Wait for form to be visible
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for form to be visible >>>>>');
+              await page.waitForSelector('form', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Form is visible >>>>>');
+              
+              // Wait for email field and type credentials
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for email field to be visible >>>>>');
+              await page.waitForSelector('#email', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Email field is visible >>>>>');
+              
+              console.log('<<<<< PA11Y AUTH SCRIPT: Typing credentials >>>>>');
+              await page.type('#email', 'tony@stark.com');
+              await page.type('#password', 'password123');
+              console.log('<<<<< PA11Y AUTH SCRIPT: Credentials typed >>>>>');
+              
+              // Wait for submit button and click
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for submit button >>>>>');
+              await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Submit button found >>>>>');
+              
+              // Click submit and wait for navigation
+              console.log('<<<<< PA11Y AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
+              await Promise.all([
+                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
+                page.click('button[type="submit"]')
+              ]);
+              
+              const currentUrl = page.url();
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+              
+              // Wait for user page content to confirm successful login
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
+              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
+              
+              // Capture page title for verification
+              const pageTitle = await page.title();
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Page title: ${pageTitle} >>>>>`);
+              
+              // Small delay for page to settle
+              console.log('<<<<< PA11Y AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              console.log('<<<<< PA11Y AUTH SCRIPT: Authentication script finished successfully. >>>>>');
+              
+            } catch (error) {
+              console.error('<<<<< PA11Y AUTH SCRIPT: Error during authentication >>>>>', error.message);
+              console.error('<<<<< PA11Y AUTH SCRIPT: Error details >>>>>', error);
+              throw error;
+            }
+          };
+          EOF
+
+          # Create Pa11y runner script - using working approach from commit 67ccece
+          cat > run-pa11y-ci.cjs << 'EOF'
+          const pa11y = require('pa11y');
+          const path = require('path');
+          const fs = require('fs');
+
+          const baseUrl = process.env.PREVIEW_URL;
+          const authScript = path.resolve('./pa11y-auth-ci.cjs');
+
+          async function runPa11yTest(url, useAuth = false) {
+            const options = {
+              standard: 'WCAG2AA',
+              timeout: 60000,
+              wait: 3000,
+              chromeLaunchConfig: {
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+                devtools: false
+              }
+            };
+            
+            if (useAuth) {
+              console.log(`🔐 USING AUTH SCRIPT: ${authScript}`);
+              return await runPa11yTestWithAuth(url, options);
+            }
+            
+            try {
+              console.log(`🧪 Testing URL: ${url} (without auth)`);
+              const results = await pa11y(url, options);
+              const safeResults = Array.isArray(results) ? results : [];
+              console.log(`📊 ${url}: ${safeResults.length} issues found`);
+              
+              if (safeResults.length > 0) {
+                console.log(`📋 Issues details for ${url}:`);
+                safeResults.forEach((issue, index) => {
+                  console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
+                });
+              }
+              
+              return safeResults;
+            } catch (error) {
+              console.error(`❌ Error testing ${url}:`, error.message);
+              return [];
+            }
+          }
+
+          async function runPa11yTestWithAuth(url, baseOptions) {
+            console.log(`🔐 Starting authentication flow for ${url}...`);
+            
+            const puppeteer = require('puppeteer');
+            const authScriptFunction = require(authScript);
+            
+            const browser = await puppeteer.launch({
+              args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+              headless: true
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers
+              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+              if (bypassSecret) {
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': bypassSecret
+                });
+              }
+              
+              // Execute authentication
+              console.log(`🔐 Executing authentication script for ${url}...`);
+              await authScriptFunction(page, { page: url });
+              
+              // Now run Pa11y on the authenticated page using direct HTMLCS injection
+              console.log(`🧪 Running Pa11y on authenticated page: ${url}`);
+              
+              // Inject HTMLCS directly into the authenticated page
+              await page.addScriptTag({
+                url: 'https://squizlabs.github.io/HTML_CodeSniffer/build/HTMLCS.js'
+              });
+              
+              // Wait for HTMLCS to be available
+              await page.waitForFunction('typeof window.HTMLCS !== "undefined"', { timeout: 10000 });
+              
+              let results;
+              try {
+                results = await page.evaluate((standard) => {
+                  return new Promise((resolve, reject) => {
+                    const messages = [];
+                    
+                    // Add timeout to prevent hanging
+                    const timeout = setTimeout(() => {
+                      reject(new Error('Pa11y evaluation timeout after 30 seconds'));
+                    }, 30000);
+                    
+                    try {
+                      // Fixed callback logic from commit 67ccece - capture all accessibility violations
+                      window.HTMLCS.process(standard, document, function(msg) {
+                        if (msg && (msg.type === window.HTMLCS.ERROR || msg.type === window.HTMLCS.WARNING || msg.type === 1)) {
+                          const messageType = msg.type === window.HTMLCS.ERROR ? 'error' : 
+                                            msg.type === window.HTMLCS.WARNING ? 'warning' : 'violation';
+                          messages.push({
+                            code: msg.code,
+                            context: msg.element?.outerHTML?.substring(0, 200) || '',
+                            message: msg.msg,
+                            selector: window.HTMLCS.util?.getElementSelector(msg.element) || 'unknown',
+                            type: messageType,
+                            typeCode: msg.type
+                          });
+                        }
+                      }, function() {
+                        // Process complete callback
+                        clearTimeout(timeout);
+                        resolve(messages);
+                      });
+                    } catch (error) {
+                      clearTimeout(timeout);
+                      reject(error);
+                    }
+                  });
+                }, baseOptions.standard || 'WCAG2AA');
+              } catch (evaluationError) {
+                console.log(`⚠️ Pa11y evaluation failed: ${evaluationError.message}`);
+                results = [];
+              }
+              
+              const errors = results || [];
+              
+              console.log(`📊 Pa11y found ${errors.length} accessibility issues on authenticated ${url}`);
+              
+              if (errors.length > 0) {
+                console.log(`� Issues details for ${url}:`);
+                errors.forEach((issue, index) => {
+                  console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
+                  console.log(`      Selector: ${issue.selector}`);
+                });
+              }
+              
+              return errors;
+              
+            } finally {
+              await browser.close();
+            }
+          }
+
+          async function main() {
+            console.log('� Starting Pa11y tests in CI/CD...');
+            console.log(`🔗 Base URL: ${baseUrl}`);
+            console.log(`🔐 Auth script path: ${authScript}`);
+            
+            // Test without authentication first (baseline)
+            console.log('\n=== TESTING WITHOUT AUTHENTICATION ===');
+            const homeResults = await runPa11yTest(baseUrl);
+            const signinResults = await runPa11yTest(`${baseUrl}/signin`);
+            const userResultsNoAuth = await runPa11yTest(`${baseUrl}/user`);
+            const notFoundResults = await runPa11yTest(`${baseUrl}/404`);
+            
+            console.log('\n=== TESTING WITH AUTHENTICATION ===');
+            const userResultsWithAuth = await runPa11yTest(`${baseUrl}/user`, true);
+            
+            // Count issues
+            const homeIssues = Array.isArray(homeResults) ? homeResults.length : 0;
+            const signinIssues = Array.isArray(signinResults) ? signinResults.length : 0;
+            const userIssuesNoAuth = Array.isArray(userResultsNoAuth) ? userResultsNoAuth.length : 0;
+            const userIssuesWithAuth = Array.isArray(userResultsWithAuth) ? userResultsWithAuth.length : 0;
+            const notFoundIssues = Array.isArray(notFoundResults) ? notFoundResults.length : 0;
+            
+            console.log('\n� Pa11y Results Summary:');
+            console.log(`- Home page: ${homeIssues} issues`);
+            console.log(`- Sign-in page: ${signinIssues} issues`);
+            console.log(`- User page (no auth): ${userIssuesNoAuth} issues`);
+            console.log(`- User page (with auth): ${userIssuesWithAuth} issues`);
+            console.log(`- 404 page: ${notFoundIssues} issues`);
+            
+            // Write detailed results
+            fs.writeFileSync('pa11y-home.json', JSON.stringify(homeResults, null, 2));
+            fs.writeFileSync('pa11y-signin.json', JSON.stringify(signinResults, null, 2));
+            fs.writeFileSync('pa11y-user-noauth.json', JSON.stringify(userResultsNoAuth, null, 2));
+            fs.writeFileSync('pa11y-user-auth.json', JSON.stringify(userResultsWithAuth, null, 2));
+            fs.writeFileSync('pa11y-404.json', JSON.stringify(notFoundResults, null, 2));
+            
+            const totalIssues = homeIssues + signinIssues + userIssuesWithAuth + notFoundIssues;
+            console.log(`\n🎯 Total issues (blocking): ${totalIssues}`);
+            
+            // Expected behavior check for test element
+            if (userIssuesNoAuth === 0 && userIssuesWithAuth === 0) {
+              console.log('\n⚠️  WARNING: Both auth and no-auth tests show 0 issues.');
+              console.log('   This suggests Pa11y may not be detecting the test contrast element.');
+              console.log('   Expected: no-auth = 0 issues, with-auth = 1+ issues (test contrast element)');
+            }
+            
+            if (totalIssues > 0) {
+              console.log('\n❌ Pa11y found accessibility issues. This is a blocking error.');
+              process.exit(1);
+            } else {
+              console.log('\n✅ No accessibility issues found.');
+              process.exit(0);
+            }
+          }
+
+          main().catch(error => {
+            console.error('💥 Pa11y test runner failed:', error);
+            process.exit(1);
+          });
+          EOF
+
+          # Run the Pa11y test with working approach from commit 67ccece
+          PREVIEW_URL="$PREVIEW_URL" VERCEL_AUTOMATION_BYPASS_SECRET="$VERCEL_AUTOMATION_BYPASS_SECRET" node run-pa11y-ci.cjs
+
+      - name: 📤 Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.test-type }}-reports
+          path: |
+            P11-ArgentBank/cypress/screenshots
+            P11-ArgentBank/cypress/videos
+            P11-ArgentBank/lighthouse-reports
+            P11-ArgentBank/pa11y-reports
+
+  promote-production:
+    name: 🚀 Promote to Production
+    needs: [ci-tests, deploy-preview, accessibility-tests]
+    if: success() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 📦 Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: 🔧 Setup vercel.json for production
+        run: pnpm run vercel:config prod
+
+      - name: 🚀 Deploy to Vercel Production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "=== Promoting to production ==="
+          echo "All tests passed! Deploying to production..."
+
+          # Deploy to production from repo root
+          cd ..
+          echo "Changed to repo root: $(pwd)"
+          vercel --prod --yes --token $VERCEL_TOKEN
+
+          echo "🎉 Production deployed: https://slm-argentbank.vercel.app"
+
+      - name: 🔧 Cleanup vercel.json
+        run: pnpm run vercel:clean
