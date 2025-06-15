@@ -324,17 +324,16 @@ const User: React.FC = () => {
               )}
             </h2>
 
-            {/* Test element for Pa11y contrast detection */}
+            {/* Element de test pour Pa11y - mauvais contraste intentionnel */}
             <div
               style={{
-                backgroundColor: "#ffffff",
-                color: "#f0f0f0",
+                color: "#ccc",
+                backgroundColor: "#ddd",
                 padding: "10px",
                 margin: "10px 0",
-                fontSize: "14px",
               }}
             >
-              This is a test element with poor contrast for Pa11y detection
+              This text has poor contrast for Pa11y testing
             </div>
 
             <div>
@@ -512,12 +511,17 @@ const User: React.FC = () => {
                         className={user["transaction-table"]}
                         ref={tableHeadingRef}
                         tabIndex={-1}
-                        aria-label={
-                          selectedAccount
-                            ? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
-                            : "Transactions from all accounts"
-                        }
                       >
+                        {/* <caption className="sr-only">
+													{selectedAccount
+														? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
+														: "Transactions from all accounts"}
+													</caption> */}
+                        <caption className="sr-only">
+                          {selectedAccount
+                            ? `Account ending in ${selectedAccount.accountNumber}`
+                            : "All accounts"}
+                        </caption>
                         {/* <thead className="sr-only">
 													<tr>
 														<th scope="col">Description</th>

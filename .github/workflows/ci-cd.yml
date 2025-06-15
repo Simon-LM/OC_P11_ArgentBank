@@ -482,7 +482,7 @@ jobs:
                   
                   // Fixed callback logic from commit 67ccece
                   window.HTMLCS.process(standard, document, function(msg) {
-                    if (msg.type === window.HTMLCS.ERROR) {
+                    if (msg && msg.type === window.HTMLCS.ERROR) {
                       messages.push({
                         code: msg.code,
                         context: msg.element?.outerHTML?.substring(0, 200) || '',
