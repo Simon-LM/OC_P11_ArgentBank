@@ -488,15 +488,17 @@ jobs:
                     }, 30000);
                     
                     try {
-                      // Fixed callback logic from commit 67ccece
+                      // Fixed callback logic from commit 67ccece - capture all accessibility violations
                       window.HTMLCS.process(standard, document, function(msg) {
-                        if (msg && msg.type === window.HTMLCS.ERROR) {
+                        if (msg && (msg.type === window.HTMLCS.ERROR || msg.type === window.HTMLCS.WARNING || msg.type === 1)) {
+                          const messageType = msg.type === window.HTMLCS.ERROR ? 'error' : 
+                                            msg.type === window.HTMLCS.WARNING ? 'warning' : 'violation';
                           messages.push({
                             code: msg.code,
                             context: msg.element?.outerHTML?.substring(0, 200) || '',
                             message: msg.msg,
                             selector: window.HTMLCS.util?.getElementSelector(msg.element) || 'unknown',
-                            type: 'error',
+                            type: messageType,
                             typeCode: msg.type
                           });
                         }
