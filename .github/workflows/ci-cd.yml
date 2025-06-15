@@ -383,7 +383,7 @@ jobs:
               
               // Small delay for page to settle
               console.log('<<<<< PA11Y AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
-              await page.waitForTimeout(2000);
+              await new Promise(resolve => setTimeout(resolve, 2000));
               console.log('<<<<< PA11Y AUTH SCRIPT: Authentication script finished successfully. >>>>>');
               
             } catch (error) {
