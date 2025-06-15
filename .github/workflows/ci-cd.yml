@@ -316,7 +316,9 @@ jobs:
           }
 
           # Install Pa11y and dependencies globally
-          npm install -g pa11y@8.0.0 puppeteer@24.10.1          # Create Pa11y authentication script for CI/CD
+          npm install -g pa11y@8.0.0 puppeteer@24.10.1
+
+          # Create Pa11y authentication script for CI/CD
           cat > pa11y-auth-ci.cjs << 'EOF'
           module.exports = async function (page, options) {
             console.log('<<<<< PA11Y AUTH SCRIPT (CI/CD) STARTED >>>>>');
@@ -374,7 +376,9 @@ jobs:
               throw error;
             }
           };
-          EOF          # Create Pa11y runner script for CI/CD with detailed debugging
+          EOF
+
+          # Create Pa11y runner script for CI/CD with detailed debugging
           cat > run-pa11y-ci.cjs << 'EOF'
           const pa11y = require('pa11y');
           const path = require('path');
