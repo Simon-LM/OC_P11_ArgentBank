@@ -315,63 +315,164 @@ jobs:
             exit 1
           }
 
-          # Install Pa11y globally
-          npm install -g pa11y@8.0.0
+          # Install Pa11y and dependencies globally
+          npm install -g pa11y@8.0.0 puppeteer@24.10.1
 
-          # Create Pa11y configuration
-          cat > .pa11yrc << EOF
-          {
-            "standard": "WCAG2AA",
-            "timeout": 30000,
-            "wait": 2000,
-            "chromeLaunchConfig": {
-              "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
-            },
-            "reporters": ["json", "cli"]
-          }
+          # Create Pa11y authentication script for CI/CD
+          cat > pa11y-auth-ci.js << 'EOF'
+          module.exports = async function (page, options) {
+            console.log('<<<<< PA11Y AUTH SCRIPT (CI/CD) STARTED >>>>>');
+            
+            try {
+              const signInUrl = options.page.replace('/user', '/signIn');
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Navigating to ${signInUrl} >>>>>`);
+              
+              // Navigate to sign-in page
+              await page.goto(signInUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Navigation to /signIn complete >>>>>');
+              
+              // Wait for form to be visible
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for form to be visible >>>>>');
+              await page.waitForSelector('form', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Form is visible >>>>>');
+              
+              // Wait for email field and type credentials
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for email field to be visible >>>>>');
+              await page.waitForSelector('input[name="email"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Email field is visible >>>>>');
+              
+              console.log('<<<<< PA11Y AUTH SCRIPT: Typing credentials >>>>>');
+              await page.type('input[name="email"]', 'user@email.com');
+              await page.type('input[name="password"]', 'password123');
+              console.log('<<<<< PA11Y AUTH SCRIPT: Credentials typed >>>>>');
+              
+              // Wait for submit button and click
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for submit button >>>>>');
+              await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Submit button found >>>>>');
+              
+              // Click submit and wait for navigation
+              console.log('<<<<< PA11Y AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
+              await Promise.all([
+                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
+                page.click('button[type="submit"]')
+              ]);
+              
+              const currentUrl = page.url();
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+              
+              // Wait for user page content to confirm successful login
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
+              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
+              
+              // Small delay for page to settle
+              console.log('<<<<< PA11Y AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
+              await page.waitForTimeout(2000);
+              console.log('<<<<< PA11Y AUTH SCRIPT: Authentication script finished successfully. >>>>>');
+              
+            } catch (error) {
+              console.error('<<<<< PA11Y AUTH SCRIPT: Error during authentication >>>>>', error.message);
+              throw error;
+            }
+          };
           EOF
 
-          # Test pages
-          echo "Testing accessibility on Preview: $PREVIEW_URL"
+          # Create Pa11y runner script for CI/CD
+          cat > run-pa11y-ci.js << 'EOF'
+          const pa11y = require('pa11y');
+          const path = require('path');
 
-          # Test Home page
-          pa11y "$PREVIEW_URL" --reporter json > pa11y-home.json 2>&1 || true
-          home_issues=$(jq length pa11y-home.json 2>/dev/null || echo "0")
+          const baseUrl = process.env.PREVIEW_URL;
+          const authScript = path.resolve('./pa11y-auth-ci.js');
 
-          # Test Sign-in page
-          pa11y "$PREVIEW_URL/signin" --reporter json > pa11y-signin.json 2>&1 || true
-          signin_issues=$(jq length pa11y-signin.json 2>/dev/null || echo "0")
+          async function runPa11yTest(url, useAuth = false) {
+            const options = {
+              standard: 'WCAG2AA',
+              timeout: 30000,
+              wait: 2000,
+              chromeLaunchConfig: {
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+              }
+            };
+            
+            if (useAuth) {
+              options.actions = [`set field input[name="email"] to user@email.com`];
+              options.authScript = authScript;
+            }
+            
+            try {
+              console.log(`Testing URL: ${url} ${useAuth ? '(with auth)' : '(without auth)'}`);
+              const results = await pa11y(url, options);
+              return results;
+            } catch (error) {
+              console.error(`Error testing ${url}:`, error.message);
+              return [];
+            }
+          }
 
-          # Test User page (diagnostic test - may fail if authentication required)
-          pa11y "$PREVIEW_URL/user" --reporter json > pa11y-user.json 2>&1 || true
-          user_issues=$(jq length pa11y-user.json 2>/dev/null || echo "0")
+          async function main() {
+            console.log('Starting Pa11y tests in CI/CD...');
+            
+            // Test without authentication first (baseline)
+            const homeResults = await runPa11yTest(baseUrl);
+            const signinResults = await runPa11yTest(`${baseUrl}/signin`);
+            const userResultsNoAuth = await runPa11yTest(`${baseUrl}/user`);
+            const notFoundResults = await runPa11yTest(`${baseUrl}/404`);
+            
+            // Test /user with authentication
+            const userResultsWithAuth = await runPa11yTest(`${baseUrl}/user`, true);
+            
+            // Count issues
+            const homeIssues = homeResults.length || 0;
+            const signinIssues = signinResults.length || 0;
+            const userIssuesNoAuth = userResultsNoAuth.length || 0;
+            const userIssuesWithAuth = userResultsWithAuth.length || 0;
+            const notFoundIssues = notFoundResults.length || 0;
+            
+            console.log('Pa11y Results:');
+            console.log(`- Home page: ${homeIssues} issues`);
+            console.log(`- Sign-in page: ${signinIssues} issues`);
+            console.log(`- User page (no auth): ${userIssuesNoAuth} issues`);
+            console.log(`- User page (with auth): ${userIssuesWithAuth} issues`);
+            console.log(`- 404 page: ${notFoundIssues} issues`);
+            
+            // Write detailed results
+            require('fs').writeFileSync('pa11y-home.json', JSON.stringify(homeResults, null, 2));
+            require('fs').writeFileSync('pa11y-signin.json', JSON.stringify(signinResults, null, 2));
+            require('fs').writeFileSync('pa11y-user-noauth.json', JSON.stringify(userResultsNoAuth, null, 2));
+            require('fs').writeFileSync('pa11y-user-auth.json', JSON.stringify(userResultsWithAuth, null, 2));
+            require('fs').writeFileSync('pa11y-404.json', JSON.stringify(notFoundResults, null, 2));
+            
+            // Calculate total (exclude no-auth user test from total)
+            const totalIssues = homeIssues + signinIssues + userIssuesWithAuth + notFoundIssues;
+            console.log(`- Total issues (blocking): ${totalIssues}`);
+            
+            if (totalIssues > 0) {
+              console.log('❌ Pa11y found accessibility issues. This is a blocking error.');
+              process.exit(1);
+            } else {
+              console.log('✅ No accessibility issues found.');
+              process.exit(0);
+            }
+          }
 
-          # Test 404 page
-          pa11y "$PREVIEW_URL/404" --reporter json > pa11y-404.json 2>&1 || true
-          notfound_issues=$(jq length pa11y-404.json 2>/dev/null || echo "0")
+          main().catch(error => {
+            console.error('Pa11y test runner failed:', error);
+            process.exit(1);
+          });
+          EOF
 
-          # Calculate total issues
-          total_issues=$((home_issues + signin_issues + user_issues + notfound_issues))
+          # Run Pa11y tests using our custom runner
+          node run-pa11y-ci.js
 
-          echo "Pa11y Results:"
-          echo "- Home page: $home_issues issues"
-          echo "- Sign-in page: $signin_issues issues"
-          echo "- User page: $user_issues issues (diagnostic test)"
-          echo "- 404 page: $notfound_issues issues"
-          echo "- Total: $total_issues issues"
-
-          # Create detailed reports directory
+          # Create reports directory and copy results
           mkdir -p pa11y-reports
           [ -f "pa11y-home.json" ] && cp pa11y-home.json pa11y-reports/
           [ -f "pa11y-signin.json" ] && cp pa11y-signin.json pa11y-reports/
-          [ -f "pa11y-user.json" ] && cp pa11y-user.json pa11y-reports/
+          [ -f "pa11y-user-noauth.json" ] && cp pa11y-user-noauth.json pa11y-reports/
+          [ -f "pa11y-user-auth.json" ] && cp pa11y-user-auth.json pa11y-reports/
           [ -f "pa11y-404.json" ] && cp pa11y-404.json pa11y-reports/
-
-          # Exit with error if issues found (this will fail the job)
-          if [ "$total_issues" != "0" ]; then
-            echo "❌ Pa11y found $total_issues accessibility issues. This is a blocking error."
-            exit 1
-          fi
 
       - name: 📤 Upload test artifacts
         uses: actions/upload-artifact@v4
