@@ -349,12 +349,12 @@ jobs:
               
               // Wait for email field and type credentials
               console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for email field to be visible >>>>>');
-              await page.waitForSelector('input[name="email"]', { visible: true, timeout: 10000 });
+              await page.waitForSelector('#email', { visible: true, timeout: 10000 });
               console.log('<<<<< PA11Y AUTH SCRIPT: Email field is visible >>>>>');
               
               console.log('<<<<< PA11Y AUTH SCRIPT: Typing credentials >>>>>');
-              await page.type('input[name="email"]', 'user@email.com');
-              await page.type('input[name="password"]', 'password123');
+              await page.type('#email', 'tony@stark.com');
+              await page.type('#password', 'password123');
               console.log('<<<<< PA11Y AUTH SCRIPT: Credentials typed >>>>>');
               
               // Wait for submit button and click
@@ -416,7 +416,6 @@ jobs:
             
             if (useAuth) {
               console.log(`🔐 USING AUTH SCRIPT: ${authScript}`);
-              options.actions = [`set field input[name="email"] to user@email.com`];
               options.authScript = authScript;
               
               // Pass environment variables to the auth script
