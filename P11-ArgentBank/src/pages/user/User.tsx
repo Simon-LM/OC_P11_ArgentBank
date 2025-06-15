@@ -499,17 +499,12 @@ const User: React.FC = () => {
                         className={user["transaction-table"]}
                         ref={tableHeadingRef}
                         tabIndex={-1}
+                        aria-label={
+                          selectedAccount
+                            ? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
+                            : "Transactions from all accounts"
+                        }
                       >
-                        {/* <caption className="sr-only">
-													{selectedAccount
-														? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
-														: "Transactions from all accounts"}
-													</caption> */}
-                        <caption className="sr-only">
-                          {selectedAccount
-                            ? `Account ending in ${selectedAccount.accountNumber}`
-                            : "All accounts"}
-                        </caption>
                         {/* <thead className="sr-only">
 													<tr>
 														<th scope="col">Description</th>

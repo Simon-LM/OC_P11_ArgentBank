@@ -157,6 +157,7 @@ const SignIn: React.FC = () => {
           </div>
 
           <button
+            type="submit"
             className={signin["signin-form__button"]}
             disabled={isLoading}
             aria-busy={isLoading}
