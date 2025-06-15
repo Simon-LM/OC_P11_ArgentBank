@@ -409,18 +409,24 @@ jobs:
               
               const results = await pa11y(url, options);
               
-              console.log(`📊 ${url} ${useAuth ? '(with auth)' : '(without auth)'}: ${results.length} issues found`);
+              // Handle undefined or null results
+              const safeResults = Array.isArray(results) ? results : [];
               
-              if (results.length > 0) {
+              console.log(`📊 ${url} ${useAuth ? '(with auth)' : '(without auth)'}: ${safeResults.length} issues found`);
+              
+              if (safeResults.length > 0) {
                 console.log(`📋 Issues details for ${url}:`);
-                results.forEach((issue, index) => {
+                safeResults.forEach((issue, index) => {
                   console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
                 });
+              } else if (results === undefined || results === null) {
+                console.log(`⚠️  WARNING: Pa11y returned ${results} for ${url} - possible test failure`);
               }
               
-              return results;
+              return safeResults;
             } catch (error) {
               console.error(`❌ Error testing ${url} ${useAuth ? '(with auth)' : '(without auth)'}:`, error.message);
+              console.error(`🔍 Error details:`, error);
               return [];
             }
           }
@@ -441,12 +447,12 @@ jobs:
             // Test /user with authentication
             const userResultsWithAuth = await runPa11yTest(`${baseUrl}/user`, true);
             
-            // Count issues
-            const homeIssues = homeResults.length || 0;
-            const signinIssues = signinResults.length || 0;
-            const userIssuesNoAuth = userResultsNoAuth.length || 0;
-            const userIssuesWithAuth = userResultsWithAuth.length || 0;
-            const notFoundIssues = notFoundResults.length || 0;
+            // Count issues (handle undefined results safely)
+            const homeIssues = Array.isArray(homeResults) ? homeResults.length : 0;
+            const signinIssues = Array.isArray(signinResults) ? signinResults.length : 0;
+            const userIssuesNoAuth = Array.isArray(userResultsNoAuth) ? userResultsNoAuth.length : 0;
+            const userIssuesWithAuth = Array.isArray(userResultsWithAuth) ? userResultsWithAuth.length : 0;
+            const notFoundIssues = Array.isArray(notFoundResults) ? notFoundResults.length : 0;
             
             console.log('\n📊 Pa11y Results Summary:');
             console.log(`- Home page: ${homeIssues} issues`);
