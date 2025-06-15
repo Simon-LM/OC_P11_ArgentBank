@@ -316,10 +316,8 @@ jobs:
           }
 
           # Install Pa11y and dependencies globally
-          npm install -g pa11y@8.0.0 puppeteer@24.10.1
-
-          # Create Pa11y authentication script for CI/CD
-          cat > pa11y-auth-ci.js << 'EOF'
+          npm install -g pa11y@8.0.0 puppeteer@24.10.1          # Create Pa11y authentication script for CI/CD
+          cat > pa11y-auth-ci.cjs << 'EOF'
           module.exports = async function (page, options) {
             console.log('<<<<< PA11Y AUTH SCRIPT (CI/CD) STARTED >>>>>');
             
@@ -379,12 +377,13 @@ jobs:
           EOF
 
           # Create Pa11y runner script for CI/CD
-          cat > run-pa11y-ci.js << 'EOF'
+          cat > run-pa11y-ci.cjs << 'EOF'
           const pa11y = require('pa11y');
           const path = require('path');
+          const fs = require('fs');
 
           const baseUrl = process.env.PREVIEW_URL;
-          const authScript = path.resolve('./pa11y-auth-ci.js');
+          const authScript = path.resolve('./pa11y-auth-ci.cjs');
 
           async function runPa11yTest(url, useAuth = false) {
             const options = {
@@ -438,11 +437,11 @@ jobs:
             console.log(`- 404 page: ${notFoundIssues} issues`);
             
             // Write detailed results
-            require('fs').writeFileSync('pa11y-home.json', JSON.stringify(homeResults, null, 2));
-            require('fs').writeFileSync('pa11y-signin.json', JSON.stringify(signinResults, null, 2));
-            require('fs').writeFileSync('pa11y-user-noauth.json', JSON.stringify(userResultsNoAuth, null, 2));
-            require('fs').writeFileSync('pa11y-user-auth.json', JSON.stringify(userResultsWithAuth, null, 2));
-            require('fs').writeFileSync('pa11y-404.json', JSON.stringify(notFoundResults, null, 2));
+            fs.writeFileSync('pa11y-home.json', JSON.stringify(homeResults, null, 2));
+            fs.writeFileSync('pa11y-signin.json', JSON.stringify(signinResults, null, 2));
+            fs.writeFileSync('pa11y-user-noauth.json', JSON.stringify(userResultsNoAuth, null, 2));
+            fs.writeFileSync('pa11y-user-auth.json', JSON.stringify(userResultsWithAuth, null, 2));
+            fs.writeFileSync('pa11y-404.json', JSON.stringify(notFoundResults, null, 2));
             
             // Calculate total (exclude no-auth user test from total)
             const totalIssues = homeIssues + signinIssues + userIssuesWithAuth + notFoundIssues;
@@ -464,7 +463,7 @@ jobs:
           EOF
 
           # Run Pa11y tests using our custom runner
-          node run-pa11y-ci.js
+          node run-pa11y-ci.cjs
 
           # Create reports directory and copy results
           mkdir -p pa11y-reports
