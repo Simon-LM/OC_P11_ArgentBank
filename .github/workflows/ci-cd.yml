@@ -457,6 +457,16 @@ jobs:
             console.log(`🔗 Base URL: ${baseUrl}`);
             console.log(`🔐 Auth script path: ${authScript}`);
             
+            // Test if auth script file exists and is readable
+            try {
+              const fs = require('fs');
+              const authScriptContent = fs.readFileSync(authScript, 'utf8');
+              console.log(`✅ Auth script exists (${authScriptContent.length} characters)`);
+              console.log(`📝 First 100 chars: ${authScriptContent.substring(0, 100)}...`);
+            } catch (error) {
+              console.error(`❌ Cannot read auth script: ${error.message}`);
+            }
+            
             // Test without authentication first (baseline)
             console.log('\n=== TESTING WITHOUT AUTHENTICATION ===');
             const homeResults = await runPa11yTest(baseUrl);
@@ -465,8 +475,38 @@ jobs:
             const notFoundResults = await runPa11yTest(`${baseUrl}/404`);
             
             console.log('\n=== TESTING WITH AUTHENTICATION ===');
-            // Test /user with authentication
+            // Test /user with authentication - try multiple approaches
+            
+            // Approach 1: Standard Pa11y with authScript
+            console.log('🔄 Attempt 1: Using Pa11y authScript option');
             const userResultsWithAuth = await runPa11yTest(`${baseUrl}/user`, true);
+            
+            // Approach 2: Direct test to verify auth script execution
+            console.log('\n🔄 Attempt 2: Testing auth script execution directly');
+            try {
+              const puppeteer = require('puppeteer');
+              const authScriptFunction = require(authScript);
+              
+              console.log('🚀 Launching Puppeteer directly...');
+              const browser = await puppeteer.launch({
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+              });
+              const page = await browser.newPage();
+              
+              console.log('🔐 Testing auth script execution...');
+              await authScriptFunction(page, { page: `${baseUrl}/user` });
+              
+              const currentUrl = page.url();
+              const pageTitle = await page.title();
+              console.log(`📍 Final URL: ${currentUrl}`);
+              console.log(`📄 Page title: ${pageTitle}`);
+              
+              await browser.close();
+              console.log('✅ Direct auth script test completed');
+              
+            } catch (error) {
+              console.error(`❌ Direct auth script test failed: ${error.message}`);
+            }
             
             // Count issues (handle undefined results safely)
             const homeIssues = Array.isArray(homeResults) ? homeResults.length : 0;
