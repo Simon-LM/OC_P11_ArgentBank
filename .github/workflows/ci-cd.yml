@@ -492,12 +492,28 @@ jobs:
                   
                   // Custom callback to collect messages
                   window.HTMLCS.process(standard, document, function(msg) {
-                    if (msg.type === window.HTMLCS.ERROR) {
+                    if (msg && msg.type === window.HTMLCS.ERROR) {
+                      // Safe selector generation
+                      let selector = 'unknown';
+                      try {
+                        if (msg.element) {
+                          if (msg.element.id) {
+                            selector = '#' + msg.element.id;
+                          } else if (msg.element.className) {
+                            selector = '.' + msg.element.className.split(' ')[0];
+                          } else {
+                            selector = msg.element.tagName?.toLowerCase() || 'unknown';
+                          }
+                        }
+                      } catch (e) {
+                        selector = 'unknown';
+                      }
+                      
                       messages.push({
-                        code: msg.code,
+                        code: msg.code || 'unknown',
                         context: msg.element?.outerHTML?.substring(0, 200) || '',
-                        message: msg.msg,
-                        selector: window.HTMLCS.util?.getElementSelector(msg.element) || 'unknown',
+                        message: msg.msg || 'No message',
+                        selector: selector,
                         type: 'error',
                         typeCode: msg.type
                       });
