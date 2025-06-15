@@ -324,6 +324,17 @@ jobs:
             console.log('<<<<< PA11Y AUTH SCRIPT (CI/CD) STARTED >>>>>');
             
             try {
+              // Add Vercel protection bypass headers
+              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+              if (bypassSecret) {
+                console.log('<<<<< PA11Y AUTH SCRIPT: Setting Vercel bypass headers >>>>>');
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': bypassSecret
+                });
+              } else {
+                console.log('<<<<< PA11Y AUTH SCRIPT: WARNING - No Vercel bypass secret found >>>>>');
+              }
+              
               const signInUrl = options.page.replace('/user', '/signIn');
               console.log(`<<<<< PA11Y AUTH SCRIPT: Navigating to ${signInUrl} >>>>>`);
               
@@ -366,6 +377,10 @@ jobs:
               await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
               console.log('<<<<< PA11Y AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
               
+              // Capture page title for verification
+              const pageTitle = await page.title();
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Page title: ${pageTitle} >>>>>`);
+              
               // Small delay for page to settle
               console.log('<<<<< PA11Y AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
               await page.waitForTimeout(2000);
@@ -373,6 +388,7 @@ jobs:
               
             } catch (error) {
               console.error('<<<<< PA11Y AUTH SCRIPT: Error during authentication >>>>>', error.message);
+              console.error('<<<<< PA11Y AUTH SCRIPT: Error details >>>>>', error);
               throw error;
             }
           };
@@ -402,6 +418,11 @@ jobs:
               console.log(`🔐 USING AUTH SCRIPT: ${authScript}`);
               options.actions = [`set field input[name="email"] to user@email.com`];
               options.authScript = authScript;
+              
+              // Pass environment variables to the auth script
+              if (!process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                console.log('⚠️  WARNING: VERCEL_AUTOMATION_BYPASS_SECRET not found in environment');
+              }
             }
             
             try {
