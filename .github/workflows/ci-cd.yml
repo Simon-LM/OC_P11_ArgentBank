@@ -374,9 +374,7 @@ jobs:
               throw error;
             }
           };
-          EOF
-
-          # Create Pa11y runner script for CI/CD
+          EOF          # Create Pa11y runner script for CI/CD with detailed debugging
           cat > run-pa11y-ci.cjs << 'EOF'
           const pa11y = require('pa11y');
           const path = require('path');
@@ -388,37 +386,54 @@ jobs:
           async function runPa11yTest(url, useAuth = false) {
             const options = {
               standard: 'WCAG2AA',
-              timeout: 30000,
-              wait: 2000,
+              timeout: 60000,
+              wait: 3000,
               chromeLaunchConfig: {
-                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+                devtools: false
               }
             };
             
             if (useAuth) {
+              console.log(`🔐 USING AUTH SCRIPT: ${authScript}`);
               options.actions = [`set field input[name="email"] to user@email.com`];
               options.authScript = authScript;
             }
             
             try {
-              console.log(`Testing URL: ${url} ${useAuth ? '(with auth)' : '(without auth)'}`);
+              console.log(`🧪 Testing URL: ${url} ${useAuth ? '(with auth)' : '(without auth)'}`);
+              
               const results = await pa11y(url, options);
+              
+              console.log(`📊 ${url} ${useAuth ? '(with auth)' : '(without auth)'}: ${results.length} issues found`);
+              
+              if (results.length > 0) {
+                console.log(`📋 Issues details for ${url}:`);
+                results.forEach((issue, index) => {
+                  console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
+                });
+              }
+              
               return results;
             } catch (error) {
-              console.error(`Error testing ${url}:`, error.message);
+              console.error(`❌ Error testing ${url} ${useAuth ? '(with auth)' : '(without auth)'}:`, error.message);
               return [];
             }
           }
 
           async function main() {
-            console.log('Starting Pa11y tests in CI/CD...');
+            console.log('🚀 Starting Pa11y tests in CI/CD...');
+            console.log(`🔗 Base URL: ${baseUrl}`);
+            console.log(`🔐 Auth script path: ${authScript}`);
             
             // Test without authentication first (baseline)
+            console.log('\n=== TESTING WITHOUT AUTHENTICATION ===');
             const homeResults = await runPa11yTest(baseUrl);
             const signinResults = await runPa11yTest(`${baseUrl}/signin`);
             const userResultsNoAuth = await runPa11yTest(`${baseUrl}/user`);
             const notFoundResults = await runPa11yTest(`${baseUrl}/404`);
             
+            console.log('\n=== TESTING WITH AUTHENTICATION ===');
             // Test /user with authentication
             const userResultsWithAuth = await runPa11yTest(`${baseUrl}/user`, true);
             
@@ -429,7 +444,7 @@ jobs:
             const userIssuesWithAuth = userResultsWithAuth.length || 0;
             const notFoundIssues = notFoundResults.length || 0;
             
-            console.log('Pa11y Results:');
+            console.log('\n📊 Pa11y Results Summary:');
             console.log(`- Home page: ${homeIssues} issues`);
             console.log(`- Sign-in page: ${signinIssues} issues`);
             console.log(`- User page (no auth): ${userIssuesNoAuth} issues`);
@@ -445,19 +460,26 @@ jobs:
             
             // Calculate total (exclude no-auth user test from total)
             const totalIssues = homeIssues + signinIssues + userIssuesWithAuth + notFoundIssues;
-            console.log(`- Total issues (blocking): ${totalIssues}`);
+            console.log(`\n🎯 Total issues (blocking): ${totalIssues}`);
+            
+            // Detailed comparison
+            if (userIssuesNoAuth === 0 && userIssuesWithAuth === 0) {
+              console.log('\n⚠️  WARNING: Both auth and no-auth tests show 0 issues.');
+              console.log('   This suggests authentication may not be working properly.');
+              console.log('   Expected: no-auth = 0 issues, with-auth = 2+ issues (contrast problems)');
+            }
             
             if (totalIssues > 0) {
-              console.log('❌ Pa11y found accessibility issues. This is a blocking error.');
+              console.log('\n❌ Pa11y found accessibility issues. This is a blocking error.');
               process.exit(1);
             } else {
-              console.log('✅ No accessibility issues found.');
+              console.log('\n✅ No accessibility issues found.');
               process.exit(0);
             }
           }
 
           main().catch(error => {
-            console.error('Pa11y test runner failed:', error);
+            console.error('💥 Pa11y test runner failed:', error);
             process.exit(1);
           });
           EOF
