@@ -476,57 +476,39 @@ jobs:
               // Now run Pa11y on the authenticated page
               console.log(`🧪 Running Pa11y on authenticated page: ${url}`);
               
-              const htmlcs = require('pa11y/lib/runners/htmlcs');
+              // Get the current page HTML after authentication
+              const pageHtml = await page.content();
+              const currentUrl = page.url();
               
-              // Inject Pa11y and run tests on the current authenticated page
-              await page.addScriptTag({
-                url: 'https://squizlabs.github.io/HTML_CodeSniffer/build/HTMLCS.js'
-              });
+              console.log(`🔍 Captured ${pageHtml.length} characters of authenticated page HTML`);
+              console.log(`📍 Current page URL: ${currentUrl}`);
               
-              // Wait for HTMLCS to be available
-              await page.waitForFunction('typeof window.HTMLCS !== "undefined"', { timeout: 10000 });
+              await browser.close();
               
-              const results = await page.evaluate((standard) => {
-                return new Promise((resolve) => {
-                  const messages = [];
-                  
-                  // Custom callback to collect messages
-                  window.HTMLCS.process(standard, document, function(msg) {
-                    if (msg && msg.type === window.HTMLCS.ERROR) {
-                      // Safe selector generation
-                      let selector = 'unknown';
-                      try {
-                        if (msg.element) {
-                          if (msg.element.id) {
-                            selector = '#' + msg.element.id;
-                          } else if (msg.element.className) {
-                            selector = '.' + msg.element.className.split(' ')[0];
-                          } else {
-                            selector = msg.element.tagName?.toLowerCase() || 'unknown';
-                          }
-                        }
-                      } catch (e) {
-                        selector = 'unknown';
-                      }
-                      
-                      messages.push({
-                        code: msg.code || 'unknown',
-                        context: msg.element?.outerHTML?.substring(0, 200) || '',
-                        message: msg.msg || 'No message',
-                        selector: selector,
-                        type: 'error',
-                        typeCode: msg.type
-                      });
-                    }
-                  }, function() {
-                    // Process complete callback
-                    resolve(messages);
-                  });
-                });
-              }, baseOptions.standard || 'WCAG2AA');
+              // Now run Pa11y on the HTML content we captured
+              const fs = require('fs');
+              const tempFilePath = './temp-authenticated-page.html';
+              fs.writeFileSync(tempFilePath, pageHtml);
               
-              // Filter for errors only (WCAG violations)
-              const errors = results || [];
+              console.log(`📄 Saved authenticated page to ${tempFilePath}`);
+              
+              // Run Pa11y on the saved HTML file
+              const pa11yOptions = {
+                standard: baseOptions?.standard || 'WCAG2AA',
+                timeout: 30000,
+                wait: 1000,
+                chromeLaunchConfig: {
+                  args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+                }
+              };
+              
+              console.log(`🔍 Running Pa11y on saved authenticated HTML...`);
+              const results = await pa11y(`file://${process.cwd()}/${tempFilePath}`, pa11yOptions);
+              
+              // Clean up temp file
+              fs.unlinkSync(tempFilePath);
+              
+              const errors = Array.isArray(results) ? results : [];
               
               console.log(`📊 Pa11y found ${errors.length} accessibility issues on authenticated ${url}`);
               
@@ -534,14 +516,17 @@ jobs:
                 console.log(`📋 Issues details for ${url}:`);
                 errors.forEach((issue, index) => {
                   console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
-                  console.log(`      Selector: ${issue.selector}`);
+                  if (issue.selector) {
+                    console.log(`      Selector: ${issue.selector}`);
+                  }
                 });
               }
               
               return errors;
               
-            } finally {
+            } catch (error) {
               await browser.close();
+              throw error;
             }
           }
 
