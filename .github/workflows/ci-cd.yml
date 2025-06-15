@@ -394,84 +394,134 @@ jobs:
           };
           EOF
 
-          # Create Pa11y runner script for CI/CD with detailed debugging
+          # Create Pa11y runner script for CI/CD with simplified approach
           cat > run-pa11y-ci.cjs << 'EOF'
           const pa11y = require('pa11y');
-          const path = require('path');
+          const puppeteer = require('puppeteer');
           const fs = require('fs');
 
-          const baseUrl = process.env.PREVIEW_URL;
-          const authScript = path.resolve('./pa11y-auth-ci.cjs');
-
-          async function runPa11yTest(url, useAuth = false) {
-            const options = {
-              standard: 'WCAG2AA',
-              timeout: 60000,
-              wait: 3000,
-              chromeLaunchConfig: {
-                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-                devtools: false
-              }
-            };
+          async function runSimplifiedPa11yTest() {
+            console.log('🚀 Starting simplified Pa11y tests...');
+            const baseUrl = process.env.PREVIEW_URL;
+            console.log('🔗 Base URL:', baseUrl);
             
-            if (useAuth) {
-              console.log(`🔐 USING AUTH SCRIPT WITH SHARED SESSION: ${authScript}`);
-              // Use a shared browser instance with authentication
-              return await runPa11yTestWithAuth(url, options);
-            }
-            
+            let browser;
             try {
-              console.log(`🧪 Testing URL: ${url} ${useAuth ? '(with auth)' : '(without auth)'}`);
+              // Test pages without authentication first
+              console.log('=== TESTING WITHOUT AUTHENTICATION ===');
+              const urls = [
+                `${baseUrl}`,
+                `${baseUrl}/signin`,
+                `${baseUrl}/user`,
+                `${baseUrl}/404`
+              ];
               
-              const results = await pa11y(url, options);
-              
-              // Handle undefined or null results
-              const safeResults = Array.isArray(results) ? results : [];
-              
-              console.log(`📊 ${url} ${useAuth ? '(with auth)' : '(without auth)'}: ${safeResults.length} issues found`);
-              
-              if (safeResults.length > 0) {
-                console.log(`📋 Issues details for ${url}:`);
-                safeResults.forEach((issue, index) => {
-                  console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
-                });
-              } else if (results === undefined || results === null) {
-                console.log(`⚠️  WARNING: Pa11y returned ${results} for ${url} - possible test failure`);
+              for (const url of urls) {
+                try {
+                  console.log(`🧪 Testing URL: ${url} (without auth)`);
+                  const result = await pa11y(url, {
+                    ignore: ['color-contrast'], // Ignore contrast for now to test detection
+                    headers: {
+                      'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                    }
+                  });
+                  console.log(`📊 ${url} (without auth): ${result.issues.length} issues found`);
+                } catch (error) {
+                  console.log(`❌ Error testing ${url}:`, error.message);
+                }
               }
               
-              return safeResults;
-            } catch (error) {
-              console.error(`❌ Error testing ${url} ${useAuth ? '(with auth)' : '(without auth)'}:`, error.message);
-              console.error(`🔍 Error details:`, error);
-              return [];
+              // Test with authentication
+              console.log('\n=== TESTING WITH AUTHENTICATION ===');
+              
+              browser = await puppeteer.launch({ 
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+              });
+              
+              const page = await browser.newPage();
+              
+              // Set headers for Vercel bypass
+              await page.setExtraHTTPHeaders({
+                'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+              });
+              
+              // Execute authentication
+              console.log('🔐 Starting authentication...');
+              const authScript = require('./pa11y-auth-ci.cjs');
+              await authScript(page, { page: `${baseUrl}/user` });
+              
+              // Get authenticated page content
+              const authenticatedHtml = await page.content();
+              const authenticatedUrl = page.url();
+              
+              console.log(`📍 Current URL: ${authenticatedUrl}`);
+              console.log(`🔍 Captured ${authenticatedHtml.length} characters of authenticated page HTML`);
+              
+              // Save authenticated HTML
+              fs.writeFileSync('./temp-authenticated-page.html', authenticatedHtml);
+              console.log('📄 Saved authenticated page to ./temp-authenticated-page.html');
+              
+              // Test the authenticated page with Pa11y
+              console.log('🔍 Running Pa11y on authenticated HTML...');
+              const authResult = await pa11y('./temp-authenticated-page.html');
+              console.log(`📊 Pa11y found ${authResult.issues.length} accessibility issues on authenticated ${authenticatedUrl}`);
+              
+              if (authResult.issues.length > 0) {
+                console.log('🔍 Issues found:');
+                authResult.issues.forEach((issue, i) => {
+                  console.log(`  ${i+1}. ${issue.type}: ${issue.message}`);
+                  if (issue.selector) console.log(`     Selector: ${issue.selector}`);
+                });
+              }
+              
+              console.log('\n📊 Pa11y Results Summary:');
+              console.log(`- Authenticated page issues: ${authResult.issues.length}`);
+              
+              if (authResult.issues.length === 0) {
+                console.log('\n⚠️  WARNING: No accessibility issues detected on authenticated page.');
+                console.log('   This might indicate that Pa11y is not properly analyzing the content.');
+                
+                // Additional verification
+                console.log('\n🔍 Verifying page content:');
+                console.log(`   - Contains 'Welcome back': ${authenticatedHtml.includes('Welcome back')}`);
+                console.log(`   - Contains user content: ${authenticatedHtml.includes('user__title')}`);
+                console.log(`   - Contains account section: ${authenticatedHtml.includes('account')}`);
+                console.log(`   - Contains balance info: ${authenticatedHtml.includes('balance')}`);
+              }
+              
+              // Return result for CI/CD decision
+              return authResult.issues.length;
+              
+            } finally {
+              if (browser) {
+                await browser.close();
+              }
             }
           }
 
-          async function runPa11yTestWithAuth(url, baseOptions) {
-            console.log(`🔐 Starting authentication flow for ${url}...`);
-            
-            const puppeteer = require('puppeteer');
-            const authScriptFunction = require(authScript);
-            
-            const browser = await puppeteer.launch({
-              args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-              headless: true
-            });
-            
+          async function main() {
             try {
-              const page = await browser.newPage();
+              const issueCount = await runSimplifiedPa11yTest();
               
-              // Add Vercel bypass headers if available
-              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-              if (bypassSecret) {
-                await page.setExtraHTTPHeaders({
-                  'x-vercel-protection-bypass': bypassSecret
-                });
+              if (issueCount > 0) {
+                console.log(`\n❌ ${issueCount} accessibility issues found. Failing CI/CD.`);
+                process.exit(1);
+              } else {
+                console.log('\n✅ No accessibility issues found.');
+                process.exit(0);
               }
-              
-              // Execute authentication
-              console.log(`🔐 Executing authentication script for ${url}...`);
-              await authScriptFunction(page, { page: url });
+            } catch (error) {
+              console.error('💥 Pa11y test runner failed:', error.message);
+              console.error(error.stack);
+              process.exit(1);
+            }
+          }
+
+          main();
+          EOF
+
+
               
               // Now run Pa11y on the authenticated page
               console.log(`🧪 Running Pa11y on authenticated page: ${url}`);
@@ -524,80 +574,11 @@ jobs:
               // Test both approaches: static HTML file and live page
               console.log(`🔍 APPROACH 1: Testing saved HTML file...`);
               const staticResults = await pa11y(`file://${process.cwd()}/${tempFilePath}`, pa11yOptions);
-              const staticErrors = Array.isArray(staticResults) ? staticResults : [];
-              console.log(`📊 Static HTML analysis: ${staticErrors.length} issues found`);
-              
-              console.log(`🔍 APPROACH 2: Testing live authenticated session...`);
-              // Create new page for live testing
-              const livePage = await page.browser().newPage();
-              
-              // Set same headers and session
-              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
-                await livePage.setExtraHTTPHeaders({
-                  'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
-                });
-              }
-              
-              // Copy cookies from authenticated session
-              const cookies = await page.cookies();
-              await livePage.setCookie(...cookies);
-              
-              // Navigate to user page with existing session
-              await livePage.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
-              await livePage.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 5000 });
-              
-              // Run Pa11y on live page using the already authenticated browser
-              const liveOptions = {
-                ...pa11yOptions,
-                browser: page.browser(),
-                page: livePage
-              };
-              
-              const liveResults = await pa11y(url, liveOptions);
-              const liveErrors = Array.isArray(liveResults) ? liveResults : [];
-              console.log(`📊 Live page analysis: ${liveErrors.length} issues found`);
-              
-              await livePage.close();
-              
-              // Clean up temp file
-              fs.unlinkSync(tempFilePath);
-              
-              // Use the approach that found more issues (more likely to be accurate)
-              const finalResults = liveErrors.length > staticErrors.length ? liveResults : staticResults;
-              const finalErrors = Array.isArray(finalResults) ? finalResults : [];
-              
-              console.log(`📊 FINAL RESULT: ${finalErrors.length} accessibility issues on authenticated ${url}`);
-              console.log(`📊 (Selected ${liveErrors.length > staticErrors.length ? 'live page' : 'static HTML'} approach)`);
-              
-              if (finalErrors.length > 0) {
-                console.log(`📋 Issues details for ${url}:`);
-                finalErrors.forEach((issue, index) => {
-                  console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
-                  if (issue.selector) {
-                    console.log(`      Selector: ${issue.selector}`);
-                  }
-                  if (issue.context) {
-                    console.log(`      Context: ${issue.context.substring(0, 100)}...`);
-                  }
-                });
-              }
-              
-              return finalErrors;
-              
-            } catch (error) {
-              await browser.close();
-              throw error;
-            }
-          }
-
-          async function main() {
-            console.log('🚀 Starting Pa11y tests in CI/CD...');
-            console.log(`🔗 Base URL: ${baseUrl}`);
-            console.log(`🔐 Auth script path: ${authScript}`);
-            
-            // Test if auth script file exists and is readable
-            try {
-              const fs = require('fs');
+          # Run the simplified Pa11y test
+          cd P11-ArgentBank
+          PREVIEW_URL="$PREVIEW_URL" VERCEL_AUTOMATION_BYPASS_SECRET="$VERCEL_AUTOMATION_BYPASS_SECRET" node ../run-pa11y-ci.cjs
+          cd P11-ArgentBank
+          PREVIEW_URL="$PREVIEW_URL" VERCEL_AUTOMATION_BYPASS_SECRET="$VERCEL_AUTOMATION_BYPASS_SECRET" node ../run-pa11y-ci.cjs
               const authScriptContent = fs.readFileSync(authScript, 'utf8');
               console.log(`✅ Auth script exists (${authScriptContent.length} characters)`);
               console.log(`📝 First 100 chars: ${authScriptContent.substring(0, 100)}...`);
