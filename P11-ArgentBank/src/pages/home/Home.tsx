@@ -165,6 +165,18 @@ const Home: React.FC = () => {
           <p className="hero__text">
             Open a savings account with Argent Bank today!
           </p>
+
+          {/* Element de test pour Pa11y - mauvais contraste intentionnel sur la page d'accueil */}
+          <div
+            style={{
+              color: "#ddd",
+              backgroundColor: "#eee",
+              padding: "8px",
+              fontSize: "14px",
+            }}
+          >
+            Home page contrast test element
+          </div>
         </section>
       </div>
 

@@ -103,6 +103,20 @@ const SignIn: React.FC = () => {
             tony@stark.com / password123
           </span>
         </p>
+
+        {/* Element de test pour Pa11y - mauvais contraste intentionnel sur la page de connexion */}
+        <div
+          style={{
+            color: "#bbb",
+            backgroundColor: "#ddd",
+            padding: "6px",
+            fontSize: "12px",
+            margin: "5px 0",
+          }}
+        >
+          SignIn page contrast test element
+        </div>
+
         <form onSubmit={handleSubmit} aria-labelledby="signin-title" noValidate>
           <div className={signin["signin-form__input-group"]}>
             <label htmlFor="email" id="email-label">
