@@ -20,7 +20,7 @@ function Error404() {
           margin: "5px 0",
         }}
       >
-        404 page contrast test element
+        Poor contrast test element for accessibility validation
       </div>
       <Link className={styles["error404__link"]} to="/">
         Return to the homepage
