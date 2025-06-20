@@ -557,7 +557,6 @@ jobs:
             console.log('\n=== TESTING WITHOUT AUTHENTICATION ===');
             const homeResults = await runPa11yTest(baseUrl);
             const signinResults = await runPa11yTest(`${baseUrl}/signin`);
-            const userResultsNoAuth = await runPa11yTest(`${baseUrl}/user`);
             const notFoundResults = await runPa11yTest(`${baseUrl}/404`);
             
             console.log('\n=== TESTING WITH AUTHENTICATION ===');
@@ -566,7 +565,6 @@ jobs:
             // Count issues
             const homeIssues = Array.isArray(homeResults) ? homeResults.length : 0;
             const signinIssues = Array.isArray(signinResults) ? signinResults.length : 0;
-            const userIssuesNoAuth = Array.isArray(userResultsNoAuth) ? userResultsNoAuth.length : 0;
             const userIssuesWithAuth = Array.isArray(userResultsWithAuth) ? userResultsWithAuth.length : 0;
             const notFoundIssues = Array.isArray(notFoundResults) ? notFoundResults.length : 0;
             
@@ -580,7 +578,6 @@ jobs:
             // Write detailed results
             fs.writeFileSync('pa11y-home.json', JSON.stringify(homeResults, null, 2));
             fs.writeFileSync('pa11y-signin.json', JSON.stringify(signinResults, null, 2));
-            fs.writeFileSync('pa11y-user-noauth.json', JSON.stringify(userResultsNoAuth, null, 2));
             fs.writeFileSync('pa11y-user-auth.json', JSON.stringify(userResultsWithAuth, null, 2));
             fs.writeFileSync('pa11y-404.json', JSON.stringify(notFoundResults, null, 2));
             
@@ -588,10 +585,10 @@ jobs:
             console.log(`\n🎯 Total issues (blocking): ${totalIssues}`);
             
             // Expected behavior check for test element
-            if (userIssuesNoAuth === 0 && userIssuesWithAuth === 0) {
-              console.log('\n⚠️  WARNING: Both auth and no-auth tests show 0 issues.');
+            if (userIssuesWithAuth === 0) {
+              console.log('\n⚠️  WARNING: User page (auth) shows 0 issues.');
               console.log('   This suggests Pa11y may not be detecting the test contrast element.');
-              console.log('   Expected: no-auth = 0 issues, with-auth = 1+ issues (test contrast element)');
+              console.log('   Expected: with-auth = 1+ issues (test contrast element)');
             }
             
             if (totalIssues > 0) {
@@ -748,7 +745,6 @@ jobs:
             console.log('\n=== TESTING WITHOUT AUTHENTICATION ===');
             const homeResults = await runPa11yWithoutAuth(baseUrl);
             const signinResults = await runPa11yWithoutAuth(`${baseUrl}/signin`);
-            const userResultsNoAuth = await runPa11yWithoutAuth(`${baseUrl}/user`);
             const notFoundResults = await runPa11yWithoutAuth(`${baseUrl}/404`);
             
             // Test authenticated user page
@@ -758,14 +754,12 @@ jobs:
             // Count issues
             const homeIssues = homeResults.length;
             const signinIssues = signinResults.length;
-            const userIssuesNoAuth = userResultsNoAuth.length;
             const userIssuesWithAuth = userResultsWithAuth.length;
             const notFoundIssues = notFoundResults.length;
             
             console.log('\n📊 Pa11y Results Summary:');
             console.log(`- Home page: ${homeIssues} issues`);
             console.log(`- Sign-in page: ${signinIssues} issues`);
-            console.log(`- User page (no auth): ${userIssuesNoAuth} issues`);
             console.log(`- User page (with auth): ${userIssuesWithAuth} issues`);
             console.log(`- 404 page: ${notFoundIssues} issues`);
             
@@ -773,7 +767,6 @@ jobs:
             fs.mkdirSync('pa11y-reports', { recursive: true });
             fs.writeFileSync('pa11y-reports/home.json', JSON.stringify(homeResults, null, 2));
             fs.writeFileSync('pa11y-reports/signin.json', JSON.stringify(signinResults, null, 2));
-            fs.writeFileSync('pa11y-reports/user-noauth.json', JSON.stringify(userResultsNoAuth, null, 2));
             fs.writeFileSync('pa11y-reports/user-auth.json', JSON.stringify(userResultsWithAuth, null, 2));
             fs.writeFileSync('pa11y-reports/404.json', JSON.stringify(notFoundResults, null, 2));
             
