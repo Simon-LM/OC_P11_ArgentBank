@@ -315,8 +315,19 @@ jobs:
             exit 1
           }
 
-          # Install Pa11y and dependencies globally
+          # Install Pa11y and dependencies globally - use full puppeteer with bundled Chrome
           npm install -g pa11y@8.0.0 puppeteer@24.10.1
+
+          # Configure Puppeteer environment for CI
+          export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+
+          # Install Puppeteer browsers (Chrome)
+          npx puppeteer browsers install chrome
+
+          # Verify Chrome installation
+          echo "Checking Chrome installation..."
+          find /home/runner/.cache/puppeteer -name "chrome" -type f 2>/dev/null | head -5 || echo "Chrome not found in cache"
 
           # Create Pa11y authentication script for CI/CD
           cat > pa11y-auth-ci.cjs << 'EOF'
@@ -609,6 +620,11 @@ jobs:
           const authScript = path.resolve('./pa11y-auth-ci.cjs');
           const authScriptFunction = require(authScript);
 
+          // Configure Puppeteer for CI environment
+          console.log('🔧 Configuring Puppeteer for CI environment...');
+          console.log('PUPPETEER_CACHE_DIR:', process.env.PUPPETEER_CACHE_DIR || 'default');
+          console.log('PUPPETEER_EXECUTABLE_PATH:', process.env.PUPPETEER_EXECUTABLE_PATH || 'auto-detect');
+
           async function runPa11yWithoutAuth(url) {
             console.log(`🧪 Testing URL: ${url} (without auth)`);
             try {
@@ -617,7 +633,15 @@ jobs:
                 timeout: 30000,
                 wait: 2000,
                 chromeLaunchConfig: {
-                  args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+                  args: [
+                    '--no-sandbox', 
+                    '--disable-setuid-sandbox', 
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--disable-extensions',
+                    '--remote-debugging-port=9222'
+                  ],
+                  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
                 },
                 headers: process.env.VERCEL_AUTOMATION_BYPASS_SECRET ? {
                   'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
@@ -643,7 +667,15 @@ jobs:
             
             const browser = await puppeteer.launch({
               headless: true,
-              args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+              args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions',
+                '--remote-debugging-port=9222'
+              ],
+              executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
             });
             
             try {
