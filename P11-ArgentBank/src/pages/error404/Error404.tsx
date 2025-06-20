@@ -10,6 +10,18 @@ function Error404() {
       <p className={styles["error404__text"]}>
         Oops, the page you are requesting does not exist.
       </p>
+      {/* Element de test pour Pa11y - mauvais contraste intentionnel sur la page de connexion */}
+      <div
+        style={{
+          color: "#bbb",
+          backgroundColor: "#ddd",
+          padding: "6px",
+          fontSize: "12px",
+          margin: "5px 0",
+        }}
+      >
+        SignIn page contrast test element
+      </div>
       <Link className={styles["error404__link"]} to="/">
         Return to the homepage
       </Link>{" "}
