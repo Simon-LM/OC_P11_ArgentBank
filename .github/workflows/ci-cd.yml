@@ -391,20 +391,19 @@ jobs:
             { url: `${baseUrl}/404`, name: '404', needsAuth: false }
           ];
 
-          // Thresholds - Seuils réalistes 
-          // 404 mobile performance reste à 90% pour valider le blocage
+          // Thresholds - Seuils durcis basés sur les excellents résultats obtenus
           const thresholds = {
             desktop: { 
-              performance: 0.75,  // Garder 75% comme demandé
-              accessibility: 0.85, 
-              'best-practices': 0.75, 
-              seo: 0.85           
+              performance: 0.95,  // 75% → 95% (scores actuels: 100%)
+              accessibility: 1.0,  // 85% → 100% (scores actuels: 100%)
+              'best-practices': 1.0, // 75% → 100% (scores actuels: 100%)
+              seo: 0.90           // 85% → 90% (scores actuels: 91-92%)
             },
             mobile: { 
-              performance: 0.60,  // 60% réaliste pour mobile CI (au lieu de 40%)
-              accessibility: 0.85, 
-              'best-practices': 0.75, 
-              seo: 0.85           
+              performance: 0.90,  // 60% → 90% (scores actuels: 96-100%)
+              accessibility: 1.0,  // 85% → 100% (scores actuels: 100%)
+              'best-practices': 1.0, // 75% → 100% (scores actuels: 100%)
+              seo: 0.90           // 85% → 90% (scores actuels: 92%)
             }
           };
 
@@ -690,10 +689,12 @@ jobs:
                 console.log(`   ${index + 1}. ${failure}`);
               });
               
-              // Special check for 404 mobile performance (should fail at 88% vs 90% threshold)
-              const has404MobileFailure = failedTests.some(f => f.includes('404') && f.includes('mobile') && f.includes('performance'));
-              if (has404MobileFailure) {
-                console.log(`\n🎯 EXPECTED FAILURE: 404 mobile performance < 90% threshold`);
+              // Special check for performance failures (now with higher thresholds)
+              const hasPerformanceFailure = failedTests.some(f => f.includes('performance'));
+              if (hasPerformanceFailure) {
+                console.log(`\n🎯 PERFORMANCE FAILURE: One or more pages failed the hardened thresholds`);
+                console.log(`   Desktop: 95% performance threshold (was 75%)`);
+                console.log(`   Mobile: 90% performance threshold (was 60%)`);
                 console.log(`   This validates our CI/CD blocking mechanism works correctly!`);
               }
               
