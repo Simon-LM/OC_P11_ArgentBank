@@ -259,25 +259,6 @@ const User: React.FC = () => {
     ? accounts.find((acc) => acc.id === selectedAccountId) || null
     : null;
 
-  // const navigateToSearchResults = () => {
-  // 	if (tableHeadingRef.current) {
-  // 		const firstCell = tableHeadingRef.current.querySelector(
-  // 			"th:first-child, td:first-child"
-  // 		);
-
-  // 		if (firstCell instanceof HTMLElement) {
-  // 			firstCell.setAttribute("tabindex", "-1");
-  // 			firstCell.focus();
-
-  // 			setActionFeedback(
-  // 				`${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} found.
-  //     Use arrow keys to navigate through the table.`
-  // 			);
-  // 		} else {
-  // 			tableHeadingRef.current.focus();
-  // 		}
-  // 	}
-  // };
   const navigateToSearchResults = () => {
     if (tableHeadingRef.current) {
       tableHeadingRef.current.focus();
@@ -325,16 +306,15 @@ const User: React.FC = () => {
             </h2>
 
             {/* Element de test pour Pa11y - mauvais contraste intentionnel */}
-            <div
-              style={{
-                color: "#ccc",
-                backgroundColor: "#ddd",
-                padding: "10px",
-                margin: "10px 0",
-              }}
-            >
-              This text has poor contrast for Pa11y testing
-            </div>
+            {/* <div
+							style={{
+								color: "#ccc",
+								backgroundColor: "#ddd",
+								padding: "10px",
+								margin: "10px 0",
+							}}>
+							This text has poor contrast for Pa11y testing
+						</div> */}
 
             <div>
               {isEditing ? (
@@ -512,24 +492,19 @@ const User: React.FC = () => {
                         ref={tableHeadingRef}
                         tabIndex={-1}
                       >
-                        {/* <caption className="sr-only">
-													{selectedAccount
-														? `Transactions for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}`
-														: "Transactions from all accounts"}
-													</caption> */}
                         <caption className="sr-only">
                           {selectedAccount
-                            ? `Account ending in ${selectedAccount.accountNumber}`
-                            : "All accounts"}
+                            ? `Transaction history for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}. ${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} listed.`
+                            : `All transactions from all accounts. ${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} listed.`}
                         </caption>
-                        {/* <thead className="sr-only">
-													<tr>
-														<th scope="col">Description</th>
-														<th scope="col">Date and Category</th>
-														<th scope="col">Amount</th>
-														<th scope="col">Notes</th>
-													</tr>
-												</thead> */}
+                        <thead className="sr-only">
+                          <tr>
+                            <th scope="col">Transaction Description</th>
+                            <th scope="col">Date and Category</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Notes</th>
+                          </tr>
+                        </thead>
                         <tbody>
                           {searchResults.map((tx) => (
                             <tr className={user["transaction-row"]} key={tx.id}>

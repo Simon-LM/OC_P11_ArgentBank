@@ -11,7 +11,7 @@ function Error404() {
         Oops, the page you are requesting does not exist.
       </p>
       {/* Element de test pour Pa11y - mauvais contraste intentionnel sur la page de connexion */}
-      <div
+      {/* <div
         style={{
           color: "#bbb",
           backgroundColor: "#ddd",
@@ -21,7 +21,7 @@ function Error404() {
         }}
       >
         Poor contrast test element for accessibility validation
-      </div>
+      </div> */}
       <Link className={styles["error404__link"]} to="/">
         Return to the homepage
       </Link>{" "}

@@ -105,7 +105,7 @@ const SignIn: React.FC = () => {
         </p>
 
         {/* Element de test pour Pa11y - mauvais contraste intentionnel sur la page de connexion */}
-        <div
+        {/* <div
           style={{
             color: "#bbb",
             backgroundColor: "#ddd",
@@ -115,7 +115,7 @@ const SignIn: React.FC = () => {
           }}
         >
           SignIn page contrast test element
-        </div>
+        </div> */}
 
         <form onSubmit={handleSubmit} aria-labelledby="signin-title" noValidate>
           <div className={signin["signin-form__input-group"]}>

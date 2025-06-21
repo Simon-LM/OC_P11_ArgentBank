@@ -32,48 +32,12 @@ const Home: React.FC = () => {
 
   const shouldRenderFeatures = isDesktop || featuresInView;
 
-  // const heroContainerStyle = {
-  // 	minHeight: heroImageLoaded ? "auto" : "clamp(15rem, 40vh, 25rem)",
-  // };
-
-  // const [imageStyles, setImageStyles] = useState<ImageStyles>({
-  // 	opacity: 0,
-  // });
-
-  // useEffect(() => {
-  // 	if (heroImageLoaded) {
-  // 		const timeout = setTimeout(() => {
-  // 			setImageStyles({
-  // 				opacity: 1,
-  // 				transition: "opacity 0.3s ease-in",
-  // 			});
-  // 		}, 10);
-  // 		return () => clearTimeout(timeout);
-  // 	}
-  // }, [heroImageLoaded]);
-
   return (
     <div tabIndex={-1}>
       <div className="hero" data-testid="hero">
         <div className="hero__image-container">
           {!heroImageError && (
             <picture className="hero__picture">
-              {/* <React.Fragment>
-								{isFirstRender && (
-									<link
-										rel="preload"
-										href={
-											isDesktop
-												? "/img/bank-tree.avif"
-												: "/img/bank-tree-640w.avif"
-										}
-										as="image"
-										type="image/avif"
-										
-									/>
-								)}
-							</React.Fragment> */}
-
               {isFirstRender && (
                 <>
                   <link
@@ -87,18 +51,6 @@ const Home: React.FC = () => {
                     type="image/avif"
                     fetchPriority="high"
                   />
-
-                  {/* <link
-										rel="preload"
-										href={
-											isDesktop
-												? "/img/bank-tree.webp"
-												: "/img/bank-tree-640w.webp"
-										}
-										as="image"
-										type="image/webp"
-										fetchPriority="high"
-									/> */}
                 </>
               )}
 
@@ -167,16 +119,15 @@ const Home: React.FC = () => {
           </p>
 
           {/* Element de test pour Pa11y - mauvais contraste intentionnel sur la page d'accueil */}
-          <div
-            style={{
-              color: "#ddd",
-              backgroundColor: "#eee",
-              padding: "8px",
-              fontSize: "14px",
-            }}
-          >
-            Home page contrast test element
-          </div>
+          {/* <div
+						style={{
+							color: "#ddd",
+							backgroundColor: "#eee",
+							padding: "8px",
+							fontSize: "14px",
+						}}>
+						Home page contrast test element
+          </div> */}
         </section>
       </div>
 
