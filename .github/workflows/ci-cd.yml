@@ -274,8 +274,8 @@ jobs:
             exit 1
           }
 
-          # Install Lighthouse and Puppeteer globally (same versions as Pa11y)
-          npm install -g lighthouse@12.0.0 puppeteer@24.10.1
+          # Install Lighthouse and Puppeteer globally (use CommonJS compatible version like Pa11y)
+          npm install -g lighthouse@10.4.0 puppeteer@24.10.1
 
           # Configure Puppeteer environment for CI (same as Pa11y)
           export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
