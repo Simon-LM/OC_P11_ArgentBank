@@ -169,6 +169,12 @@ jobs:
     strategy:
       matrix:
         test-type: [cypress, lighthouse, pa11y]
+        device: [desktop, mobile]
+        exclude:
+          - test-type: cypress
+            device: mobile # Cypress reste desktop seulement
+          - test-type: pa11y
+            device: mobile # Pa11y reste desktop seulement
       fail-fast: false
 
     steps:
@@ -249,13 +255,14 @@ jobs:
 
           pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
 
-      - name: ⚡ Run Lighthouse tests
+      - name: ⚡ Run Lighthouse tests (${{ matrix.device }})
         if: matrix.test-type == 'lighthouse'
         env:
           PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          DEVICE: ${{ matrix.device }}
         run: |
-          echo "Running Lighthouse tests on Preview: $PREVIEW_URL"
+          echo "Running Lighthouse tests ($DEVICE) on Preview: $PREVIEW_URL"
 
           # Wait for Preview to be ready
           echo "Waiting for Preview to be ready..."
@@ -267,35 +274,352 @@ jobs:
             exit 1
           }
 
-          # Install Lighthouse CLI globally
-          npm install -g @lhci/cli@0.13.0
+          # Install Lighthouse and Puppeteer globally (same versions as Pa11y)
+          npm install -g lighthouse@12.0.0 puppeteer@24.10.1
 
-          # Create lighthouse config
-          cat > lighthouserc.json << EOF
-          {
-            "ci": {
-              "collect": {
-                "url": ["$PREVIEW_URL", "$PREVIEW_URL/signin"],
-                "numberOfRuns": 3
-              },
-              "assert": {
-                "assertions": {
-                  "categories:performance": ["warn", {"minScore": 0.6}],
-                  "categories:accessibility": ["error", {"minScore": 0.9}],
-                  "categories:best-practices": ["warn", {"minScore": 0.8}],
-                  "categories:seo": ["warn", {"minScore": 0.8}]
-                }
-              },
-              "upload": {
-                "target": "filesystem",
-                "outputDir": "./lighthouse-reports"
+          # Configure Puppeteer environment for CI (same as Pa11y)
+          export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+
+          # Install Puppeteer browsers (Chrome)
+          npx puppeteer browsers install chrome
+
+          # Verify Chrome installation
+          echo "Checking Chrome installation..."
+          find /home/runner/.cache/puppeteer -name "chrome" -type f 2>/dev/null | head -5 || echo "Chrome not found in cache"
+
+          # Create authentication script (SAME as Pa11y)
+          cat > lighthouse-auth-ci.cjs << 'EOF'
+          module.exports = async function (page, options) {
+            console.log('<<<<< LIGHTHOUSE AUTH SCRIPT (CI/CD) STARTED >>>>>');
+            
+            try {
+              // Add Vercel protection bypass headers
+              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+              if (bypassSecret) {
+                console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Setting Vercel bypass headers >>>>>');
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': bypassSecret
+                });
+              } else {
+                console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: WARNING - No Vercel bypass secret found >>>>>');
               }
+              
+              const signInUrl = options.page.replace('/user', '/signin');
+              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Navigating to ${signInUrl} >>>>>`);
+              
+              // Navigate to sign-in page
+              await page.goto(signInUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Navigation to /signin complete >>>>>');
+              
+              // Wait for form to be visible
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for form to be visible >>>>>');
+              await page.waitForSelector('form', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Form is visible >>>>>');
+              
+              // Wait for email field and type credentials
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for email field to be visible >>>>>');
+              await page.waitForSelector('#email', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Email field is visible >>>>>');
+              
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Typing credentials >>>>>');
+              await page.type('#email', 'tony@stark.com');
+              await page.type('#password', 'password123');
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Credentials typed >>>>>');
+              
+              // Wait for submit button and click
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for submit button >>>>>');
+              await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Submit button found >>>>>');
+              
+              // Click submit and wait for navigation
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
+              await Promise.all([
+                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
+                page.click('button[type="submit"]')
+              ]);
+              
+              const currentUrl = page.url();
+              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+              
+              // Wait for user page content to confirm successful login
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
+              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
+              
+              // Small delay for page to settle
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Authentication script finished successfully. >>>>>');
+              
+            } catch (error) {
+              console.error('<<<<< LIGHTHOUSE AUTH SCRIPT: Error during authentication >>>>>', error.message);
+              throw error;
             }
-          }
+          };
           EOF
 
-          # Run Lighthouse CI
-          lhci autorun || true
+          # Create Lighthouse runner script (inspired by Pa11y hybrid approach)
+          cat > run-lighthouse-ci.cjs << 'EOF'
+          const lighthouse = require('lighthouse');
+          const puppeteer = require('puppeteer');
+          const fs = require('fs');
+          const path = require('path');
+
+          const baseUrl = process.env.PREVIEW_URL;
+          const device = process.env.DEVICE || 'desktop';
+          const authScript = path.resolve('./lighthouse-auth-ci.cjs');
+          const authScriptFunction = require(authScript);
+
+          // Pages to test (4 pages)
+          const pages = [
+            { url: baseUrl, name: 'home', needsAuth: false },
+            { url: `${baseUrl}/signin`, name: 'signin', needsAuth: false },
+            { url: `${baseUrl}/user`, name: 'user', needsAuth: true },
+            { url: `${baseUrl}/404`, name: '404', needsAuth: false }
+          ];
+
+          // Thresholds - 404 mobile performance 88% < 90% threshold = DOIT BLOQUER
+          const thresholds = {
+            desktop: { 
+              performance: 0.95, 
+              accessibility: 1.0, 
+              'best-practices': 0.92, 
+              seo: 0.92 
+            },
+            mobile: { 
+              performance: 0.90,  // 404 mobile est à 88% → DOIT BLOQUER ✅
+              accessibility: 1.0, 
+              'best-practices': 0.92, 
+              seo: 0.92 
+            }
+          };
+
+          // Device configuration
+          const getDeviceConfig = (device) => {
+            if (device === 'mobile') {
+              return {
+                extends: 'lighthouse:default',
+                settings: {
+                  formFactor: 'mobile',
+                  throttling: {
+                    rttMs: 150,
+                    throughputKbps: 1638.4,
+                    cpuSlowdownMultiplier: 4
+                  },
+                  screenEmulation: {
+                    mobile: true,
+                    width: 412,
+                    height: 823,
+                    deviceScaleFactor: 2.625,
+                    disabled: false
+                  },
+                  emulatedUserAgent: 'Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.101 Mobile Safari/537.36'
+                }
+              };
+            } else {
+              return {
+                extends: 'lighthouse:default',
+                settings: {
+                  formFactor: 'desktop',
+                  throttling: {
+                    rttMs: 40,
+                    throughputKbps: 10240,
+                    cpuSlowdownMultiplier: 1
+                  },
+                  screenEmulation: {
+                    mobile: false,
+                    width: 1350,
+                    height: 940,
+                    deviceScaleFactor: 1,
+                    disabled: false
+                  }
+                }
+              };
+            }
+          };
+
+          async function runLighthouseWithoutAuth(pageInfo) {
+            console.log(`🚨 Testing ${pageInfo.name} (${device}) WITHOUT auth: ${pageInfo.url}`);
+            
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions'
+              ]
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                });
+              }
+              
+              // Run Lighthouse
+              const config = getDeviceConfig(device);
+              const result = await lighthouse(pageInfo.url, {
+                port: new URL(browser.wsEndpoint()).port,
+                output: 'json',
+                logLevel: 'info'
+              }, config);
+              
+              console.log(`📊 ${pageInfo.name} (${device}): Performance=${Math.round(result.lhr.categories.performance.score * 100)}%, Accessibility=${Math.round(result.lhr.categories.accessibility.score * 100)}%`);
+              
+              return result.lhr;
+            } catch (error) {
+              console.error(`❌ Lighthouse failed for ${pageInfo.name} (${device}):`, error.message);
+              return null;
+            } finally {
+              await browser.close();
+            }
+          }
+
+          async function runLighthouseWithAuth(pageInfo) {
+            console.log(`🔐 Testing ${pageInfo.name} (${device}) WITH auth: ${pageInfo.url}`);
+            
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions'
+              ]
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                });
+              }
+              
+              // Execute authentication (SAME as Pa11y)
+              console.log('🔐 Executing authentication script...');
+              await authScriptFunction(page, { page: pageInfo.url });
+              console.log('✅ Authentication successful!');
+              
+              // Run Lighthouse on authenticated page
+              console.log('🚨 Running Lighthouse on authenticated page...');
+              const config = getDeviceConfig(device);
+              const result = await lighthouse(pageInfo.url, {
+                port: new URL(browser.wsEndpoint()).port,
+                output: 'json',
+                logLevel: 'info'
+              }, config);
+              
+              console.log(`📊 ${pageInfo.name} (${device}) [AUTH]: Performance=${Math.round(result.lhr.categories.performance.score * 100)}%, Accessibility=${Math.round(result.lhr.categories.accessibility.score * 100)}%`);
+              
+              return result.lhr;
+            } catch (error) {
+              console.error(`💥 Lighthouse authentication failed for ${pageInfo.name} (${device}):`, error);
+              return null;
+            } finally {
+              await browser.close();
+            }
+          }
+
+          async function main() {
+            console.log(`🚀 Starting Lighthouse tests (${device}) on CI/CD...`);
+            console.log(`🔗 Base URL: ${baseUrl}`);
+            console.log(`📱 Device: ${device}`);
+            
+            // Create reports directory
+            fs.mkdirSync('lighthouse-reports', { recursive: true });
+            
+            const results = [];
+            let failedTests = [];
+            
+            for (const pageInfo of pages) {
+              let result;
+              
+              if (pageInfo.needsAuth) {
+                result = await runLighthouseWithAuth(pageInfo);
+              } else {
+                result = await runLighthouseWithoutAuth(pageInfo);
+              }
+              
+              if (result) {
+                // Save individual report
+                const filename = `${device}-${pageInfo.name}.json`;
+                fs.writeFileSync(`lighthouse-reports/${filename}`, JSON.stringify(result, null, 2));
+                console.log(`💾 Saved report: lighthouse-reports/${filename}`);
+                
+                // Check thresholds
+                const scores = result.categories;
+                const deviceThresholds = thresholds[device];
+                
+                console.log(`\n📊 ${pageInfo.name} (${device}) Results:`);
+                for (const [category, threshold] of Object.entries(deviceThresholds)) {
+                  const score = scores[category]?.score || 0;
+                  const percentage = Math.round(score * 100);
+                  const thresholdPercentage = Math.round(threshold * 100);
+                  const passed = score >= threshold;
+                  
+                  console.log(`   ${category}: ${percentage}% (threshold: ${thresholdPercentage}%) ${passed ? '✅' : '❌'}`);
+                  
+                  if (!passed) {
+                    failedTests.push(`${pageInfo.name} (${device}) - ${category}: ${percentage}% < ${thresholdPercentage}%`);
+                  }
+                }
+                
+                results.push({
+                  page: pageInfo.name,
+                  device: device,
+                  scores: scores,
+                  passed: failedTests.length === 0
+                });
+              } else {
+                failedTests.push(`${pageInfo.name} (${device}) - Lighthouse execution failed`);
+              }
+              
+              // Small delay between tests
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            
+            console.log(`\n🎯 Lighthouse ${device} Summary:`);
+            console.log(`- Tests run: ${results.length}/${pages.length}`);
+            console.log(`- Failed tests: ${failedTests.length}`);
+            
+            if (failedTests.length > 0) {
+              console.log(`\n❌ BLOCKING DEPLOYMENT: Lighthouse found ${failedTests.length} failing tests:`);
+              failedTests.forEach((failure, index) => {
+                console.log(`   ${index + 1}. ${failure}`);
+              });
+              
+              // Special check for 404 mobile performance (should fail at 88% vs 90% threshold)
+              const has404MobileFailure = failedTests.some(f => f.includes('404') && f.includes('mobile') && f.includes('performance'));
+              if (has404MobileFailure) {
+                console.log(`\n🎯 EXPECTED FAILURE: 404 mobile performance < 90% threshold`);
+                console.log(`   This validates our CI/CD blocking mechanism works correctly!`);
+              }
+              
+              process.exit(1);
+            } else {
+              console.log('\n✅ All Lighthouse tests passed!');
+            }
+          }
+
+          main().catch(error => {
+            console.error('💥 Lighthouse test runner failed:', error);
+            process.exit(1);
+          });
+          EOF
+
+          # Run the Lighthouse test script
+          PREVIEW_URL="$PREVIEW_URL" VERCEL_AUTOMATION_BYPASS_SECRET="$VERCEL_AUTOMATION_BYPASS_SECRET" DEVICE="$DEVICE" node run-lighthouse-ci.cjs
 
       - name: ♿ Run Pa11y accessibility tests
         if: matrix.test-type == 'pa11y'
@@ -811,7 +1135,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ${{ matrix.test-type }}-reports
+          name: ${{ matrix.test-type }}-${{ matrix.device }}-reports
           path: |
             P11-ArgentBank/cypress/screenshots
             P11-ArgentBank/cypress/videos
