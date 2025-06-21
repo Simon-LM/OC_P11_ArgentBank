@@ -84,7 +84,9 @@ describe("App - Integration Tests", () => {
       </Provider>,
     );
 
-    expect(await screen.findByText(/404/i)).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: /404/i }),
+    ).toBeInTheDocument();
   });
 
   test("protège la route /user sans authentification", async () => {

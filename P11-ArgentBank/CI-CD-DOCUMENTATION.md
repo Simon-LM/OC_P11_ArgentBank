@@ -19,63 +19,123 @@ Configuration Vercel:
 └── Node.js Version: 18.x
 ```
 
-### Workflow GitHub Actions proposé
+### Workflow GitHub Actions proposé (Architecture cible)
 
 ```text
-GitHub Actions Workflow
-├── 🔍 Code Quality
-│   ├── ESLint
-│   ├── TypeScript Check
-│   └── Format Check (Prettier)
-├── 🧪 Tests
-│   ├── Tests Unitaires (Vitest)
-│   ├── Tests d'Intégration (Vitest)
-│   ├── Tests d'Accessibilité (Axe intégré)
-│   └── Tests E2E (Cypress) - OBLIGATOIRES
-├── 📊 Analyse
-│   ├── Coverage Report
-│   ├── Bundle Size Analysis
-│   └── Security Audit
-└── 🚀 Déploiement
-    ├── Preview (Pull Requests)
-    └── Production (main branch)
+Workflow Unique Sécurisé (complete-ci-cd.yml)
+├── 🔍 Phase 1: Tests de Base (CI)
+│   ├── ESLint (bloquant)
+│   ├── TypeScript Check (bloquant)
+│   ├── Tests Unitaires (bloquant)
+│   └── Build (bloquant)
+├── 🚀 Phase 2: Déploiement Preview
+│   ├── Deploy Preview Vercel (si Phase 1 OK)
+│   └── Récupération URL Preview
+├── 🧪 Phase 3: Tests Avancés sur Preview
+│   ├── Tests E2E Cypress (bloquant)
+│   ├── Tests Accessibilité Pa11y (bloquant - priorité absolue)
+│   └── Tests Performance Lighthouse (warning seulement)
+├── ✅ Phase 4: Auto-promotion Production
+│   ├── Conditions: toutes les phases précédentes OK + branch main
+│   └── Déploiement Production automatique
+└── 📊 Phase 5: Analyse (parallèle, non-bloquante)
+    ├── Coverage Report
+    ├── Bundle Size Analysis
+    └── Security Audit
 ```
+
+### Architecture actuelle (workflows séparés - PROBLÈME)
+
+⚠️ **Problème critique identifié :** Les workflows actuels sont indépendants et ne se bloquent pas mutuellement !
+
+```text
+État actuel DANGEREUX:
+├── ci.yml → Peut échouer ❌
+├── accessibility-performance.yml → Peut échouer ❌
+└── deploy.yml → DÉPLOIE QUAND MÊME ✅ (PROBLÈME!)
+```
+
+**Conséquence :** Le déploiement production peut se faire même si les tests d'accessibilité ou les tests unitaires échouent !
 
 ## 📁 Structure des workflows
 
+### **Architecture actuelle (workflows séparés)**
+
 ```text
-.github/
-├── workflows/
-│   ├── ci.yml                    # Workflow principal CI
-│   ├── lighthouse.yml            # Tests de performance (optionnel)
-│   ├── security.yml              # Audit de sécurité
-│   └── cleanup.yml               # Nettoyage des artifacts
-└── ISSUE_TEMPLATE/               # Templates d'issues (optionnel)
+.github/workflows/
+├── ci.yml                         # Tests de base (lint, typecheck, test, build)
+├── deploy.yml                     # Déploiement Vercel (preview/production)
+├── accessibility-performance.yml  # Tests E2E, Lighthouse, Pa11y
+└── analysis.yml                   # Coverage, bundle, security
 ```
 
-## 🎯 Stratégie de déploiement
+### **Architecture cible (workflow unique sécurisé)**
 
-### Branches et environnements
+```text
+.github/workflows/
+├── complete-ci-cd.yml            # Workflow unique avec toutes les étapes
+├── [LEGACY] ci.yml               # À supprimer après migration
+├── [LEGACY] deploy.yml           # À supprimer après migration
+├── [LEGACY] accessibility-performance.yml # À supprimer après migration
+└── analysis.yml                  # Conservé (optionnel, non-bloquant)
+```
 
-| Branch      | Environnement | Action              | URL                                   |
-| ----------- | ------------- | ------------------- | ------------------------------------- |
-| `main`      | Production    | Auto-deploy         | https://slm-argentbank.vercel.app     |
-| `develop`   | Staging       | Auto-deploy preview | https://slm-argentbank-git-develop... |
-| `feature/*` | Preview       | Deploy on PR        | https://slm-argentbank-git-feature... |
+## 🎯 Stratégie de déploiement (Architecture cible)
 
-### Déclencheurs
+### Branches et environnements (Workflow unique sécurisé)
 
-**CI s'exécute sur :**
+| Branch      | Environnement | Action Workflow Unique                | URL                                   |
+| ----------- | ------------- | ------------------------------------- | ------------------------------------- |
+| `main`      | Production    | CI → Preview → Tests → Auto-promote   | https://slm-argentbank.vercel.app     |
+| `develop`   | Staging       | CI → Preview → Tests (sans promotion) | https://slm-argentbank-git-develop... |
+| `feature/*` | Preview       | CI → Preview → Tests (sans promotion) | https://slm-argentbank-git-feature... |
 
-- ✅ Push sur `main`
-- ✅ Push sur `develop`
-- ✅ Pull Requests vers `main` ou `develop`
+### Logique Preview First (sécurisée)
+
+```mermaid
+graph LR
+    A[Push Code] --> B[CI Tests]
+    B --> C{CI OK?}
+    C -->|❌ Non| D[STOP - Pas de déploiement]
+    C -->|✅ Oui| E[Deploy Preview]
+    E --> F[Tests E2E/A11y/Perf]
+    F --> G{Tests OK?}
+    G -->|❌ Non| H[STOP - Preview seulement]
+    G -->|✅ Oui + main| I[Auto-promote Production]
+    G -->|✅ Oui + autre| J[Preview seulement]
+```
+
+### Déclencheurs (Workflow unique)
+
+**CI/CD s'exécute sur :**
+
+- ✅ Push sur `main` → CI + Preview + Tests + Auto-promotion Production
+- ✅ Push sur `develop` → CI + Preview + Tests (sans promotion)
+- ✅ Pull Requests vers `main` ou `develop` → CI + Preview + Tests (sans promotion)
 - ✅ Manuellement (workflow_dispatch)
 
-**Déploiement automatique :**
+**Avantages :**
 
-- ✅ Production : Push sur `main`
-- ✅ Preview : Pull Requests
+- 🛡️ **Zéro risque** pour la production (tests avant promotion)
+- 🔄 **Dépendances claires** entre les phases
+- ⚡ **Performance optimisée** (pas de duplication setup)
+- 🧪 **Tests sur environnement réel** Vercel
+
+### Conditions de blocage
+
+**Tests bloquants (empêchent la promotion) :**
+
+- ❌ **ESLint errors** (lint)
+- ❌ **TypeScript errors** (typecheck)
+- ❌ **Unit tests failures** (test)
+- ❌ **Build failures** (build)
+- ❌ **E2E tests failures** (Cypress)
+- ❌ **Accessibility failures** (Pa11y - PRIORITÉ ABSOLUE)
+
+**Tests non-bloquants (warning seulement) :**
+
+- ⚠️ **Performance < 70%** (Lighthouse - warning)
+- ⚠️ **Bundle size increase > 10%** (warning)
 
 ## 🧪 Stratégie de tests par environnement
 
@@ -164,42 +224,62 @@ Cache Configuration:
 - **Test Results** : Résultats détaillés des tests
 - **Security Report** : Audit de sécurité des dépendances
 
-## 🚀 Plan d'implémentation progressive
+## 🚀 Plan d'implémentation progressive (Architecture cible)
 
-### Phase 1 : CI de base ✅ (À implémenter en premier)
+### Phase 1 : Création du workflow unique sécurisé ✅ (Nouvelle approche)
 
 ```yaml
-Jobs essentiels:
-├── 🔍 lint
-├── 🔍 typecheck
-├── 🧪 test
-└── 🏗️ build
+complete-ci-cd.yml:
+├── Job: ci-tests
+│   ├── ESLint (bloquant)
+│   ├── TypeScript (bloquant)
+│   ├── Tests unitaires (bloquant)
+│   └── Build (bloquant)
+├── Job: deploy-preview
+│   ├── Dépend de: ci-tests (needs: ci-tests)
+│   ├── Deploy Vercel Preview
+│   └── Récupération URL Preview
+├── Job: accessibility-tests
+│   ├── Dépend de: deploy-preview (needs: deploy-preview)
+│   ├── Cypress E2E (bloquant)
+│   ├── Pa11y Accessibility (bloquant)
+│   └── Lighthouse Performance (warning)
+└── Job: promote-production
+    ├── Dépend de: [ci-tests, accessibility-tests]
+    ├── Condition: success() && github.ref == 'refs/heads/main'
+    └── Promotion automatique vers production
 ```
 
-### Phase 2 : Déploiement automatique
+### Phase 2 : Migration progressive (sécurisée)
 
 ```yaml
-Jobs déploiement:
-├── 🚀 deploy-preview (PR)
-└── 🚀 deploy-production (main)
+Étape 2.1: Tester le nouveau workflow
+├── Créer complete-ci-cd.yml
+├── Tester sur une branche feature
+├── Valider toutes les phases
+└── Ajuster si nécessaire
+
+Étape 2.2: Désactiver temporairement les anciens workflows
+├── Renommer ci.yml → ci.yml.disabled
+├── Renommer deploy.yml → deploy.yml.disabled
+├── Renommer accessibility-performance.yml → accessibility-performance.yml.disabled
+└── Tester complete-ci-cd.yml en production
+
+Étape 2.3: Validation et nettoyage
+├── Valider sur plusieurs commits
+├── Vérifier les performances
+├── Supprimer les anciens workflows si OK
+└── Mettre à jour la documentation
 ```
 
-### Phase 3 : Analyse avancée
+### Phase 3 : Tests et optimisation
 
 ```yaml
-Jobs analyse:
-├── 📊 coverage-report
-├── 📦 bundle-analysis
-└── 🔒 security-audit
-```
-
-### Phase 4 : Tests d'accessibilité et performance (obligatoires)
-
-```yaml
-Jobs accessibilité et performance:
-├── 🏃 e2e-tests (Cypress) - Navigation utilisateur
-├── ⚡ lighthouse-tests - Performance et bonnes pratiques
-└── ♿ pa11y-tests - Conformité WCAG (priorité absolue)
+Optimisations:
+├── 📊 Parallélisation des jobs indépendants
+├── 📦 Optimisation du cache
+├── ⚡ Réduction des temps d'exécution
+└── 🔍 Monitoring des performances
 ```
 
 ## 🔧 Configuration des outils

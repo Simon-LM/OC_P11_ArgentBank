@@ -4,114 +4,141 @@
 
 ## 🎯 Objectif
 
-Mettre en place un pipeline CI/CD robuste pour ArgentBank en implémentant les fonctionnalités étape par étape, en testant chaque phase avant de passer à la suivante.
+Mettre en place un pipeline CI/CD robuste et sécurisé pour ArgentBank avec un **workflow unique** utilisant l'approche **Preview First** pour éviter les déploiements défaillants en production.
 
-## 📅 Planning d'implémentation
+## 🚨 Problème critique identifié
 
-### Phase 1 : CI de base (À implémenter maintenant)
+**L'architecture actuelle (workflows séparés) présente un défaut de sécurité majeur :**
 
-**Durée estimée :** 1-2 heures
+- ❌ `ci.yml`, `accessibility-performance.yml` et `deploy.yml` sont **indépendants**
+- ❌ `deploy.yml` peut déployer en production **même si les autres workflows échouent**
+- ❌ Aucune dépendance entre les workflows
+- ❌ Risque de déployer du code défaillant en production
+
+**Solution :** Workflow unique avec dépendances strictes entre les phases.
+
+## 📅 Planning d'implémentation (Architecture cible)
+
+### **Phase 1 : Création du workflow unique sécurisé** ⚡ (Nouvelle priorité)
+
+**Durée estimée :** 2-3 heures (avec tests approfondis)
 
 **Objectifs :**
 
-- ✅ Workflow CI fonctionnel
-- ✅ Tests et vérifications de base
-- ✅ Feedback rapide sur les PRs
+- ✅ Workflow unique avec dépendances strictes
+- ✅ Approche Preview First (sécurisée)
+- ✅ Auto-promotion production si tous les tests passent
+- ✅ Impossibilité de déployer si un test échoue
 
-**Jobs à implémenter :**
+**Structure du workflow `complete-ci-cd.yml` :**
 
 ```yaml
-ci.yml:
-├── Job: lint
-│   ├── ESLint check
-│   └── Format check
-├── Job: typecheck
-│   ├── TypeScript compilation
-│   └── Type validation
-├── Job: test
-│   ├── Tests unitaires (Vitest)
-│   ├── Tests d'intégration (Vitest)
-│   └── Tests d'accessibilité (Axe intégré)
-└── Job: build
-    ├── Build Vite
-    └── Vérification des outputs
+name: "🚀 Complete CI/CD Pipeline"
+
+jobs:
+  # Phase 1: Tests de base (bloquants)
+  ci-tests:
+    name: "🔍 CI Tests (Lint, TypeCheck, Unit Tests, Build)"
+    runs-on: ubuntu-latest
+    steps: [setup, lint, typecheck, test, build]
+
+  # Phase 2: Déploiement Preview (dépend de ci-tests)
+  deploy-preview:
+    name: "📦 Deploy Preview"
+    needs: ci-tests
+    if: success()
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ steps.deploy.outputs.url }}
+    steps: [setup, deploy-preview-vercel, capture-url]
+
+  # Phase 3: Tests avancés sur Preview (dépend de deploy-preview)
+  accessibility-tests:
+    name: "🧪 Accessibility & Performance Tests"
+    needs: deploy-preview
+    if: success()
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [cypress, pa11y, lighthouse]
+    steps: [setup, run-tests-on-preview]
+
+  # Phase 4: Auto-promotion Production (dépend de TOUT)
+  promote-production:
+    name: "🚀 Promote to Production"
+    needs: [ci-tests, deploy-preview, accessibility-tests]
+    if: success() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps: [setup, promote-preview-to-production]
 ```
 
 **Tests de validation :**
 
-1. Créer une PR avec une erreur de lint ❌
-2. Créer une PR avec une erreur TypeScript ❌
-3. Créer une PR avec un test qui échoue ❌
-4. Créer une PR propre ✅
+1. **Test de blocage CI :** Créer une erreur de lint → Vérifier que rien ne se déploie ❌
+2. **Test de blocage accessibilité :** Créer une erreur Pa11y → Vérifier que la production n'est pas mise à jour ❌
+3. **Test de réussite complète :** Code propre → Vérifier la séquence complète ✅
+4. **Test sur branche feature :** Vérifier que seul le preview se déploie (sans promotion) ✅
 
-### Phase 2 : Déploiement automatique
+### **Phase 2 : Migration progressive et sécurisée**
 
 **Durée estimée :** 1 heure
 
 **Objectifs :**
 
-- ✅ Déploiement automatique sur Vercel
-- ✅ Preview deployments pour les PRs
-- ✅ Production deployment sur main
+- ✅ Migration sans casser l'existant
+- ✅ Période de test du nouveau workflow
+- ✅ Rollback possible si problème
 
-**Jobs à ajouter :**
+**Étapes de migration :**
 
 ```yaml
-deploy.yml (ou ajout à ci.yml):
-├── Job: deploy-preview
-│   ├── Conditions: Pull Request
-│   ├── Deploy to Vercel Preview
-│   └── Comment avec URL preview
-└── Job: deploy-production
-    ├── Conditions: Push to main
-    ├── Deploy to Vercel Production
-    └── Notification de succès
+Étape 2.1: Test en parallèle (sécurisé)
+├── Créer complete-ci-cd.yml
+├── Conserver les anciens workflows (backup)
+├── Tester complete-ci-cd.yml sur branche feature
+├── Valider tous les cas de figure
+└── Ajuster le nouveau workflow si nécessaire
+
+Étape 2.2: Désactivation temporaire (réversible)
+├── Renommer ci.yml → ci.yml.backup
+├── Renommer deploy.yml → deploy.yml.backup
+├── Renommer accessibility-performance.yml → accessibility-performance.yml.backup
+├── Activer complete-ci-cd.yml en production
+└── Surveiller 2-3 commits pour validation
+
+Étape 2.3: Validation et nettoyage
+├── Valider le comportement sur main
+├── Vérifier les temps d'exécution
+├── Optimiser si nécessaire
+├── Supprimer les fichiers .backup si tout OK
+└── Mettre à jour la documentation
 ```
 
-**Tests de validation :**
-
-1. Créer une PR et vérifier le déploiement preview ✅
-2. Merger sur main et vérifier le déploiement prod ✅
-
-### Phase 3 : Analyse et reporting
+### **Phase 3 : Optimisation et monitoring**
 
 **Durée estimée :** 1 heure
 
 **Objectifs :**
 
-- ✅ Coverage reports
-- ✅ Bundle analysis
-- ✅ Security audit
+- ✅ Optimisation des performances
+- ✅ Monitoring des métriques
+- ✅ Documentation finalisée
 
-**Jobs à ajouter :**
+**Optimisations :**
 
 ```yaml
-analysis.yml:
-├── Job: coverage
-│   ├── Generate coverage report
-│   ├── Upload to Codecov (optionnel)
-│   └── Comment PR avec coverage
-├── Job: bundle-analysis
-│   ├── Analyze bundle size
-│   ├── Compare with baseline
-│   └── Report size changes
-└── Job: security
-    ├── npm audit
-    ├── Check vulnerabilities
-    └── Report security issues
+Performance:
+├── Parallélisation des tests accessibilité (matrix strategy)
+├── Cache optimisé pour toutes les phases
+├── Artifacts partagés entre jobs
+└── Conditional execution selon le type de changement
+
+Monitoring:
+├── Métriques de temps d'exécution
+├── Taux de succès par phase
+├── Alertes si dépassement de seuils
+└── Dashboard de suivi des déploiements
 ```
-
-### Phase 4 : Tests d'accessibilité et performance (OBLIGATOIRES - Plus tard)
-
-**Durée estimée :** 2-3 heures
-
-**Objectifs :**
-
-- ✅ Tests E2E avec Cypress (navigation utilisateur complète) - **OBLIGATOIRE**
-- ✅ Tests de performance Lighthouse (Core Web Vitals) - **OBLIGATOIRE**
-- ✅ Tests d'accessibilité Pa11y (conformité WCAG - priorité absolue) - **OBLIGATOIRE**
-
-**Note importante :** Ces tests sont obligatoires pour la conformité WCAG et la qualité utilisateur, mais implémentés progressivement après avoir validé le CI de base.
 
 ## 🧪 Stratégie de test par phase
 
@@ -168,38 +195,60 @@ analysis.yml:
    - Vérifier le déploiement en production
    - Tester la fonctionnalité en prod
 
-## 📋 Checklist d'implémentation
+## 📋 Checklist d'implémentation (Architecture cible)
 
-### Phase 1 : CI de base
+### **Phase 1 : Workflow unique sécurisé**
 
-- [ ] Créer `.github/workflows/ci.yml`
-- [ ] Configurer les jobs lint, typecheck, test, build
-- [ ] Tester avec PR qui échoue (lint)
-- [ ] Tester avec PR qui échoue (typecheck)
-- [ ] Tester avec PR qui échoue (test)
-- [ ] Tester avec PR qui échoue (build)
-- [ ] Tester avec PR qui réussit complètement
-- [ ] Vérifier les temps d'exécution (< 10 min)
-- [ ] Documenter les résultats
+- [ ] **Analyser les workflows existants**
+  - [ ] Identifier les jobs fonctionnels dans ci.yml
+  - [ ] Identifier les jobs fonctionnels dans accessibility-performance.yml
+  - [ ] Identifier les jobs fonctionnels dans deploy.yml
+  - [ ] Documenter les scripts pnpm utilisés
+- [ ] **Créer `complete-ci-cd.yml`**
+  - [ ] Job `ci-tests` (lint, typecheck, test, build)
+  - [ ] Job `deploy-preview` (needs ci-tests, deploy preview)
+  - [ ] Job `accessibility-tests` (needs deploy-preview, cypress+pa11y+lighthouse)
+  - [ ] Job `promote-production` (needs all, condition main branch)
+- [ ] **Tester le nouveau workflow**
+  - [ ] Test sur branche feature (preview seulement)
+  - [ ] Test avec erreur lint (doit bloquer tout)
+  - [ ] Test avec erreur Pa11y (doit bloquer promotion)
+  - [ ] Test complet sur main (promotion automatique)
+- [ ] **Validation des performances**
+  - [ ] Vérifier temps d'exécution (< 15 min total)
+  - [ ] Vérifier parallélisation des tests
+  - [ ] Optimiser si nécessaire
 
-### Phase 2 : Déploiement
+### **Phase 2 : Migration progressive**
 
-- [ ] Ajouter les secrets Vercel dans GitHub
-- [ ] Configurer le job de preview deployment
-- [ ] Configurer le job de production deployment
-- [ ] Tester le preview deployment avec une PR
-- [ ] Tester le production deployment avec un merge
-- [ ] Vérifier les URLs de déploiement
-- [ ] Documenter les résultats
+- [ ] **Préparation sécurisée**
+  - [ ] Backup des workflows existants (.backup)
+  - [ ] Documentation de rollback
+  - [ ] Plan de test de migration
+- [ ] **Migration temporaire**
+  - [ ] Désactiver les anciens workflows (renommer)
+  - [ ] Activer complete-ci-cd.yml
+  - [ ] Surveiller 2-3 commits
+- [ ] **Validation et nettoyage**
+  - [ ] Vérifier comportement sur PR
+  - [ ] Vérifier comportement sur main
+  - [ ] Vérifier blocage en cas d'erreur
+  - [ ] Supprimer les anciens fichiers si OK
 
-### Phase 3 : Analyse
+### **Phase 3 : Optimisation**
 
-- [ ] Configurer le coverage reporting
-- [ ] Configurer l'analyse de bundle
-- [ ] Configurer l'audit de sécurité
-- [ ] Tester chaque fonctionnalité
-- [ ] Optimiser les performances si nécessaire
-- [ ] Documenter les résultats
+- [ ] **Performance**
+  - [ ] Optimiser cache entre jobs
+  - [ ] Paralléliser tests accessibilité (matrix)
+  - [ ] Partager artifacts entre jobs
+- [ ] **Monitoring**
+  - [ ] Ajouter métriques temps d'exécution
+  - [ ] Ajouter alertes échec critique
+  - [ ] Dashboard de suivi (optionnel)
+- [ ] **Documentation**
+  - [ ] Mettre à jour README avec nouveau workflow
+  - [ ] Documenter les conditions de blocage
+  - [ ] Guide de dépannage
 
 ## 🔧 Configuration requise
 
@@ -412,8 +461,30 @@ Approche Lighthouse pour CI:
 └── 🚨 Focus sur accessibilité: TOUJOURS 100%
 ```
 
-## 🎯 Prochaine action
+## 🎯 Prochaine action (Plan actualisé)
 
-**Phase 1 - Étape 1 :** Créer le fichier `.github/workflows/ci.yml` avec les 4 jobs de base.
+**Phase 1 - Étape 1 :** Créer le fichier `.github/workflows/complete-ci-cd.yml` avec la structure sécurisée suivante :
 
-Êtes-vous prêt à commencer l'implémentation de la Phase 1 ?
+```yaml
+# Structure du workflow unique à créer
+complete-ci-cd.yml:
+├── ci-tests (lint + typecheck + test + build) - BLOQUANT
+├── deploy-preview (needs: ci-tests) - Deploy preview uniquement
+├── accessibility-tests (needs: deploy-preview) - Tests sur preview - BLOQUANT
+└── promote-production (needs: all + main branch) - Auto-promotion si tout OK
+```
+
+**Avantages de cette approche :**
+
+- 🛡️ **Sécurité maximale** : Impossible de déployer en production si un test échoue
+- 🧪 **Tests sur environnement réel** : Tests d'accessibilité sur Preview Vercel
+- ⚡ **Performance optimisée** : Un seul setup, jobs avec dépendances
+- 🔄 **Migration sécurisée** : Conservation des anciens workflows en backup
+
+**Êtes-vous prêt à commencer la création du workflow unique sécurisé ?**
+
+---
+
+### 🚨 Rappel du problème critique
+
+L'architecture actuelle permet des déploiements production même en cas d'échec des tests d'accessibilité. Le workflow unique résout définitivement ce problème de sécurité.

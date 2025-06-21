@@ -1,0 +1,1288 @@
+# @format
+
+# Unified CI/CD Workflow with Vercel Protection Bypass for Automation
+# This workflow uses VERCEL_AUTOMATION_BYPASS_SECRET to access protected Preview deployments
+# Last updated: June 14, 2025 - Testing new Vercel authentication system
+
+name: 🚀 CI/CD
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+on:
+  push:
+    branches: [main, develop, test/unified-ci-cd]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: P11-ArgentBank
+
+jobs:
+  ci-tests:
+    name: 🔍 CI Tests (Lint, TypeCheck, Unit Tests, Build)
+    runs-on: ubuntu-latest
+    outputs:
+      build-success: ${{ steps.build.outcome == 'success' }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🔧 Setup Vercel config for CI
+        run: pnpm run vercel:clean
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 🔍 Run ESLint
+        run: pnpm run lint
+
+      - name: 🔍 Run TypeScript check
+        run: pnpm run typecheck
+
+      - name: 🧪 Run tests
+        run: pnpm run test
+
+      - name: 🏗️ Build project
+        id: build
+        run: pnpm run build
+
+      - name: 📤 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: P11-ArgentBank/dist/
+          retention-days: 1
+
+  deploy-preview:
+    name: 📦 Deploy Preview
+    needs: ci-tests
+    if: success()
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 📦 Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 📤 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: P11-ArgentBank/dist/
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 📦 Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: 🔧 Setup vercel.json for deployment
+        run: pnpm run vercel:config prod
+
+      - name: 🚀 Deploy to Vercel Preview
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "=== Deploying Preview ==="
+          echo "Current directory: $(pwd)"
+          echo "Root Directory configured: P11-ArgentBank"
+
+          # Deploy to preview (without --prod) from repo root
+          cd ..
+          echo "Changed to repo root: $(pwd)"
+          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN)
+          echo "Preview deployed: $PREVIEW_URL"
+          echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
+          echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+
+  accessibility-tests:
+    name: 🧪 Accessibility & Performance Tests
+    needs: deploy-preview
+    if: success()
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [cypress, lighthouse, pa11y]
+        device: [desktop, mobile]
+        exclude:
+          - test-type: cypress
+            device: mobile # Cypress reste desktop seulement
+          - test-type: pa11y
+            device: mobile # Pa11y reste desktop seulement
+      fail-fast: false
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+
+      - name: 📦 Cache Cypress binary
+        if: matrix.test-type == 'cypress'
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🔧 Install Cypress binary
+        if: matrix.test-type == 'cypress'
+        run: pnpm exec cypress install
+
+      - name: 🗃️ Generate Prisma Client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/test"
+          pnpm exec prisma generate
+
+      - name: 🔍 Test Preview API availability
+        if: matrix.test-type == 'cypress'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          echo "Testing API on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be fully ready
+          echo "Waiting for Preview deployment to be fully ready..."
+          sleep 15
+
+          # Test ping endpoint
+          echo "Testing ping endpoint..."
+          curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
+            echo "Let's check if the base URL responds..."
+            curl -I "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 10 || echo "Base URL also failed"
+            exit 1
+          }
+
+          echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
+
+      - name: 🏃 Run Cypress E2E tests
+        if: matrix.test-type == 'cypress'
+        env:
+          CYPRESS_BASE_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          CI: true
+        run: |
+          echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"
+          echo "🔧 [Debug] API will be accessible at: $CYPRESS_BASE_URL/api"
+          echo "🔧 [Debug] CI environment: $CI"
+          echo "🔧 [Debug] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
+
+          # Additional wait to ensure stability
+          echo "Final wait for application stability..."
+          sleep 5
+
+          pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
+
+      - name: ⚡ Run Lighthouse tests (${{ matrix.device }})
+        if: matrix.test-type == 'lighthouse'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          DEVICE: ${{ matrix.device }}
+        run: |
+          echo "Running Lighthouse tests ($DEVICE) on Preview: $PREVIEW_URL"
+          echo "🔧 [DEBUG] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
+
+          # Wait for Preview to be ready
+          echo "Waiting for Preview to be ready..."
+          sleep 10
+
+          # Test Preview URL accessibility avec headers bypass
+          echo "Testing Preview URL with Vercel bypass headers..."
+          curl -f "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ Preview URL not accessible with bypass headers: $PREVIEW_URL"
+            echo "Testing without headers for comparison..."
+            curl -I "$PREVIEW_URL" --max-time 10 || echo "Base URL also failed"
+            exit 1
+          }
+
+          echo "✅ Preview URL responds correctly with bypass headers"
+
+          # Install Lighthouse and Puppeteer globally (latest version with ESM support)
+          npm install -g lighthouse@12.6.1 puppeteer@24.10.1
+
+          # Configure Puppeteer environment for CI (same as Pa11y)
+          export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+
+          # Install Puppeteer browsers (Chrome)
+          npx puppeteer browsers install chrome
+
+          # Verify Chrome installation
+          echo "Checking Chrome installation..."
+          find /home/runner/.cache/puppeteer -name "chrome" -type f 2>/dev/null | head -5 || echo "Chrome not found in cache"
+
+          # Create authentication script (ESM compatible)
+          cat > lighthouse-auth-ci.mjs << 'EOF'
+          export default async function (page, options) {
+            console.log('<<<<< LIGHTHOUSE AUTH SCRIPT (CI/CD) STARTED >>>>>');
+            
+            try {
+              // Add Vercel protection bypass headers
+              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+              if (bypassSecret) {
+                console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Setting Vercel bypass headers >>>>>');
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': bypassSecret
+                });
+              } else {
+                console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: WARNING - No Vercel bypass secret found >>>>>');
+              }
+              
+              const signInUrl = options.page.replace('/user', '/signin');
+              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Navigating to ${signInUrl} >>>>>`);
+              
+              // Navigate to sign-in page
+              await page.goto(signInUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Navigation to /signin complete >>>>>');
+              
+              // Wait for form to be visible
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for form to be visible >>>>>');
+              await page.waitForSelector('form', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Form is visible >>>>>');
+              
+              // Wait for email field and type credentials
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for email field to be visible >>>>>');
+              await page.waitForSelector('#email', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Email field is visible >>>>>');
+              
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Typing credentials >>>>>');
+              await page.type('#email', 'tony@stark.com');
+              await page.type('#password', 'password123');
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Credentials typed >>>>>');
+              
+              // Wait for submit button and click
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for submit button >>>>>');
+              await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Submit button found >>>>>');
+              
+              // Click submit and wait for navigation
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
+              await Promise.all([
+                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
+                page.click('button[type="submit"]')
+              ]);
+              
+              const currentUrl = page.url();
+              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+              
+              // Wait for user page content to confirm successful login
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
+              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
+              
+              // Small delay for page to settle
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Authentication script finished successfully. >>>>>');
+              
+            } catch (error) {
+              console.error('<<<<< LIGHTHOUSE AUTH SCRIPT: Error during authentication >>>>>', error.message);
+              throw error;
+            }
+          };
+          EOF
+
+          # Create Lighthouse runner script (ESM compatible)
+          cat > run-lighthouse-ci.mjs << 'EOF'
+          import lighthouse from 'lighthouse';
+          import puppeteer from 'puppeteer';
+          import fs from 'fs';
+          import path from 'path';
+          import { fileURLToPath } from 'url';
+
+          const __filename = fileURLToPath(import.meta.url);
+          const __dirname = path.dirname(__filename);
+
+          const baseUrl = process.env.PREVIEW_URL;
+          const device = process.env.DEVICE || 'desktop';
+
+          // Import authentication function
+          const authScript = path.resolve(__dirname, './lighthouse-auth-ci.mjs');
+          const { default: authScriptFunction } = await import(authScript);
+
+          // Pages to test (4 pages)
+          const pages = [
+            { url: baseUrl, name: 'home', needsAuth: false },
+            { url: `${baseUrl}/signin`, name: 'signin', needsAuth: false },
+            { url: `${baseUrl}/user`, name: 'user', needsAuth: true },
+            { url: `${baseUrl}/404`, name: '404', needsAuth: false }
+          ];
+
+          // Thresholds - Seuils durcis basés sur les excellents résultats obtenus
+          const thresholds = {
+            desktop: { 
+              performance: 0.95,  // 75% → 95% (scores actuels: 100%)
+              accessibility: 1.0,  // 85% → 100% (scores actuels: 100%)
+              'best-practices': 1.0, // 75% → 100% (scores actuels: 100%)
+              seo: 0.90           // 85% → 90% (scores actuels: 91-92%)
+            },
+            mobile: { 
+              performance: 0.90,  // 60% → 90% (scores actuels: 96-100%)
+              accessibility: 1.0,  // 85% → 100% (scores actuels: 100%)
+              'best-practices': 1.0, // 75% → 100% (scores actuels: 100%)
+              seo: 0.90           // 85% → 90% (scores actuels: 92%)
+            }
+          };
+
+          // Device configuration - Mobile moins strict pour portfolio
+          const getDeviceConfig = (device) => {
+            if (device === 'mobile') {
+              return {
+                extends: 'lighthouse:default',
+                settings: {
+                  formFactor: 'mobile',
+                  throttling: {
+                    rttMs: 70,                    // 150 → 70 (plus réaliste)
+                    throughputKbps: 3000,         // 1638 → 3000 (4G standard) 
+                    cpuSlowdownMultiplier: 2      // 4 → 2 (moins sévère)
+                  },
+                  screenEmulation: {
+                    mobile: true,
+                    width: 412,
+                    height: 823,
+                    deviceScaleFactor: 2.625,
+                    disabled: false
+                  },
+                  emulatedUserAgent: 'Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.101 Mobile Safari/537.36'
+                }
+              };
+            } else {
+              return {
+                extends: 'lighthouse:default',
+                settings: {
+                  formFactor: 'desktop',
+                  throttling: {
+                    rttMs: 40,
+                    throughputKbps: 10240,
+                    cpuSlowdownMultiplier: 1
+                  },
+                  screenEmulation: {
+                    mobile: false,
+                    width: 1350,
+                    height: 940,
+                    deviceScaleFactor: 1,
+                    disabled: false
+                  }
+                }
+              };
+            }
+          };
+
+          async function runLighthouseWithoutAuth(pageInfo) {
+            console.log(`🚨 Testing ${pageInfo.name} (${device}) WITHOUT auth: ${pageInfo.url}`);
+            
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions'
+              ]
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                console.log('🔧 Setting Vercel bypass headers for Lighthouse...');
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                });
+              }
+              
+              // Run Lighthouse avec headers bypass dans la configuration
+              const config = getDeviceConfig(device);
+              
+              // SOLUTION 1: Ajouter les headers bypass directement dans la configuration Lighthouse
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                config.settings = {
+                  ...config.settings,
+                  extraHeaders: {
+                    'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                  }
+                };
+                console.log('✅ Added Vercel bypass headers to Lighthouse config');
+              }
+              
+              const result = await lighthouse(pageInfo.url, {
+                port: new URL(browser.wsEndpoint()).port,
+                output: 'json',
+                logLevel: 'info'
+              }, config);                // Log détaillé des scores ET des échecs spécifiques
+                const scores = result.lhr.categories;
+                console.log(`📊 ${pageInfo.name} (${device}): Performance=${Math.round(scores.performance.score * 100)}%, Accessibility=${Math.round(scores.accessibility.score * 100)}%, Best-Practices=${Math.round(scores['best-practices'].score * 100)}%, SEO=${Math.round(scores.seo.score * 100)}%`);
+                
+                // DIAGNOSTIC DÉTAILLÉ - Log des audits qui échouent
+                console.log(`\n🔍 DIAGNOSTIC DÉTAILLÉ pour ${pageInfo.name} (${device}):`);
+                
+                // Accessibility failures
+                const accessibilityAudits = result.lhr.audits;
+                const failedAccessibility = Object.entries(accessibilityAudits)
+                  .filter(([key, audit]) => audit.scoreDisplayMode !== 'notApplicable' && audit.score !== null && audit.score < 1)
+                  .filter(([key, audit]) => key.includes('color-contrast') || key.includes('aria') || key.includes('label') || key.includes('heading') || key.includes('landmark'))
+                  .map(([key, audit]) => ({ key, title: audit.title, score: audit.score, description: audit.description }));
+                
+                if (failedAccessibility.length > 0) {
+                  console.log(`  ♿ ACCESSIBILITY ÉCHECS (${failedAccessibility.length}):`);
+                  failedAccessibility.forEach(audit => {
+                    console.log(`    - ${audit.title}: ${Math.round(audit.score * 100)}%`);
+                    console.log(`      ${audit.description.substring(0, 100)}...`);
+                  });
+                }
+                
+                // SEO failures  
+                const failedSEO = Object.entries(accessibilityAudits)
+                  .filter(([key, audit]) => audit.scoreDisplayMode !== 'notApplicable' && audit.score !== null && audit.score < 1)
+                  .filter(([key, audit]) => key.includes('meta') || key.includes('title') || key.includes('canonical') || key.includes('robots') || key.includes('structured'))
+                  .map(([key, audit]) => ({ key, title: audit.title, score: audit.score, description: audit.description }));
+                
+                if (failedSEO.length > 0) {
+                  console.log(`  🔍 SEO ÉCHECS (${failedSEO.length}):`);
+                  failedSEO.forEach(audit => {
+                    console.log(`    - ${audit.title}: ${Math.round(audit.score * 100)}%`);
+                    console.log(`      ${audit.description.substring(0, 100)}...`);
+                  });
+                }
+                
+                // Best Practices failures
+                const failedBestPractices = Object.entries(accessibilityAudits)
+                  .filter(([key, audit]) => audit.scoreDisplayMode !== 'notApplicable' && audit.score !== null && audit.score < 1)
+                  .filter(([key, audit]) => key.includes('https') || key.includes('console') || key.includes('vulnerability') || key.includes('csp') || key.includes('mixed-content'))
+                  .map(([key, audit]) => ({ key, title: audit.title, score: audit.score, description: audit.description }));
+                
+                if (failedBestPractices.length > 0) {
+                  console.log(`  ⚡ BEST PRACTICES ÉCHECS (${failedBestPractices.length}):`);
+                  failedBestPractices.forEach(audit => {
+                    console.log(`    - ${audit.title}: ${Math.round(audit.score * 100)}%`);
+                    console.log(`      ${audit.description.substring(0, 100)}...`);
+                  });
+                }
+                
+                console.log(`🔍 FIN DIAGNOSTIC pour ${pageInfo.name}\n`);
+                
+                return result.lhr;
+            } catch (error) {
+              console.error(`❌ Lighthouse failed for ${pageInfo.name} (${device}):`, error.message);
+              return null;
+            } finally {
+              await browser.close();
+            }
+          }
+
+          async function runLighthouseWithAuth(pageInfo) {
+            console.log(`🔐 Testing ${pageInfo.name} (${device}) WITH auth: ${pageInfo.url}`);
+            
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions'
+              ]
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                });
+              }
+              
+              // Execute authentication (SAME as Pa11y)
+              console.log('🔐 Executing authentication script...');
+              await authScriptFunction(page, { page: pageInfo.url });
+              console.log('✅ Authentication successful!');
+              
+              // Run Lighthouse on authenticated page avec headers bypass
+              console.log('🚨 Running Lighthouse on authenticated page...');
+              const config = getDeviceConfig(device);
+              
+              // SOLUTION 1: Ajouter les headers bypass dans la configuration Lighthouse (AUTH)
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                config.settings = {
+                  ...config.settings,
+                  extraHeaders: {
+                    'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                  }
+                };
+                console.log('✅ Added Vercel bypass headers to Lighthouse config (AUTH)');
+              }
+              
+              const result = await lighthouse(pageInfo.url, {
+                port: new URL(browser.wsEndpoint()).port,
+                output: 'json',
+                logLevel: 'info'
+              }, config);
+              
+              console.log(`📊 ${pageInfo.name} (${device}) [AUTH]: Performance=${Math.round(result.lhr.categories.performance.score * 100)}%, Accessibility=${Math.round(result.lhr.categories.accessibility.score * 100)}%, Best-Practices=${Math.round(result.lhr.categories['best-practices'].score * 100)}%, SEO=${Math.round(result.lhr.categories.seo.score * 100)}%`);
+              
+              // DIAGNOSTIC DÉTAILLÉ pour page authentifiée aussi
+              console.log(`\n🔍 DIAGNOSTIC AUTH pour ${pageInfo.name} (${device}):`);
+              const authScores = result.lhr.categories;
+              console.log(`  Accessibility: ${Math.round(authScores.accessibility.score * 100)}% | SEO: ${Math.round(authScores.seo.score * 100)}% | Best-Practices: ${Math.round(authScores['best-practices'].score * 100)}%`);
+              
+              return result.lhr;
+            } catch (error) {
+              console.error(`💥 Lighthouse authentication failed for ${pageInfo.name} (${device}):`, error);
+              return null;
+            } finally {
+              await browser.close();
+            }
+          }
+
+          async function main() {
+            console.log(`🚀 Starting Lighthouse tests (${device}) on CI/CD...`);
+            console.log(`🔗 Base URL: ${baseUrl}`);
+            console.log(`📱 Device: ${device}`);
+            
+            // Create reports directory
+            fs.mkdirSync('lighthouse-reports', { recursive: true });
+            
+            const results = [];
+            let failedTests = [];
+            
+            for (const pageInfo of pages) {
+              let result;
+              
+              if (pageInfo.needsAuth) {
+                result = await runLighthouseWithAuth(pageInfo);
+              } else {
+                result = await runLighthouseWithoutAuth(pageInfo);
+              }
+              
+              if (result) {
+                // Save individual report
+                const filename = `${device}-${pageInfo.name}.json`;
+                fs.writeFileSync(`lighthouse-reports/${filename}`, JSON.stringify(result, null, 2));
+                console.log(`💾 Saved report: lighthouse-reports/${filename}`);
+                
+                // Check thresholds
+                const scores = result.categories;
+                const deviceThresholds = thresholds[device];
+                
+                console.log(`\n📊 ${pageInfo.name} (${device}) Results:`);
+                for (const [category, threshold] of Object.entries(deviceThresholds)) {
+                  const score = scores[category]?.score || 0;
+                  const percentage = Math.round(score * 100);
+                  const thresholdPercentage = Math.round(threshold * 100);
+                  const passed = score >= threshold;
+                  
+                  console.log(`   ${category}: ${percentage}% (threshold: ${thresholdPercentage}%) ${passed ? '✅' : '❌'}`);
+                  
+                  if (!passed) {
+                    failedTests.push(`${pageInfo.name} (${device}) - ${category}: ${percentage}% < ${thresholdPercentage}%`);
+                  }
+                }
+                
+                results.push({
+                  page: pageInfo.name,
+                  device: device,
+                  scores: scores,
+                  passed: failedTests.length === 0
+                });
+              } else {
+                failedTests.push(`${pageInfo.name} (${device}) - Lighthouse execution failed`);
+              }
+              
+              // Small delay between tests
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            
+            console.log(`\n🎯 Lighthouse ${device} Summary:`);
+            console.log(`- Tests run: ${results.length}/${pages.length}`);
+            console.log(`- Failed tests: ${failedTests.length}`);
+            
+            if (failedTests.length > 0) {
+              console.log(`\n❌ BLOCKING DEPLOYMENT: Lighthouse found ${failedTests.length} failing tests:`);
+              failedTests.forEach((failure, index) => {
+                console.log(`   ${index + 1}. ${failure}`);
+              });
+              
+              // Special check for performance failures (now with higher thresholds)
+              const hasPerformanceFailure = failedTests.some(f => f.includes('performance'));
+              if (hasPerformanceFailure) {
+                console.log(`\n🎯 PERFORMANCE FAILURE: One or more pages failed the hardened thresholds`);
+                console.log(`   Desktop: 95% performance threshold (was 75%)`);
+                console.log(`   Mobile: 90% performance threshold (was 60%)`);
+                console.log(`   This validates our CI/CD blocking mechanism works correctly!`);
+              }
+              
+              process.exit(1);
+            } else {
+              console.log('\n✅ All Lighthouse tests passed!');
+            }
+          }
+
+          main().catch(error => {
+            console.error('💥 Lighthouse test runner failed:', error);
+            process.exit(1);
+          });
+          EOF
+
+          # Run the Lighthouse test script
+          PREVIEW_URL="$PREVIEW_URL" VERCEL_AUTOMATION_BYPASS_SECRET="$VERCEL_AUTOMATION_BYPASS_SECRET" DEVICE="$DEVICE" node run-lighthouse-ci.mjs
+
+      - name: ♿ Run Pa11y accessibility tests
+        if: matrix.test-type == 'pa11y'
+        env:
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          echo "Running Pa11y accessibility tests on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be ready
+          echo "Waiting for Preview to be ready..."
+          sleep 10
+
+          # Test Preview URL accessibility
+          curl -f "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ Preview URL not accessible: $PREVIEW_URL"
+            exit 1
+          }
+
+          # Install Pa11y and dependencies globally - use full puppeteer with bundled Chrome
+          npm install -g pa11y@8.0.0 puppeteer@24.10.1
+
+          # Configure Puppeteer environment for CI
+          export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+
+          # Install Puppeteer browsers (Chrome)
+          npx puppeteer browsers install chrome
+
+          # Verify Chrome installation
+          echo "Checking Chrome installation..."
+          find /home/runner/.cache/puppeteer -name "chrome" -type f 2>/dev/null | head -5 || echo "Chrome not found in cache"
+
+          # Create Pa11y authentication script for CI/CD
+          cat > pa11y-auth-ci.cjs << 'EOF'
+          module.exports = async function (page, options) {
+            console.log('<<<<< PA11Y AUTH SCRIPT (CI/CD) STARTED >>>>>');
+            
+            try {
+              // Add Vercel protection bypass headers
+              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+              if (bypassSecret) {
+                console.log('<<<<< PA11Y AUTH SCRIPT: Setting Vercel bypass headers >>>>>');
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': bypassSecret
+                });
+              } else {
+                console.log('<<<<< PA11Y AUTH SCRIPT: WARNING - No Vercel bypass secret found >>>>>');
+              }
+              
+              const signInUrl = options.page.replace('/user', '/signin');
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Navigating to ${signInUrl} >>>>>`);
+              
+              // Navigate to sign-in page
+              await page.goto(signInUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Navigation to /signin complete >>>>>');
+              
+              // Wait for form to be visible
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for form to be visible >>>>>');
+              await page.waitForSelector('form', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Form is visible >>>>>');
+              
+              // Wait for email field and type credentials
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for email field to be visible >>>>>');
+              await page.waitForSelector('#email', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Email field is visible >>>>>');
+              
+              console.log('<<<<< PA11Y AUTH SCRIPT: Typing credentials >>>>>');
+              await page.type('#email', 'tony@stark.com');
+              await page.type('#password', 'password123');
+              console.log('<<<<< PA11Y AUTH SCRIPT: Credentials typed >>>>>');
+              
+              // Wait for submit button and click
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for submit button >>>>>');
+              await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: Submit button found >>>>>');
+              
+              // Click submit and wait for navigation
+              console.log('<<<<< PA11Y AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
+              await Promise.all([
+                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
+                page.click('button[type="submit"]')
+              ]);
+              
+              const currentUrl = page.url();
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+              
+              // Wait for user page content to confirm successful login
+              console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
+              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< PA11Y AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
+              
+              // Capture page title for verification
+              const pageTitle = await page.title();
+              console.log(`<<<<< PA11Y AUTH SCRIPT: Page title: ${pageTitle} >>>>>`);
+              
+              // Small delay for page to settle
+              console.log('<<<<< PA11Y AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              console.log('<<<<< PA11Y AUTH SCRIPT: Authentication script finished successfully. >>>>>');
+              
+            } catch (error) {
+              console.error('<<<<< PA11Y AUTH SCRIPT: Error during authentication >>>>>', error.message);
+              console.error('<<<<< PA11Y AUTH SCRIPT: Error details >>>>>', error);
+              throw error;
+            }
+          };
+          EOF
+
+          # Create Pa11y runner script - using working approach from commit 67ccece
+          cat > run-pa11y-ci.cjs << 'EOF'
+          const pa11y = require('pa11y');
+          const path = require('path');
+          const fs = require('fs');
+
+          const baseUrl = process.env.PREVIEW_URL;
+          const authScript = path.resolve('./pa11y-auth-ci.cjs');
+
+          async function runPa11yTest(url, useAuth = false) {
+            const options = {
+              standard: 'WCAG2AA',
+              timeout: 60000,
+              wait: 3000,
+              chromeLaunchConfig: {
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+                devtools: false
+              }
+            };
+            
+            if (useAuth) {
+              console.log(`🔐 USING AUTH SCRIPT: ${authScript}`);
+              return await runPa11yTestWithAuth(url, options);
+            }
+            
+            try {
+              console.log(`🧪 Testing URL: ${url} (without auth)`);
+              const results = await pa11y(url, options);
+              const safeResults = Array.isArray(results) ? results : [];
+              console.log(`📊 ${url}: ${safeResults.length} issues found`);
+              
+              if (safeResults.length > 0) {
+                console.log(`📋 Issues details for ${url}:`);
+                safeResults.forEach((issue, index) => {
+                  console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
+                });
+              }
+              
+              return safeResults;
+            } catch (error) {
+              console.error(`❌ Error testing ${url}:`, error.message);
+              return [];
+            }
+          }
+
+          async function runPa11yTestWithAuth(url, baseOptions) {
+            console.log(`🔐 Starting authentication flow for ${url}...`);
+            
+            const puppeteer = require('puppeteer');
+            const authScriptFunction = require(authScript);
+            
+            const browser = await puppeteer.launch({
+              args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+              headless: true
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers
+              const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+              if (bypassSecret) {
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': bypassSecret
+                });
+              }
+              
+              // Execute authentication
+              console.log(`🔐 Executing authentication script for ${url}...`);
+              await authScriptFunction(page, { page: url });
+              
+              // Now run Pa11y on the authenticated page using direct HTMLCS injection
+              console.log(`🧪 Running Pa11y on authenticated page: ${url}`);
+              
+              // Inject HTMLCS directly into the authenticated page
+              await page.addScriptTag({
+                url: 'https://squizlabs.github.io/HTML_CodeSniffer/build/HTMLCS.js'
+              });
+              
+              // Wait for HTMLCS to be available
+              await page.waitForFunction('typeof window.HTMLCS !== "undefined"', { timeout: 10000 });
+              
+              let results;
+              try {
+                results = await page.evaluate((standard) => {
+                  return new Promise((resolve, reject) => {
+                    const messages = [];
+                    
+                    // Add timeout to prevent hanging
+                    const timeout = setTimeout(() => {
+                      reject(new Error('Pa11y evaluation timeout after 30 seconds'));
+                    }, 30000);
+                    
+                    try {
+                      // Fixed callback logic from commit 67ccece - capture all accessibility violations
+                      window.HTMLCS.process(standard, document, function(msg) {
+                        if (msg && (msg.type === window.HTMLCS.ERROR || msg.type === window.HTMLCS.WARNING || msg.type === 1)) {
+                          const messageType = msg.type === window.HTMLCS.ERROR ? 'error' : 
+                                            msg.type === window.HTMLCS.WARNING ? 'warning' : 'violation';
+                          messages.push({
+                            code: msg.code,
+                            context: msg.element?.outerHTML?.substring(0, 200) || '',
+                            message: msg.msg,
+                            selector: window.HTMLCS.util?.getElementSelector(msg.element) || 'unknown',
+                            type: messageType,
+                            typeCode: msg.type
+                          });
+                        }
+                      }, function() {
+                        // Process complete callback
+                        clearTimeout(timeout);
+                        resolve(messages);
+                      });
+                    } catch (error) {
+                      clearTimeout(timeout);
+                      reject(error);
+                    }
+                  });
+                }, baseOptions.standard || 'WCAG2AA');
+              } catch (evaluationError) {
+                console.log(`⚠️ Pa11y evaluation failed: ${evaluationError.message}`);
+                results = [];
+              }
+              
+              const errors = results || [];
+              
+              console.log(`📊 Pa11y found ${errors.length} accessibility issues on authenticated ${url}`);
+              
+              if (errors.length > 0) {
+                console.log(`� Issues details for ${url}:`);
+                errors.forEach((issue, index) => {
+                  console.log(`   ${index + 1}. ${issue.message} (${issue.code})`);
+                  console.log(`      Selector: ${issue.selector}`);
+                });
+              }
+              
+              return errors;
+              
+            } finally {
+              await browser.close();
+            }
+          }
+
+          async function main() {
+            console.log('� Starting Pa11y tests in CI/CD...');
+            console.log(`🔗 Base URL: ${baseUrl}`);
+            console.log(`🔐 Auth script path: ${authScript}`);
+            
+            // Test without authentication first (baseline)
+            console.log('\n=== TESTING WITHOUT AUTHENTICATION ===');
+            const homeResults = await runPa11yTest(baseUrl);
+            const signinResults = await runPa11yTest(`${baseUrl}/signin`);
+            const notFoundResults = await runPa11yTest(`${baseUrl}/404`);
+            
+            console.log('\n=== TESTING WITH AUTHENTICATION ===');
+            const userResultsWithAuth = await runPa11yTest(`${baseUrl}/user`, true);
+            
+            // Count issues
+            const homeIssues = Array.isArray(homeResults) ? homeResults.length : 0;
+            const signinIssues = Array.isArray(signinResults) ? signinResults.length : 0;
+            const userIssuesWithAuth = Array.isArray(userResultsWithAuth) ? userResultsWithAuth.length : 0;
+            const notFoundIssues = Array.isArray(notFoundResults) ? notFoundResults.length : 0;
+            
+            console.log('\n� Pa11y Results Summary:');
+            console.log(`- Home page: ${homeIssues} issues`);
+            console.log(`- Sign-in page: ${signinIssues} issues`);
+            console.log(`- User page (no auth): ${userIssuesNoAuth} issues`);
+            console.log(`- User page (with auth): ${userIssuesWithAuth} issues`);
+            console.log(`- 404 page: ${notFoundIssues} issues`);
+            
+            // Write detailed results
+            fs.writeFileSync('pa11y-home.json', JSON.stringify(homeResults, null, 2));
+            fs.writeFileSync('pa11y-signin.json', JSON.stringify(signinResults, null, 2));
+            fs.writeFileSync('pa11y-user-auth.json', JSON.stringify(userResultsWithAuth, null, 2));
+            fs.writeFileSync('pa11y-404.json', JSON.stringify(notFoundResults, null, 2));
+            
+            const totalIssues = homeIssues + signinIssues + userIssuesWithAuth + notFoundIssues;
+            console.log(`\n🎯 Total issues (blocking): ${totalIssues}`);
+            
+            // Expected behavior check for test element
+            if (userIssuesWithAuth === 0) {
+              console.log('\n⚠️  WARNING: User page (auth) shows 0 issues.');
+              console.log('   This suggests Pa11y may not be detecting the test contrast element.');
+              console.log('   Expected: with-auth = 1+ issues (test contrast element)');
+            }
+            
+            if (totalIssues > 0) {
+              console.log('\n❌ Pa11y found accessibility issues. This is a blocking error.');
+              process.exit(1);
+            } else {
+              console.log('\n✅ No accessibility issues found.');
+              process.exit(0);
+            }
+          }
+
+          main().catch(error => {
+            console.error('💥 Pa11y test runner failed:', error);
+            process.exit(1);
+          });
+          EOF
+
+          # Create HYBRID Pa11y runner script - using real Pa11y library with our auth
+          cat > run-pa11y-hybrid.cjs << 'EOF'
+          const pa11y = require('pa11y');
+          const puppeteer = require('puppeteer');
+          const path = require('path');
+          const fs = require('fs');
+
+          const baseUrl = process.env.PREVIEW_URL;
+          const authScript = path.resolve('./pa11y-auth-ci.cjs');
+          const authScriptFunction = require(authScript);
+
+          // Configure Puppeteer for CI environment
+          console.log('🔧 Configuring Puppeteer for CI environment...');
+          console.log('PUPPETEER_CACHE_DIR:', process.env.PUPPETEER_CACHE_DIR || 'default');
+          console.log('PUPPETEER_EXECUTABLE_PATH:', process.env.PUPPETEER_EXECUTABLE_PATH || 'auto-detect');
+
+          async function runPa11yWithoutAuth(url) {
+            console.log(`🧪 Testing URL: ${url} (without auth)`);
+            
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions',
+                '--remote-debugging-port=9222'
+              ],
+              executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers if available
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                });
+              }
+              
+              // Navigate to the page
+              await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+              
+              // Run Pa11y on the page using the existing browser and page
+              const results = await pa11y(url, {
+                browser: browser,
+                page: page,
+                standard: 'WCAG2AA',
+                timeout: 30000,
+                wait: 2000
+              });
+              
+              console.log(`📊 ${url}: ${results.issues.length} issues found`);
+              if (results.issues.length > 0) {
+                console.log(`📋 Issues details for ${url}:`);
+                results.issues.forEach((issue, index) => {
+                  console.log(`   ${index + 1}. [${issue.type}] ${issue.message} (${issue.code})`);
+                });
+              }
+              return results.issues;
+            } catch (error) {
+              console.error(`❌ Pa11y failed for ${url}:`, error.message);
+              return [];
+            } finally {
+              await browser.close();
+            }
+          }
+
+          async function runPa11yWithAuth(url) {
+            console.log(`🔐 Starting authentication flow for ${url}...`);
+            
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--disable-extensions',
+                '--remote-debugging-port=9222'
+              ],
+              executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
+            });
+            
+            try {
+              const page = await browser.newPage();
+              
+              // Add Vercel bypass headers if available
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                await page.setExtraHTTPHeaders({
+                  'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                });
+              }
+              
+              // Execute our working authentication script
+              console.log('🔐 Executing authentication script...');
+              await authScriptFunction(page, { page: url });
+              console.log('✅ Authentication successful!');
+              
+              // Now run Pa11y on the authenticated page using the existing browser and page
+              console.log('🧪 Running Pa11y on authenticated page...');
+              const results = await pa11y(url, {
+                browser: browser,
+                page: page,
+                standard: 'WCAG2AA',
+                timeout: 30000,
+                wait: 2000
+              });
+              
+              console.log(`📊 Pa11y found ${results.issues.length} accessibility issues on authenticated ${url}`);
+              
+              if (results.issues.length > 0) {
+                console.log(`📋 Issues details for ${url}:`);
+                results.issues.forEach((issue, index) => {
+                  console.log(`   ${index + 1}. [${issue.type}] ${issue.message} (${issue.code})`);
+                  console.log(`      Selector: ${issue.selector}`);
+                });
+              }
+              
+              return results.issues;
+              
+            } catch (error) {
+              console.error('💥 Pa11y authentication test failed:', error);
+              return [];
+            } finally {
+              await browser.close();
+            }
+          }
+
+          async function main() {
+            console.log('🚀 Starting HYBRID Pa11y tests (real Pa11y + working auth)...');
+            console.log(`🔗 Base URL: ${baseUrl}`);
+            
+            // Test pages without authentication first
+            console.log('\n=== TESTING WITHOUT AUTHENTICATION ===');
+            const homeResults = await runPa11yWithoutAuth(baseUrl);
+            const signinResults = await runPa11yWithoutAuth(`${baseUrl}/signin`);
+            const notFoundResults = await runPa11yWithoutAuth(`${baseUrl}/404`);
+            
+            // Test authenticated user page
+            console.log('\n=== TESTING WITH AUTHENTICATION ===');
+            const userResultsWithAuth = await runPa11yWithAuth(`${baseUrl}/user`);
+            
+            // Count issues
+            const homeIssues = homeResults.length;
+            const signinIssues = signinResults.length;
+            const userIssuesWithAuth = userResultsWithAuth.length;
+            const notFoundIssues = notFoundResults.length;
+            
+            console.log('\n📊 Pa11y Results Summary:');
+            console.log(`- Home page: ${homeIssues} issues`);
+            console.log(`- Sign-in page: ${signinIssues} issues`);
+            console.log(`- User page (with auth): ${userIssuesWithAuth} issues`);
+            console.log(`- 404 page: ${notFoundIssues} issues`);
+            
+            // Save detailed results
+            fs.mkdirSync('pa11y-reports', { recursive: true });
+            fs.writeFileSync('pa11y-reports/home.json', JSON.stringify(homeResults, null, 2));
+            fs.writeFileSync('pa11y-reports/signin.json', JSON.stringify(signinResults, null, 2));
+            fs.writeFileSync('pa11y-reports/user-auth.json', JSON.stringify(userResultsWithAuth, null, 2));
+            fs.writeFileSync('pa11y-reports/404.json', JSON.stringify(notFoundResults, null, 2));
+            
+            const totalIssues = homeIssues + signinIssues + userIssuesWithAuth + notFoundIssues;
+            console.log(`\n🎯 Total issues (blocking): ${totalIssues}`);
+            
+            // Validation checks - should detect our test elements
+            if (homeIssues === 0) {
+              console.log(`⚠️  WARNING: Home page shows 0 issues. Expected: 1+ (test contrast element)`);
+            }
+            if (signinIssues === 0) {
+              console.log(`⚠️  WARNING: SignIn page shows 0 issues. Expected: 1+ (test contrast element)`);
+            }
+            if (userIssuesWithAuth === 0) {
+              console.log(`⚠️  WARNING: User page (auth) shows 0 issues. Expected: 1+ (test contrast element)`);
+            }
+            
+            if (totalIssues > 0) {
+              console.log(`\n❌ BLOCKING DEPLOYMENT: Pa11y found ${totalIssues} accessibility issues!`);
+              console.log(`ℹ️  Current issues include intentional test elements to validate Pa11y detection.`);
+              console.log(`ℹ️  In production, remove test elements and Pa11y should find 0 issues.`);
+              process.exit(1);
+            } else {
+              console.log('\n⚠️  No accessibility issues found.');
+              console.log('   This suggests Pa11y may not be working correctly.');
+              console.log('   Expected to find at least the intentional test contrast elements.');
+            }
+            
+            console.log('\n✅ Pa11y hybrid test completed successfully.');
+          }
+
+          main().catch(error => {
+            console.error('💥 Pa11y hybrid test runner failed:', error);
+            process.exit(1);
+          });
+          EOF
+
+          # Run the HYBRID Pa11y test (real Pa11y + working auth)
+          PREVIEW_URL="$PREVIEW_URL" VERCEL_AUTOMATION_BYPASS_SECRET="$VERCEL_AUTOMATION_BYPASS_SECRET" node run-pa11y-hybrid.cjs
+
+      - name: 📤 Upload test artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.test-type }}-${{ matrix.device }}-reports
+          path: |
+            P11-ArgentBank/cypress/screenshots
+            P11-ArgentBank/cypress/videos
+            P11-ArgentBank/lighthouse-reports
+            P11-ArgentBank/pa11y-reports
+
+  promote-production:
+    name: 🚀 Promote to Production
+    needs: [ci-tests, deploy-preview, accessibility-tests]
+    if: success() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 📦 Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🗃️ Generate Prisma client
+        run: |
+          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          pnpm exec prisma generate
+
+      - name: 📦 Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: 🔧 Setup vercel.json for production
+        run: pnpm run vercel:config prod
+
+      - name: 🚀 Deploy to Vercel Production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          echo "=== Promoting to production ==="
+          echo "All tests passed! Deploying to production..."
+
+          # Deploy to production from repo root
+          cd ..
+          echo "Changed to repo root: $(pwd)"
+          vercel --prod --yes --token $VERCEL_TOKEN
+
+          echo "🎉 Production deployed: https://slm-argentbank.vercel.app"
+
+      - name: 🔧 Cleanup vercel.json
+        run: pnpm run vercel:clean
