@@ -274,8 +274,8 @@ jobs:
             exit 1
           }
 
-          # Install Lighthouse and Puppeteer globally (use CommonJS compatible version like Pa11y)
-          npm install -g lighthouse@10.4.0 puppeteer@24.10.1
+          # Install Lighthouse and Puppeteer globally (latest version with ESM support)
+          npm install -g lighthouse@12.6.1 puppeteer@24.10.1
 
           # Configure Puppeteer environment for CI (same as Pa11y)
           export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
@@ -288,9 +288,9 @@ jobs:
           echo "Checking Chrome installation..."
           find /home/runner/.cache/puppeteer -name "chrome" -type f 2>/dev/null | head -5 || echo "Chrome not found in cache"
 
-          # Create authentication script (SAME as Pa11y)
-          cat > lighthouse-auth-ci.cjs << 'EOF'
-          module.exports = async function (page, options) {
+          # Create authentication script (ESM compatible)
+          cat > lighthouse-auth-ci.mjs << 'EOF'
+          export default async function (page, options) {
             console.log('<<<<< LIGHTHOUSE AUTH SCRIPT (CI/CD) STARTED >>>>>');
             
             try {
@@ -357,19 +357,64 @@ jobs:
               throw error;
             }
           };
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for email field to be visible >>>>>');
+              await page.waitForSelector('#email', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Email field is visible >>>>>');
+              
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Typing credentials >>>>>');
+              await page.type('#email', 'tony@stark.com');
+              await page.type('#password', 'password123');
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Credentials typed >>>>>');
+              
+              // Wait for submit button and click
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for submit button >>>>>');
+              await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Submit button found >>>>>');
+              
+              // Click submit and wait for navigation
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
+              await Promise.all([
+                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
+                page.click('button[type="submit"]')
+              ]);
+              
+              const currentUrl = page.url();
+              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+              
+              // Wait for user page content to confirm successful login
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
+              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
+              
+              // Small delay for page to settle
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Authentication script finished successfully. >>>>>');
+              
+            } catch (error) {
+              console.error('<<<<< LIGHTHOUSE AUTH SCRIPT: Error during authentication >>>>>', error.message);
+              throw error;
+            }
+          };
           EOF
 
-          # Create Lighthouse runner script (inspired by Pa11y hybrid approach)
-          cat > run-lighthouse-ci.cjs << 'EOF'
-          const lighthouse = require('lighthouse');
-          const puppeteer = require('puppeteer');
-          const fs = require('fs');
-          const path = require('path');
+          # Create Lighthouse runner script (ESM compatible)
+          cat > run-lighthouse-ci.mjs << 'EOF'
+          import lighthouse from 'lighthouse';
+          import puppeteer from 'puppeteer';
+          import fs from 'fs';
+          import path from 'path';
+          import { fileURLToPath } from 'url';
+
+          const __filename = fileURLToPath(import.meta.url);
+          const __dirname = path.dirname(__filename);
 
           const baseUrl = process.env.PREVIEW_URL;
           const device = process.env.DEVICE || 'desktop';
-          const authScript = path.resolve('./lighthouse-auth-ci.cjs');
-          const authScriptFunction = require(authScript);
+
+          // Import authentication function
+          const authScript = path.resolve(__dirname, './lighthouse-auth-ci.mjs');
+          const { default: authScriptFunction } = await import(authScript);
 
           // Pages to test (4 pages)
           const pages = [
@@ -619,7 +664,7 @@ jobs:
           EOF
 
           # Run the Lighthouse test script
-          PREVIEW_URL="$PREVIEW_URL" VERCEL_AUTOMATION_BYPASS_SECRET="$VERCEL_AUTOMATION_BYPASS_SECRET" DEVICE="$DEVICE" node run-lighthouse-ci.cjs
+          PREVIEW_URL="$PREVIEW_URL" VERCEL_AUTOMATION_BYPASS_SECRET="$VERCEL_AUTOMATION_BYPASS_SECRET" DEVICE="$DEVICE" node run-lighthouse-ci.mjs
 
       - name: ♿ Run Pa11y accessibility tests
         if: matrix.test-type == 'pa11y'
