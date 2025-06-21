@@ -263,16 +263,22 @@ jobs:
           DEVICE: ${{ matrix.device }}
         run: |
           echo "Running Lighthouse tests ($DEVICE) on Preview: $PREVIEW_URL"
+          echo "🔧 [DEBUG] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
 
           # Wait for Preview to be ready
           echo "Waiting for Preview to be ready..."
           sleep 10
 
-          # Test Preview URL accessibility
+          # Test Preview URL accessibility avec headers bypass
+          echo "Testing Preview URL with Vercel bypass headers..."
           curl -f "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
-            echo "❌ Preview URL not accessible: $PREVIEW_URL"
+            echo "❌ Preview URL not accessible with bypass headers: $PREVIEW_URL"
+            echo "Testing without headers for comparison..."
+            curl -I "$PREVIEW_URL" --max-time 10 || echo "Base URL also failed"
             exit 1
           }
+
+          echo "✅ Preview URL responds correctly with bypass headers"
 
           # Install Lighthouse and Puppeteer globally (latest version with ESM support)
           npm install -g lighthouse@12.6.1 puppeteer@24.10.1
@@ -465,13 +471,26 @@ jobs:
               
               // Add Vercel bypass headers
               if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                console.log('🔧 Setting Vercel bypass headers for Lighthouse...');
                 await page.setExtraHTTPHeaders({
                   'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
                 });
               }
               
-              // Run Lighthouse
+              // Run Lighthouse avec headers bypass dans la configuration
               const config = getDeviceConfig(device);
+              
+              // SOLUTION 1: Ajouter les headers bypass directement dans la configuration Lighthouse
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                config.settings = {
+                  ...config.settings,
+                  extraHeaders: {
+                    'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                  }
+                };
+                console.log('✅ Added Vercel bypass headers to Lighthouse config');
+              }
+              
               const result = await lighthouse(pageInfo.url, {
                 port: new URL(browser.wsEndpoint()).port,
                 output: 'json',
@@ -566,9 +585,21 @@ jobs:
               await authScriptFunction(page, { page: pageInfo.url });
               console.log('✅ Authentication successful!');
               
-              // Run Lighthouse on authenticated page
+              // Run Lighthouse on authenticated page avec headers bypass
               console.log('🚨 Running Lighthouse on authenticated page...');
               const config = getDeviceConfig(device);
+              
+              // SOLUTION 1: Ajouter les headers bypass dans la configuration Lighthouse (AUTH)
+              if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+                config.settings = {
+                  ...config.settings,
+                  extraHeaders: {
+                    'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+                  }
+                };
+                console.log('✅ Added Vercel bypass headers to Lighthouse config (AUTH)');
+              }
+              
               const result = await lighthouse(pageInfo.url, {
                 port: new URL(browser.wsEndpoint()).port,
                 output: 'json',
