@@ -357,45 +357,6 @@ jobs:
               throw error;
             }
           };
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for email field to be visible >>>>>');
-              await page.waitForSelector('#email', { visible: true, timeout: 10000 });
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Email field is visible >>>>>');
-              
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Typing credentials >>>>>');
-              await page.type('#email', 'tony@stark.com');
-              await page.type('#password', 'password123');
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Credentials typed >>>>>');
-              
-              // Wait for submit button and click
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for submit button >>>>>');
-              await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Submit button found >>>>>');
-              
-              // Click submit and wait for navigation
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
-              await Promise.all([
-                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
-                page.click('button[type="submit"]')
-              ]);
-              
-              const currentUrl = page.url();
-              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
-              
-              // Wait for user page content to confirm successful login
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
-              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
-              
-              // Small delay for page to settle
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Adding small delay for page to settle... >>>>>');
-              await new Promise(resolve => setTimeout(resolve, 2000));
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Authentication script finished successfully. >>>>>');
-              
-            } catch (error) {
-              console.error('<<<<< LIGHTHOUSE AUTH SCRIPT: Error during authentication >>>>>', error.message);
-              throw error;
-            }
-          };
           EOF
 
           # Create Lighthouse runner script (ESM compatible)
@@ -715,12 +676,12 @@ jobs:
                 console.log('<<<<< PA11Y AUTH SCRIPT: WARNING - No Vercel bypass secret found >>>>>');
               }
               
-              const signInUrl = options.page.replace('/user', '/signIn');
+              const signInUrl = options.page.replace('/user', '/signin');
               console.log(`<<<<< PA11Y AUTH SCRIPT: Navigating to ${signInUrl} >>>>>`);
               
               // Navigate to sign-in page
               await page.goto(signInUrl, { waitUntil: 'networkidle0', timeout: 30000 });
-              console.log('<<<<< PA11Y AUTH SCRIPT: Navigation to /signIn complete >>>>>');
+              console.log('<<<<< PA11Y AUTH SCRIPT: Navigation to /signin complete >>>>>');
               
               // Wait for form to be visible
               console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for form to be visible >>>>>');
