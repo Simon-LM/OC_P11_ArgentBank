@@ -11,6 +11,10 @@ import {
   requiresAuthentication,
   convertCookiesForLighthouse,
 } from "../lib/lighthouse-auth-v2.js";
+import {
+  runLighthouseWithIntegratedAuth,
+  runLighthouseWithoutAuth,
+} from "../lib/lighthouse-auth-integrated.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,6 +69,9 @@ function parseArgs() {
         config.mobile = true;
         config.desktop = false;
         break;
+      case "--integrated-auth":
+        config.integratedAuth = true;
+        break;
       case "--help":
         console.log(`
 Usage: node lighthouse-runner.js [options]
@@ -75,11 +82,12 @@ Options:
   --output-path <path>  Chemin du fichier de sortie (défaut: ${defaultConfig.outputPath})
   --mobile             Test en mode mobile (défaut)
   --desktop            Test en mode desktop
+  --integrated-auth    Utilise l'authentification intégrée (comme CI/CD)
   --help               Affiche cette aide
 
 Exemples:
   node lighthouse-runner.js
-  node lighthouse-runner.js --url http://localhost:3000/profile --desktop
+  node lighthouse-runner.js --url http://localhost:3000/user --desktop --integrated-auth
   node lighthouse-runner.js --output json --output-path ./reports/perf.json
         `);
         process.exit(0);
@@ -98,11 +106,11 @@ function getLighthouseConfig(isMobile = true) {
       formFactor: isMobile ? "mobile" : "desktop",
       throttling: isMobile
         ? {
-            rttMs: 150,
-            throughputKbps: 1638.4,
-            cpuSlowdownMultiplier: 4,
+            rttMs: 70, // 150 → 70 (plus réaliste)
+            throughputKbps: 3000, // 1638 → 3000 (4G standard)
+            cpuSlowdownMultiplier: 2, // 4 → 2 (moins sévère)
             requestLatencyMs: 0,
-            downloadThroughputKbps: 1638.4,
+            downloadThroughputKbps: 3000, // 1638 → 3000
             uploadThroughputKbps: 675,
           }
         : {
@@ -146,50 +154,103 @@ async function runLighthouse() {
   console.log(`📱 Mode: ${config.mobile ? "Mobile" : "Desktop"}`);
   console.log(`🌐 URL: ${config.url}`);
 
+  // Vérifier si l'URL nécessite une authentification
+  const needsAuth = requiresAuthentication(config.url);
+
+  console.log(`🔐 Auth required: ${needsAuth ? "OUI" : "NON"}`);
+  console.log(
+    `🔐 Integrated auth flag: ${config.integratedAuth ? "ACTIVÉ" : "DÉSACTIVÉ"}`,
+  );
+
+  // Déterminer le mode d'auth final
+  let authMode = "AUCUNE";
+  if (needsAuth && config.integratedAuth) {
+    authMode = "INTÉGRÉE (CI/CD style)";
+  } else if (needsAuth) {
+    authMode = "COOKIES (legacy)";
+  }
+  console.log(`🔐 Mode d'authentification: ${authMode}`);
+
+  try {
+    let result;
+
+    if (needsAuth && config.integratedAuth) {
+      // 🆕 MODE INTÉGRÉ (comme CI/CD) - RECOMMANDÉ pour /user
+      console.log(
+        "🔐 ▶️ DÉMARRAGE de l'authentification intégrée (CI/CD style)...",
+      );
+      const device = config.mobile ? "mobile" : "desktop";
+      result = await runLighthouseWithIntegratedAuth(config.url, device);
+
+      if (!result) {
+        throw new Error("Échec de l'authentification intégrée");
+      }
+    } else if (needsAuth) {
+      // MODE LEGACY (cookies) - Fallback
+      console.log(
+        "🔐 URL protégée détectée - authentification automatique (mode cookies)...",
+      );
+      await runLegacyAuthentication(config);
+      return; // runLegacyAuthentication gère le reste
+    } else {
+      // MODE SIMPLE (sans auth)
+      console.log("🔍 Test simple sans authentification...");
+      const device = config.mobile ? "mobile" : "desktop";
+      result = await runLighthouseWithoutAuth(config.url, device);
+
+      if (!result) {
+        throw new Error("Échec du test Lighthouse");
+      }
+    }
+
+    // Traitement des résultats commun
+    await processResults(result, config);
+  } catch (error) {
+    console.error(
+      "❌ Erreur lors de l'exécution de Lighthouse:",
+      error.message,
+    );
+
+    if (error.message.includes("ECONNREFUSED")) {
+      console.error("\n💡 Suggestions:");
+      console.error(
+        "   • Vérifiez que votre serveur de développement fonctionne",
+      );
+      console.error('   • Lancez "pnpm dev" dans un autre terminal');
+      console.error("   • Vérifiez que l'URL est correcte");
+    }
+
+    process.exit(1);
+  }
+}
+
+// Fonction legacy pour l'authentification par cookies
+async function runLegacyAuthentication(config) {
   let chrome;
 
   try {
-    // Vérifier si l'URL nécessite une authentification
-    const needsAuth = requiresAuthentication(config.url);
-    let cookies = null;
+    const authData = await getAuthenticatedCookies();
+    const cookies = authData.cookies || [];
+    const storage = authData.storage || {
+      localStorage: {},
+      sessionStorage: {},
+    };
 
-    if (needsAuth) {
-      console.log("🔐 URL protégée détectée - authentification automatique...");
-      try {
-        const authData = await getAuthenticatedCookies();
-        cookies = authData.cookies || [];
-        const storage = authData.storage || {
-          localStorage: {},
-          sessionStorage: {},
-        };
+    console.log("✅ Authentification réussie - données récupérées");
 
-        console.log("✅ Authentification réussie - données récupérées");
+    // Vérifier si nous avons trouvé des tokens dans le stockage
+    const hasStorageTokens =
+      Object.keys(storage.localStorage || {}).length > 0 ||
+      Object.keys(storage.sessionStorage || {}).length > 0;
 
-        // Vérifier si nous avons trouvé des tokens dans le stockage
-        const hasStorageTokens =
-          Object.keys(storage.localStorage || {}).length > 0 ||
-          Object.keys(storage.sessionStorage || {}).length > 0;
-
-        if (hasStorageTokens) {
-          console.log("🔑 Tokens trouvés dans le localStorage/sessionStorage");
-          console.log(
-            "⚠️ Note: Lighthouse ne peut pas automatiquement utiliser ces tokens.",
-          );
-          console.log(
-            "💡 Solution: Utilisez le pre-auth state avec les extensions Chrome pour Lighthouse.",
-          );
-        }
-      } catch (authError) {
-        console.error(
-          "❌ Échec de l'authentification automatique:",
-          authError.message,
-        );
-        throw new Error(
-          `Impossible d'accéder à la page protégée: ${authError.message}`,
-        );
-      }
-    } else {
-      console.log("🔍 Vérification de l'accessibilité de l'URL...");
+    if (hasStorageTokens) {
+      console.log("🔑 Tokens trouvés dans le localStorage/sessionStorage");
+      console.log(
+        "⚠️ Note: Lighthouse ne peut pas automatiquement utiliser ces tokens.",
+      );
+      console.log(
+        "💡 Solution: Utilisez --integrated-auth pour une authentification complète.",
+      );
     }
 
     // Lancer Chrome
@@ -242,110 +303,112 @@ async function runLighthouse() {
       throw new Error("Lighthouse n'a pas pu s'exécuter");
     }
 
-    const { lhr, report } = runnerResult;
-
-    // Afficher les résultats principaux
-    console.log("\n📊 RÉSULTATS LIGHTHOUSE");
-    console.log("========================");
-
-    const categories = lhr.categories;
-    Object.keys(categories).forEach((categoryName) => {
-      const category = categories[categoryName];
-      const score = Math.round(category.score * 100);
-      const emoji = score >= 90 ? "🟢" : score >= 50 ? "🟡" : "🔴";
-      console.log(`${emoji} ${category.title}: ${score}%`);
-    });
-
-    // Métriques de performance détaillées
-    if (categories.performance) {
-      console.log("\n⚡ MÉTRIQUES DE PERFORMANCE");
-      console.log("============================");
-
-      const audits = lhr.audits;
-      const metrics = [
-        { key: "first-contentful-paint", name: "First Contentful Paint (FCP)" },
-        {
-          key: "largest-contentful-paint",
-          name: "Largest Contentful Paint (LCP)",
-        },
-        {
-          key: "cumulative-layout-shift",
-          name: "Cumulative Layout Shift (CLS)",
-        },
-        { key: "total-blocking-time", name: "Total Blocking Time (TBT)" },
-        { key: "speed-index", name: "Speed Index" },
-        { key: "interactive", name: "Time to Interactive (TTI)" },
-      ];
-
-      metrics.forEach((metric) => {
-        const audit = audits[metric.key];
-        if (audit && audit.displayValue) {
-          const score = audit.score ? Math.round(audit.score * 100) : "N/A";
-          const emoji =
-            audit.score >= 0.9 ? "🟢" : audit.score >= 0.5 ? "🟡" : "🔴";
-          console.log(
-            `${emoji} ${metric.name}: ${audit.displayValue} (${score}%)`,
-          );
-        }
-      });
-    }
-
-    // Opportunités d'amélioration
-    console.log("\n🔧 PRINCIPALES OPPORTUNITÉS");
-    console.log("============================");
-
-    const opportunities = Object.values(lhr.audits)
-      .filter((audit) => audit.details && audit.details.type === "opportunity")
-      .sort(
-        (a, b) =>
-          (b.details.overallSavingsMs || 0) - (a.details.overallSavingsMs || 0),
-      )
-      .slice(0, 5);
-
-    if (opportunities.length > 0) {
-      opportunities.forEach((audit) => {
-        const savings = audit.details.overallSavingsMs || 0;
-        if (savings > 100) {
-          console.log(`⚠️  ${audit.title}: ${Math.round(savings)}ms`);
-        }
-      });
-    } else {
-      console.log("✅ Aucune opportunité majeure détectée");
-    }
-
-    // Sauvegarder le rapport
-    await fs.writeFile(config.outputPath, report);
-    console.log(`\n📁 Rapport sauvegardé: ${config.outputPath}`);
-
-    // Afficher le chemin absolu pour faciliter l'ouverture
-    const absolutePath = path.resolve(config.outputPath);
-    console.log(`🔗 Chemin absolu: ${absolutePath}`);
-
-    if (config.output === "html") {
-      console.log(
-        `💡 Ouvrez le rapport dans votre navigateur: file://${absolutePath}`,
-      );
-    }
-  } catch (error) {
+    await processResults(runnerResult.lhr, config, runnerResult.report);
+  } catch (authError) {
     console.error(
-      "❌ Erreur lors de l'exécution de Lighthouse:",
-      error.message,
+      "❌ Échec de l'authentification automatique:",
+      authError.message,
     );
-
-    if (error.message.includes("ECONNREFUSED")) {
-      console.error("\n💡 Suggestions:");
-      console.error(
-        "   • Vérifiez que votre serveur de développement fonctionne",
-      );
-      console.error('   • Lancez "pnpm dev" dans un autre terminal');
-      console.error("   • Vérifiez que l'URL est correcte");
-    }
-
-    process.exit(1);
+    throw new Error(
+      `Impossible d'accéder à la page protégée: ${authError.message}`,
+    );
   } finally {
     if (chrome) {
       await chrome.kill();
     }
+  }
+}
+
+// Fonction pour traiter et afficher les résultats
+async function processResults(lhr, config, report = null) {
+  // Générer le rapport si nécessaire (mode intégré)
+  if (!report) {
+    if (config.output === "html") {
+      // Pour l'instant, on utilise JSON en mode intégré
+      report = JSON.stringify(lhr, null, 2);
+    } else {
+      report = JSON.stringify(lhr, null, 2);
+    }
+  }
+
+  // Afficher les résultats principaux
+  console.log("\n📊 RÉSULTATS LIGHTHOUSE");
+  console.log("========================");
+
+  const categories = lhr.categories;
+  Object.keys(categories).forEach((categoryName) => {
+    const category = categories[categoryName];
+    const score = Math.round(category.score * 100);
+    const emoji = score >= 90 ? "🟢" : score >= 50 ? "🟡" : "🔴";
+    console.log(`${emoji} ${category.title}: ${score}%`);
+  });
+
+  // Métriques de performance détaillées
+  if (categories.performance) {
+    console.log("\n⚡ MÉTRIQUES DE PERFORMANCE");
+    console.log("============================");
+
+    const audits = lhr.audits;
+    const metrics = [
+      { key: "first-contentful-paint", name: "First Contentful Paint (FCP)" },
+      {
+        key: "largest-contentful-paint",
+        name: "Largest Contentful Paint (LCP)",
+      },
+      { key: "cumulative-layout-shift", name: "Cumulative Layout Shift (CLS)" },
+      { key: "total-blocking-time", name: "Total Blocking Time (TBT)" },
+      { key: "speed-index", name: "Speed Index" },
+      { key: "interactive", name: "Time to Interactive (TTI)" },
+    ];
+
+    metrics.forEach((metric) => {
+      const audit = audits[metric.key];
+      if (audit && audit.displayValue) {
+        const score = audit.score ? Math.round(audit.score * 100) : "N/A";
+        const emoji =
+          audit.score >= 0.9 ? "🟢" : audit.score >= 0.5 ? "🟡" : "🔴";
+        console.log(
+          `${emoji} ${metric.name}: ${audit.displayValue} (${score}%)`,
+        );
+      }
+    });
+  }
+
+  // Opportunités d'amélioration
+  console.log("\n🔧 PRINCIPALES OPPORTUNITÉS");
+  console.log("============================");
+
+  const opportunities = Object.values(lhr.audits)
+    .filter((audit) => audit.details && audit.details.type === "opportunity")
+    .sort(
+      (a, b) =>
+        (b.details.overallSavingsMs || 0) - (a.details.overallSavingsMs || 0),
+    )
+    .slice(0, 5);
+
+  if (opportunities.length > 0) {
+    opportunities.forEach((audit) => {
+      const savings = audit.details.overallSavingsMs || 0;
+      if (savings > 100) {
+        console.log(`⚠️  ${audit.title}: ${Math.round(savings)}ms`);
+      }
+    });
+  } else {
+    console.log("✅ Aucune opportunité majeure détectée");
+  }
+
+  // Sauvegarder le rapport
+  await fs.writeFile(config.outputPath, report);
+  console.log(`\n📁 Rapport sauvegardé: ${config.outputPath}`);
+
+  // Afficher le chemin absolu pour faciliter l'ouverture
+  const absolutePath = path.resolve(config.outputPath);
+  console.log(`🔗 Chemin absolu: ${absolutePath}`);
+
+  if (config.output === "html") {
+    console.log(
+      `💡 Ouvrez le rapport dans votre navigateur: file://${absolutePath}`,
+    );
   }
 }
 

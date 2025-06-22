@@ -29,14 +29,14 @@ const testSuites = [
   },
   {
     name: "SignIn",
-    url: "http://localhost:3000/sign-in",
-    path: "/sign-in",
+    url: "http://localhost:3000/signin",
+    path: "/signin",
   },
   {
     name: "Profile",
     url: "http://localhost:3000/user",
     path: "/user",
-    requiresAuth: true,
+    requiresAuth: true, // 🔐 Authentification requise
   },
 ];
 
@@ -78,11 +78,9 @@ async function runGlobalTestSuite() {
       try {
         // Générer un nom de fichier JSON avec horodatage
         const filename = `${page.name.toLowerCase()}-${device.name}-${timestamp}.json`;
-        const outputPath = path.join(reportsDir, filename);
-
-        // Simuler les arguments de ligne de commande pour JSON
+        const outputPath = path.join(reportsDir, filename); // Simuler les arguments de ligne de commande pour JSON
         const originalArgv = process.argv;
-        process.argv = [
+        const baseArgs = [
           "node",
           "lighthouse-runner.js",
           "--url",
@@ -95,10 +93,13 @@ async function runGlobalTestSuite() {
           outputPath,
         ];
 
-        // Si la page nécessite une authentification, l'ajouter
+        // 🔐 Ajouter l'authentification intégrée pour les pages protégées
         if (page.requiresAuth) {
-          process.argv.push("--auth");
+          baseArgs.push("--integrated-auth");
+          console.log("🔐 Authentification intégrée activée pour le profil");
         }
+
+        process.argv = baseArgs;
 
         // Exécuter le test
         await runLighthouse();

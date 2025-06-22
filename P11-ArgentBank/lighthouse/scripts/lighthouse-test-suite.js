@@ -36,13 +36,13 @@ const testSuites = [
   },
   {
     name: "Connexion - Mobile",
-    url: "http://localhost:3000/sign-in",
+    url: "http://localhost:3000/signin",
     mobile: true,
     outputPath: "../reports/signin-mobile.html",
   },
   {
     name: "Connexion - Desktop",
-    url: "http://localhost:3000/sign-in",
+    url: "http://localhost:3000/signin",
     mobile: false,
     outputPath: "../reports/signin-desktop.html",
   },
@@ -51,12 +51,14 @@ const testSuites = [
     url: "http://localhost:3000/user",
     mobile: true,
     outputPath: "../reports/profile-mobile.html",
+    needsAuth: true, // 🔐 Marqué comme nécessitant l'authentification
   },
   {
     name: "Profil - Desktop",
     url: "http://localhost:3000/user",
     mobile: false,
     outputPath: "../reports/profile-desktop.html",
+    needsAuth: true, // 🔐 Marqué comme nécessitant l'authentification
   },
 ];
 
@@ -95,7 +97,7 @@ async function runTestSuite() {
 
       // Simuler les arguments de ligne de commande
       const originalArgv = process.argv;
-      process.argv = [
+      const baseArgs = [
         "node",
         "lighthouse-runner.js",
         "--url",
@@ -104,6 +106,14 @@ async function runTestSuite() {
         timestampedOutputPath,
         test.mobile ? "--mobile" : "--desktop",
       ];
+
+      // 🔐 Ajouter l'authentification intégrée pour les pages protégées
+      if (test.needsAuth) {
+        baseArgs.push("--integrated-auth");
+        console.log("🔐 Authentification intégrée activée pour cette page");
+      }
+
+      process.argv = baseArgs;
 
       const startTime = Date.now();
       await runLighthouse();

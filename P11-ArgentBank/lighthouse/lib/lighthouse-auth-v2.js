@@ -83,14 +83,16 @@ async function getAuthenticatedCookies(baseUrl = "http://localhost:3000") {
 
   let browser;
   try {
-    // Lancer un navigateur headless
+    // Lancer un navigateur headless avec config CI/CD synchronisée
     browser = await puppeteer.launch({
       headless: true,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
-        "--disable-web-security",
-        "--disable-features=VizDisplayCompositor",
+        "--disable-dev-shm-usage", // ✅ CI important
+        "--disable-gpu", // ✅ CI important
+        "--disable-extensions", // ✅ CI important
+        "--disable-web-security", // Garde pour dev local
       ],
     });
 
@@ -102,7 +104,7 @@ async function getAuthenticatedCookies(baseUrl = "http://localhost:3000") {
     );
 
     console.log("🌐 Navigation vers la page de connexion...");
-    await page.goto(`${baseUrl}/signIn`, {
+    await page.goto(`${baseUrl}/signin`, {
       waitUntil: "networkidle0",
       timeout: 30000,
     });
@@ -223,13 +225,13 @@ async function getAuthenticatedCookies(baseUrl = "http://localhost:3000") {
     console.log("⏳ Attente de la redirection...");
 
     try {
-      await page.waitForFunction(() => window.location.pathname !== "/signIn", {
+      await page.waitForFunction(() => window.location.pathname !== "/signin", {
         timeout: 15000,
       });
     } catch (error) {
       // Vérifier si on est déjà connecté d'une autre manière
       const currentUrl = page.url();
-      if (!currentUrl.includes("/signIn")) {
+      if (!currentUrl.includes("/signin")) {
         console.log("✅ Redirection détectée via URL change");
       } else {
         throw new Error("Pas de redirection après soumission");
@@ -316,12 +318,10 @@ async function getAuthenticatedCookies(baseUrl = "http://localhost:3000") {
  * @returns {boolean} - true si authentification requise
  */
 function requiresAuthentication(url) {
-  // URLs protégées connues
+  // URLs protégées dans l'application ArgentBank
+  // Seule la page /user nécessite une authentification
   const protectedPaths = [
-    "/user/profile",
-    "/profile",
-    "/dashboard",
-    "/account",
+    "/user", // 🔐 Page utilisateur principale (seule route protégée)
   ];
 
   return protectedPaths.some((path) => url.includes(path));
