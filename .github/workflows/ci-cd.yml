@@ -132,8 +132,10 @@ jobs:
           path: P11-ArgentBank/dist/
 
       - name: 🗃️ Generate Prisma client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
+          echo "🔧 Using real DATABASE_URL for Prisma generation (VPS connection)"
           pnpm exec prisma generate
 
       - name: 📦 Install Vercel CLI
@@ -148,15 +150,17 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "=== Deploying Preview ==="
           echo "Current directory: $(pwd)"
           echo "Root Directory configured: P11-ArgentBank"
+          echo "🔧 DATABASE_URL configured: $(if [ -n "$DATABASE_URL" ]; then echo 'YES (pointing to real VPS)'; else echo 'NO'; fi)"
 
-          # Deploy to preview (without --prod) from repo root
+          # Deploy to preview (without --prod) from repo root with environment variables
           cd ..
           echo "Changed to repo root: $(pwd)"
-          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN)
+          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN --env DATABASE_URL="$DATABASE_URL")
           echo "Preview deployed: $PREVIEW_URL"
           echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
           echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
@@ -210,8 +214,10 @@ jobs:
         run: pnpm exec cypress install
 
       - name: 🗃️ Generate Prisma Client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          export DATABASE_URL="postgresql://user:password@localhost:5432/test"
+          echo "🔧 Using real DATABASE_URL for Cypress tests (VPS connection)"
           pnpm exec prisma generate
 
       - name: 🔍 Test Preview API availability
