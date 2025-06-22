@@ -53,5 +53,9 @@ export default defineConfig({
   },
   env: {
     apiUrl: getApiUrl(),
+    // Variables d'environnement pour CI/CD
+    CI: process.env.CI,
+    VERCEL_AUTOMATION_BYPASS_SECRET:
+      process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
   },
 });
