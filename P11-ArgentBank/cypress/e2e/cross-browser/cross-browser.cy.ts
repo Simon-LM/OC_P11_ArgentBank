@@ -215,7 +215,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
         });
 
         // Vérifier la redirection
-        cy.url().should("eq", "http://localhost:3000/");
+        cy.location("pathname").should("eq", "/");
         cy.url().should("not.include", "/user");
 
         // Test d'accessibilité de la page d'accueil
