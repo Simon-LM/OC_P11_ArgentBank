@@ -90,7 +90,6 @@
     "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.13",
     "@types/jest-axe": "^3.5.9",
-    "@types/node": "^22.14.1",
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.6",
     "@types/react-router-dom": "^5.3.3",
