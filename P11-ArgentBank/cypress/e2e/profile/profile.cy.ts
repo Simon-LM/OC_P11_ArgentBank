@@ -29,11 +29,7 @@ describe("Gestion de Profil Utilisateur", () => {
   it("devrait afficher correctement les informations de l'utilisateur sur la page de profil", function () {
     // Injecter axe-core et tester l'accessibilité de la page de profil (ignorer les violations de contraste connues)
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // this.usersData est disponible grâce à l'alias dans beforeEach et l'utilisation de function()
     // Typage explicite de this.usersData
@@ -57,11 +53,7 @@ describe("Gestion de Profil Utilisateur", () => {
     cy.contains("button", "Edit User").click();
 
     // Test d'accessibilité du formulaire d'édition ouvert (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Vérifier que les champs userName, firstName et lastName sont corrects
     // Assurer que userName, firstName et lastName ne sont pas undefined avant de les utiliser
@@ -353,35 +345,19 @@ describe("Gestion de Profil Utilisateur", () => {
   it("devrait être accessible sur la page de profil utilisateur", function () {
     // Injecter axe-core et tester l'accessibilité dédié pour la page de profil (ignorer les violations de contraste connues)
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Tester l'accessibilité du bouton Edit User
     cy.contains("button", "Edit User").focus();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Ouvrir le formulaire d'édition et tester son accessibilité
     cy.contains("button", "Edit User").click();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Tester l'accessibilité des champs de saisie
     cy.get("input#userName").focus();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Tester l'accessibilité des boutons Save/Cancel
     cy.contains("button", "Save").focus();

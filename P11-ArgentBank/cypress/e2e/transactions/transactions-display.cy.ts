@@ -77,11 +77,7 @@ describe("Affichage des Transactions", () => {
     cy.injectAxe();
 
     // Test d'accessibilité de la page des transactions (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     const transactionRowSelector = selectors.transactionRow;
 
@@ -191,21 +187,13 @@ describe("Affichage des Transactions", () => {
     cy.injectAxe();
 
     // Vérifier l'accessibilité globale de la page des transactions
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false }, // Ignorer les violations de contraste connues
-      },
-    });
+    cy.checkA11y();
 
     // Vérifier l'accessibilité spécifique du tableau de transactions
     cy.get(transactionTableSelector).should("be.visible");
 
     // Test d'accessibilité spécifique au tableau
-    cy.checkA11y(transactionTableSelector, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Vérifier que les éléments interactifs sont accessibles au clavier
     cy.get(selectors.accountButton).first().focus().should("be.focused");

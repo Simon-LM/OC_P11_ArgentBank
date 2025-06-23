@@ -52,11 +52,7 @@ describe("Gestion des Comptes Bancaires", () => {
     cy.injectAxe();
 
     // Test d'accessibilité de la page des comptes (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // La page User est déjà chargée après la connexion dans beforeEach
 
@@ -143,19 +139,11 @@ describe("Gestion des Comptes Bancaires", () => {
     cy.injectAxe();
 
     // Test d'accessibilité dédié pour la page des comptes (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Tester l'accessibilité des boutons de compte
     cy.get('button[class*="account"]').first().focus();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Cliquer sur un compte et tester l'accessibilité
     cy.get('button[class*="account"]').first().click();

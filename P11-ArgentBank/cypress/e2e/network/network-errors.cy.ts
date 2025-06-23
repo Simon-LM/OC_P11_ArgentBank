@@ -30,9 +30,7 @@ describe("Gestion des erreurs réseau", () => {
       cy.injectAxe();
 
       // Test d'accessibilité initial
-      cy.checkA11y(undefined, {
-        rules: { "color-contrast": { enabled: false } },
-      });
+      cy.checkA11y();
 
       // Remplir le formulaire avec sélecteurs robustes
       cy.get('[data-cy="email-input"], input#email').type(validUser.email);
@@ -55,9 +53,7 @@ describe("Gestion des erreurs réseau", () => {
       cy.url().should("include", "/signin");
 
       // Test d'accessibilité avec message d'erreur
-      cy.checkA11y(undefined, {
-        rules: { "color-contrast": { enabled: false } },
-      });
+      cy.checkA11y();
     });
 
     it("devrait afficher une erreur quand l'API de profil échoue", function () {

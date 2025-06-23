@@ -291,20 +291,12 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
     // Page d'accueil
     cy.visit("/");
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Page de connexion
     cy.visit("/signin");
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Test simple de navigation au clavier
     cy.get('[data-cy="email-input"], input#email')
@@ -317,11 +309,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
       .type("password");
 
     // Test d'accessibilité final
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
   });
 });
 

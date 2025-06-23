@@ -47,11 +47,7 @@ describe("Déconnexion de l'utilisateur", () => {
     cy.injectAxe();
 
     // Test d'accessibilité de la page utilisateur avant déconnexion (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Utilisation de function() pour accéder à this.usersData si nécessaire, bien que non utilisé ici directement
     // Cliquer sur le bouton de déconnexion (Sign Out)
@@ -63,11 +59,7 @@ describe("Déconnexion de l'utilisateur", () => {
     cy.url().should("not.include", "/user"); // Ne doit plus être sur la page utilisateur
 
     // Test d'accessibilité de la page d'accueil après déconnexion (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Vérifier que le lien "Sign In" est à nouveau visible
     cy.contains("Sign In").should("be.visible");
@@ -89,18 +81,10 @@ describe("Déconnexion de l'utilisateur", () => {
     cy.injectAxe();
 
     // Test d'accessibilité dédié pour la page utilisateur connectée (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Tester l'accessibilité après focus sur les éléments de navigation
     cy.contains("Sign Out").focus();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
   });
 });

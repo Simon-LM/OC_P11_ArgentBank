@@ -68,9 +68,7 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
 
     // Test d'accessibilité
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
   });
 
   it("devrait gérer des noms d'utilisateur très longs", function () {
@@ -89,9 +87,7 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
 
     // Test d'accessibilité
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
   });
 
   it("devrait gérer des transactions avec montants extrêmes", function () {
@@ -146,9 +142,7 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
 
     // Test d'accessibilité avec montants extrêmes
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
   });
 
   it("devrait gérer des données de transaction malformées", function () {
@@ -207,9 +201,7 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
 
     // Test d'accessibilité avec données malformées
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
   });
 
   it("devrait gérer des réponses API avec structure inattendue", function () {
@@ -227,9 +219,7 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
 
     // Test d'accessibilité
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
   });
 
   it("devrait gérer une pagination avec beaucoup de pages", function () {
@@ -287,8 +277,6 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
 
     // Test d'accessibilité
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
   });
 });
