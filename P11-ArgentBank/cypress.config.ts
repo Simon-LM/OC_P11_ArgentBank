@@ -28,7 +28,17 @@ export default defineConfig({
     viewportHeight: 720,
     video: false,
     screenshotOnRunFailure: true,
-    experimentalRunAllSpecs: true,
+    experimentalRunAllSpecs: false, // Disable parallel execution to prevent rate limiting
+    // Rate limiting protection
+    defaultCommandTimeout: 15000,
+    requestTimeout: 15000,
+    responseTimeout: 15000,
+    pageLoadTimeout: 30000,
+    // Retry configuration
+    retries: {
+      runMode: 2, // Retry failed tests in CI
+      openMode: 0, // No retries in interactive mode
+    },
     // Configuration du reporter pour les tests d'accessibilité
     reporter: "mochawesome",
     reporterOptions: {
@@ -39,8 +49,22 @@ export default defineConfig({
       timestamp: "mmddyyyy_HHMMss",
     },
     setupNodeEvents(on, config) {
-      // Configuration pour les tests d'accessibilité et le reporting
-      // Note: Mochawesome sera configuré via les options du reporter
+      // Add rate limiting between spec files
+      on("before:run", () => {
+        console.log("Starting Cypress tests with rate limiting protection");
+      });
+
+      on("after:spec", (_spec, _results) => {
+        // Add delay between spec files to prevent rate limiting
+        return new Promise((resolve) => {
+          const delayMs = isCI ? 3000 : 1000; // 3s in CI, 1s locally
+          console.log(
+            `Waiting ${delayMs}ms before next spec to prevent rate limiting...`,
+          );
+          setTimeout(resolve, delayMs);
+        });
+      });
+
       return config;
     },
   },

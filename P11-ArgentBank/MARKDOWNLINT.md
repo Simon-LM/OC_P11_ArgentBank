@@ -10,6 +10,7 @@ Les règles suivantes ont été désactivées car elles ne posent pas de problè
 
 - **MD010** : Tabulations dans le code (acceptable avec les outils modernes)
 - **MD013** : Longueur de ligne (acceptable sur GitHub avec défilement horizontal)
+- **MD022** : Lignes vides autour des titres (pas critique pour GitHub, peut être trop restrictif)
 - **MD024** : Titres dupliqués (acceptable dans différentes sections)
 - **MD026** : Ponctuation dans les titres (les ":" sont courants et acceptables)
 - **MD031** : Lignes vides autour des blocs de code (pas critique pour la lisibilité)
