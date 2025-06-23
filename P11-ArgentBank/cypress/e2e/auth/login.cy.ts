@@ -30,11 +30,7 @@ describe("Authentification", () => {
     cy.injectAxe();
 
     // Test d'accessibilité de la page de connexion (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     cy.get('[data-cy="email-input"], input#email').type(validUser.email);
     cy.get('[data-cy="password-input"], input#password').type(
@@ -50,11 +46,7 @@ describe("Authentification", () => {
     cy.url().should("include", "/user");
 
     // Test d'accessibilité de la page utilisateur après connexion
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
     // Optionnel : ajouter une vérification plus spécifique de la page utilisateur,
     // par exemple, la présence du nom de l'utilisateur.
     // cy.contains(`Welcome back, ${validUser.firstName}`).should("be.visible");
@@ -77,11 +69,7 @@ describe("Authentification", () => {
     cy.injectAxe();
 
     // Test d'accessibilité de la page de connexion (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     cy.get('[data-cy="email-input"], input#email').type(invalidUser.email);
     cy.get('[data-cy="password-input"], input#password').type(
@@ -103,37 +91,21 @@ describe("Authentification", () => {
       .and("contain.text", "Invalid email or password");
 
     // Test d'accessibilité de la page avec le message d'erreur (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
   });
   it("devrait être accessible sur la page de connexion", () => {
     // Injecter axe-core pour les tests d'accessibilité
     cy.injectAxe();
 
     // Test d'accessibilité dédié pour la page de connexion (ignorer les violations de contraste connues)
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     // Tester l'accessibilité avec focus sur les champs de formulaire
     cy.get("input#email").focus();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
 
     cy.get("input#password").focus();
-    cy.checkA11y(undefined, {
-      rules: {
-        "color-contrast": { enabled: false },
-      },
-    });
+    cy.checkA11y();
   });
 
   // Le test de déconnexion a été déplacé dans cypress/e2e/auth/logout.cy.ts
