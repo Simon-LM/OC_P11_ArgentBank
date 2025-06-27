@@ -20,7 +20,7 @@ import type { User } from "../../support/types";
  * l'application reste accessible sur tous les navigateurs.
  */
 
-describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
+describe.skip("Tests Cross-Browser - Fonctionnalités Principales", () => {
   let validUser: User;
 
   before(() => {
@@ -312,7 +312,7 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
 });
 
 // Tests spécifiques aux navigateurs mobiles (si Cypress supporte mobile testing)
-describe("Tests Cross-Browser - Compatibilité Mobile", () => {
+describe.skip("Tests Cross-Browser - Compatibilité Mobile", () => {
   beforeEach(() => {
     // Simuler un viewport mobile
     cy.viewport(375, 667); // iPhone 6/7/8

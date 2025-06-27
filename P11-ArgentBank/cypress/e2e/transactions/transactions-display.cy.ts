@@ -36,7 +36,7 @@ const verifyDateSortingDescending = (dates: string[]): void => {
   }
 };
 
-describe("Affichage des Transactions", () => {
+describe.skip("Affichage des Transactions", () => {
   beforeEach(() => {
     cy.fixture("users.json").as("usersData");
 

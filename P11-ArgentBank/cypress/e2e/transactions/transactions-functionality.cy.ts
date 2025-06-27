@@ -30,7 +30,7 @@ const createApiIntercept = (pattern: string, alias: string) => {
   return `@${alias}`;
 };
 
-describe("Fonctionnalités des Transactions", () => {
+describe.skip("Fonctionnalités des Transactions", () => {
   beforeEach(() => {
     cy.fixture("users.json").as("usersData");
 

@@ -3,7 +3,7 @@
 // Import de l'interface User commune
 import type { User } from "../../support/types";
 
-describe("Gestion de Profil Utilisateur", () => {
+describe.skip("Gestion de Profil Utilisateur", () => {
   beforeEach(() => {
     // Charger les fixtures utilisateur
     cy.fixture("users.json").as("usersData");

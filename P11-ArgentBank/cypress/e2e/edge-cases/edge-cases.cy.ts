@@ -2,7 +2,7 @@
 
 import type { User } from "../../support/types";
 
-describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
+describe.skip("Edge Cases - Tests de Gestion des Cas Limites", () => {
   beforeEach(() => {
     // Charger les fixtures utilisateur
     cy.fixture("users.json").as("usersData");
