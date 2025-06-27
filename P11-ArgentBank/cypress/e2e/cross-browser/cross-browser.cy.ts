@@ -44,14 +44,29 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
         );
       }
 
-      // Visiter la page de connexion
-      cy.visit("/signin");
-      cy.get("input#email").type(validUser.email);
-      cy.get("input#password").type(validUser.password);
-      cy.get("form").contains("button", "Connect").click();
+      // Utiliser cy.session pour réutiliser la session entre les tests
+      cy.session(
+        [validUser.email, validUser.password],
+        () => {
+          // Visiter la page de connexion
+          cy.visit("/signin");
+          cy.get("input#email").type(validUser.email!);
+          cy.get("input#password").type(validUser.password!);
+          cy.get("form").contains("button", "Connect").click();
+          // Attendre que la redirection vers la page utilisateur soit terminée
+          cy.url().should("include", "/user");
+        },
+        {
+          validate() {
+            // Vérifier que la session est toujours valide
+            cy.visit("/user");
+            cy.url().should("include", "/user");
+          },
+        },
+      );
 
-      // Attendre que la redirection vers la page utilisateur soit terminée
-      cy.url().should("include", "/user");
+      // Visiter la page utilisateur après la session
+      cy.visit("/user");
 
       // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
       if (!validUser.userName) {
@@ -308,7 +323,32 @@ describe("Tests Cross-Browser - Compatibilité Mobile", () => {
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.email && validUser.password) {
-        cy.visit("/signin");
+        // Utiliser cy.session pour réutiliser la session
+        cy.session(
+          [validUser.email, validUser.password, "mobile"],
+          () => {
+            cy.visit("/signin");
+            cy.get('[data-cy="email-input"], input#email')
+              .should("be.visible")
+              .type(validUser.email!);
+            cy.get('[data-cy="password-input"], input#password')
+              .should("be.visible")
+              .type(validUser.password!);
+            cy.get('[data-cy="connect-button"], form button')
+              .contains("Connect")
+              .click();
+            cy.url().should("include", "/user");
+          },
+          {
+            validate() {
+              cy.visit("/user");
+              cy.url().should("include", "/user");
+            },
+          },
+        );
+
+        // Visiter la page utilisateur directement (déjà connecté via session)
+        cy.visit("/user");
 
         // Injecter axe-core pour les tests d'accessibilité après le chargement de la page
         cy.injectAxe();
@@ -320,21 +360,7 @@ describe("Tests Cross-Browser - Compatibilité Mobile", () => {
           },
         });
 
-        // Vérifier que les éléments sont visibles et cliquables sur mobile
-        cy.get('[data-cy="email-input"], input#email')
-          .should("be.visible")
-          .type(validUser.email);
-        cy.get('[data-cy="password-input"], input#password')
-          .should("be.visible")
-          .type(validUser.password);
-        cy.get('[data-cy="login-button"], form')
-          .contains("button", "Connect")
-          .should("be.visible")
-          .click();
-
-        cy.url().should("include", "/user");
-
-        // Vérifier l'affichage des comptes sur mobile
+        // Vérifier l'affichage des comptes sur mobile (on est déjà connecté)
         cy.get('[data-cy="account-card"], button[class*="account"]').should(
           "be.visible",
         );

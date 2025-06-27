@@ -17,11 +17,27 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
         );
       }
 
-      cy.visit("/signin");
-      cy.get("input#email").type(validUser.email);
-      cy.get("input#password").type(validUser.password);
-      cy.get("form").contains("button", "Connect").click();
-      cy.url().should("include", "/user");
+      // Utiliser cy.session pour réutiliser la session entre les tests
+      cy.session(
+        [validUser.email, validUser.password],
+        () => {
+          cy.visit("/signin");
+          cy.get("input#email").type(validUser.email!);
+          cy.get("input#password").type(validUser.password!);
+          cy.get("form").contains("button", "Connect").click();
+          cy.url().should("include", "/user");
+        },
+        {
+          validate() {
+            // Vérifier que la session est toujours valide
+            cy.visit("/user");
+            cy.url().should("include", "/user");
+          },
+        },
+      );
+
+      // Visiter la page utilisateur après la session
+      cy.visit("/user");
 
       // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
       if (!validUser.userName) {

@@ -58,12 +58,29 @@ describe("Affichage des Transactions", () => {
         );
       }
 
-      cy.visit("/signin");
-      cy.get("input#email").type(validUser.email);
-      cy.get("input#password").type(validUser.password);
-      cy.get("form").contains("button", "Connect").click();
-      cy.wait("@loginRequest");
-      cy.url().should("include", "/user");
+      // Utiliser cy.session pour réutiliser la session entre les tests
+      cy.session(
+        [validUser.email, validUser.password],
+        () => {
+          cy.visit("/signin");
+          cy.get("input#email").type(validUser.email!);
+          cy.get("input#password").type(validUser.password!);
+          cy.get("form").contains("button", "Connect").click();
+          cy.wait("@loginRequest");
+          cy.url().should("include", "/user");
+        },
+        {
+          validate() {
+            // Vérifier que la session est toujours valide
+            cy.visit("/user");
+            cy.url().should("include", "/user");
+          },
+        },
+      );
+
+      // Visiter la page utilisateur après la session
+      cy.visit("/user");
+
       // Attend que les données essentielles soient chargées
       cy.wait([
         "@profileRequest",

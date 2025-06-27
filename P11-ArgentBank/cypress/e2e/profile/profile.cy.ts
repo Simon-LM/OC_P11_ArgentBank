@@ -8,7 +8,7 @@ describe("Gestion de Profil Utilisateur", () => {
     // Charger les fixtures utilisateur
     cy.fixture("users.json").as("usersData");
 
-    // Se connecter en tant qu'utilisateur valide avant chaque test de ce bloc
+    // Utiliser cy.session pour éviter les connexions multiples et le rate limiting
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
 
@@ -18,17 +18,30 @@ describe("Gestion de Profil Utilisateur", () => {
         );
       }
 
-      // Visiter la page de connexion
-      cy.visit("/signin");
-      cy.get("input#email").type(validUser.email);
-      cy.get("input#password").type(validUser.password);
-      cy.get("form").contains("button", "Connect").click();
+      // Utiliser cy.session pour réutiliser la session entre les tests
+      cy.session(
+        [validUser.email, validUser.password],
+        () => {
+          // Se connecter seulement UNE FOIS pour tous les tests
+          cy.visit("/signin");
+          cy.get("input#email").type(validUser.email);
+          cy.get("input#password").type(validUser.password);
+          cy.get("form").contains("button", "Connect").click();
+          cy.url().should("include", "/user");
+        },
+        {
+          validate() {
+            // Vérifier que la session est toujours valide
+            cy.visit("/user");
+            cy.url().should("include", "/user");
+          },
+        },
+      );
 
-      // Attendre que la redirection vers la page utilisateur soit terminée
-      cy.url().should("include", "/user");
+      // Visiter la page utilisateur après la session
+      cy.visit("/user");
 
       // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
-      // Assurez-vous que validUser.userName est défini dans vos fixtures
       if (!validUser.userName) {
         throw new Error(
           "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
