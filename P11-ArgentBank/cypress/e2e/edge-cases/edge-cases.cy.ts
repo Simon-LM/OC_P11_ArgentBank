@@ -7,20 +7,31 @@ describe("Edge Cases - Tests de Gestion des Cas Limites", () => {
     // Charger les fixtures utilisateur
     cy.fixture("users.json").as("usersData");
 
-    // Se connecter avant chaque test de ce bloc (même approche que accounts.cy.ts)
+    // Se connecter en tant qu'utilisateur valide avant chaque test de ce bloc
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
-      if (validUser && validUser.email && validUser.password) {
-        cy.visit("/signin");
-        cy.get("input#email").type(validUser.email);
-        cy.get("input#password").type(validUser.password);
-        cy.get("form").contains("button", "Connect").click();
-        cy.url().should("include", "/user");
-      } else {
+
+      if (!validUser || !validUser.email || !validUser.password) {
         throw new Error(
-          "Utilisateur valide non trouvé ou informations manquantes dans les fixtures.",
+          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de edge-cases.",
         );
       }
+
+      cy.visit("/signin");
+      cy.get("input#email").type(validUser.email);
+      cy.get("input#password").type(validUser.password);
+      cy.get("form").contains("button", "Connect").click();
+      cy.url().should("include", "/user");
+
+      // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
+      if (!validUser.userName) {
+        throw new Error(
+          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
+        );
+      }
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
     });
   });
 

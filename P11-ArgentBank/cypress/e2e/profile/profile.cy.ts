@@ -8,21 +8,35 @@ describe("Gestion de Profil Utilisateur", () => {
     // Charger les fixtures utilisateur
     cy.fixture("users.json").as("usersData");
 
-    // Se connecter avant chaque test de ce bloc
+    // Se connecter en tant qu'utilisateur valide avant chaque test de ce bloc
     cy.get<User[]>("@usersData").then((usersData) => {
-      // Utilisation de User[] pour typer usersData
       const validUser = usersData.find((user) => user.type === "valid");
-      if (validUser && validUser.email && validUser.password) {
-        cy.visit("/signin");
-        cy.get("input#email").type(validUser.email);
-        cy.get("input#password").type(validUser.password);
-        cy.get("form").contains("button", "Connect").click();
-        cy.url().should("include", "/user"); // S'assurer que la connexion est réussie et redirigée
-      } else {
+
+      if (!validUser || !validUser.email || !validUser.password) {
         throw new Error(
-          "Utilisateur valide non trouvé ou informations manquantes dans les fixtures.",
+          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de profil.",
         );
       }
+
+      // Visiter la page de connexion
+      cy.visit("/signin");
+      cy.get("input#email").type(validUser.email);
+      cy.get("input#password").type(validUser.password);
+      cy.get("form").contains("button", "Connect").click();
+
+      // Attendre que la redirection vers la page utilisateur soit terminée
+      cy.url().should("include", "/user");
+
+      // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
+      // Assurez-vous que validUser.userName est défini dans vos fixtures
+      if (!validUser.userName) {
+        throw new Error(
+          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
+        );
+      }
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
     });
   });
 

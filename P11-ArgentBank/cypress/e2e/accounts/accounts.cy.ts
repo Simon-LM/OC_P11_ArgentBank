@@ -27,21 +27,32 @@ describe("Gestion des Comptes Bancaires", () => {
     // Charger les fixtures utilisateur
     cy.fixture("users.json").as("usersData");
 
-    // Se connecter avant chaque test de ce bloc
+    // Se connecter en tant qu'utilisateur valide avant chaque test de ce bloc
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
-      if (validUser && validUser.email && validUser.password) {
-        cy.log("🔧 [Test Debug] About to visit /signin");
-        cy.visit("/signin");
-        cy.get("input#email").type(validUser.email);
-        cy.get("input#password").type(validUser.password);
-        cy.get("form").contains("button", "Connect").click();
-        cy.url().should("include", "/user");
-      } else {
+
+      if (!validUser || !validUser.email || !validUser.password) {
         throw new Error(
-          "Utilisateur valide non trouvé ou informations manquantes dans les fixtures.",
+          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de comptes.",
         );
       }
+
+      cy.log("🔧 [Test Debug] About to visit /signin");
+      cy.visit("/signin");
+      cy.get("input#email").type(validUser.email);
+      cy.get("input#password").type(validUser.password);
+      cy.get("form").contains("button", "Connect").click();
+      cy.url().should("include", "/user");
+
+      // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
+      if (!validUser.userName) {
+        throw new Error(
+          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
+        );
+      }
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
     });
     // Potentiellement charger les fixtures des comptes si des vérifications de données spécifiques sont nécessaires
     // cy.fixture("accounts.json").as("accountsData");

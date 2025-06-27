@@ -31,14 +31,38 @@ describe("Tests Cross-Browser - Fonctionnalités Principales", () => {
   });
 
   beforeEach(() => {
-    // Use session-based login to avoid repeated authentication
-    // Use unique session ID for cross-browser tests
-    if (validUser && validUser.email && validUser.password) {
-      cy.loginWithSession(validUser, {
-        sessionId: "cross-browser",
-        cacheAcrossSpecs: false,
-      });
-    }
+    // Charger les fixtures utilisateur
+    cy.fixture("users.json").as("usersData");
+
+    // Se connecter en tant qu'utilisateur valide avant chaque test de ce bloc
+    cy.get<User[]>("@usersData").then((usersData) => {
+      const validUser = usersData.find((user) => user.type === "valid");
+
+      if (!validUser || !validUser.email || !validUser.password) {
+        throw new Error(
+          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de cross-browser.",
+        );
+      }
+
+      // Visiter la page de connexion
+      cy.visit("/signin");
+      cy.get("input#email").type(validUser.email);
+      cy.get("input#password").type(validUser.password);
+      cy.get("form").contains("button", "Connect").click();
+
+      // Attendre que la redirection vers la page utilisateur soit terminée
+      cy.url().should("include", "/user");
+
+      // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
+      if (!validUser.userName) {
+        throw new Error(
+          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
+        );
+      }
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
+    });
   });
 
   it("devrait permettre la connexion utilisateur sur tous les navigateurs", () => {
