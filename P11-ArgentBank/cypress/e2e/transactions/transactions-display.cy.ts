@@ -36,59 +36,30 @@ const verifyDateSortingDescending = (dates: string[]): void => {
   }
 };
 
-describe.skip("Affichage des Transactions", () => {
+describe("Affichage des Transactions", () => {
   beforeEach(() => {
-    cy.fixture("users.json").as("usersData");
+    cy.fixture<User[]>("users.json").as("usersData");
 
     cy.intercept("POST", "/api/user/login").as("loginRequest");
     cy.intercept("GET", "/api/user/profile").as("profileRequest");
     cy.intercept("GET", "/api/accounts").as("accountsRequest");
-    // Intercepte la recherche initiale de transactions qui se produit au chargement de la page User.
-    // Cela peut être appelé avec ou sans accountId initialement.
     cy.intercept("GET", "/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
 
     cy.get<User[]>("@usersData").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
-
       if (!validUser || !validUser.email || !validUser.password) {
         throw new Error(
           "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de transactions-display.",
         );
       }
-
-      // Utiliser cy.session pour réutiliser la session entre les tests
-      cy.session(
-        [validUser.email, validUser.password],
-        () => {
-          cy.visit("/signin");
-          cy.get("input#email").type(validUser.email!);
-          cy.get("input#password").type(validUser.password!);
-          cy.get("form").contains("button", "Connect").click();
-          cy.wait("@loginRequest");
-          cy.url().should("include", "/user");
-        },
-        {
-          validate() {
-            // Vérifier que la session est toujours valide
-            cy.visit("/user");
-            cy.url().should("include", "/user");
-          },
-        },
-      );
-
-      // Visiter la page utilisateur après la session
-      cy.visit("/user");
-
-      // Attend que les données essentielles soient chargées
-      cy.wait([
-        "@profileRequest",
-        "@accountsRequest",
-        "@searchTransactionsRequest",
-      ]);
-
-      // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
+      // Login UI robuste (comme logout.cy.ts)
+      cy.visit("/signin");
+      cy.get("input#email").type(validUser.email);
+      cy.get("input#password").type(validUser.password);
+      cy.get("form").contains("button", "Connect").click();
+      cy.url().should("include", "/user");
       if (!validUser.userName) {
         throw new Error(
           "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
@@ -97,6 +68,13 @@ describe.skip("Affichage des Transactions", () => {
       cy.get(".header__nav-item")
         .contains(validUser.userName)
         .should("be.visible");
+      // Visiter la page utilisateur après login
+      cy.visit("/user");
+      cy.wait([
+        "@profileRequest",
+        "@accountsRequest",
+        "@searchTransactionsRequest",
+      ]);
     });
   });
 

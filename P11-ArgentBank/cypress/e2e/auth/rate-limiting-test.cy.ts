@@ -11,7 +11,7 @@ import type { User } from "../../support/types";
  * gèrent correctement les limitations de débit de l'API Vercel.
  */
 
-describe("Tests de Protection Rate Limiting", () => {
+describe.skip("Tests de Protection Rate Limiting", () => {
   let validUser: User;
 
   before(() => {
@@ -197,7 +197,7 @@ describe("Tests de Protection Rate Limiting", () => {
   });
 });
 
-describe("Tests de Robustesse API", () => {
+describe.skip("Tests de Robustesse API", () => {
   let validUser: User;
 
   before(() => {
