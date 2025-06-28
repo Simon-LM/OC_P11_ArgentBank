@@ -20,6 +20,12 @@ describe("Tests de Protection Rate Limiting", () => {
     });
   });
 
+  beforeEach(() => {
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => win.sessionStorage.clear());
+  });
+
   it("devrait gérer les connexions multiples sans déclencher le rate limiting", () => {
     if (!validUser || !validUser.email || !validUser.password) {
       throw new Error("Valid user not found in fixtures");
