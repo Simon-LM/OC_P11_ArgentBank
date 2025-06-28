@@ -178,6 +178,8 @@ jobs:
     needs: deploy-preview
     if: success()
     runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ needs.deploy-preview.outputs.preview-url }}
 
     # # # # # # # # # #
 
@@ -732,6 +734,8 @@ jobs:
     needs: pa11y-tests # ← ATTEND QUE PA11Y FINISSE
     if: success()
     runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ needs.pa11y-tests.outputs.preview-url }}
     strategy:
       matrix:
         device: [desktop, mobile] # ← GARDE LA MATRICE DEVICE
@@ -766,7 +770,7 @@ jobs:
       - name: ⚡ Run Lighthouse tests (${{ matrix.device }})
 
         env:
-          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          PREVIEW_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           DEVICE: ${{ matrix.device }}
         run: |
@@ -1235,6 +1239,8 @@ jobs:
     needs: lighthouse-tests
     if: success()
     runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ needs.lighthouse-tests.outputs.preview-url }}
 
     steps:
       - name: 📥 Checkout code # ← MANQUE !
@@ -1275,7 +1281,7 @@ jobs:
 
       - name: 🔍 Test Preview API availability
         env:
-          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          PREVIEW_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
           echo "Testing API on Preview: $PREVIEW_URL"
@@ -1298,7 +1304,7 @@ jobs:
       - name: 🏃 Run Cypress E2E tests
 
         env:
-          CYPRESS_BASE_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          CYPRESS_BASE_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           CI: true
         run: |
