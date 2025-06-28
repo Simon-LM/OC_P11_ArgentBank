@@ -29,17 +29,24 @@ describe("Tests de Protection Rate Limiting", () => {
     for (let i = 0; i < 3; i++) {
       cy.log(`Tentative de connexion ${i + 1}/3`);
 
-      // Use smart login with automatic rate limiting protection
-      cy.smartLogin(validUser.email, validUser.password);
-
-      // Verify successful login
+      // Connexion via l'UI (même logique que logout)
+      cy.visitWithBypass("/signin");
+      cy.get('[data-cy="email-input"], input#email')
+        .clear()
+        .type(validUser.email);
+      cy.get('[data-cy="password-input"], input#password')
+        .clear()
+        .type(validUser.password);
+      cy.get(
+        '[data-cy="login-button"], form button:contains("Connect")',
+      ).click();
       cy.url().should("include", "/user");
 
-      // Logout before next attempt
+      // Logout avant la prochaine tentative
       cy.contains("Sign Out").click();
       cy.url().should("not.include", "/user");
 
-      // Small delay between iterations
+      // Petite pause entre les itérations
       cy.wait(1000);
     }
   });
