@@ -57,7 +57,8 @@ describe("Affichage des Transactions", () => {
           "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le before de transactions-display.",
         );
       }
-      cy.visit("/signin");
+      // Remplacer cy.visit par cy.visitWithBypass pour supporter le header Vercel en CI
+      cy.visitWithBypass("/signin");
       cy.get("input#email").type(validUser.email);
       cy.get("input#password").type(validUser.password);
       cy.get("form").contains("button", "Connect").click();
@@ -70,7 +71,7 @@ describe("Affichage des Transactions", () => {
       cy.get(".header__nav-item")
         .contains(validUser.userName)
         .should("be.visible");
-      cy.visit("/user");
+      cy.visitWithBypass("/user");
       cy.wait([
         "@profileRequest",
         "@accountsRequest",
