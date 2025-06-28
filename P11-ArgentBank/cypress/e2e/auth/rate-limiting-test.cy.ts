@@ -39,10 +39,10 @@ describe("Tests de Protection Rate Limiting", () => {
       cy.visitWithBypass("/signin");
       cy.get('[data-cy="email-input"], input#email')
         .clear()
-        .type(validUser.email);
+        .type(validUser.email!);
       cy.get('[data-cy="password-input"], input#password')
         .clear()
-        .type(validUser.password);
+        .type(validUser.password!);
       cy.get(
         '[data-cy="login-button"], form button:contains("Connect")',
       ).click();
@@ -62,12 +62,15 @@ describe("Tests de Protection Rate Limiting", () => {
       throw new Error("Valid user not found in fixtures");
     }
 
-    // First login with session - use unique session ID for rate limiting tests
-    cy.loginWithSession(validUser, {
-      sessionId: "rate-limiting-test",
-      cacheAcrossSpecs: false,
-    });
-    cy.visitWithBypass("/user");
+    // Connexion via l'UI (pas de loginWithSession)
+    cy.visitWithBypass("/signin");
+    cy.get('[data-cy="email-input"], input#email')
+      .clear()
+      .type(validUser.email!);
+    cy.get('[data-cy="password-input"], input#password')
+      .clear()
+      .type(validUser.password!);
+    cy.get('[data-cy="login-button"], form button:contains("Connect")').click();
     cy.url().should("include", "/user");
 
     // Navigate away and back - should not trigger new login
@@ -96,10 +99,10 @@ describe("Tests de Protection Rate Limiting", () => {
     // This should trigger our rate limiting handling
     cy.get('[data-cy="email-input"], input#email')
       .clear()
-      .type(validUser.email);
+      .type(validUser.email!);
     cy.get('[data-cy="password-input"], input#password')
       .clear()
-      .type(validUser.password);
+      .type(validUser.password!);
     cy.get('[data-cy="login-button"], form button:contains("Connect")').click();
 
     // Wait for the intercepted request
@@ -124,14 +127,33 @@ describe("Tests de Protection Rate Limiting", () => {
       }).as("loginWithHeader");
 
       if (validUser && validUser.email && validUser.password) {
-        cy.smartLogin(validUser.email, validUser.password);
+        // Connexion via l'UI pour déclencher l'intercept
+        cy.visitWithBypass("/signin");
+        cy.get('[data-cy="email-input"], input#email')
+          .clear()
+          .type(validUser.email!);
+        cy.get('[data-cy="password-input"], input#password')
+          .clear()
+          .type(validUser.password!);
+        cy.get(
+          '[data-cy="login-button"], form button:contains("Connect")',
+        ).click();
         cy.wait("@loginWithHeader");
       }
     } else {
       cy.log("Running in local environment - no Vercel bypass needed");
-      // Just verify normal login works
+      // Connexion UI classique
       if (validUser && validUser.email && validUser.password) {
-        cy.smartLogin(validUser.email, validUser.password);
+        cy.visitWithBypass("/signin");
+        cy.get('[data-cy="email-input"], input#email')
+          .clear()
+          .type(validUser.email!);
+        cy.get('[data-cy="password-input"], input#password')
+          .clear()
+          .type(validUser.password!);
+        cy.get(
+          '[data-cy="login-button"], form button:contains("Connect")',
+        ).click();
         cy.url().should("include", "/user");
       }
     }
@@ -144,17 +166,30 @@ describe("Tests de Protection Rate Limiting", () => {
 
     const startTime = Date.now();
 
-    // First login
-    cy.smartLogin(validUser.email, validUser.password);
+    // First login via UI
+    cy.visitWithBypass("/signin");
+    cy.get('[data-cy="email-input"], input#email')
+      .clear()
+      .type(validUser.email!);
+    cy.get('[data-cy="password-input"], input#password')
+      .clear()
+      .type(validUser.password!);
+    cy.get('[data-cy="login-button"], form button:contains("Connect")').click();
     cy.contains("Sign Out").click();
 
-    // Second login - should include automatic delay
-    cy.smartLogin(validUser.email, validUser.password);
+    // Second login via UI (simulate rate-limiting delay)
+    cy.visitWithBypass("/signin");
+    cy.get('[data-cy="email-input"], input#email')
+      .clear()
+      .type(validUser.email!);
+    cy.get('[data-cy="password-input"], input#password')
+      .clear()
+      .type(validUser.password!);
+    cy.get('[data-cy="login-button"], form button:contains("Connect")').click();
 
     cy.then(() => {
       const endTime = Date.now();
       const totalTime = endTime - startTime;
-
       // Should take at least the minimum interval (2000ms) plus execution time
       expect(totalTime).to.be.greaterThan(2000);
       cy.log(`Total time for rate-limited logins: ${totalTime}ms`);
@@ -189,10 +224,10 @@ describe("Tests de Robustesse API", () => {
 
     cy.get('[data-cy="email-input"], input#email')
       .clear()
-      .type(validUser.email);
+      .type(validUser.email!);
     cy.get('[data-cy="password-input"], input#password')
       .clear()
-      .type(validUser.password);
+      .type(validUser.password!);
     cy.get('[data-cy="login-button"], form button:contains("Connect")').click();
 
     cy.wait("@malformedJWT");
@@ -220,10 +255,10 @@ describe("Tests de Robustesse API", () => {
     // This should timeout and be handled gracefully
     cy.get('[data-cy="email-input"], input#email')
       .clear()
-      .type(validUser.email);
+      .type(validUser.email!);
     cy.get('[data-cy="password-input"], input#password')
       .clear()
-      .type(validUser.password);
+      .type(validUser.password!);
     cy.get('[data-cy="login-button"], form button:contains("Connect")').click();
 
     // Wait with extended timeout for our slow response
