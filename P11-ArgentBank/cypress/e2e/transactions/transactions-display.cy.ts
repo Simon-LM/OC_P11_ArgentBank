@@ -71,7 +71,20 @@ describe("Affichage des Transactions", () => {
       cy.get(".header__nav-item")
         .contains(validUser.userName)
         .should("be.visible");
-      // Suppression du cy.visitWithBypass("/user") pour préserver la session et le JWT
+      // Vérification du JWT après login
+      cy.window().then((win) => {
+        const jwt =
+          win.localStorage.getItem("jwt") || win.sessionStorage.getItem("jwt");
+        cy.log("JWT after login:", jwt);
+        // Correction du lint : placer l'expect dans un bloc
+        if (jwt) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          expect(jwt, "JWT should be present after login").to.be.a("string").and
+            .not.be.empty;
+        } else {
+          throw new Error("JWT is missing after login");
+        }
+      });
       cy.wait([
         "@profileRequest",
         "@accountsRequest",
