@@ -37,9 +37,12 @@ const verifyDateSortingDescending = (dates: string[]): void => {
 };
 
 describe("Affichage des Transactions", () => {
-  beforeEach(() => {
-    cy.fixture<User[]>("users.json").as("usersData");
+  before(() => {
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => win.sessionStorage.clear());
 
+    cy.fixture<User[]>("users.json").as("usersData");
     cy.intercept("POST", "/api/user/login").as("loginRequest");
     cy.intercept("GET", "/api/user/profile").as("profileRequest");
     cy.intercept("GET", "/api/accounts").as("accountsRequest");
@@ -51,10 +54,9 @@ describe("Affichage des Transactions", () => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (!validUser || !validUser.email || !validUser.password) {
         throw new Error(
-          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de transactions-display.",
+          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le before de transactions-display.",
         );
       }
-      // Login UI robuste (comme logout.cy.ts)
       cy.visit("/signin");
       cy.get("input#email").type(validUser.email);
       cy.get("input#password").type(validUser.password);
@@ -68,7 +70,6 @@ describe("Affichage des Transactions", () => {
       cy.get(".header__nav-item")
         .contains(validUser.userName)
         .should("be.visible");
-      // Visiter la page utilisateur après login
       cy.visit("/user");
       cy.wait([
         "@profileRequest",
