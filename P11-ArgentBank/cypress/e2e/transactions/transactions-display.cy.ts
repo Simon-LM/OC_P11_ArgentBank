@@ -71,7 +71,7 @@ describe("Affichage des Transactions", () => {
       cy.get(".header__nav-item")
         .contains(validUser.userName)
         .should("be.visible");
-      cy.visitWithBypass("/user");
+      // Suppression du cy.visitWithBypass("/user") pour préserver la session et le JWT
       cy.wait([
         "@profileRequest",
         "@accountsRequest",
