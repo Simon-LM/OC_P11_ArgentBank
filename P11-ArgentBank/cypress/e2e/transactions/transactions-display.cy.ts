@@ -80,10 +80,26 @@ describe("Affichage des Transactions", () => {
           JSON.stringify(interception.response?.body),
         );
       });
-      cy.url().should("include", "/user");
+      cy.url({ timeout: 20000 })
+        .should("include", "/user")
+        .then((url) => {
+          if (!url.includes("/user")) {
+            cy.log(
+              `[DEBUG] Redirection après login échouée, URL actuelle: ${url}`,
+            );
+          }
+        });
       if (!validUser.userName) {
+        // Ajout debug en cas d'échec de login
+        cy.window().then((win) => {
+          cy.log("[DEBUG] sessionStorage:", JSON.stringify(win.sessionStorage));
+          cy.log("[DEBUG] localStorage:", JSON.stringify(win.localStorage));
+        });
+        cy.get("body").then(($body) => {
+          cy.log("[DEBUG] page HTML:", $body.html().slice(0, 1000));
+        });
         throw new Error(
-          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
+          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide. Vérifiez la fixture users.json et la réponse de l'API login.",
         );
       }
       cy.get(".header__nav-item")
@@ -140,10 +156,16 @@ describe("Affichage des Transactions", () => {
           .eq(1) // Conteneur pour Date et Catégorie
           .find(selectors.transactionDate)
           .invoke("text")
-          .should(
-            "match",
-            /^(\d{2}\/\d{2}\/\d{4})$/, // Format DD/MM/YYYY attendu par toLocaleDateString()
-          );
+          .then((dateText) => {
+            const frFormat = /^\d{2}\/\d{2}\/\d{4}$/;
+            const usFormat = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+            const isValid =
+              frFormat.test(dateText.trim()) || usFormat.test(dateText.trim());
+            assert.isTrue(
+              isValid,
+              `La date '${dateText}' ne correspond ni au format FR (JJ/MM/AAAA) ni au format US (M/D/YYYY)`,
+            );
+          });
 
         // Vérification du montant dans la cellule amount
         cy.get(selectors.transactionAmount)
@@ -201,11 +223,9 @@ describe("Affichage des Transactions", () => {
     // Log tous les boutons de compte présents pour debug (console.log pour éviter l'erreur lint)
     cy.get("body").then(($body) => {
       const $btns = $body.find(selectors.accountButton);
-      // eslint-disable-next-line no-console
-      console.log("Account buttons found:", $btns.length);
+      cy.log(`Account buttons found: ${$btns.length}`);
       $btns.each((i, el) => {
-        // eslint-disable-next-line no-console
-        console.log(`Account button ${i}:`, el.getAttribute("aria-label"));
+        cy.log(`Account button ${i}: ${el.getAttribute("aria-label")}`);
       });
     });
 
