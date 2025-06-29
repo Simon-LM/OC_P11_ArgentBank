@@ -59,9 +59,31 @@ describe("Affichage des Transactions", () => {
       }
       // Remplacer cy.visit par cy.visitWithBypass pour supporter le header Vercel en CI
       cy.visitWithBypass("/signin");
+      // Étapes de debug pour CI : vérifier l'URL, prendre une capture, vérifier la visibilité du champ email
+      cy.url().should("include", "/signin");
+      cy.screenshot("debug-signin-page");
+      cy.get("input#email").should("be.visible");
       cy.get("input#email").type(validUser.email);
       cy.get("input#password").type(validUser.password);
       cy.get("form").contains("button", "Connect").click();
+      // Log du localStorage/sessionStorage juste après le clic (avant la redirection)
+      cy.window().then((win) => {
+        cy.log(
+          "[DEBUG] localStorage après login:",
+          JSON.stringify(win.localStorage),
+        );
+        cy.log(
+          "[DEBUG] sessionStorage après login:",
+          JSON.stringify(win.sessionStorage),
+        );
+      });
+      // Vérifier la réponse de l'API login
+      cy.wait("@loginRequest").then((interception) => {
+        cy.log(
+          "[DEBUG] login response:",
+          JSON.stringify(interception.response?.body),
+        );
+      });
       cy.url().should("include", "/user");
       if (!validUser.userName) {
         throw new Error(
@@ -71,19 +93,13 @@ describe("Affichage des Transactions", () => {
       cy.get(".header__nav-item")
         .contains(validUser.userName)
         .should("be.visible");
-      // Vérification du JWT après login
+      // Vérification de la présence du token d'authentification après login
       cy.window().then((win) => {
-        const jwt =
-          win.localStorage.getItem("jwt") || win.sessionStorage.getItem("jwt");
-        cy.log("JWT after login:", jwt);
-        // Correction du lint : placer l'expect dans un bloc
-        if (jwt) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          expect(jwt, "JWT should be present after login").to.be.a("string").and
-            .not.be.empty;
-        } else {
-          throw new Error("JWT is missing after login");
-        }
+        const authToken = win.sessionStorage.getItem("authToken");
+        cy.log("authToken after login:", authToken);
+        cy.wrap(authToken, { log: false })
+          .should("be.a", "string")
+          .and("not.be.empty");
       });
       cy.wait([
         "@profileRequest",
