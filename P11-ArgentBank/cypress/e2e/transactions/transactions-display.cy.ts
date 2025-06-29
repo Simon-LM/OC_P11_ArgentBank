@@ -79,6 +79,26 @@ describe("Affichage des Transactions", () => {
           "[DEBUG] login response:",
           JSON.stringify(interception.response?.body),
         );
+        // Vérification du code retour
+        const status = interception.response?.statusCode;
+        if (status !== 200) {
+          throw new Error(
+            `[LOGIN ERROR] Login API returned status ${status}. Body: ${JSON.stringify(interception.response?.body)}`,
+          );
+        }
+        // Vérification du token JWT
+        const token =
+          interception.response?.body?.body?.token ||
+          interception.response?.body?.token;
+        if (
+          !token ||
+          typeof token !== "string" ||
+          !/^([\w-]+\.){2}[\w-]+$/.test(token)
+        ) {
+          throw new Error(
+            `[LOGIN ERROR] Token JWT manquant ou malformé: ${token}`,
+          );
+        }
       });
       cy.url({ timeout: 20000 })
         .should("include", "/user")
@@ -111,6 +131,12 @@ describe("Affichage des Transactions", () => {
         cy.wrap(authToken, { log: false })
           .should("be.a", "string")
           .and("not.be.empty");
+        // Vérification structure JWT
+        const isJwt = /^([\w-]+\.){2}[\w-]+$/.test(authToken || "");
+        assert.isTrue(
+          isJwt,
+          `[LOGIN ERROR] authToken in sessionStorage is not a valid JWT: ${authToken}`,
+        );
       });
       cy.wait([
         "@profileRequest",
