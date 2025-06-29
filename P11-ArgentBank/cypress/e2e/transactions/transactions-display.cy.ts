@@ -241,6 +241,17 @@ describe("Affichage des Transactions", () => {
     // Vérifier que le bouton existe avant de continuer
     cy.get(accountSelector).should("exist");
 
+    // Debug : vérifier le token juste avant le clic sur le compte
+    cy.window().then((win) => {
+      const authToken = win.sessionStorage.getItem("authToken");
+      cy.log("[DEBUG] authToken before account click:", authToken);
+      assert.isTrue(
+        typeof authToken === "string" &&
+          /^([\w-]+\.){2}[\w-]+$/.test(authToken || ""),
+        "[DEBUG] authToken is missing or malformed before account click",
+      );
+    });
+
     // Cliquer sur le compte (Checking x8949)
     cy.get(accountSelector)
       .should("be.visible")
