@@ -30,60 +30,105 @@ const createApiIntercept = (pattern: string, alias: string) => {
   return `@${alias}`;
 };
 
-describe.skip("Fonctionnalités des Transactions", () => {
+describe("Fonctionnalités des Transactions", () => {
   beforeEach(() => {
-    cy.fixture("users.json").as("usersData");
-
+    // Intercepts doivent être définis avant cy.session pour être utilisables dans la session
     cy.intercept("POST", "/api/user/login").as("loginRequest");
     cy.intercept("GET", "/api/user/profile").as("profileRequest");
     cy.intercept("GET", "/api/accounts").as("accountsRequest");
-    // Intercepte la recherche initiale de transactions qui se produit au chargement de la page User.
-    // Cela peut être appelé avec ou sans accountId initialement.
     cy.intercept("GET", "/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
-
-    cy.get<User[]>("@usersData").then((usersData) => {
-      const validUser = usersData.find((user) => user.type === "valid");
-
-      if (!validUser || !validUser.email || !validUser.password) {
-        throw new Error(
-          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de transactions-functionality.",
-        );
-      }
-
-      // Utiliser cy.session pour réutiliser la session entre les tests
-      cy.session(
-        [validUser.email, validUser.password],
-        () => {
-          cy.visit("/signin");
-          cy.get("input#email").type(validUser.email!);
-          cy.get("input#password").type(validUser.password!);
-          cy.get("form").contains("button", "Connect").click();
-          cy.wait("@loginRequest");
-          cy.url().should("include", "/user");
-        },
-        {
-          validate() {
-            // Vérifier que la session est toujours valide
-            cy.visit("/user");
-            cy.url().should("include", "/user");
-          },
-        },
-      );
-
-      // Visiter la page utilisateur après la session
-      cy.visit("/user");
-
-      // Attend que les données essentielles soient chargées
-      cy.wait([
-        "@profileRequest",
-        "@accountsRequest",
-        "@searchTransactionsRequest",
-      ]);
-
-      // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
-      if (!validUser.userName) {
+    // Attendre un peu avant chaque login pour éviter le rate limiting Vercel gratuit
+    cy.wait(2000);
+    let validUser: User | undefined;
+    cy.session("validUserSession", () => {
+      cy.fixture<User[]>("users.json").as("usersData");
+      cy.get<User[]>("@usersData").then((usersData) => {
+        validUser = usersData.find((user) => user.type === "valid");
+        if (!validUser || !validUser.email || !validUser.password) {
+          throw new Error(
+            "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de transactions-functionality.",
+          );
+        }
+        cy.visitWithBypass("/signin");
+        cy.url().should("include", "/signin");
+        cy.screenshot("debug-signin-page");
+        cy.get("input#email").should("be.visible");
+        cy.get("input#email").type(validUser.email);
+        cy.get("input#password").type(validUser.password);
+        cy.get("form").contains("button", "Connect").click();
+        cy.wait("@loginRequest").then((interception) => {
+          cy.log(
+            "[DEBUG] login response:",
+            JSON.stringify(interception.response?.body),
+          );
+          const status = interception.response?.statusCode;
+          if (status !== 200) {
+            throw new Error(
+              `[LOGIN ERROR] Login API returned status ${status}. Body: ${JSON.stringify(interception.response?.body)}`,
+            );
+          }
+          const token =
+            interception.response?.body?.body?.token ||
+            interception.response?.body?.token;
+          if (
+            !token ||
+            typeof token !== "string" ||
+            !/^([\w-]+\.){2}[\w-]+$/.test(token)
+          ) {
+            throw new Error(
+              `[LOGIN ERROR] Token JWT manquant ou malformé: ${token}`,
+            );
+          }
+        });
+        cy.url({ timeout: 20000 })
+          .should("include", "/user")
+          .then((url) => {
+            if (!url.includes("/user")) {
+              cy.log(
+                `[DEBUG] Redirection après login échouée, URL actuelle: ${url}`,
+              );
+            }
+          });
+        if (!validUser.userName) {
+          cy.window().then((win) => {
+            cy.log(
+              "[DEBUG] sessionStorage:",
+              JSON.stringify(win.sessionStorage),
+            );
+            cy.log("[DEBUG] localStorage:", JSON.stringify(win.localStorage));
+          });
+          cy.get("body").then(($body) => {
+            cy.log("[DEBUG] page HTML:", $body.html().slice(0, 1000));
+          });
+          throw new Error(
+            "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide. Vérifiez la fixture users.json et la réponse de l'API login.",
+          );
+        }
+        cy.get(".header__nav-item")
+          .contains(validUser.userName)
+          .should("be.visible");
+        cy.window().then((win) => {
+          const authToken = win.sessionStorage.getItem("authToken");
+          cy.log("authToken after login:", authToken);
+          cy.wrap(authToken, { log: false })
+            .should("be.a", "string")
+            .and("not.be.empty");
+          const isJwt = /^([\w-]+\.){2}[\w-]+$/.test(authToken || "");
+          assert.isTrue(
+            isJwt,
+            `[LOGIN ERROR] authToken in sessionStorage is not a valid JWT: ${authToken}`,
+          );
+        });
+      });
+    });
+    // Visiter la page utilisateur après la session
+    cy.visit("/user");
+    // Vérifier que le nom d'utilisateur est affiché dans l'en-tête après la session
+    cy.fixture<User[]>("users.json").then((usersData) => {
+      validUser = usersData.find((user) => user.type === "valid");
+      if (!validUser || !validUser.userName) {
         throw new Error(
           "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
         );
