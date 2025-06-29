@@ -11,7 +11,7 @@ import type { User } from "../../support/types";
  * gèrent correctement les limitations de débit de l'API Vercel.
  */
 
-describe.skip("Tests de Protection Rate Limiting", () => {
+describe("Tests de Protection Rate Limiting", () => {
   let validUser: User;
 
   before(() => {
@@ -21,9 +21,111 @@ describe.skip("Tests de Protection Rate Limiting", () => {
   });
 
   beforeEach(() => {
-    cy.clearCookies();
-    cy.clearLocalStorage();
-    cy.window().then((win) => win.sessionStorage.clear());
+    // Intercepts doivent être définis avant cy.session pour être utilisables dans la session
+    cy.intercept("POST", "/api/user/login").as("loginRequest");
+    cy.intercept("GET", "/api/user/profile").as("profileRequest");
+    cy.intercept("GET", "/api/accounts").as("accountsRequest");
+    cy.intercept("GET", "/api/transactions/search*").as(
+      "searchTransactionsRequest",
+    );
+    // Attendre un peu avant chaque login pour éviter le rate limiting Vercel gratuit
+    cy.wait(2000);
+    let sessionUser: User | undefined;
+    cy.session("validUserSession", () => {
+      cy.fixture<User[]>("users.json").as("usersData");
+      cy.get<User[]>("@usersData").then((usersData) => {
+        sessionUser = usersData.find((user) => user.type === "valid");
+        if (!sessionUser || !sessionUser.email || !sessionUser.password) {
+          throw new Error(
+            "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de rate-limiting-test.",
+          );
+        }
+        cy.visitWithBypass("/signin");
+        cy.url().should("include", "/signin");
+        cy.screenshot("debug-signin-page");
+        cy.get("input#email").should("be.visible");
+        cy.get("input#email").type(sessionUser.email);
+        cy.get("input#password").type(sessionUser.password);
+        cy.get("form").contains("button", "Connect").click();
+        cy.wait("@loginRequest").then((interception) => {
+          cy.log(
+            "[DEBUG] login response:",
+            JSON.stringify(interception.response?.body),
+          );
+          const status = interception.response?.statusCode;
+          if (status !== 200) {
+            throw new Error(
+              `[LOGIN ERROR] Login API returned status ${status}. Body: ${JSON.stringify(interception.response?.body)}`,
+            );
+          }
+          const token =
+            interception.response?.body?.body?.token ||
+            interception.response?.body?.token;
+          if (
+            !token ||
+            typeof token !== "string" ||
+            !/^([\w-]+\.){2}[\w-]+$/.test(token)
+          ) {
+            throw new Error(
+              `[LOGIN ERROR] Token JWT manquant ou malformé: ${token}`,
+            );
+          }
+        });
+        cy.url({ timeout: 20000 })
+          .should("include", "/user")
+          .then((url) => {
+            if (!url.includes("/user")) {
+              cy.log(
+                `[DEBUG] Redirection après login échouée, URL actuelle: ${url}`,
+              );
+            }
+          });
+        if (!sessionUser.userName) {
+          cy.window().then((win) => {
+            cy.log(
+              "[DEBUG] sessionStorage:",
+              JSON.stringify(win.sessionStorage),
+            );
+            cy.log("[DEBUG] localStorage:", JSON.stringify(win.localStorage));
+          });
+          cy.get("body").then(($body) => {
+            cy.log("[DEBUG] page HTML:", $body.html().slice(0, 1000));
+          });
+          throw new Error(
+            "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide. Vérifiez la fixture users.json et la réponse de l'API login.",
+          );
+        }
+        cy.get(".header__nav-item")
+          .contains(sessionUser.userName)
+          .should("be.visible");
+        cy.window().then((win) => {
+          const authToken = win.sessionStorage.getItem("authToken");
+          cy.log("authToken after login:", authToken);
+          cy.wrap(authToken, { log: false })
+            .should("be.a", "string")
+            .and("not.be.empty");
+          const isJwt = /^([\w-]+\.){2}[\w-]+$/.test(authToken || "");
+          assert.isTrue(
+            isJwt,
+            `[LOGIN ERROR] authToken in sessionStorage is not a valid JWT: ${authToken}`,
+          );
+        });
+      });
+    });
+    // Visiter la page utilisateur après la session
+    cy.visit("/user");
+    // Vérifier que le nom d'utilisateur est affiché dans l'en-tête après la session
+    cy.fixture<User[]>("users.json").then((usersData) => {
+      validUser = usersData.find((user) => user.type === "valid")!;
+      if (!validUser || !validUser.userName) {
+        throw new Error(
+          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
+        );
+      }
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
+    });
   });
 
   it("devrait gérer les connexions multiples sans déclencher le rate limiting", () => {
@@ -197,12 +299,82 @@ describe.skip("Tests de Protection Rate Limiting", () => {
   });
 });
 
-describe.skip("Tests de Robustesse API", () => {
+describe("Tests de Robustesse API", () => {
   let validUser: User;
 
   before(() => {
     cy.fixture("users.json").then((usersData: User[]) => {
       validUser = usersData.find((user) => user.type === "valid") as User;
+    });
+  });
+
+  beforeEach(() => {
+    // Intercepts pour login
+    cy.intercept("POST", "/api/user/login").as("loginRequest");
+    cy.intercept("GET", "/api/user/profile").as("profileRequest");
+    cy.intercept("GET", "/api/accounts").as("accountsRequest");
+    cy.intercept("GET", "/api/transactions/search*").as(
+      "searchTransactionsRequest",
+    );
+    cy.wait(2000);
+    let sessionUser: User | undefined;
+    cy.session("validUserSession", () => {
+      cy.fixture<User[]>("users.json").as("usersData");
+      cy.get<User[]>("@usersData").then((usersData) => {
+        sessionUser = usersData.find((user) => user.type === "valid");
+        if (!sessionUser || !sessionUser.email || !sessionUser.password) {
+          throw new Error(
+            "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de robustesse API.",
+          );
+        }
+        cy.visitWithBypass("/signin");
+        cy.url().should("include", "/signin");
+        cy.get("input#email").should("be.visible");
+        cy.get("input#email").type(sessionUser.email);
+        cy.get("input#password").type(sessionUser.password);
+        cy.get("form").contains("button", "Connect").click();
+        cy.wait("@loginRequest").then((interception) => {
+          const status = interception.response?.statusCode;
+          if (status !== 200) {
+            throw new Error(
+              `[LOGIN ERROR] Login API returned status ${status}. Body: ${JSON.stringify(interception.response?.body)}`,
+            );
+          }
+          const token =
+            interception.response?.body?.body?.token ||
+            interception.response?.body?.token;
+          if (
+            !token ||
+            typeof token !== "string" ||
+            !/^([\w-]+\.){2}[\w-]+$/.test(token)
+          ) {
+            throw new Error(
+              `[LOGIN ERROR] Token JWT manquant ou malformé: ${token}`,
+            );
+          }
+        });
+        cy.url({ timeout: 20000 }).should("include", "/user");
+        if (!sessionUser.userName) {
+          throw new Error(
+            "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
+          );
+        }
+        cy.get(".header__nav-item")
+          .contains(sessionUser.userName)
+          .should("be.visible");
+      });
+    });
+    cy.visit("/user");
+    cy.fixture<User[]>("users.json").then((usersData) => {
+      validUser = usersData.find((user) => user.type === "valid")!;
+      if (!validUser || !validUser.userName) {
+        throw new Error(
+          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
+        );
+      }
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
     });
   });
 
@@ -232,8 +404,17 @@ describe.skip("Tests de Robustesse API", () => {
 
     cy.wait("@malformedJWT");
 
-    // The application should handle this gracefully
-    // (specific behavior depends on your application's error handling)
+    // Vérification : l'application doit afficher un message d'erreur ou rester sur la page de connexion
+    cy.url().should("include", "/signin");
+    cy.get("body").then(($body) => {
+      // Vérifie qu'un message d'erreur est visible (adapter le sélecteur selon l'app)
+      if (
+        $body.text().toLowerCase().includes("jwt") ||
+        $body.text().toLowerCase().includes("token")
+      ) {
+        cy.log("[DEBUG] Erreur JWT détectée dans la page");
+      }
+    });
   });
 
   it("devrait gérer les timeouts d'API", () => {
@@ -263,5 +444,16 @@ describe.skip("Tests de Robustesse API", () => {
 
     // Wait with extended timeout for our slow response
     cy.wait("@slowLogin", { timeout: 20000 });
+
+    // Vérification : l'application doit afficher un message d'erreur ou rester sur la page de connexion
+    cy.url().should("include", "/signin");
+    cy.get("body").then(($body) => {
+      if (
+        $body.text().toLowerCase().includes("timeout") ||
+        $body.text().toLowerCase().includes("délai")
+      ) {
+        cy.log("[DEBUG] Timeout détecté dans la page");
+      }
+    });
   });
 });
