@@ -1307,6 +1307,7 @@ jobs:
           CYPRESS_BASE_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
           CI: true
         run: |
+          cd P11-ArgentBank
           pnpm exec cypress run --spec "cypress/e2e/accounts.cy.ts,cypress/e2e/login.cy.ts,cypress/e2e/logout.cy.ts,cypress/e2e/profile.cy.ts,cypress/e2e/transactions-functionality.cy.ts,cypress/e2e/transactions-display.cy.ts"
 
       - name: 📤 Upload Cypress artifacts
