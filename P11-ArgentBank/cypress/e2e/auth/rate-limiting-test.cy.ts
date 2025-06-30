@@ -31,7 +31,7 @@ describe("Tests de Protection Rate Limiting", () => {
     // Attendre un peu avant chaque login pour éviter le rate limiting Vercel gratuit
     cy.wait(2000);
     let sessionUser: User | undefined;
-    cy.session("validUserSession", () => {
+    cy.session("validUserSession-rate-limiting", () => {
       cy.fixture<User[]>("users.json").as("usersData");
       cy.get<User[]>("@usersData").then((usersData) => {
         sessionUser = usersData.find((user) => user.type === "valid");
@@ -318,7 +318,7 @@ describe("Tests de Robustesse API", () => {
     );
     cy.wait(2000);
     let sessionUser: User | undefined;
-    cy.session("validUserSession", () => {
+    cy.session("validUserSession-robustesse", () => {
       cy.fixture<User[]>("users.json").as("usersData");
       cy.get<User[]>("@usersData").then((usersData) => {
         sessionUser = usersData.find((user) => user.type === "valid");

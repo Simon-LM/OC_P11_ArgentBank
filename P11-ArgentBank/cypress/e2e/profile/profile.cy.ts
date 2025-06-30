@@ -3,311 +3,226 @@
 // Import de l'interface User commune
 import type { User } from "../../support/types";
 
-describe.skip("Gestion de Profil Utilisateur", () => {
-  beforeEach(() => {
-    // Charger les fixtures utilisateur
-    cy.fixture("users.json").as("usersData");
+describe("Gestion de Profil Utilisateur", () => {
+  let validUser: User | undefined;
 
-    // Utiliser cy.session pour éviter les connexions multiples et le rate limiting
-    cy.get<User[]>("@usersData").then((usersData) => {
-      const validUser = usersData.find((user) => user.type === "valid");
-
-      if (!validUser || !validUser.email || !validUser.password) {
+  before(function () {
+    cy.fixture<User[]>("users.json").then((usersData) => {
+      this.usersData = usersData;
+      validUser = usersData.find((user) => user.type === "valid");
+      if (
+        !validUser ||
+        !validUser.email ||
+        !validUser.password ||
+        !validUser.userName
+      ) {
         throw new Error(
-          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de profil.",
+          "Fixture users.json: utilisateur valide incomplet ou manquant",
         );
       }
-
-      // Utiliser cy.session pour réutiliser la session entre les tests
-      cy.session(
-        [validUser.email, validUser.password],
-        () => {
-          // Se connecter seulement UNE FOIS pour tous les tests
-          cy.visit("/signin");
-          cy.get("input#email").type(validUser.email);
-          cy.get("input#password").type(validUser.password);
-          cy.get("form").contains("button", "Connect").click();
-          cy.url().should("include", "/user");
-        },
-        {
-          validate() {
-            // Vérifier que la session est toujours valide
-            cy.visit("/user");
-            cy.url().should("include", "/user");
-          },
-        },
-      );
-
-      // Visiter la page utilisateur après la session
-      cy.visit("/user");
-
-      // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
-      if (!validUser.userName) {
-        throw new Error(
-          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
-        );
-      }
-      cy.get(".header__nav-item")
-        .contains(validUser.userName)
-        .should("be.visible");
     });
   });
 
+  beforeEach(function () {
+    cy.intercept("POST", "/api/user/login").as("loginRequest");
+    cy.intercept("GET", "/api/user/profile").as("profileRequest");
+    cy.intercept("GET", "/api/accounts").as("accountsRequest");
+    cy.intercept("GET", "/api/transactions/search*").as(
+      "searchTransactionsRequest",
+    );
+    cy.wait(2000);
+    cy.session("validUserSession", () => {
+      cy.visitWithBypass("/signin");
+      cy.url().should("include", "/signin");
+      cy.get("input#email")
+        .should("be.visible")
+        .type(validUser!.email as string);
+      cy.get("input#password").type(validUser!.password as string);
+      cy.get("form").contains("button", "Connect").click();
+      cy.wait("@loginRequest").then((interception) => {
+        const status = interception.response?.statusCode;
+        if (status !== 200) {
+          throw new Error(`[LOGIN ERROR] Login API returned status ${status}`);
+        }
+        const token =
+          interception.response?.body?.body?.token ||
+          interception.response?.body?.token;
+        if (
+          !token ||
+          typeof token !== "string" ||
+          !/^([\w-]+\.){2}[\w-]+$/.test(token)
+        ) {
+          throw new Error(
+            `[LOGIN ERROR] Token JWT manquant ou malformé: ${token}`,
+          );
+        }
+      });
+      cy.url({ timeout: 20000 }).should("include", "/user");
+      cy.get(".header__nav-item")
+        .contains(validUser!.userName as string)
+        .should("be.visible");
+      cy.window().then((win) => {
+        const authToken = win.sessionStorage.getItem("authToken");
+        // Correction : expression attendue
+        void expect(authToken, "authToken in sessionStorage").to.be.a("string")
+          .and.not.be.empty;
+        const isJwt = /^([\w-]+\.){2}[\w-]+$/.test(authToken || "");
+        assert.isTrue(
+          isJwt,
+          `[LOGIN ERROR] authToken in sessionStorage is not un JWT: ${authToken}`,
+        );
+      });
+    });
+    cy.visit("/user");
+    cy.url().should("include", "/user");
+    cy.get(".header__nav-item")
+      .contains(validUser!.userName as string)
+      .should("be.visible");
+  });
+
   it("devrait afficher correctement les informations de l'utilisateur sur la page de profil", function () {
-    // Injecter axe-core et tester l'accessibilité de la page de profil (ignorer les violations de contraste connues)
     cy.injectAxe();
     cy.checkA11y();
-
-    // this.usersData est disponible grâce à l'alias dans beforeEach et l'utilisation de function()
-    // Typage explicite de this.usersData
-    const usersData = this.usersData as User[];
-    const validUser = usersData.find((user) => user.type === "valid");
-
-    if (!validUser) {
-      throw new Error(
-        "Utilisateur valide non trouvé dans les fixtures pour le test.",
-      );
-    }
-
+    const user = validUser!;
     // La page /User est celle où le profil est affiché ou modifiable
-    // Vérifier que le titre "Welcome back" est présent
-    cy.contains("h2", "Welcome back").should("be.visible"); // Titre de la page User
-
-    // Vérifier la présence du bouton "Edit User"
+    cy.contains("h2", "Welcome back").should("be.visible");
     cy.contains("button", "Edit User").should("be.visible");
-
-    // Cliquer sur "Edit User" pour faire apparaître les champs du formulaire
     cy.contains("button", "Edit User").click();
-
-    // Test d'accessibilité du formulaire d'édition ouvert (ignorer les violations de contraste connues)
     cy.checkA11y();
-
-    // Vérifier que les champs userName, firstName et lastName sont corrects
-    // Assurer que userName, firstName et lastName ne sont pas undefined avant de les utiliser
-    if (validUser.userName) {
-      cy.get("input#userName").should("have.value", validUser.userName);
+    if (user.userName) {
+      cy.get("input#userName").should("have.value", user.userName);
     } else {
-      // Si userName peut être optionnel et que le champ doit être vide, ajustez ici
       cy.get("input#userName").should("have.value", "");
     }
-    if (validUser.firstName) {
+    if (user.firstName) {
       cy.get("input#firstName")
-        .should("have.value", validUser.firstName)
-        .and("have.attr", "readonly"); // Changé de .and("be.disabled")
+        .should("have.value", user.firstName)
+        .and("have.attr", "readonly");
     } else {
       cy.get("input#firstName")
         .should("have.value", "")
-        .and("have.attr", "readonly"); // Changé de .and("be.disabled")
+        .and("have.attr", "readonly");
     }
-    if (validUser.lastName) {
+    if (user.lastName) {
       cy.get("input#lastName")
-        .should("have.value", validUser.lastName)
-        .and("have.attr", "readonly"); // Changé de .and("be.disabled")
+        .should("have.value", user.lastName)
+        .and("have.attr", "readonly");
     } else {
       cy.get("input#lastName")
         .should("have.value", "")
-        .and("have.attr", "readonly"); // Changé de .and("be.disabled")
+        .and("have.attr", "readonly");
     }
-
-    // Optionnel: vérifier d'autres informations si elles sont présentes
   });
 
   it("devrait permettre à un utilisateur de modifier son nom d'utilisateur avec succès", function () {
-    const usersData = this.usersData as User[];
-    const validUser = usersData.find((user) => user.type === "valid");
-
-    if (!validUser || !validUser.userName) {
-      // Ajout d'une vérification pour validUser.userName
+    const user = validUser!;
+    if (!user.userName) {
       throw new Error(
         "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test de modification.",
       );
     }
-
-    const originalUserName = validUser.userName;
-    const newUserName = "IronMan76"; // Nouveau nom d'utilisateur pour le test
-
-    // S'assurer que newUserName est différent de originalUserName pour que le test soit significatif
+    const originalUserName = user.userName;
+    const newUserName = "IronMan76";
     if (originalUserName === newUserName) {
       throw new Error(
         "Le nouveau nom d'utilisateur doit être différent de l'original pour ce test.",
       );
     }
-
-    // 1. Cliquer sur "Edit User" pour ouvrir le formulaire
     cy.contains("button", "Edit User").click();
-
-    // 2. Modifier le nom d'utilisateur
     cy.get("input#userName").clear().type(newUserName);
-
-    // 3. Cliquer sur "Save"
     cy.contains("button", "Save").click();
-
-    // 4. Vérifier que le formulaire est fermé (le bouton "Edit User" est de nouveau visible)
     cy.contains("button", "Edit User").should("be.visible");
-
-    // 5. Vérifier que le nom d'utilisateur dans l'en-tête est mis à jour avec le nouveau nom
     cy.get(".header__nav-item span").should("contain.text", newUserName);
-
-    // --- Remettre le nom d'utilisateur à son état original ---
     cy.log("Réinitialisation du nom d'utilisateur à sa valeur d'origine.");
     cy.contains("button", "Edit User").click();
     cy.get("input#userName").clear().type(originalUserName);
     cy.contains("button", "Save").click();
-    cy.contains("button", "Edit User").should("be.visible"); // Confirmer la fermeture du formulaire
-    // Vérifier que le nom dans l'en-tête est revenu à l'original
+    cy.contains("button", "Edit User").should("be.visible");
     cy.get(".header__nav-item span").should("contain.text", originalUserName);
     cy.log("Nom d'utilisateur réinitialisé.");
   });
 
   it("devrait annuler la modification du nom d'utilisateur", function () {
-    const usersData = this.usersData as User[];
-    const validUser = usersData.find((user) => user.type === "valid");
-
-    if (!validUser || !validUser.userName) {
+    const user = validUser!;
+    if (!user.userName) {
       throw new Error(
         "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test d'annulation.",
       );
     }
-
-    const originalUserName = validUser.userName;
+    const originalUserName = user.userName;
     const tempUserName = "TempUserName123";
-
-    // S'assurer que tempUserName est différent de originalUserName
     if (originalUserName === tempUserName) {
       throw new Error(
         "Le nom d'utilisateur temporaire doit être différent de l'original pour ce test.",
       );
     }
-
-    // 1. Cliquer sur "Edit User" pour ouvrir le formulaire
     cy.contains("button", "Edit User").click();
-
-    // 2. Modifier le nom d'utilisateur (temporairement)
     cy.get("input#userName").clear().type(tempUserName);
-
-    // 3. Cliquer sur "Cancel"
     cy.contains("button", "Cancel").click();
-
-    // 4. Vérifier que le formulaire est fermé
     cy.contains("button", "Edit User").should("be.visible");
     cy.contains("button", "Save").should("not.exist");
     cy.contains("button", "Cancel").should("not.exist");
-
-    // 5. Vérifier que le nom d'utilisateur dans l'en-tête n'a pas changé
     cy.get(".header__nav-item span").should("contain.text", originalUserName);
-
-    // 6. Rouvrir le formulaire et vérifier que le champ userName contient toujours l'originalUserName
     cy.contains("button", "Edit User").click();
     cy.get("input#userName").should("have.value", originalUserName);
-    // Optionnel: refermer le formulaire proprement
     cy.contains("button", "Cancel").click();
   });
 
-  // Test pour la validation du formulaire (par exemple, nom d'utilisateur vide)
   it("devrait afficher une erreur si le nom d'utilisateur est soumis vide", function () {
-    const usersData = this.usersData as User[];
-    const validUser = usersData.find((user) => user.type === "valid");
-
-    if (!validUser || !validUser.userName) {
+    const user = validUser!;
+    if (!user.userName) {
       throw new Error(
         "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test de validation.",
       );
     }
-
-    // 1. Cliquer sur "Edit User" pour ouvrir le formulaire
     cy.contains("button", "Edit User").click();
-
-    // 2. Vider le champ du nom d'utilisateur
     cy.get("input#userName").clear();
-
-    // 3. Cliquer sur "Save"
     cy.contains("button", "Save").click();
-
-    // 4. Vérifier qu'un message d'erreur est affiché
     cy.get("input#userName")
-      .siblings("p[role='alert']") // Sélecteur corrigé
+      .siblings("p[role='alert']")
       .should("be.visible")
-      .and("contain.text", "User name is required"); // Message d'erreur corrigé
-
-    // 5. Vérifier que le formulaire est toujours en mode édition
+      .and("contain.text", "User name is required");
     cy.contains("button", "Save").should("be.visible");
     cy.get("input#userName").should("be.visible");
-
-    // 6. Vérifier que le nom d'utilisateur dans l'en-tête n'a pas changé
-    if (validUser && validUser.userName) {
-      cy.get(".header__nav-item span").should(
-        "contain.text",
-        validUser.userName,
-      );
-    }
-
-    // 7. Nettoyage : Annuler pour fermer le formulaire et s'assurer que l'état est propre
+    cy.get(".header__nav-item span").should("contain.text", user.userName);
     cy.contains("button", "Cancel").click();
-    cy.contains("button", "Edit User").should("be.visible"); // Confirmer la fermeture du formulaire
+    cy.contains("button", "Edit User").should("be.visible");
   });
 
   it("devrait afficher une erreur si le nom d'utilisateur dépasse 10 caractères", function () {
-    const usersData = this.usersData as User[];
-    const validUser = usersData.find((user) => user.type === "valid");
-
-    if (!validUser || !validUser.userName) {
+    const user = validUser!;
+    if (!user.userName) {
       throw new Error(
         "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test de validation.",
       );
     }
-
-    const longUserName = "ThisIsTooLong"; // 13 caractères
-
-    // 1. Cliquer sur "Edit User" pour ouvrir le formulaire
+    const longUserName = "ThisIsTooLong";
     cy.contains("button", "Edit User").click();
-
-    // 2. Entrer un nom d'utilisateur trop long
     cy.get("input#userName").clear().type(longUserName);
-
-    // 3. Cliquer sur "Save"
     cy.contains("button", "Save").click();
-
-    // 4. Vérifier qu'un message d'erreur est affiché
     cy.get("input#userName")
       .siblings("p[role='alert']")
       .should("be.visible")
       .and("contain.text", "User name cannot exceed 10 characters");
-
-    // 5. Vérifier que le formulaire est toujours en mode édition
     cy.contains("button", "Save").should("be.visible");
     cy.get("input#userName").should("be.visible");
-    cy.get("input#userName").should("have.value", longUserName); // Le champ garde la valeur erronée
-
-    // 6. Vérifier que le nom d'utilisateur dans l'en-tête n'a pas changé
-    cy.get(".header__nav-item span").should("contain.text", validUser.userName);
-
-    // 7. Nettoyage : Annuler pour fermer le formulaire
+    cy.get("input#userName").should("have.value", longUserName);
+    cy.get(".header__nav-item span").should("contain.text", user.userName);
     cy.contains("button", "Cancel").click();
-    cy.contains("button", "Edit User").should("be.visible"); // Confirmer la fermeture
+    cy.contains("button", "Edit User").should("be.visible");
   });
 
   it("devrait afficher une erreur si le nom d'utilisateur contient des caractères non autorisés", function () {
-    const usersData = this.usersData as User[];
-    const validUser = usersData.find((user) => user.type === "valid");
-
-    if (!validUser || !validUser.userName) {
+    const user = validUser!;
+    if (!user.userName) {
       throw new Error(
         "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test de validation.",
       );
     }
-
-    const invalidCharUserName = "User!Name"; // Modifié pour être < 10 caractères et invalide
-
-    // 1. Cliquer sur "Edit User" pour ouvrir le formulaire
+    const invalidCharUserName = "User!Name";
     cy.contains("button", "Edit User").click();
-
-    // 2. Entrer un nom d'utilisateur avec des caractères non autorisés
     cy.get("input#userName").clear().type(invalidCharUserName);
-
-    // 3. Cliquer sur "Save"
     cy.contains("button", "Save").click();
-
-    // 4. Vérifier qu'un message d'erreur est affiché
     cy.get("input#userName")
       .siblings("p[role='alert']")
       .should("be.visible")
@@ -315,58 +230,35 @@ describe.skip("Gestion de Profil Utilisateur", () => {
         "contain.text",
         "Only letters, numbers, underscore and hyphen are allowed",
       );
-
-    // 5. Vérifier que le formulaire est toujours en mode édition
     cy.contains("button", "Save").should("be.visible");
     cy.get("input#userName").should("be.visible");
     cy.get("input#userName").should("have.value", invalidCharUserName);
-
-    // 6. Vérifier que le nom d'utilisateur dans l'en-tête n'a pas changé
-    cy.get(".header__nav-item span").should("contain.text", validUser.userName);
-
-    // 7. Nettoyage : Annuler pour fermer le formulaire
+    cy.get(".header__nav-item span").should("contain.text", user.userName);
     cy.contains("button", "Cancel").click();
-    cy.contains("button", "Edit User").should("be.visible"); // Confirmer la fermeture
+    cy.contains("button", "Edit User").should("be.visible");
   });
 
   it("devrait afficher une erreur si le nom d'utilisateur est sur liste noire", function () {
-    const usersData = this.usersData as User[];
-    const validUser = usersData.find((user) => user.type === "valid");
-
-    if (!validUser || !validUser.userName) {
+    const user = validUser!;
+    if (!user.userName) {
       throw new Error(
         "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test de validation.",
       );
     }
-
     const blacklistedUserName = "admin";
-
-    // 1. Cliquer sur "Edit User" pour ouvrir le formulaire
     cy.contains("button", "Edit User").click();
-
-    // 2. Entrer un nom d'utilisateur sur liste noire
     cy.get("input#userName").clear().type(blacklistedUserName);
-
-    // 3. Cliquer sur "Save"
     cy.contains("button", "Save").click();
-
-    // 4. Vérifier qu'un message d'erreur est affiché
     cy.get("input#userName")
       .siblings("p[role='alert']")
       .should("be.visible")
       .and("contain.text", "Username contains inappropriate words or terms");
-
-    // 5. Vérifier que le formulaire est toujours en mode édition
     cy.contains("button", "Save").should("be.visible");
     cy.get("input#userName").should("be.visible");
     cy.get("input#userName").should("have.value", blacklistedUserName);
-
-    // 6. Vérifier que le nom d'utilisateur dans l'en-tête n'a pas changé
-    cy.get(".header__nav-item span").should("contain.text", validUser.userName);
-
-    // 7. Nettoyage : Annuler pour fermer le formulaire
+    cy.get(".header__nav-item span").should("contain.text", user.userName);
     cy.contains("button", "Cancel").click();
-    cy.contains("button", "Edit User").should("be.visible"); // Confirmer la fermeture
+    cy.contains("button", "Edit User").should("be.visible");
   });
 
   it("devrait être accessible sur la page de profil utilisateur", function () {
