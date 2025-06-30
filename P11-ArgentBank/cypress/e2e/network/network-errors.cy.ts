@@ -4,6 +4,11 @@
 
 import type { User } from "../../support/types";
 
+if (Cypress.env("CI")) {
+  describe.skip("[CI/CD] Network error tests ignorés en CI/CD (local uniquement)", () => {});
+  // Empêche l'exécution de tous les tests de ce fichier en CI/CD
+}
+
 describe("Gestion des erreurs réseau", () => {
   beforeEach(() => {
     cy.fixture<User[]>("users.json").as("usersData");

@@ -1307,8 +1307,16 @@ jobs:
           CYPRESS_BASE_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
           CI: true
         run: |
-          cd P11-ArgentBank
-          pnpm exec cypress run --spec "cypress/e2e/accounts.cy.ts,cypress/e2e/login.cy.ts,cypress/e2e/logout.cy.ts,cypress/e2e/profile.cy.ts,cypress/e2e/transactions-functionality.cy.ts,cypress/e2e/transactions-display.cy.ts"
+          echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"Add commentMore actions
+          echo "🔧 [Debug] API will be accessible at: $CYPRESS_BASE_URL/api"
+          echo "🔧 [Debug] CI environment: $CI"
+          echo "🔧 [Debug] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
+
+          # Additional wait to ensure stability
+          echo "Final wait for application stability..."
+          sleep 5
+
+          pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
 
       - name: 📤 Upload Cypress artifacts
         uses: actions/upload-artifact@v4
