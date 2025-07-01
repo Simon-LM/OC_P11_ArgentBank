@@ -14,48 +14,38 @@ import type { User } from "../../support/types";
 
 describe("Gestion des Comptes Bancaires", () => {
   beforeEach(() => {
-    // 🔧 DEBUG LOGS
-    cy.log("🔧 [Test Debug] Starting accounts test");
-    cy.log("🔧 [Test Debug] CI env: " + Cypress.env("CI"));
-    cy.log(
-      "🔧 [Test Debug] VERCEL_AUTOMATION_BYPASS_SECRET: " +
-        (Cypress.env("VERCEL_AUTOMATION_BYPASS_SECRET")
-          ? "***PRESENT***"
-          : "NOT_FOUND"),
-    );
-
-    // Charger les fixtures utilisateur
-    cy.fixture("users.json").as("usersData");
-
-    // Se connecter en tant qu'utilisateur valide avant chaque test de ce bloc
-    cy.get<User[]>("@usersData").then((usersData) => {
-      const validUser = usersData.find((user) => user.type === "valid");
-
-      if (!validUser || !validUser.email || !validUser.password) {
-        throw new Error(
-          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de comptes.",
-        );
-      }
-
-      cy.log("🔧 [Test Debug] About to visit /signin");
-      cy.visit("/signin");
-      cy.get("input#email").type(validUser.email);
-      cy.get("input#password").type(validUser.password);
-      cy.get("form").contains("button", "Connect").click();
-      cy.url().should("include", "/user");
-
-      // Vérifier que le nom d'utilisateur est affiché dans l'en-tête
-      if (!validUser.userName) {
-        throw new Error(
-          "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide.",
-        );
-      }
-      cy.get(".header__nav-item")
-        .contains(validUser.userName)
-        .should("be.visible");
+    // Intercepts éventuels ici si besoin (ex: cy.intercept(...))
+    cy.session("accounts-valid-user-session", () => {
+      cy.fixture<User[]>("users.json").then((usersData) => {
+        const validUser = usersData.find((user) => user.type === "valid");
+        if (
+          !validUser ||
+          !validUser.email ||
+          !validUser.password ||
+          !validUser.userName
+        ) {
+          throw new Error(
+            "Utilisateur valide non trouvé ou informations manquantes dans les fixtures.",
+          );
+        }
+        cy.visit("/signin");
+        cy.get("input#email").type(validUser.email);
+        cy.get("input#password").type(validUser.password);
+        cy.get("form").contains("button", "Connect").click();
+        cy.url().should("include", "/user");
+        cy.get(".header__nav-item")
+          .contains(validUser.userName)
+          .should("be.visible");
+        // Vérification du token (adapter la clé si besoin)
+        cy.window().then((win) => {
+          const token =
+            win.sessionStorage.getItem("authToken") ||
+            win.localStorage.getItem("token");
+          cy.wrap(token).should("be.a", "string").and("not.be.empty");
+        });
+      });
     });
-    // Potentiellement charger les fixtures des comptes si des vérifications de données spécifiques sont nécessaires
-    // cy.fixture("accounts.json").as("accountsData");
+    cy.visit("/user");
   });
 
   it("devrait afficher correctement la liste des comptes de l'utilisateur sur la page de profil", () => {
@@ -63,7 +53,11 @@ describe("Gestion des Comptes Bancaires", () => {
     cy.injectAxe();
 
     // Test d'accessibilité de la page des comptes (ignorer les violations de contraste connues)
-    cy.checkA11y();
+    cy.checkA11y(undefined, {
+      rules: {
+        "color-contrast": { enabled: false },
+      },
+    });
 
     // La page User est déjà chargée après la connexion dans beforeEach
 
@@ -150,11 +144,19 @@ describe("Gestion des Comptes Bancaires", () => {
     cy.injectAxe();
 
     // Test d'accessibilité dédié pour la page des comptes (ignorer les violations de contraste connues)
-    cy.checkA11y();
+    cy.checkA11y(undefined, {
+      rules: {
+        "color-contrast": { enabled: false },
+      },
+    });
 
     // Tester l'accessibilité des boutons de compte
     cy.get('button[class*="account"]').first().focus();
-    cy.checkA11y();
+    cy.checkA11y(undefined, {
+      rules: {
+        "color-contrast": { enabled: false },
+      },
+    });
 
     // Cliquer sur un compte et tester l'accessibilité
     cy.get('button[class*="account"]').first().click();

@@ -216,6 +216,7 @@ if (Cypress.env("CI")) {
       });
 
       it("devrait afficher un indicateur de chargement pendant les requêtes lentes", function () {
+        // Ce test vérifie que l'UI affiche un état de chargement lors d'une authentification lente
         const validUser = (this.usersData as User[]).find(
           (user) => user.type === "valid",
         );
@@ -245,16 +246,18 @@ if (Cypress.env("CI")) {
           .contains("button", "Connect")
           .click();
 
-        // Vérifier l'état de chargement du bouton
+        // Vérifier que le bouton affiche l'état de chargement pendant la requête
         cy.get('[data-cy="login-button"], form button').should(
           "contain",
           "Authenticating...",
         );
+        // Optionnel : vérifier qu'on reste sur la page de connexion
+        cy.url().should("include", "/signin");
 
         // Attendre la réponse
         cy.wait("@slowLogin");
 
-        // Vérifier que le chargement se termine
+        // Vérifier que le bouton revient à l'état normal
         cy.get('[data-cy="login-button"], form button').should(
           "contain",
           "Connect",
