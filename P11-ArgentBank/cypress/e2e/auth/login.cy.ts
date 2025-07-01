@@ -46,15 +46,11 @@ describe("Authentification", () => {
   it("devrait permettre à un utilisateur de se connecter avec des identifiants valides", () => {
     // Injecter axe-core pour les tests d'accessibilité
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
     // La session Cypress a déjà connecté l'utilisateur, il suffit de tester l'UI
     cy.get('[data-cy="login-button"], form').should("not.exist");
     cy.url().should("include", "/user");
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
     // Optionnel : vérifier le header si besoin
     // cy.get('.header__nav-item').should('be.visible');
   });
@@ -69,9 +65,7 @@ describe("Authentification", () => {
       }
       cy.visit("/signin");
       cy.injectAxe();
-      cy.checkA11y(undefined, {
-        rules: { "color-contrast": { enabled: false } },
-      });
+      cy.checkA11y();
       cy.get('[data-cy="email-input"], input#email').type(invalidUser.email);
       cy.get('[data-cy="password-input"], input#password').type(
         invalidUser.password,
@@ -84,27 +78,19 @@ describe("Authentification", () => {
       cy.get("#error-message")
         .should("be.visible")
         .and("contain.text", "Invalid email or password");
-      cy.checkA11y(undefined, {
-        rules: { "color-contrast": { enabled: false } },
-      });
+      cy.checkA11y();
     });
   });
   it("devrait être accessible sur la page de connexion", () => {
     cy.visit("/signin");
     // Injecter axe-core pour les tests d'accessibilité
     cy.injectAxe();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
     // Tester l'accessibilité avec focus sur les champs de formulaire
     cy.get("input#email").focus();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
     cy.get("input#password").focus();
-    cy.checkA11y(undefined, {
-      rules: { "color-contrast": { enabled: false } },
-    });
+    cy.checkA11y();
   });
 
   // Le test de déconnexion a été déplacé dans cypress/e2e/auth/logout.cy.ts

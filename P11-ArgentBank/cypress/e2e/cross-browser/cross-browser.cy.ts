@@ -188,22 +188,14 @@ if (Cypress.env("CI")) {
       cy.injectAxe();
 
       // Test d'accessibilité de la page de connexion
-      cy.checkA11y(undefined, {
-        rules: {
-          "color-contrast": { enabled: false },
-        },
-      });
+      cy.checkA11y();
 
       // Use smart login with rate limiting protection
       if (validUser && validUser.email && validUser.password) {
         cy.smartLogin(validUser.email, validUser.password);
 
         // Test d'accessibilité de la page utilisateur
-        cy.checkA11y(undefined, {
-          rules: {
-            "color-contrast": { enabled: false },
-          },
-        });
+        cy.checkA11y();
 
         // Vérifier l'affichage du nom d'utilisateur
         if (validUser.userName) {
@@ -217,11 +209,7 @@ if (Cypress.env("CI")) {
     it("devrait afficher les comptes bancaires correctement sur tous les navigateurs", () => {
       ensureUserIsLoggedInAndOnDashboard(validUser);
       cy.injectAxe();
-      cy.checkA11y(
-        undefined,
-        { rules: { "color-contrast": { enabled: false } } },
-        true,
-      );
+      cy.checkA11y();
       cy.get('[data-cy="user-dashboard"], div[class*="user-page"]').should(
         "be.visible",
       );
@@ -231,11 +219,7 @@ if (Cypress.env("CI")) {
       );
 
       // Test d'accessibilité des comptes
-      cy.checkA11y(undefined, {
-        rules: {
-          "color-contrast": { enabled: false },
-        },
-      });
+      cy.checkA11y();
 
       // Vérifier l'interaction avec les comptes
       cy.get(
@@ -249,11 +233,7 @@ if (Cypress.env("CI")) {
     it("devrait permettre la recherche de transactions sur tous les navigateurs", () => {
       ensureUserIsLoggedInAndOnDashboard(validUser);
       cy.injectAxe();
-      cy.checkA11y(
-        undefined,
-        { rules: { "color-contrast": { enabled: false } } },
-        true,
-      );
+      cy.checkA11y();
       cy.get(
         '[data-cy="transactions-table"], table[class*="transaction-table"]',
       ).should("be.visible");
@@ -305,11 +285,7 @@ if (Cypress.env("CI")) {
       });
       cy.location("pathname").should("eq", "/");
       cy.url().should("not.include", "/user");
-      cy.checkA11y(
-        undefined,
-        { rules: { "color-contrast": { enabled: false } } },
-        true,
-      );
+      cy.checkA11y();
       cy.get("body").then(($body) => {
         if (
           $body.find('[data-cy="signin-link"], [data-cy="sign-in-link"]')
@@ -357,11 +333,7 @@ if (Cypress.env("CI")) {
         );
 
         // Test d'accessibilité en cas d'erreur
-        cy.checkA11y(undefined, {
-          rules: {
-            "color-contrast": { enabled: false },
-          },
-        });
+        cy.checkA11y();
       }
     });
 
@@ -476,11 +448,7 @@ if (Cypress.env("CI")) {
               .contains(validUser.userName!)
               .should("be.visible");
             cy.injectAxe();
-            cy.checkA11y(
-              undefined,
-              { rules: { "color-contrast": { enabled: false } } },
-              true,
-            );
+            cy.checkA11y();
             cy.get('[data-cy="account-card"], button[class*="account"]').should(
               "be.visible",
             );

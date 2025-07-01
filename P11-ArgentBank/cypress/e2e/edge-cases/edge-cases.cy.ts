@@ -71,9 +71,7 @@ if (Cypress.env("CI")) {
 
       // Test d'accessibilité
       cy.injectAxe();
-      cy.checkA11y(undefined, {
-        rules: { "color-contrast": { enabled: false } },
-      });
+      cy.checkA11y();
     });
 
     it("devrait gérer des noms d'utilisateur très longs", function () {
@@ -92,9 +90,7 @@ if (Cypress.env("CI")) {
 
       // Test d'accessibilité
       cy.injectAxe();
-      cy.checkA11y(undefined, {
-        rules: { "color-contrast": { enabled: false } },
-      });
+      cy.checkA11y();
     });
 
     it("devrait gérer des transactions avec montants extrêmes", function () {
@@ -149,9 +145,7 @@ if (Cypress.env("CI")) {
 
       // Test d'accessibilité avec montants extrêmes
       cy.injectAxe();
-      cy.checkA11y(undefined, {
-        rules: { "color-contrast": { enabled: false } },
-      });
+      cy.checkA11y();
     });
 
     it("devrait gérer des données de transaction malformées", function () {
@@ -290,9 +284,7 @@ if (Cypress.env("CI")) {
 
       // Test d'accessibilité
       cy.injectAxe();
-      cy.checkA11y(undefined, {
-        rules: { "color-contrast": { enabled: false } },
-      });
+      cy.checkA11y();
     });
   });
 }
