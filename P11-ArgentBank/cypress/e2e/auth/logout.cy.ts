@@ -55,7 +55,7 @@ describe("Déconnexion de l'utilisateur", () => {
     cy.contains("Sign Out").click();
 
     // Vérifications après la déconnexion
-    cy.url().should("eq", "http://localhost:3000/"); // Doit rediriger vers la page d'accueil
+    cy.url().should("eq", `${Cypress.config("baseUrl")}/`); // Doit rediriger vers la page d'accueil, compatible local/CI
     cy.url().should("not.include", "/user"); // Ne doit plus être sur la page utilisateur
 
     // Test d'accessibilité de la page d'accueil après déconnexion (ignorer les violations de contraste connues)
