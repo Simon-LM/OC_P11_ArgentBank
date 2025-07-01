@@ -637,7 +637,7 @@ jobs:
                 console.log(`📋 Issues details for ${url}:`);
                 results.issues.forEach((issue, index) => {
                   console.log(`   ${index + 1}. [${issue.type}] ${issue.message} (${issue.code})`);
-                  console.log(`      Selector: ${issue.selector}`);
+                  console.log(`      ${issue.selector}`);
                 });
               }
               
@@ -735,6 +735,8 @@ jobs:
     needs: pa11y-tests
     if: success()
     runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ steps.set-preview-url.outputs.preview_url }}
 
     steps:
       - name: 📥 Checkout code # ← MANQUE !
@@ -795,6 +797,10 @@ jobs:
 
           echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
 
+      - name: set-preview-url
+        id: set-preview-url
+        run: echo "preview_url=${{ env.PREVIEW_URL }}" >> $GITHUB_OUTPUT
+
       - name: 🏃 Run Cypress E2E tests
         env:
           CYPRESS_BASE_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
@@ -821,14 +827,13 @@ jobs:
             P11-ArgentBank/cypress/screenshots
             P11-ArgentBank/cypress/videos
 
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   lighthouse-tests:
     name: ⚡ Lighthouse Performance Tests
     needs: cypress-tests
     if: success()
     runs-on: ubuntu-latest
     outputs:
-      preview-url: ${{ needs.pa11y-tests.outputs.preview-url }}
+      preview-url: ${{ needs.cypress-tests.outputs.preview-url }}
     strategy:
       matrix:
         device: [desktop, mobile] # ← GARDE LA MATRICE DEVICE
@@ -863,7 +868,7 @@ jobs:
       - name: ⚡ Run Lighthouse tests (${{ matrix.device }})
 
         env:
-          PREVIEW_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
+          PREVIEW_URL: ${{ needs.cypress-tests.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           DEVICE: ${{ matrix.device }}
         run: |
@@ -884,18 +889,10 @@ jobs:
           }
 
           echo "✅ Preview URL responds correctly with bypass headers"
-
-          # Install Lighthouse and Puppeteer globally (latest version with ESM support)
           npm install -g lighthouse@12.6.1 puppeteer@24.10.1
-
-          # Configure Puppeteer environment for CI (same as Pa11y)
           export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
           export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
-
-          # Install Puppeteer browsers (Chrome)
           npx puppeteer browsers install chrome
-
-          # Verify Chrome installation
           echo "Checking Chrome installation..."
           find /home/runner/.cache/puppeteer -name "chrome" -type f 2>/dev/null | head -5 || echo "Chrome not found in cache"
 
@@ -1323,156 +1320,4 @@ jobs:
         if: always()
         with:
           name: lighthouse-${{ matrix.device }}-reports
-          path: P11-ArgentBank/lighthouse-r
-
-    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  # cypress-tests:
-  #   name: 🏃 Cypress E2E Tests
-  #   needs: lighthouse-tests
-  #   if: success()
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     preview-url: ${{ needs.lighthouse-tests.outputs.preview-url }}
-
-  #   steps:
-  #     - name: 📥 Checkout code # ← MANQUE !
-  #       uses: actions/checkout@v4
-
-  #     - name: 📦 Setup pnpm # ← MANQUE !
-  #       uses: pnpm/action-setup@v4
-  #       with:
-  #         version: 8
-
-  #     - name: 🟢 Setup Node.js # ← MANQUE !
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: "18"
-  #         cache: "pnpm"
-  #         cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
-
-  #     - name: 📦 Cache Cypress binary # ← MANQUE !
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.cache/Cypress
-  #         key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-cypress-
-
-  #     - name: 📦 Install dependencies # ← MANQUE !
-  #       run: pnpm install --no-frozen-lockfile
-
-  #     - name: 🔧 Install Cypress binary # ← MANQUE !
-  #       run: pnpm exec cypress install
-
-  #     - name: 🗃️ Generate Prisma Client # ← MANQUE !
-  #       env:
-  #         DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  #       run: |
-  #         echo "🔧 Using real DATABASE_URL for Cypress tests (VPS connection)"
-  #         pnpm exec prisma generate
-
-  #     - name: 🔍 Test Preview API availability
-  #       env:
-  #         PREVIEW_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
-  #         VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-  #       run: |
-  #         echo "Testing API on Preview: $PREVIEW_URL"
-
-  #         # Wait for Preview to be fully ready
-  #         echo "Waiting for Preview deployment to be fully ready..."
-  #         sleep 15
-
-  #         # Test ping endpoint
-  #         echo "Testing ping endpoint..."
-  #         curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
-  #           echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
-  #           echo "Let's check if the base URL responds..."
-  #           curl -I "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 10 || echo "Base URL also failed"
-  #           exit 1
-  #         }
-
-  #         echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
-
-  #     - name: 🏃 Run Cypress E2E tests
-
-  #       env:
-  #         CYPRESS_BASE_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
-  #         VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-  #         CI: true
-  #       run: |
-  #         echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"Add commentMore actions
-  #         echo "🔧 [Debug] API will be accessible at: $CYPRESS_BASE_URL/api"
-  #         echo "🔧 [Debug] CI environment: $CI"
-  #         echo "🔧 [Debug] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
-
-  #         # Additional wait to ensure stability
-  #         echo "Final wait for application stability..."
-  #         sleep 5
-
-  #         pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
-
-  #     - name: 📤 Upload Cypress artifacts
-  #       uses: actions/upload-artifact@v4
-  #       if: always()
-  #       with:
-  #         name: cypress-reports
-  #         path: |
-  #           P11-ArgentBank/cypress/screenshots
-  #           P11-ArgentBank/cypress/videos
-
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-  promote-production:
-    name: 🚀 Promote to Production
-    needs: [ci-tests, deploy-preview, cypress-tests]
-    if: success() && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-
-      - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8
-
-      - name: 📦 Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: 🗃️ Generate Prisma client
-        run: |
-          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
-          pnpm exec prisma generate
-
-      - name: 📦 Install Vercel CLI
-        run: npm install -g vercel@latest
-
-      - name: 🔧 Setup vercel.json for production
-        run: pnpm run vercel:config prod
-
-      - name: 🚀 Deploy to Vercel Production
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          echo "=== Promoting to production ==="
-          echo "All tests passed! Deploying to production..."
-
-          # Deploy to production from repo root
-          cd ..
-          echo "Changed to repo root: $(pwd)"
-          vercel --prod --yes --token $VERCEL_TOKEN
-
-          echo "🎉 Production deployed: https://slm-argentbank.vercel.app"
-
-      - name: 🔧 Cleanup vercel.json
-        run: pnpm run vercel:clean
+          path: P11-ArgentBank/lighthouse-reports
