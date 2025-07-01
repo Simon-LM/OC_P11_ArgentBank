@@ -737,6 +737,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       preview-url: ${{ steps.set-preview-url.outputs.preview_url }}
+    env:
+      PREVIEW_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
 
     steps:
       - name: 📥 Checkout code # ← MANQUE !
@@ -803,11 +805,11 @@ jobs:
 
       - name: 🏃 Run Cypress E2E tests
         env:
-          CYPRESS_BASE_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
+          CYPRESS_BASE_URL: ${{ env.PREVIEW_URL }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           CI: true
         run: |
-          echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"Add commentMore actions
+          echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"
           echo "🔧 [Debug] API will be accessible at: $CYPRESS_BASE_URL/api"
           echo "🔧 [Debug] CI environment: $CI"
           echo "🔧 [Debug] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
