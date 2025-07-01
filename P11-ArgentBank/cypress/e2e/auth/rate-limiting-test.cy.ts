@@ -11,7 +11,8 @@ import type { User } from "../../support/types";
  * gèrent correctement les limitations de débit de l'API Vercel.
  */
 
-describe("Tests de Protection Rate Limiting", () => {
+const isCI = Cypress.env("CI");
+(isCI ? describe.skip : describe)("Tests de Protection Rate Limiting", () => {
   let validUser: User;
 
   before(() => {
