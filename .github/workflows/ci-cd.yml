@@ -735,8 +735,6 @@ jobs:
     needs: pa11y-tests
     if: success()
     runs-on: ubuntu-latest
-    outputs:
-      preview-url: ${{ needs.lighthouse-tests.outputs.preview-url }}
 
     steps:
       - name: 📥 Checkout code # ← MANQUE !
@@ -777,7 +775,7 @@ jobs:
 
       - name: 🔍 Test Preview API availability
         env:
-          PREVIEW_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
+          PREVIEW_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
           echo "Testing API on Preview: $PREVIEW_URL"
@@ -798,9 +796,8 @@ jobs:
           echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
 
       - name: 🏃 Run Cypress E2E tests
-
         env:
-          CYPRESS_BASE_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
+          CYPRESS_BASE_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           CI: true
         run: |
@@ -1329,7 +1326,6 @@ jobs:
           path: P11-ArgentBank/lighthouse-r
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
   # cypress-tests:
   #   name: 🏃 Cypress E2E Tests
   #   needs: lighthouse-tests
