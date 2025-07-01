@@ -727,11 +727,107 @@ jobs:
         with:
           name: pa11y-reports
           path: P11-ArgentBank/pa11y-reports
-      # # # # # # # # # # # # # # # # # # # # # # # # #
 
+  # # #  # # # # # # # # # # # # # # # # # # # # # # # # #
+
+  cypress-tests:
+    name: 🏃 Cypress E2E Tests
+    needs: pa11y-tests
+    if: success()
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ needs.lighthouse-tests.outputs.preview-url }}
+
+    steps:
+      - name: 📥 Checkout code # ← MANQUE !
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm # ← MANQUE !
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: 🟢 Setup Node.js # ← MANQUE !
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+
+      - name: 📦 Cache Cypress binary # ← MANQUE !
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      - name: 📦 Install dependencies # ← MANQUE !
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 🔧 Install Cypress binary # ← MANQUE !
+        run: pnpm exec cypress install
+
+      - name: 🗃️ Generate Prisma Client # ← MANQUE !
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔧 Using real DATABASE_URL for Cypress tests (VPS connection)"
+          pnpm exec prisma generate
+
+      - name: 🔍 Test Preview API availability
+        env:
+          PREVIEW_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          echo "Testing API on Preview: $PREVIEW_URL"
+
+          # Wait for Preview to be fully ready
+          echo "Waiting for Preview deployment to be fully ready..."
+          sleep 15
+
+          # Test ping endpoint
+          echo "Testing ping endpoint..."
+          curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
+            echo "Let's check if the base URL responds..."
+            curl -I "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 10 || echo "Base URL also failed"
+            exit 1
+          }
+
+          echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
+
+      - name: 🏃 Run Cypress E2E tests
+
+        env:
+          CYPRESS_BASE_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          CI: true
+        run: |
+          echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"Add commentMore actions
+          echo "🔧 [Debug] API will be accessible at: $CYPRESS_BASE_URL/api"
+          echo "🔧 [Debug] CI environment: $CI"
+          echo "🔧 [Debug] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
+
+          # Additional wait to ensure stability
+          echo "Final wait for application stability..."
+          sleep 5
+
+          pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
+
+      - name: 📤 Upload Cypress artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-reports
+          path: |
+            P11-ArgentBank/cypress/screenshots
+            P11-ArgentBank/cypress/videos
+
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   lighthouse-tests:
     name: ⚡ Lighthouse Performance Tests
-    needs: pa11y-tests # ← ATTEND QUE PA11Y FINISSE
+    needs: cypress-tests
     if: success()
     runs-on: ubuntu-latest
     outputs:
@@ -1234,101 +1330,101 @@ jobs:
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-  cypress-tests:
-    name: 🏃 Cypress E2E Tests
-    needs: lighthouse-tests
-    if: success()
-    runs-on: ubuntu-latest
-    outputs:
-      preview-url: ${{ needs.lighthouse-tests.outputs.preview-url }}
+  # cypress-tests:
+  #   name: 🏃 Cypress E2E Tests
+  #   needs: lighthouse-tests
+  #   if: success()
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     preview-url: ${{ needs.lighthouse-tests.outputs.preview-url }}
 
-    steps:
-      - name: 📥 Checkout code # ← MANQUE !
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: 📥 Checkout code # ← MANQUE !
+  #       uses: actions/checkout@v4
 
-      - name: 📦 Setup pnpm # ← MANQUE !
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8
+  #     - name: 📦 Setup pnpm # ← MANQUE !
+  #       uses: pnpm/action-setup@v4
+  #       with:
+  #         version: 8
 
-      - name: 🟢 Setup Node.js # ← MANQUE !
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "pnpm"
-          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+  #     - name: 🟢 Setup Node.js # ← MANQUE !
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: "18"
+  #         cache: "pnpm"
+  #         cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 
-      - name: 📦 Cache Cypress binary # ← MANQUE !
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-cypress-
+  #     - name: 📦 Cache Cypress binary # ← MANQUE !
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.cache/Cypress
+  #         key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-cypress-
 
-      - name: 📦 Install dependencies # ← MANQUE !
-        run: pnpm install --no-frozen-lockfile
+  #     - name: 📦 Install dependencies # ← MANQUE !
+  #       run: pnpm install --no-frozen-lockfile
 
-      - name: 🔧 Install Cypress binary # ← MANQUE !
-        run: pnpm exec cypress install
+  #     - name: 🔧 Install Cypress binary # ← MANQUE !
+  #       run: pnpm exec cypress install
 
-      - name: 🗃️ Generate Prisma Client # ← MANQUE !
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🔧 Using real DATABASE_URL for Cypress tests (VPS connection)"
-          pnpm exec prisma generate
+  #     - name: 🗃️ Generate Prisma Client # ← MANQUE !
+  #       env:
+  #         DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  #       run: |
+  #         echo "🔧 Using real DATABASE_URL for Cypress tests (VPS connection)"
+  #         pnpm exec prisma generate
 
-      - name: 🔍 Test Preview API availability
-        env:
-          PREVIEW_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-        run: |
-          echo "Testing API on Preview: $PREVIEW_URL"
+  #     - name: 🔍 Test Preview API availability
+  #       env:
+  #         PREVIEW_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
+  #         VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+  #       run: |
+  #         echo "Testing API on Preview: $PREVIEW_URL"
 
-          # Wait for Preview to be fully ready
-          echo "Waiting for Preview deployment to be fully ready..."
-          sleep 15
+  #         # Wait for Preview to be fully ready
+  #         echo "Waiting for Preview deployment to be fully ready..."
+  #         sleep 15
 
-          # Test ping endpoint
-          echo "Testing ping endpoint..."
-          curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
-            echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
-            echo "Let's check if the base URL responds..."
-            curl -I "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 10 || echo "Base URL also failed"
-            exit 1
-          }
+  #         # Test ping endpoint
+  #         echo "Testing ping endpoint..."
+  #         curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+  #           echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
+  #           echo "Let's check if the base URL responds..."
+  #           curl -I "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 10 || echo "Base URL also failed"
+  #           exit 1
+  #         }
 
-          echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
+  #         echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
 
-      - name: 🏃 Run Cypress E2E tests
+  #     - name: 🏃 Run Cypress E2E tests
 
-        env:
-          CYPRESS_BASE_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-          CI: true
-        run: |
-          echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"Add commentMore actions
-          echo "🔧 [Debug] API will be accessible at: $CYPRESS_BASE_URL/api"
-          echo "🔧 [Debug] CI environment: $CI"
-          echo "🔧 [Debug] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
+  #       env:
+  #         CYPRESS_BASE_URL: ${{ needs.lighthouse-tests.outputs.preview-url }}
+  #         VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+  #         CI: true
+  #       run: |
+  #         echo "🔧 [Debug] Running Cypress E2E tests against: $CYPRESS_BASE_URL"Add commentMore actions
+  #         echo "🔧 [Debug] API will be accessible at: $CYPRESS_BASE_URL/api"
+  #         echo "🔧 [Debug] CI environment: $CI"
+  #         echo "🔧 [Debug] VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
 
-          # Additional wait to ensure stability
-          echo "Final wait for application stability..."
-          sleep 5
+  #         # Additional wait to ensure stability
+  #         echo "Final wait for application stability..."
+  #         sleep 5
 
-          pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
+  #         pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
 
-      - name: 📤 Upload Cypress artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: cypress-reports
-          path: |
-            P11-ArgentBank/cypress/screenshots
-            P11-ArgentBank/cypress/videos
+  #     - name: 📤 Upload Cypress artifacts
+  #       uses: actions/upload-artifact@v4
+  #       if: always()
+  #       with:
+  #         name: cypress-reports
+  #         path: |
+  #           P11-ArgentBank/cypress/screenshots
+  #           P11-ArgentBank/cypress/videos
 
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
