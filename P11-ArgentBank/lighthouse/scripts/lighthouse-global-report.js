@@ -148,7 +148,7 @@ async function runGlobalTestSuite() {
   console.log("\n" + "=".repeat(50));
   console.log("📊 RÉSUMÉ DE LA SESSION DE TESTS");
   console.log("=".repeat(50));
-  console.log(`🗓️  Date: ${new Date().toLocaleString("fr-FR")}`);
+  console.log(`🗓️  Date: ${new Date().toLocaleString("en-US")}`);
   console.log(`⏱️  Session: ${timestamp}`);
   console.log(`✅ Tests réussis: ${successful.length}/${results.length}`);
   console.log(`❌ Tests échoués: ${failed.length}/${results.length}`);

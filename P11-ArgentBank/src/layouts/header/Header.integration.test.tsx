@@ -1,10 +1,10 @@
 /** @format */
 
 /**
- * Tests d'intégration pour le composant Header
+ * Integration tests for the Header component
  *
- * Ces tests couvrent les interactions complexes avec Redux,
- * la navigation, et les tests d'accessibilité.
+ * These tests cover complex interactions with Redux,
+ * navigation, and accessibility tests.
  */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
@@ -129,7 +129,7 @@ describe("Header - Tests d'intégration", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/");
   });
 
-  // Tests d'accessibilité
+  // Accessibility tests
   describe("Accessibility", () => {
     test("has no accessibility violations when logged out", async () => {
       const { container } = render(

@@ -1,36 +1,36 @@
 <!-- @format -->
 
-# 🤖 Guide Complet : Gestion des Sauvegardes GitHub Copilot avec pnpm
+# 🤖 Complete Guide: GitHub Copilot Backup Management with pnpm
 
-> **Problème résolu** : Conflits de sauvegardes Copilot/VS Code lors des redémarrages et commits avec pnpm
+> **Problem resolved**: Copilot/VS Code backup conflicts during restarts and commits with pnpm
 
-## 📋 Table des Matières
+## 📋 Table of Contents
 
-1. [Problème Initial](#problème-initial)
-2. [Solutions Implémentées](#solutions-implémentées)
-3. [Installation et Configuration](#installation-et-configuration)
-4. [Utilisation Quotidienne](#utilisation-quotidienne)
-5. [Résolution des Problèmes](#résolution-des-problèmes)
-6. [Architecture Technique](#architecture-technique)
+1. [Initial Problem](#initial-problem)
+2. [Implemented Solutions](#implemented-solutions)
+3. [Installation and Configuration](#installation-and-configuration)
+4. [Daily Usage](#daily-usage)
+5. [Problem Resolution](#problem-resolution)
+6. [Technical Architecture](#technical-architecture)
 7. [FAQ](#faq)
 
 ---
 
-## 🚨 Problème Initial
+## 🚨 Initial Problem
 
-### Symptômes Observés
+### Observed Symptoms
 
-- ✗ Anciennes sauvegardes de fichiers réapparaissent au redémarrage de VS Code
-- ✗ Conflits entre npm et pnpm (package-lock.json vs pnpm-lock.yaml)
-- ✗ Sauvegardes Copilot non synchronisées avec l'état Git
-- ✗ Cache VS Code corrompu causant des incohérences
+- ✗ Old file backups reappear when VS Code restarts
+- ✗ Conflicts between npm and pnpm (package-lock.json vs pnpm-lock.yaml)
+- ✗ Copilot backups not synchronized with Git state
+- ✗ Corrupted VS Code cache causing inconsistencies
 
-### Causes Racines
+### Root Causes
 
-- **VS Code** : `files.hotExit` activé par défaut
-- **Copilot** : Sauvegardes automatiques non nettoyées
-- **Gestionnaire de paquets** : Mélange npm/pnpm dans le même projet
-- **Cache** : Accumulation de fichiers temporaires
+- **VS Code**: `files.hotExit` enabled by default
+- **Copilot**: Automatic backups not cleaned
+- **Package manager**: Mixing npm/pnpm in the same project
+- **Cache**: Accumulation of temporary files
 
 ---
 

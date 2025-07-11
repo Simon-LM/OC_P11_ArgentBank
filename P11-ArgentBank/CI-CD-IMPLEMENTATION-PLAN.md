@@ -1,48 +1,48 @@
 <!-- @format -->
 
-# 📋 Plan d'implémentation CI/CD - ArgentBank
+# 📋 CI/CD Implementation Plan - ArgentBank
 
-## 🎯 Objectif
+## 🎯 Objective
 
-Mettre en place un pipeline CI/CD robuste et sécurisé pour ArgentBank avec un **workflow unique** utilisant l'approche **Preview First** pour éviter les déploiements défaillants en production.
+Implement a robust and secure CI/CD pipeline for ArgentBank with a **unified workflow** using the **Preview First** approach to prevent failed deployments to production.
 
-## 🚨 Problème critique identifié
+## 🚨 Critical Issue Identified
 
-**L'architecture actuelle (workflows séparés) présente un défaut de sécurité majeur :**
+**The current architecture (separate workflows) presents a major security flaw:**
 
-- ❌ `ci.yml`, `accessibility-performance.yml` et `deploy.yml` sont **indépendants**
-- ❌ `deploy.yml` peut déployer en production **même si les autres workflows échouent**
-- ❌ Aucune dépendance entre les workflows
-- ❌ Risque de déployer du code défaillant en production
+- ❌ `ci.yml`, `accessibility-performance.yml` and `deploy.yml` are **independent**
+- ❌ `deploy.yml` can deploy to production **even if other workflows fail**
+- ❌ No dependencies between workflows
+- ❌ Risk of deploying faulty code to production
 
-**Solution :** Workflow unique avec dépendances strictes entre les phases.
+**Solution:** Single workflow with strict dependencies between phases.
 
-## 📅 Planning d'implémentation (Architecture cible)
+## 📅 Implementation Schedule (Target Architecture)
 
-### **Phase 1 : Création du workflow unique sécurisé** ⚡ (Nouvelle priorité)
+### **Phase 1: Creating secure unified workflow** ⚡ (New priority)
 
-**Durée estimée :** 2-3 heures (avec tests approfondis)
+**Estimated duration:** 2-3 hours (with thorough testing)
 
-**Objectifs :**
+**Objectives:**
 
-- ✅ Workflow unique avec dépendances strictes
-- ✅ Approche Preview First (sécurisée)
-- ✅ Auto-promotion production si tous les tests passent
-- ✅ Impossibilité de déployer si un test échoue
+- ✅ Single workflow with strict dependencies
+- ✅ Preview First approach (secure)
+- ✅ Auto-promotion to production if all tests pass
+- ✅ Impossible to deploy if any test fails
 
-**Structure du workflow `complete-ci-cd.yml` :**
+**Structure of `complete-ci-cd.yml` workflow:**
 
 ```yaml
 name: "🚀 Complete CI/CD Pipeline"
 
 jobs:
-  # Phase 1: Tests de base (bloquants)
+  # Phase 1: Basic tests (blocking)
   ci-tests:
     name: "🔍 CI Tests (Lint, TypeCheck, Unit Tests, Build)"
     runs-on: ubuntu-latest
     steps: [setup, lint, typecheck, test, build]
 
-  # Phase 2: Déploiement Preview (dépend de ci-tests)
+  # Phase 2: Preview deployment (depends on ci-tests)
   deploy-preview:
     name: "📦 Deploy Preview"
     needs: ci-tests
@@ -52,7 +52,7 @@ jobs:
       preview-url: ${{ steps.deploy.outputs.url }}
     steps: [setup, deploy-preview-vercel, capture-url]
 
-  # Phase 3: Tests avancés sur Preview (dépend de deploy-preview)
+  # Phase 3: Advanced tests on Preview (depends on deploy-preview)
   accessibility-tests:
     name: "🧪 Accessibility & Performance Tests"
     needs: deploy-preview
@@ -63,7 +63,7 @@ jobs:
         test-type: [cypress, pa11y, lighthouse]
     steps: [setup, run-tests-on-preview]
 
-  # Phase 4: Auto-promotion Production (dépend de TOUT)
+  # Phase 4: Auto-promotion to Production (depends on EVERYTHING)
   promote-production:
     name: "🚀 Promote to Production"
     needs: [ci-tests, deploy-preview, accessibility-tests]
@@ -72,196 +72,196 @@ jobs:
     steps: [setup, promote-preview-to-production]
 ```
 
-**Tests de validation :**
+**Validation tests:**
 
-1. **Test de blocage CI :** Créer une erreur de lint → Vérifier que rien ne se déploie ❌
-2. **Test de blocage accessibilité :** Créer une erreur Pa11y → Vérifier que la production n'est pas mise à jour ❌
-3. **Test de réussite complète :** Code propre → Vérifier la séquence complète ✅
-4. **Test sur branche feature :** Vérifier que seul le preview se déploie (sans promotion) ✅
+1. **CI blocking test:** Create lint error → Verify nothing deploys ❌
+2. **Accessibility blocking test:** Create Pa11y error → Verify production not updated ❌
+3. **Complete success test:** Clean code → Verify full sequence ✅
+4. **Feature branch test:** Verify only preview deploys (no promotion) ✅
 
-### **Phase 2 : Migration progressive et sécurisée**
+### **Phase 2: Progressive and secure migration**
 
-**Durée estimée :** 1 heure
+**Estimated duration:** 1 hour
 
-**Objectifs :**
+**Objectives:**
 
-- ✅ Migration sans casser l'existant
-- ✅ Période de test du nouveau workflow
-- ✅ Rollback possible si problème
+- ✅ Migration without breaking existing setup
+- ✅ Testing period for new workflow
+- ✅ Rollback possible if issues occur
 
-**Étapes de migration :**
+**Migration steps:**
 
 ```yaml
-Étape 2.1: Test en parallèle (sécurisé)
-├── Créer complete-ci-cd.yml
-├── Conserver les anciens workflows (backup)
-├── Tester complete-ci-cd.yml sur branche feature
-├── Valider tous les cas de figure
-└── Ajuster le nouveau workflow si nécessaire
+Step 2.1: Parallel testing (secure)
+├── Create complete-ci-cd.yml
+├── Keep old workflows (backup)
+├── Test complete-ci-cd.yml on feature branch
+├── Validate all scenarios
+└── Adjust new workflow if needed
 
-Étape 2.2: Désactivation temporaire (réversible)
-├── Renommer ci.yml → ci.yml.backup
-├── Renommer deploy.yml → deploy.yml.backup
-├── Renommer accessibility-performance.yml → accessibility-performance.yml.backup
-├── Activer complete-ci-cd.yml en production
-└── Surveiller 2-3 commits pour validation
+Step 2.2: Temporary deactivation (reversible)
+├── Rename ci.yml → ci.yml.backup
+├── Rename deploy.yml → deploy.yml.backup
+├── Rename accessibility-performance.yml → accessibility-performance.yml.backup
+├── Activate complete-ci-cd.yml in production
+└── Monitor 2-3 commits for validation
 
-Étape 2.3: Validation et nettoyage
-├── Valider le comportement sur main
-├── Vérifier les temps d'exécution
-├── Optimiser si nécessaire
-├── Supprimer les fichiers .backup si tout OK
-└── Mettre à jour la documentation
+Step 2.3: Validation and cleanup
+├── Validate behavior on main
+├── Check execution times
+├── Optimize if necessary
+├── Delete .backup files if everything OK
+└── Update documentation
 ```
 
-### **Phase 3 : Optimisation et monitoring**
+### **Phase 3: Optimization and monitoring**
 
-**Durée estimée :** 1 heure
+**Estimated duration:** 1 hour
 
-**Objectifs :**
+**Objectives:**
 
-- ✅ Optimisation des performances
-- ✅ Monitoring des métriques
-- ✅ Documentation finalisée
+- ✅ Performance optimization
+- ✅ Metrics monitoring
+- ✅ Finalized documentation
 
-**Optimisations :**
+**Optimizations:**
 
 ```yaml
 Performance:
-├── Parallélisation des tests accessibilité (matrix strategy)
-├── Cache optimisé pour toutes les phases
-├── Artifacts partagés entre jobs
-└── Conditional execution selon le type de changement
+├── Parallel accessibility testing (matrix strategy)
+├── Optimized cache for all phases
+├── Shared artifacts between jobs
+└── Conditional execution based on change type
 
 Monitoring:
-├── Métriques de temps d'exécution
-├── Taux de succès par phase
-├── Alertes si dépassement de seuils
-└── Dashboard de suivi des déploiements
+├── Execution time metrics
+├── Success rate per phase
+├── Alerts if thresholds exceeded
+└── Deployment tracking dashboard
 ```
 
-## 🧪 Stratégie de test par phase
+## 🧪 Testing Strategy by Phase
 
-### Phase 1 - Tests de base
+### Phase 1 - Basic Tests
 
-**Scénarios de test :**
+**Test scenarios:**
 
-1. **Test de lint échoue :**
+1. **Lint test fails:**
 
    ```typescript
-   // Ajouter une erreur de lint volontaire
+   // Add intentional lint error
    const unusedVariable = "test"; // ESLint error
    ```
 
-2. **Test TypeScript échoue :**
+2. **TypeScript test fails:**
 
    ```typescript
-   // Ajouter une erreur de type volontaire
+   // Add intentional type error
    const test: string = 123; // Type error
    ```
 
-3. **Test unitaire échoue :**
+3. **Unit test fails:**
 
    ```typescript
-   // Modifier temporairement un test pour qu'il échoue
+   // Temporarily modify test to fail
    expect(true).toBe(false); // Test failure
    ```
 
-4. **Test de build échoue :**
+4. **Build test fails:**
 
    ```typescript
-   // Import inexistant
+   // Non-existent import
    import { NonExistentComponent } from "./nowhere";
    ```
 
-5. **Test succès complet :**
-   - Code propre, lint ✅
-   - Types corrects ✅
-   - Tests passent ✅
-   - Build réussi ✅
+5. **Complete success test:**
+   - Clean code, lint ✅
+   - Correct types ✅
+   - Tests pass ✅
+   - Build successful ✅
 
-### Phase 2 - Tests de déploiement
+### Phase 2 - Deployment Tests
 
-**Scénarios de test :**
+**Test scenarios:**
 
-1. **PR avec preview deployment :**
+1. **PR with preview deployment:**
 
-   - Créer une PR avec un changement visible
-   - Vérifier que le preview est accessible
-   - Tester la fonctionnalité sur le preview
+   - Create PR with visible change
+   - Verify preview is accessible
+   - Test functionality on preview
 
-2. **Merge vers production :**
-   - Merger la PR
-   - Vérifier le déploiement en production
-   - Tester la fonctionnalité en prod
+2. **Merge to production:**
+   - Merge PR
+   - Verify production deployment
+   - Test functionality in prod
 
-## 📋 Checklist d'implémentation (Architecture cible)
+## 📋 Implementation Checklist (Target Architecture)
 
-### **Phase 1 : Workflow unique sécurisé**
+### **Phase 1: Secure unified workflow**
 
-- [ ] **Analyser les workflows existants**
-  - [ ] Identifier les jobs fonctionnels dans ci.yml
-  - [ ] Identifier les jobs fonctionnels dans accessibility-performance.yml
-  - [ ] Identifier les jobs fonctionnels dans deploy.yml
-  - [ ] Documenter les scripts pnpm utilisés
-- [ ] **Créer `complete-ci-cd.yml`**
+- [ ] **Analyze existing workflows**
+  - [ ] Identify functional jobs in ci.yml
+  - [ ] Identify functional jobs in accessibility-performance.yml
+  - [ ] Identify functional jobs in deploy.yml
+  - [ ] Document pnpm scripts used
+- [ ] **Create `complete-ci-cd.yml`**
   - [ ] Job `ci-tests` (lint, typecheck, test, build)
   - [ ] Job `deploy-preview` (needs ci-tests, deploy preview)
   - [ ] Job `accessibility-tests` (needs deploy-preview, cypress+pa11y+lighthouse)
   - [ ] Job `promote-production` (needs all, condition main branch)
-- [ ] **Tester le nouveau workflow**
-  - [ ] Test sur branche feature (preview seulement)
-  - [ ] Test avec erreur lint (doit bloquer tout)
-  - [ ] Test avec erreur Pa11y (doit bloquer promotion)
-  - [ ] Test complet sur main (promotion automatique)
-- [ ] **Validation des performances**
-  - [ ] Vérifier temps d'exécution (< 15 min total)
-  - [ ] Vérifier parallélisation des tests
-  - [ ] Optimiser si nécessaire
+- [ ] **Test new workflow**
+  - [ ] Test on feature branch (preview only)
+  - [ ] Test with lint error (should block everything)
+  - [ ] Test with Pa11y error (should block promotion)
+  - [ ] Complete test on main (automatic promotion)
+- [ ] **Performance validation**
+  - [ ] Check execution time (< 15 min total)
+  - [ ] Check test parallelization
+  - [ ] Optimize if necessary
 
-### **Phase 2 : Migration progressive**
+### **Phase 2: Progressive migration**
 
-- [ ] **Préparation sécurisée**
-  - [ ] Backup des workflows existants (.backup)
-  - [ ] Documentation de rollback
-  - [ ] Plan de test de migration
-- [ ] **Migration temporaire**
-  - [ ] Désactiver les anciens workflows (renommer)
-  - [ ] Activer complete-ci-cd.yml
-  - [ ] Surveiller 2-3 commits
-- [ ] **Validation et nettoyage**
-  - [ ] Vérifier comportement sur PR
-  - [ ] Vérifier comportement sur main
-  - [ ] Vérifier blocage en cas d'erreur
-  - [ ] Supprimer les anciens fichiers si OK
+- [ ] **Secure preparation**
+  - [ ] Backup existing workflows (.backup)
+  - [ ] Rollback documentation
+  - [ ] Migration test plan
+- [ ] **Temporary migration**
+  - [ ] Disable old workflows (rename)
+  - [ ] Activate complete-ci-cd.yml
+  - [ ] Monitor 2-3 commits
+- [ ] **Validation and cleanup**
+  - [ ] Verify PR behavior
+  - [ ] Verify main behavior
+  - [ ] Verify blocking on error
+  - [ ] Delete old files if OK
 
-### **Phase 3 : Optimisation**
+### **Phase 3: Optimization**
 
 - [ ] **Performance**
-  - [ ] Optimiser cache entre jobs
-  - [ ] Paralléliser tests accessibilité (matrix)
-  - [ ] Partager artifacts entre jobs
+  - [ ] Optimize cache between jobs
+  - [ ] Parallelize accessibility tests (matrix)
+  - [ ] Share artifacts between jobs
 - [ ] **Monitoring**
-  - [ ] Ajouter métriques temps d'exécution
-  - [ ] Ajouter alertes échec critique
-  - [ ] Dashboard de suivi (optionnel)
+  - [ ] Add execution time metrics
+  - [ ] Add critical failure alerts
+  - [ ] Tracking dashboard (optional)
 - [ ] **Documentation**
-  - [ ] Mettre à jour README avec nouveau workflow
-  - [ ] Documenter les conditions de blocage
-  - [ ] Guide de dépannage
+  - [ ] Update README with new workflow
+  - [ ] Document blocking conditions
+  - [ ] Troubleshooting guide
 
-## 🔧 Configuration requise
+## 🔧 Required Configuration
 
-### Secrets GitHub à configurer (Phase 2)
+### GitHub Secrets to configure (Phase 2)
 
 ```bash
-# À ajouter dans GitHub Repository Settings > Secrets
-VERCEL_TOKEN=           # Token Vercel
-VERCEL_ORG_ID=         # ID organisation Vercel
-VERCEL_PROJECT_ID=     # ID projet Vercel
+# To add in GitHub Repository Settings > Secrets
+VERCEL_TOKEN=           # Vercel token
+VERCEL_ORG_ID=         # Vercel organization ID
+VERCEL_PROJECT_ID=     # Vercel project ID
 ```
 
-### Scripts package.json requis (Phase 1)
+### Required package.json scripts (Phase 1)
 
 ```json
 {
@@ -276,94 +276,94 @@ VERCEL_PROJECT_ID=     # ID projet Vercel
 }
 ```
 
-## 📊 Métriques de succès
+## 📊 Success Metrics
 
-### Explication des temps d'exécution
+### Execution Time Explanation
 
-#### Comprendre l'exécution en parallèle dans GitHub Actions
+#### Understanding Parallel Execution in GitHub Actions
 
-**❓ Pourquoi Phase 1 = 4-8 min et Phase 2 = 1-2 min ?**
+**❓ Why Phase 1 = 4-8 min and Phase 2 = 1-2 min?**
 
-C'est parce que GitHub Actions peut exécuter des jobs **en parallèle** une fois que certaines conditions sont remplies !
+This is because GitHub Actions can execute jobs **in parallel** once certain conditions are met!
 
-**Phase 1 - Tests de base (4-8 minutes SÉQUENTIELS) :**
+**Phase 1 - Basic tests (4-8 minutes SEQUENTIAL):**
 
 ```yaml
-Exécution séquentielle dans le même job :
+Sequential execution within same job:
 lint (30s) → typecheck (45s) → test (3-5min) → build (1-2min)
-Total : 4-8 minutes
+Total: 4-8 minutes
 ```
 
-**Phase 2 - Déploiement (1-2 minutes EN PARALLÈLE) :**
+**Phase 2 - Deployment (1-2 minutes IN PARALLEL):**
 
 ```yaml
-Une fois que build est réussi :
-├── deploy-preview (1-2min) // S'exécute en parallèle
-└── autres tests peuvent continuer // En même temps !
+Once build succeeds:
+├── deploy-preview (1-2min) // Executes in parallel
+└── other tests can continue // At same time!
 ```
 
-**Temps total réel :** ~6-10 minutes MAXIMUM (pas 15+ minutes) car tout s'optimise en parallèle !
+**Real total time:** ~6-10 minutes MAXIMUM (not 15+ minutes) because everything optimizes in parallel!
 
-#### Stratégie d'optimisation des workflows
+#### Workflow Optimization Strategy
 
 ```yaml
-Exemple concret d'exécution :
-├── 0:00 → Démarrage du workflow
-├── 0:30 → Lint terminé ✅
-├── 1:15 → TypeCheck terminé ✅
-├── 6:00 → Tests terminés ✅
-├── 7:30 → Build terminé ✅ → 🚀 Déploiement démarre en parallèle
-├── 8:00 → Coverage analysis (en parallèle avec déploiement)
-├── 9:30 → Déploiement terminé ✅
-└── 10:00 → Workflow complet ✅
+Concrete execution example:
+├── 0:00 → Workflow start
+├── 0:30 → Lint completed ✅
+├── 1:15 → TypeCheck completed ✅
+├── 6:00 → Tests completed ✅
+├── 7:30 → Build completed ✅ → 🚀 Deployment starts in parallel
+├── 8:00 → Coverage analysis (in parallel with deployment)
+├── 9:30 → Deployment completed ✅
+└── 10:00 → Complete workflow ✅
 ```
 
-**Temps total : 10 minutes**, pas 4+8+1+2=15 minutes !
+**Total time: 10 minutes**, not 4+8+1+2=15 minutes!
 
-#### Pourquoi 95% de taux de succès des WORKFLOWS ?
+#### Why 95% workflow success rate?
 
-Le taux de 95% concerne le **succès des Pull Requests** (pas des tests individuels) :
+The 95% rate concerns **Pull Request success** (not individual tests):
 
-- ✅ **95% des PRs passent le CI** sans intervention manuelle
-- ✅ **5% nécessitent des corrections** (erreurs humaines, problèmes environnementaux)
-- ✅ **Standard professionnel élevé** pour la qualité du workflow
-- ✅ **Encourage l'excellence** et les bonnes pratiques
+- ✅ **95% of PRs pass CI** without manual intervention
+- ✅ **5% require corrections** (human errors, environmental issues)
+- ✅ **High professional standard** for workflow quality
+- ✅ **Encourages excellence** and best practices
 
-**IMPORTANT :** Les tests individuels doivent TOUJOURS être à 100% de réussite :
+**IMPORTANT:** Individual tests must ALWAYS be 100% successful:
 
 ```yaml
-Taux de réussite OBLIGATOIRES (100%) :
-├── ✅ Tests unitaires (Vitest): 100% - BLOQUE LE MERGE
-├── ✅ Tests d'intégration (Vitest): 100% - BLOQUE LE MERGE
-├── ✅ Tests d'accessibilité (Axe): 100% - BLOQUE LE MERGE
-├── ✅ Tests d'accessibilité (Pa11y): 100% - BLOQUE LE MERGE
-├── ✅ Tests E2E (Cypress): 100% - BLOQUE LE MERGE
+REQUIRED success rates (100%):
+├── ✅ Unit tests (Vitest): 100% - BLOCKS MERGE
+├── ✅ Integration tests (Vitest): 100% - BLOCKS MERGE
+├── ✅ Accessibility tests (Axe): 100% - BLOCKS MERGE
+├── ✅ Accessibility tests (Pa11y): 100% - BLOCKS MERGE
+├── ✅ E2E tests (Cypress): 100% - BLOCKS MERGE
 ├── ⚠️  Lighthouse Performance: > 70% CI / > 85% Prod - WARNING
-└── ⚠️  Lighthouse autres: > 90% - WARNING
+└── ⚠️  Lighthouse others: > 90% - WARNING
 ```
 
-### 🎯 Philosophie du CI/CD avec focus accessibilité
+### 🎯 CI/CD Philosophy with Accessibility Focus
 
-#### Priorités par ordre d'importance
+#### Priorities by order of importance
 
-1. **🔴 CRITIQUE - Accessibilité** (Bloque le merge)
+1. **🔴 CRITICAL - Accessibility** (Blocks merge)
 
-   - Pa11y : Conformité WCAG 2.1 AA obligatoire
-   - Axe intégré : Tests d'accessibilité dans chaque composant
-   - Score Lighthouse accessibilité > 90
+   - Pa11y: WCAG 2.1 AA compliance mandatory
+   - Integrated Axe: Accessibility tests in each component
+   - Lighthouse accessibility score > 90
 
-2. **🟠 HAUTE - Fonctionnel** (Bloque le merge)
+2. **🟠 HIGH - Functional** (Blocks merge)
 
-   - Tests unitaires et d'intégration
-   - Build réussi
-   - TypeScript sans erreurs
+   - Unit and integration tests
+   - Successful build
+   - TypeScript without errors
 
-3. **🟡 MOYENNE - Qualité** (Bloque le merge)
+3. **🟡 MEDIUM - Quality** (Blocks merge)
 
-   - ESLint sans erreurs
-   - Tests E2E critiques (Cypress)
+   - ESLint without errors
+   - Critical E2E tests (Cypress)
 
-4. **🟢 BASSE - Performance** (Warning, ne bloque pas)
+4. **🟢 LOW - Performance** (Warning, does not block)
    - Score Lighthouse performance > 70% (CI) / > 85% (Prod)
    - Bundle size analysis
    - Security audit
@@ -447,44 +447,44 @@ Lighthouse Production:         ~85-95% performance
 
 **Production :**
 
-- ✅ Build optimisé + CDN Vercel
-- ✅ Cache et compression activés
-- ✅ Infrastructure dédiée
+- ✅ Optimized build + Vercel CDN
+- ✅ Cache and compression enabled
+- ✅ Dedicated infrastructure
 
-### Stratégie recommandée
+### Recommended Strategy
 
 ```yaml
-Approche Lighthouse pour CI:
-├── 🎯 Utiliser en mode RELATIF (détection de régression)
-├── ⚠️  Seuils adaptés: Performance > 70% (CI) vs > 85% (Prod)
-├── 📊 Comparer avec commit précédent (-10% = alert)
-└── 🚨 Focus sur accessibilité: TOUJOURS 100%
+Lighthouse approach for CI:
+├── 🎯 Use in RELATIVE mode (regression detection)
+├── ⚠️  Adapted thresholds: Performance > 70% (CI) vs > 85% (Prod)
+├── 📊 Compare with previous commit (-10% = alert)
+└── 🚨 Focus on accessibility: ALWAYS 100%
 ```
 
-## 🎯 Prochaine action (Plan actualisé)
+## 🎯 Next Action (Updated Plan)
 
-**Phase 1 - Étape 1 :** Créer le fichier `.github/workflows/complete-ci-cd.yml` avec la structure sécurisée suivante :
+**Phase 1 - Step 1:** Create the `.github/workflows/complete-ci-cd.yml` file with the following secure structure:
 
 ```yaml
-# Structure du workflow unique à créer
+# Structure of unified workflow to create
 complete-ci-cd.yml:
-├── ci-tests (lint + typecheck + test + build) - BLOQUANT
-├── deploy-preview (needs: ci-tests) - Deploy preview uniquement
-├── accessibility-tests (needs: deploy-preview) - Tests sur preview - BLOQUANT
-└── promote-production (needs: all + main branch) - Auto-promotion si tout OK
+├── ci-tests (lint + typecheck + test + build) - BLOCKING
+├── deploy-preview (needs: ci-tests) - Deploy preview only
+├── accessibility-tests (needs: deploy-preview) - Tests on preview - BLOCKING
+└── promote-production (needs: all + main branch) - Auto-promotion if all OK
 ```
 
-**Avantages de cette approche :**
+**Advantages of this approach:**
 
-- 🛡️ **Sécurité maximale** : Impossible de déployer en production si un test échoue
-- 🧪 **Tests sur environnement réel** : Tests d'accessibilité sur Preview Vercel
-- ⚡ **Performance optimisée** : Un seul setup, jobs avec dépendances
-- 🔄 **Migration sécurisée** : Conservation des anciens workflows en backup
+- 🛡️ **Maximum security**: Impossible to deploy to production if any test fails
+- 🧪 **Tests on real environment**: Accessibility tests on Vercel Preview
+- ⚡ **Optimized performance**: Single setup, jobs with dependencies
+- 🔄 **Secure migration**: Keep old workflows as backup
 
-**Êtes-vous prêt à commencer la création du workflow unique sécurisé ?**
+**Are you ready to start creating the secure unified workflow?**
 
 ---
 
-### 🚨 Rappel du problème critique
+### 🚨 Critical Issue Reminder
 
-L'architecture actuelle permet des déploiements production même en cas d'échec des tests d'accessibilité. Le workflow unique résout définitivement ce problème de sécurité.
+The current architecture allows production deployments even when accessibility tests fail. The unified workflow definitively solves this security problem.

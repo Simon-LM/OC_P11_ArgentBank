@@ -27,7 +27,7 @@ async function resetInappropriateUserNames() {
     "bitch",
     "bastard",
 
-    // Français
+    // French
     "putain",
     "merde",
     "connard",

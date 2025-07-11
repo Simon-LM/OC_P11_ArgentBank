@@ -1,47 +1,47 @@
 <!-- @format -->
 
-# Configuration du Contournement de Protection Vercel
+# Vercel Protection Bypass Configuration
 
-## Problème Identifié
+## Identified Problem
 
-Les deployments Preview de Vercel sont protégés, ce qui empêche les tests automatisés (Cypress, Lighthouse, Pa11y) de s'exécuter en CI/CD. Les erreurs 401 Unauthorized se produisent car le token Vercel standard (`VERCEL_TOKEN`) n'est pas conçu pour contourner la protection des deployments.
+Vercel Preview deployments are protected, which prevents automated tests (Cypress, Lighthouse, Pa11y) from running in CI/CD. 401 Unauthorized errors occur because the standard Vercel token (`VERCEL_TOKEN`) is not designed to bypass deployment protection.
 
-## Solution Implémentée
+## Implemented Solution
 
-Vercel propose un système spécifique appelé **"Protection Bypass for Automation"** qui génère un secret dédié pour permettre aux outils d'automatisation d'accéder aux deployments protégés.
+Vercel offers a specific system called **"Protection Bypass for Automation"** which generates a dedicated secret to allow automation tools to access protected deployments.
 
-### Fonctionnement
+### How it works
 
-1. **Header spécial** : `x-vercel-protection-bypass` avec le secret généré
-2. **Header optionnel** : `x-vercel-set-bypass-cookie: true` pour définir un cookie d'authentification
-3. **Variable d'environnement** : `VERCEL_AUTOMATION_BYPASS_SECRET` disponible automatiquement dans les deployments
+1. **Special header**: `x-vercel-protection-bypass` with the generated secret
+2. **Optional header**: `x-vercel-set-bypass-cookie: true` to set an authentication cookie
+3. **Environment variable**: `VERCEL_AUTOMATION_BYPASS_SECRET` automatically available in deployments
 
-## Configuration Requise
+## Required Configuration
 
-### 1. Générer le Secret de Contournement
+### 1. Generate the Bypass Secret
 
-Dans votre tableau de bord Vercel :
+In your Vercel dashboard:
 
-1. Allez dans **Project Settings** → **Deployment Protection**
-2. Activez **"Protection Bypass for Automation"**
-3. Copiez le secret généré
-4. Ajoutez-le comme secret GitHub : `VERCEL_AUTOMATION_BYPASS_SECRET`
+1. Go to **Project Settings** → **Deployment Protection**
+2. Enable **"Protection Bypass for Automation"**
+3. Copy the generated secret
+4. Add it as a GitHub secret: `VERCEL_AUTOMATION_BYPASS_SECRET`
 
-### 2. Mise à Jour du Workflow CI/CD
+### 2. CI/CD Workflow Update
 
-Le workflow a été mis à jour pour utiliser :
+The workflow has been updated to use:
 
 ```yaml
 env:
   VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
-# Dans les requêtes curl
+# In curl requests
 curl -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET"
 ```
 
-### 3. Configuration Cypress
+### 3. Cypress Configuration
 
-Le fichier `cypress/support/e2e.ts` a été mis à jour pour intercepter automatiquement toutes les requêtes en CI et ajouter les headers nécessaires :
+The `cypress/support/e2e.ts` file has been updated to automatically intercept all requests in CI and add the necessary headers:
 
 ```typescript
 if (isCI && vercelBypassSecret) {
@@ -54,58 +54,58 @@ if (isCI && vercelBypassSecret) {
 }
 ```
 
-## Tests Mis à Jour
+## Updated Tests
 
 ### Cypress E2E
 
-- ✅ Headers automatiquement ajoutés via l'intercepteur global
-- ✅ Variable `VERCEL_AUTOMATION_BYPASS_SECRET` passée depuis le workflow
+- ✅ Headers automatically added via global interceptor
+- ✅ Variable `VERCEL_AUTOMATION_BYPASS_SECRET` passed from workflow
 
 ### Lighthouse
 
-- ✅ Header `x-vercel-protection-bypass` ajouté aux requêtes curl
-- ✅ Tests de connectivité avant exécution
+- ✅ Header `x-vercel-protection-bypass` added to curl requests
+- ✅ Connectivity tests before execution
 
 ### Pa11y
 
-- ✅ Header `x-vercel-protection-bypass` ajouté aux requêtes curl
-- ✅ Tests de connectivité avant exécution
+- ✅ Header `x-vercel-protection-bypass` added to curl requests
+- ✅ Connectivity tests before execution
 
-## Actions Requises
+## Required Actions
 
-### Immédiat
+### Immediate
 
-1. **Ajouter le secret GitHub** :
+1. **Add the GitHub secret**:
 
    ```bash
-   # Dans GitHub → Settings → Secrets and variables → Actions
-   VERCEL_AUTOMATION_BYPASS_SECRET=votre_secret_vercel
+   # In GitHub → Settings → Secrets and variables → Actions
+   VERCEL_AUTOMATION_BYPASS_SECRET=your_vercel_secret
    ```
 
-2. **Vérifier la protection Vercel** :
-   - Le projet doit avoir la protection activée sur les Preview deployments
-   - La fonctionnalité "Protection Bypass for Automation" doit être activée
+2. **Verify Vercel protection**:
+   - The project must have protection enabled on Preview deployments
+   - The "Protection Bypass for Automation" feature must be enabled
 
-### Test de Validation
+### Validation Test
 
-1. Créer une PR de test
-2. Vérifier que le workflow fonctionne sans erreurs 401
-3. Confirmer que tous les tests (Cypress, Lighthouse, Pa11y) s'exécutent correctement
+1. Create a test PR
+2. Verify that the workflow runs without 401 errors
+3. Confirm that all tests (Cypress, Lighthouse, Pa11y) run correctly
 
-## Avantages de cette Solution
+## Benefits of this Solution
 
-1. **Sécurisé** : Le secret est spécialement conçu pour l'automatisation
-2. **Officiel** : Solution recommandée par Vercel
-3. **Automatique** : Headers ajoutés automatiquement sans modification des tests
-4. **Réversible** : Peut être désactivé facilement si nécessaire
+1. **Secure**: The secret is specifically designed for automation
+2. **Official**: Solution recommended by Vercel
+3. **Automatic**: Headers added automatically without modifying tests
+4. **Reversible**: Can be easily disabled if necessary
 
-## Références
+## References
 
 - [Vercel Protection Bypass for Automation](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation)
 - [Vercel Deployment Protection](https://vercel.com/docs/security/deployment-protection)
 
-## Statut
+## Status
 
-- ✅ Code mis à jour
-- ⏳ Secret GitHub à configurer
-- ⏳ Tests de validation à effectuer
+- ✅ Code updated
+- ⏳ GitHub secret to configure
+- ⏳ Validation tests to perform

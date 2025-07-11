@@ -1,72 +1,72 @@
 <!-- @format -->
 
-# Diagnostic des échecs Cypress en CI/CD
+# Cypress CI/CD Failure Diagnostic
 
-## 🎯 Résumé exécutif
+## 🎯 Executive Summary
 
-**PROBLÈME** : Tests Cypress fonctionnent en local mais échouent systématiquement en CI/CD  
-**CAUSE RACINE** : Cypress ne peut pas accéder aux URLs Vercel Preview protégées car il manque les headers de bypass  
-**SOLUTION** : Configurer Cypress pour utiliser les headers `x-vercel-protection-bypass` comme Pa11y
+**PROBLEM**: Cypress tests work locally but fail systematically in CI/CD  
+**ROOT CAUSE**: Cypress cannot access protected Vercel Preview URLs because it lacks bypass headers  
+**SOLUTION**: Configure Cypress to use `x-vercel-protection-bypass` headers like Pa11y
 
-## 📋 Preuve de l'analyse
+## 📋 Analysis Evidence
 
-### Logs d'erreur CI/CD analysés
+### CI/CD Error Logs Analyzed
 
 ```
 Tests:        3
-Passing:      0  ← TOUS LES TESTS ÉCHOUENT
+Passing:      0  ← ALL TESTS FAIL
 Failing:      1
 Pending:      0
 Skipped:      2
 ```
 
-### Comparaison des outils de test
+### Test Tools Comparison
 
-| Outil          | Local | CI/CD | Headers Vercel | Status       |
-| -------------- | ----- | ----- | -------------- | ------------ |
-| **Lighthouse** | ✅    | ✅    | ✅ Configurés  | Fonctionne   |
-| **Pa11y**      | ✅    | ✅    | ✅ Configurés  | Fonctionne   |
-| **Cypress**    | ✅    | ❌    | ❌ Manquants   | **PROBLÈME** |
+| Tool           | Local | CI/CD | Vercel Headers | Status      |
+| -------------- | ----- | ----- | -------------- | ----------- |
+| **Lighthouse** | ✅    | ✅    | ✅ Configured  | Working     |
+| **Pa11y**      | ✅    | ✅    | ✅ Configured  | Working     |
+| **Cypress**    | ✅    | ❌    | ❌ Missing     | **PROBLEM** |
 
-## Problème identifié
+## Identified Problem
 
-Les tests Cypress **fonctionnent en local** mais **échouent en CI/CD**. Après analyse comparative avec Pa11y (qui fonctionne en CI/CD), la cause racine a été identifiée.
+Cypress tests **work locally** but **fail in CI/CD**. After comparative analysis with Pa11y (which works in CI/CD), the root cause has been identified.
 
-## Cause racine : Headers de bypass Vercel manquants
+## Root Cause: Missing Vercel Bypass Headers
 
-### Contexte
+### Context
 
-- En CI/CD, l'application est déployée sur Vercel Preview avec protection d'accès
-- Pa11y fonctionne car il configure explicitement les headers de bypass Vercel
-- Cypress échoue car il n'a pas accès à ces headers
+- In CI/CD, the application is deployed on Vercel Preview with access protection
+- Pa11y works because it explicitly configures Vercel bypass headers
+- Cypress fails because it doesn't have access to these headers
 
-### Comparaison Pa11y vs Cypress
+### Pa11y vs Cypress Comparison
 
-#### ✅ Pa11y (FONCTIONNE en CI/CD)
+#### ✅ Pa11y (WORKS in CI/CD)
 
 ```javascript
-// Pa11y configure explicitement les headers de bypass
+// Pa11y explicitly configures bypass headers
 await page.setExtraHTTPHeaders({
   "x-vercel-protection-bypass": process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
 });
 ```
 
-#### ❌ Cypress (ÉCHOUE en CI/CD)
+#### ❌ Cypress (FAILS in CI/CD)
 
 ```typescript
-// Cypress n'a pas de configuration pour les headers de bypass Vercel
-// Il essaie d'accéder directement à CYPRESS_BASE_URL sans authentification
-cy.visit("/signin"); // Échoue car pas d'accès au Preview protégé
+// Cypress has no configuration for Vercel bypass headers
+// It tries to access CYPRESS_BASE_URL directly without authentication
+cy.visit("/signin"); // Fails because no access to protected Preview
 ```
 
-## Détails techniques
+## Technical Details
 
-### Environnement de test
+### Test Environment
 
-- **Local** : `http://localhost:3000` (pas de protection) → ✅ Fonctionne
-- **CI/CD** : `https://[preview-url].vercel.app` (protégé) → ❌ Échoue
+- **Local**: `http://localhost:3000` (no protection) → ✅ Works
+- **CI/CD**: `https://[preview-url].vercel.app` (protected) → ❌ Fails
 
-### Configuration actuelle CI/CD
+### Current CI/CD Configuration
 
 ```yaml
 - name: 🏃 Run Cypress E2E tests
@@ -77,56 +77,56 @@ cy.visit("/signin"); // Échoue car pas d'accès au Preview protégé
     pnpm exec cypress run --config baseUrl=$CYPRESS_BASE_URL
 ```
 
-### Problème
+### Problem
 
-- La variable `VERCEL_AUTOMATION_BYPASS_SECRET` est disponible mais **Cypress ne l'utilise pas**
-- Cypress ne peut pas accéder aux pages protégées du Preview
+- The `VERCEL_AUTOMATION_BYPASS_SECRET` variable is available but **Cypress doesn't use it**
+- Cypress cannot access protected Preview pages
 
-## Solutions possibles
+## Possible Solutions
 
-### Option 1 : Configuration Cypress avec headers personnalisés
+### Option 1: Cypress Configuration with Custom Headers
 
-Implémenter un plugin Cypress pour injecter les headers de bypass automatiquement.
+Implement a Cypress plugin to automatically inject bypass headers.
 
-### Option 2 : Command Cypress personnalisée
+### Option 2: Custom Cypress Command
 
-Créer une commande `cy.visitWithBypass()` qui configure les headers.
+Create a `cy.visitWithBypass()` command that configures headers.
 
-### Option 3 : Intercepteur de requêtes
+### Option 3: Request Interceptor
 
-Utiliser `cy.intercept()` pour ajouter les headers à toutes les requêtes.
+Use `cy.intercept()` to add headers to all requests.
 
-### Option 4 : Configuration globale dans support/e2e.ts
+### Option 4: Global Configuration in support/e2e.ts
 
-Configurer les headers au niveau global pour tous les tests.
+Configure headers at the global level for all tests.
 
-## Recommandation
+## Recommendation
 
-**Option 4** semble la plus appropriée car elle :
+**Option 4** seems most appropriate because it:
 
-- Configure automatiquement tous les tests
-- Maintient la compatibilité local/CI
-- Ne nécessite pas de changement dans les tests existants
+- Automatically configures all tests
+- Maintains local/CI compatibility
+- Requires no changes to existing tests
 
-## Prochaines étapes
+## Next Steps
 
-1. ⏳ **Implémentation de la solution** (après validation de l'analyse)
-2. ⏳ Test en local avec simulation des conditions CI
-3. ⏳ Validation en CI/CD
+1. ⏳ **Solution implementation** (after analysis validation)
+2. ⏳ Local testing with CI conditions simulation
+3. ⏳ CI/CD validation
 
-## Validation de l'analyse
+## Analysis Validation
 
-### Environnement local ✅
+### Local Environment ✅
 
-- Serveur : `vercel dev` sur `http://localhost:3000`
-- Cypress version : 14.4.0
-- Tests : ✅ Passent (pas de protection d'accès)
+- Server: `vercel dev` on `http://localhost:3000`
+- Cypress version: 14.4.0
+- Tests: ✅ Pass (no access protection)
 
-### Environnement CI/CD ❌
+### CI/CD Environment ❌
 
-- Serveur : Preview Vercel protégé
-- URL : `https://[preview-url].vercel.app`
-- Protection : Headers `x-vercel-protection-bypass` requis
-- Tests : ❌ Échouent (pas d'accès autorisé)
+- Server: Protected Vercel Preview
+- URL: `https://[preview-url].vercel.app`
+- Protection: `x-vercel-protection-bypass` headers required
+- Tests: ❌ Fail (no authorized access)
 
-Date : 22 juin 2025 - 16:25
+Date: June 22, 2025 - 16:25

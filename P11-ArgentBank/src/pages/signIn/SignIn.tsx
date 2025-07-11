@@ -42,7 +42,7 @@ const SignIn: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setError(null); // Réinitialiser les erreurs précédentes
+    setError(null); // Reset previous errors
     setIsLoading(true);
     setAriaMessage("Authenticating...");
     try {
@@ -80,7 +80,7 @@ const SignIn: React.FC = () => {
       }
     } finally {
       setIsLoading(false);
-      // setTimeout(() => setAriaMessage(null), 3000); // Retiré ou ajusté si l'erreur est affichée
+      // setTimeout(() => setAriaMessage(null), 3000); // Removed or adjusted if error is displayed
     }
   };
 

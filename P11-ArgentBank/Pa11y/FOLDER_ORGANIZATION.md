@@ -2,80 +2,80 @@
 
 # Pa11y Folder Organization
 
-## Structure des dossiers
+## Folder structure
 
 ```text
 Pa11y/
 ├── scripts/
-│   ├── run-pa11y-tests.js          # Script principal de test Pa11y
-│   └── pa11y-auth.js               # Script d'authentification
+│   ├── run-pa11y-tests.js          # Main Pa11y test script
+│   └── pa11y-auth.js               # Authentication script
 ├── config/
-│   ├── pa11y-ci.config.cjs         # Configuration Pa11y CI
-│   └── pa11y-ci.json               # Configuration JSON Pa11y CI
+│   ├── pa11y-ci.config.cjs         # Pa11y CI configuration
+│   └── pa11y-ci.json               # Pa11y CI JSON configuration
 ├── screenshots/
-│   ├── debug/                      # Captures de débogage
-│   ├── errors/                     # Captures d'erreurs
-│   └── success/                    # Captures de succès
-├── README.md                       # Documentation principale
-└── FOLDER_ORGANIZATION.md          # Ce fichier
+│   ├── debug/                      # Debug captures
+│   ├── errors/                     # Error captures
+│   └── success/                    # Success captures
+├── README.md                       # Main documentation
+└── FOLDER_ORGANIZATION.md          # This file
 ```
 
-## Types de captures d'écran
+## Screenshot types
 
 ### Debug (`screenshots/debug/`)
 
-- `debug_before_button_search.png` - Capture avant la recherche du bouton de connexion
-- `debug_before_submit_click.png` - Capture avant le clic sur le bouton de soumission
-- `debug_signIn_page_before_wait.png` - Capture de la page de connexion avant attente
+- `debug_before_button_search.png` - Capture before login button search
+- `debug_before_submit_click.png` - Capture before submit button click
+- `debug_signIn_page_before_wait.png` - Capture of login page before wait
 
 ### Errors (`screenshots/errors/`)
 
-- `error_in_auth_script.png` - Erreurs génériques dans le script d'authentification
-- `error_test_http___localhost_3000_.png` - Erreurs sur la page d'accueil
-- `error_test_http___localhost_3000_signIn.png` - Erreurs sur la page de connexion
-- `error_test_http___localhost_3000_user.png` - Erreurs sur la page utilisateur
-- `error_after_login_wrong_page.png` - Erreur de navigation après connexion
-- `error_auth_user_page_content_verification_failed.png` - Erreur de vérification du contenu
+- `error_in_auth_script.png` - Generic errors in authentication script
+- `error_test_http___localhost_3000_.png` - Errors on home page
+- `error_test_http___localhost_3000_signIn.png` - Errors on login page
+- `error_test_http___localhost_3000_user.png` - Errors on user page
+- `error_after_login_wrong_page.png` - Navigation error after login
+- `error_auth_user_page_content_verification_failed.png` - Content verification error
 
 ### Success (`screenshots/success/`)
 
-- `screenshot_user_page_after_auth.png` - Capture de succès de la page utilisateur après authentification
-- `pa11y_user_page_after_auth.png` - Capture Pa11y de la page utilisateur authentifiée
+- `screenshot_user_page_after_auth.png` - Success capture of user page after authentication
+- `pa11y_user_page_after_auth.png` - Pa11y capture of authenticated user page
 
-## Configuration des chemins
+## Path configuration
 
-Les scripts `run-pa11y-tests.js` et `pa11y-auth.js` utilisent `path.join(__dirname, ...)` pour construire les chemins vers les captures d'écran. Par exemple :
+The `run-pa11y-tests.js` and `pa11y-auth.js` scripts use `path.join(__dirname, ...)` to build paths to screenshots. For example:
 
-- Dans `run-pa11y-tests.js`:
-  - `errorScreenshotPath` pointe vers `screenshots/errors/error_test_SCENARIO_URL.png`
-- Dans `pa11y-auth.js`:
-  - `screenshotBeforeButtonSearchPath` pointe vers `screenshots/debug/debug_before_button_search.png`
+- In `run-pa11y-tests.js`:
+  - `errorScreenshotPath` points to `screenshots/errors/error_test_SCENARIO_URL.png`
+- In `pa11y-auth.js`:
+  - `screenshotBeforeButtonSearchPath` points to `screenshots/debug/debug_before_button_search.png`
 
-Assurez-vous que la structure de vos dossiers `screenshots/debug/` et `screenshots/errors/` correspond à ces chemins.
+Make sure your `screenshots/debug/` and `screenshots/errors/` folder structure matches these paths.
 
-## Tests disponibles
+## Available tests
 
-1. **Page d'accueil** (`/`) - Sans authentification
-2. **Page de connexion** (`/signIn`) - Sans authentification
-3. **Page utilisateur** (`/user`) - Avec authentification requise
+1. **Home page** (`/`) - No authentication
+2. **Login page** (`/signIn`) - No authentication
+3. **User page** (`/user`) - Authentication required
 
-## Exécution des tests
+## Running tests
 
 ```bash
-# Depuis le dossier Pa11y
+# From Pa11y folder
 node run-pa11y-tests.js
 
-# Ou depuis la racine du projet
+# Or from project root
 node Pa11y/run-pa11y-tests.js
 ```
 
-## Prochaines étapes
+## Next steps
 
-1. Intégration avec Cypress pour des tests E2E complets
-2. Configuration CI/CD pour l'exécution automatique
-3. Rapports HTML détaillés avec captures d'écran intégrées
+1. Integration with Cypress for complete E2E tests
+2. CI/CD configuration for automatic execution
+3. Detailed HTML reports with integrated screenshots
 
 ---
 
-**Date de création :** 26 mai 2025  
-**Dernière mise à jour :** 26 mai 2025
+**Creation date:** May 26, 2025  
+**Last updated:** May 26, 2025

@@ -455,7 +455,7 @@ test: {
 - [ ] Tests des props obligatoires
 - [ ] Tests d'accessibilité de base
 
-## 🔗 Intégration avec les autres outils
+## 🔗 Integration with other tools
 
 ### Avec les autres types de tests
 

@@ -1,55 +1,55 @@
 <!-- @format -->
 
-# Plan d'intégration de Cypress dans ArgentBank
+# Cypress Integration Plan for ArgentBank
 
-Ce document présente une stratégie pour l'intégration de Cypress comme outil de tests end-to-end (E2E) dans le projet ArgentBank, en complément des tests unitaires et d'intégration existants avec Vitest.
+This document presents a strategy for integrating Cypress as an end-to-end (E2E) testing tool in the ArgentBank project, complementing existing unit and integration tests with Vitest.
 
-## 📋 Vue d'ensemble
+## 📋 Overview
 
-### Positionnement dans la stratégie de test
+### Positioning in the Testing Strategy
 
 ```
                     ┌─────────────────┐
-                    │   Tests E2E     │
+                    │     E2E Tests   │
                     │    (Cypress)    │
                     └────────┬────────┘
                              │
                     ┌────────▼────────┐
-                    │Tests d'intégration│
+                    │Integration Tests│
                     │    (Vitest)     │
                     └────────┬────────┘
                              │
                     ┌────────▼────────┐
-                    │  Tests unitaires │
+                    │   Unit Tests    │
                     │     (Vitest)    │
                     └─────────────────┘
 ```
 
-### Complémentarité avec les tests existants
+### Complementarity with Existing Tests
 
-| Type de test | Outil   | Objectif                                           | Focus                           |
-| ------------ | ------- | -------------------------------------------------- | ------------------------------- |
-| Unitaire     | Vitest  | Vérifier les fonctions isolées                     | Comportement individuel         |
-| Intégration  | Vitest  | Vérifier les interactions entre modules            | Workflows internes              |
-| E2E          | Cypress | Vérifier l'application du point de vue utilisateur | Expérience utilisateur complète |
+| Test Type   | Tool    | Objective                                  | Focus                    |
+| ----------- | ------- | ------------------------------------------ | ------------------------ |
+| Unit        | Vitest  | Verify isolated functions                  | Individual behavior      |
+| Integration | Vitest  | Verify interactions between modules        | Internal workflows       |
+| E2E         | Cypress | Verify application from user's perspective | Complete user experience |
 
-## 🛠️ Installation et configuration
+## 🛠️ Installation and Configuration
 
-### Installation de Cypress
+### Cypress Installation
 
 ```bash
-# Installer Cypress comme dépendance de développement
+# Install Cypress as a development dependency
 pnpm add -D cypress
 
-# Installer les plugins recommandés
+# Install recommended plugins
 pnpm add -D @testing-library/cypress cypress-axe cypress-real-events
 ```
 
-### Structure de dossiers proposée
+### Proposed Folder Structure
 
 ```
 cypress/
-├── e2e/                      # Tests E2E organisés par fonctionnalité
+├── e2e/                      # E2E tests organized by feature
 │   ├── auth/
 │   │   ├── login.cy.js
 │   │   └── logout.cy.js
@@ -183,7 +183,7 @@ describe("Login Process", () => {
 });
 ```
 
-## 🔄 Intégration avec le reste de la suite de tests
+## 🔄 Integration with the rest of the test suite
 
 ### Scripts dans package.json
 

@@ -2,10 +2,10 @@
 
 // cypress/e2e/auth/login.cy.ts
 
-// Import de l'interface User commune
+// Import of common User interface
 import type { User } from "../../support/types";
 
-describe("Authentification", () => {
+describe("Authentication", () => {
   beforeEach(() => {
     cy.session("login-valid-user-session", () => {
       cy.fixture<User[]>("users.json").then((usersData) => {
@@ -17,7 +17,7 @@ describe("Authentification", () => {
           !validUser.userName
         ) {
           throw new Error(
-            "Utilisateur valide non trouvé ou informations manquantes dans les fixtures.",
+            "Valid user not found or missing information in fixtures.",
           );
         }
         cy.visit("/signin");
@@ -43,24 +43,24 @@ describe("Authentification", () => {
     cy.visit("/user");
   });
 
-  it("devrait permettre à un utilisateur de se connecter avec des identifiants valides", () => {
-    // Injecter axe-core pour les tests d'accessibilité
+  it("should allow a user to sign in with valid credentials", () => {
+    // Inject axe-core for accessibility tests
     cy.injectAxe();
     cy.checkA11y();
-    // La session Cypress a déjà connecté l'utilisateur, il suffit de tester l'UI
+    // Cypress session has already logged in the user, just need to test the UI
     cy.get('[data-cy="login-button"], form').should("not.exist");
     cy.url().should("include", "/user");
     cy.checkA11y();
-    // Optionnel : vérifier le header si besoin
+    // Optional: check header if needed
     // cy.get('.header__nav-item').should('be.visible');
   });
 
-  it("devrait afficher un message d'erreur avec des identifiants invalides", () => {
+  it("should display an error message with invalid credentials", () => {
     cy.fixture<User[]>("users.json").then((usersData) => {
       const invalidUser = usersData.find((user) => user.type === "invalid");
       if (!invalidUser || !invalidUser.email || !invalidUser.password) {
         throw new Error(
-          "Utilisateur invalide non trouvé ou informations manquantes (email, password) dans les fixtures pour le test d'identifiants invalides.",
+          "Invalid user not found or missing information (email, password) in fixtures for invalid credentials test.",
         );
       }
       cy.visit("/signin");
@@ -81,17 +81,17 @@ describe("Authentification", () => {
       cy.checkA11y();
     });
   });
-  it("devrait être accessible sur la page de connexion", () => {
+  it("should be accessible on the login page", () => {
     cy.visit("/signin");
-    // Injecter axe-core pour les tests d'accessibilité
+    // Inject axe-core for accessibility tests
     cy.injectAxe();
     cy.checkA11y();
-    // Tester l'accessibilité avec focus sur les champs de formulaire
+    // Test accessibility with focus on form fields
     cy.get("input#email").focus();
     cy.checkA11y();
     cy.get("input#password").focus();
     cy.checkA11y();
   });
 
-  // Le test de déconnexion a été déplacé dans cypress/e2e/auth/logout.cy.ts
+  // The logout test has been moved to cypress/e2e/auth/logout.cy.ts
 });

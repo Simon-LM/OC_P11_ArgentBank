@@ -1,12 +1,12 @@
 /** @format */
 
 /**
- * Tests d'intégration pour ProtectedRoute
+ * Integration tests for ProtectedRoute
  *
- * Scope d'intégration :
- * - Intégration Redux + React Router
- * - Logique de redirection d'authentification
- * - Interaction entre store d'état et navigation
+ * Integration scope:
+ * - Redux + React Router integration
+ * - Authentication redirection logic
+ * - Interaction between state store and navigation
  */
 
 import { describe, test, expect } from "vitest";

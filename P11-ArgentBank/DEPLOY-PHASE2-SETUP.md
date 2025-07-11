@@ -1,87 +1,87 @@
 <!-- @format -->
 
-# 🚀 Phase 2 : Configuration Déploiement Automatique Vercel
+# 🚀 Phase 2: Vercel Automatic Deployment Configuration
 
-## 📋 Secrets GitHub requis
+## 📋 Required GitHub Secrets
 
-Pour activer le déploiement automatique, vous devez configurer ces secrets dans votre repository GitHub :
+To enable automatic deployment, you must configure these secrets in your GitHub repository:
 
-### 1. Obtenir les tokens Vercel
+### 1. Get Vercel tokens
 
 ```bash
-# Dans votre terminal
-vercel login  # Si pas déjà connecté
-vercel link   # Lier le projet Vercel (dans P11-ArgentBank/)
+# In your terminal
+vercel login  # If not already connected
+vercel link   # Link Vercel project (in P11-ArgentBank/)
 
-# Récupérer les informations nécessaires
-vercel env ls --environment=production  # Voir les variables
+# Get necessary information
+vercel env ls --environment=production  # View variables
 ```
 
-### 2. Secrets à configurer sur GitHub
+### 2. Secrets to configure on GitHub
 
-Allez dans **Settings > Secrets and variables > Actions** de votre repository et ajoutez :
+Go to **Settings > Secrets and variables > Actions** of your repository and add:
 
-| Secret Name         | Description                     | Où le trouver                                                  |
-| ------------------- | ------------------------------- | -------------------------------------------------------------- |
-| `VERCEL_TOKEN`      | Token d'authentification Vercel | [vercel.com/account/tokens](https://vercel.com/account/tokens) |
-| `VERCEL_ORG_ID`     | ID de votre organisation Vercel | Fichier `.vercel/project.json` (après `vercel link`)           |
-| `VERCEL_PROJECT_ID` | ID de votre projet Vercel       | Fichier `.vercel/project.json` (après `vercel link`)           |
+| Secret Name         | Description                 | Where to find it                                               |
+| ------------------- | --------------------------- | -------------------------------------------------------------- |
+| `VERCEL_TOKEN`      | Vercel authentication token | [vercel.com/account/tokens](https://vercel.com/account/tokens) |
+| `VERCEL_ORG_ID`     | Your Vercel organization ID | `.vercel/project.json` file (after `vercel link`)              |
+| `VERCEL_PROJECT_ID` | Your Vercel project ID      | `.vercel/project.json` file (after `vercel link`)              |
 
-### 3. Récupération automatique des IDs
+### 3. Automatic ID retrieval
 
 ```bash
 cd P11-ArgentBank
-vercel link --yes  # Crée .vercel/project.json
-cat .vercel/project.json  # Affiche orgId et projectId
+vercel link --yes  # Creates .vercel/project.json
+cat .vercel/project.json  # Displays orgId and projectId
 ```
 
-## 🔄 Fonctionnement du déploiement
+## 🔄 Deployment Process
 
-### **Pull Request** → Déploiement Preview
+### **Pull Request** → Preview Deployment
 
-- ✅ Build automatique
-- ✅ Tests CI/CD passent
-- ✅ Déploiement sur URL preview Vercel
-- ✅ Commentaire automatique avec lien preview
+- ✅ Automatic build
+- ✅ CI/CD tests pass
+- ✅ Deployment to Vercel preview URL
+- ✅ Automatic comment with preview link
 
-### **Merge vers main** → Déploiement Production
+### **Merge to main** → Production Deployment
 
-- ✅ Build automatique
-- ✅ Tests CI/CD passent
-- ✅ Déploiement production sur votre domaine Vercel
+- ✅ Automatic build
+- ✅ CI/CD tests pass
+- ✅ Production deployment to your Vercel domain
 
-## 🛠️ Workflows créés
+## 🛠️ Created Workflows
 
-- **`.github/workflows/ci.yml`** - Tests et validation (Phase 1) ✅
-- **`.github/workflows/deploy.yml`** - Déploiement automatique (Phase 2) 🆕
+- **`.github/workflows/ci.yml`** - Tests and validation (Phase 1) ✅
+- **`.github/workflows/deploy.yml`** - Automatic deployment (Phase 2) 🆕
 
-## ⚡ Test du déploiement
+## ⚡ Deployment Testing
 
-Une fois les secrets configurés :
+Once secrets are configured:
 
-1. **Créer une nouvelle PR** → Déclenche le déploiement preview
-2. **Merger la PR** → Déclenche le déploiement production
+1. **Create a new PR** → Triggers preview deployment
+2. **Merge the PR** → Triggers production deployment
 
 ## 🔧 Troubleshooting
 
-### Erreur "VERCEL_TOKEN invalid"
+### Error "VERCEL_TOKEN invalid"
 
-- Régénérer le token sur [vercel.com/account/tokens](https://vercel.com/account/tokens)
-- Vérifier que le token a les permissions "Deploy"
+- Regenerate token on [vercel.com/account/tokens](https://vercel.com/account/tokens)
+- Verify token has "Deploy" permissions
 
-### Erreur "Project not found"
+### Error "Project not found"
 
-- Vérifier `VERCEL_PROJECT_ID` et `VERCEL_ORG_ID`
-- Re-lancer `vercel link` dans P11-ArgentBank/
+- Verify `VERCEL_PROJECT_ID` and `VERCEL_ORG_ID`
+- Re-run `vercel link` in P11-ArgentBank/
 
-### Déploiement bloqué
+### Deployment blocked
 
-- Vérifier que tous les secrets sont bien configurés
-- Regarder les logs GitHub Actions pour plus de détails
+- Verify all secrets are properly configured
+- Check GitHub Actions logs for more details
 
-## 🎯 Prochaines étapes
+## 🎯 Next Steps
 
-Une fois la Phase 2 fonctionnelle :
+Once Phase 2 is functional:
 
-- **Phase 3** : Analyse avancée (coverage, bundle, security)
-- **Phase 4** : Tests accessibilité (Pa11y, Lighthouse, Cypress)
+- **Phase 3**: Advanced analysis (coverage, bundle, security)
+- **Phase 4**: Accessibility tests (Pa11y, Lighthouse, Cypress)

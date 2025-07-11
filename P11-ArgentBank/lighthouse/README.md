@@ -2,26 +2,26 @@
 
 # Lighthouse Testing Suite
 
-Suite de tests Lighthouse pour l'application ArgentBank avec support d'authentification.
+Lighthouse testing suite for the ArgentBank application with authentication support.
 
-## Structure du projet
+## Project Structure
 
 ```plaintext
 lighthouse/
-├── auth/              # Données d'authentification
+├── auth/              # Authentication data
 │   └── auth-cookies.json
-├── config/            # Configuration Lighthouse
+├── config/            # Lighthouse configuration
 │   ├── lighthouse.config.js
 │   └── lighthouse-ci.config.js
-├── lib/               # Bibliothèques et utilitaires
+├── lib/               # Libraries and utilities
 │   ├── lighthouse-analyzer.js
 │   ├── lighthouse-auth-v2.js
 │   └── lighthouse-regression.js
-├── reports/           # Rapports générés
+├── reports/           # Generated reports
 │   ├── lighthouse-report.html
 │   ├── lighthouse-report.json
-│   └── archive/       # Archives des anciens rapports
-└── scripts/           # Scripts d'exécution
+│   └── archive/       # Old reports archive
+└── scripts/           # Execution scripts
     ├── lighthouse-auth-runner.sh
     ├── lighthouse-quick.sh
     ├── lighthouse-runner.js
@@ -29,13 +29,13 @@ lighthouse/
     └── pre-commit-lighthouse.sh
 ```
 
-## Scripts principaux
+## Main Scripts
 
 ### `lighthouse-runner.js`
 
-Runner principal CLI avec support d'authentification automatique.
+Main CLI runner with automatic authentication support.
 
-**Usage :**
+**Usage:**
 
 ```bash
 node lighthouse/scripts/lighthouse-runner.js
@@ -43,11 +43,11 @@ node lighthouse/scripts/lighthouse-runner.js
 
 ### `lighthouse-global-report.js`
 
-#### 🌍 NOUVEAU : Script de rapport global différencié
+#### 🌍 NEW: Differentiated global report script
 
-Génère automatiquement des rapports Lighthouse pour toutes les pages (Home, SignIn, Profile) sur mobile et desktop, puis produit une analyse globale comparative.
+Automatically generates Lighthouse reports for all pages (Home, SignIn, Profile) on mobile and desktop, then produces a comparative global analysis.
 
-**Fonctionnalités :**
+**Features:**
 
 - ✅ Tests automatisés sur 3 pages × 2 devices = 6 rapports JSON
 - ✅ Gestion automatique de l'authentification pour la page Profile
@@ -91,7 +91,7 @@ Script shell pour tests avec authentification avancée.
 
 ### `lighthouse-test-suite.js`
 
-Suite de tests complète pour multiple pages.
+Complete test suite for multiple pages.
 
 **Usage :**
 

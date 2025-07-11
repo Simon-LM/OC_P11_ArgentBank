@@ -10,8 +10,8 @@ describe("ProtectedRoute", () => {
   });
 
   test("is a functional component that accepts props", () => {
-    // Test structurel minimal sans rendu
+    // Minimal structural test without rendering
     const component = ProtectedRoute;
-    expect(component.length).toBe(1); // Attend 1 paramètre (props)
+    expect(component.length).toBe(1); // Expects 1 parameter (props)
   });
 });

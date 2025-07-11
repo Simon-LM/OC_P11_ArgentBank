@@ -57,7 +57,7 @@ describe("Home - Integration Tests", () => {
       fireEvent.load(img);
     }
 
-    // Attendre que le style de la description soit mis à jour
+    // Wait for description style to be updated
     await waitFor(() => {
       const description = screen.getByText(
         /A young tree sprout growing in a glass jar filled with coins/,

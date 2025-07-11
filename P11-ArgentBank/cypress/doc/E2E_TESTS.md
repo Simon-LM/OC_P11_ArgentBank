@@ -1,53 +1,53 @@
 <!-- @format -->
 
-# Guide des Tests E2E avec Cypress
+# E2E Testing Guide with Cypress
 
-Ce guide explique comment créer, structurer et maintenir des tests end-to-end (E2E) efficaces avec Cypress dans le projet ArgentBank.
+This guide explains how to create, structure, and maintain effective end-to-end (E2E) tests with Cypress in the ArgentBank project.
 
-## 📋 Vue d'ensemble
+## 📋 Overview
 
-Les tests E2E avec Cypress permettent de vérifier le fonctionnement complet de l'application du point de vue de l'utilisateur, simulant les interactions réelles avec l'interface.
+E2E tests with Cypress allow you to verify the complete functionality of the application from the user's perspective, simulating real interactions with the interface.
 
-## 🎯 Objectifs des tests E2E
+## 🎯 E2E Testing Objectives
 
-- ✅ Valider les parcours utilisateur complets
-- ✅ Tester l'intégration de tous les composants ensemble
-- ✅ Vérifier que l'interface utilisateur répond correctement
-- ✅ S'assurer que les données circulent correctement entre le frontend et le backend
-- ✅ Détecter les régressions visuelles et fonctionnelles
+- ✅ Validate complete user journeys
+- ✅ Test integration of all components together
+- ✅ Verify that the user interface responds correctly
+- ✅ Ensure data flows correctly between frontend and backend
+- ✅ Detect visual and functional regressions
 
-## 📁 Organisation des tests
+## 📁 Test Organization
 
-### Structure actuelle du projet
+### Current Project Structure
 
 ```text
 cypress/
 └── e2e/
-    ├── auth/                           # Tests d'authentification (2 fichiers)
-    │   ├── login.cy.ts                 # Tests de connexion - 3 tests
-    │   └── logout.cy.ts                # Tests de déconnexion - 2 tests
-    ├── accounts/                       # Tests des comptes bancaires (1 fichier)
-    │   └── accounts.cy.ts              # Tests de visualisation comptes - 3 tests
-    ├── profile/                        # Tests du profil utilisateur (1 fichier)
-    │   └── profile.cy.ts               # Tests de modification profil - 8 tests
-    ├── transactions/                   # Tests des transactions (2 fichiers)
-    │   ├── transactions-display.cy.ts  # Tests d'affichage et navigation - 3 tests
-    │   └── transactions-functionality.cy.ts # Tests de fonctionnalités - 3 tests
-    ├── cross-browser/                  # Tests cross-browser (1 fichier)
-    │   └── cross-browser.cy.ts         # Tests de compatibilité - 7 tests
-    ├── edge-cases/                     # Tests de cas limites (1 fichier)
-    │   └── edge-cases.cy.ts            # Tests de robustesse - 7 tests
-    └── network/                        # Tests réseau (1 fichier)
-        └── network-errors.cy.ts        # Tests de gestion d'erreurs - 7 tests
+    ├── auth/                           # Authentication tests (2 files)
+    │   ├── login.cy.ts                 # Login tests - 3 tests
+    │   └── logout.cy.ts                # Logout tests - 2 tests
+    ├── accounts/                       # Bank accounts tests (1 file)
+    │   └── accounts.cy.ts              # Account viewing tests - 3 tests
+    ├── profile/                        # User profile tests (1 file)
+    │   └── profile.cy.ts               # Profile modification tests - 8 tests
+    ├── transactions/                   # Transaction tests (2 files)
+    │   ├── transactions-display.cy.ts  # Display and navigation tests - 3 tests
+    │   └── transactions-functionality.cy.ts # Functionality tests - 3 tests
+    ├── cross-browser/                  # Cross-browser tests (1 file)
+    │   └── cross-browser.cy.ts         # Compatibility tests - 7 tests
+    ├── edge-cases/                     # Edge case tests (1 file)
+    │   └── edge-cases.cy.ts            # Robustness tests - 7 tests
+    └── network/                        # Network tests (1 file)
+        └── network-errors.cy.ts        # Error handling tests - 7 tests
 
-Total: 9 fichiers de test | 41 tests E2E | 100% avec accessibilité intégrée
+Total: 9 test files | 41 E2E tests | 100% with integrated accessibility
 ```
 
-### Convention de nommage
+### Naming Convention
 
-- **Fichiers** : `[feature]-[action].cy.ts` ou `[feature].cy.ts`
-- **Descriptions** : Utiliser des verbes d'action clairs
-- **Tests** : Décrire le comportement attendu
+- **Files**: `[feature]-[action].cy.ts` or `[feature].cy.ts`
+- **Descriptions**: Use clear action verbs
+- **Tests**: Describe expected behavior
 
 ```javascript
 // ✅ Bon nommage (exemples du projet)

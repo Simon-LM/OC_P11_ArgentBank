@@ -1,11 +1,11 @@
 /** @format */
 
-// Import de l'interface User commune
+// Import of common User interface
 import type { User } from "../../support/types";
 
-describe("Gestion des Comptes Bancaires", () => {
+describe("Bank Account Management", () => {
   beforeEach(() => {
-    // Intercepts éventuels ici si besoin (ex: cy.intercept(...))
+    // Potential intercepts here if needed (ex: cy.intercept(...))
     cy.session("accounts-valid-user-session", () => {
       cy.fixture<User[]>("users.json").then((usersData) => {
         const validUser = usersData.find((user) => user.type === "valid");
@@ -16,7 +16,7 @@ describe("Gestion des Comptes Bancaires", () => {
           !validUser.userName
         ) {
           throw new Error(
-            "Utilisateur valide non trouvé ou informations manquantes dans les fixtures.",
+            "Valid user not found or missing information in fixtures.",
           );
         }
         cy.visit("/signin");
@@ -27,7 +27,7 @@ describe("Gestion des Comptes Bancaires", () => {
         cy.get(".header__nav-item")
           .contains(validUser.userName)
           .should("be.visible");
-        // Vérification du token (adapter la clé si besoin)
+        // Token verification (adapt key if needed)
         cy.window().then((win) => {
           const token =
             win.sessionStorage.getItem("authToken") ||
@@ -39,62 +39,62 @@ describe("Gestion des Comptes Bancaires", () => {
     cy.visit("/user");
   });
 
-  it("devrait afficher correctement la liste des comptes de l'utilisateur sur la page de profil", () => {
-    // Injecter axe-core pour les tests d'accessibilité
+  it("should correctly display the user's account list on the profile page", () => {
+    // Inject axe-core for accessibility tests
     cy.injectAxe();
 
-    // Test d'accessibilité de la page des comptes (ignorer les violations de contraste connues)
+    // Accessibility test of accounts page (ignore known contrast violations)
     cy.checkA11y();
 
-    // La page User est déjà chargée après la connexion dans beforeEach
+    // User page is already loaded after login in beforeEach
 
-    // Vérifier la présence d'au moins trois sections de compte (Checking, Savings, Credit Card)
-    // Ces sélecteurs sont basés sur la structure HTML typique du projet
+    // Verify presence of at least three account sections (Checking, Savings, Credit Card)
+    // These selectors are based on typical HTML structure of the project
     const accountSelectors = [
       {
         titleContains: "Checking",
         balanceText: "Available Balance",
-        idSuffix: "x8949", // Corrigé de x8349 à x8949
+        idSuffix: "x8949", // Corrected from x8349 to x8949
       },
       {
         titleContains: "Savings",
         balanceText: "Available Balance",
-        idSuffix: "x2094", // Corrigé de x6712 à x2094
+        idSuffix: "x2094", // Corrected from x6712 to x2094
       },
       {
         titleContains: "Credit Card",
-        balanceText: "Available Balance", // Corrigé de "Current Balance" à "Available Balance"
-        idSuffix: "x5642", // Corrigé de x5201 à x5642
+        balanceText: "Available Balance", // Corrected from "Current Balance" to "Available Balance"
+        idSuffix: "x5642", // Corrected from x5201 to x5642
       },
     ];
 
     cy.get('div[class*="user-page"]').within(() => {
       accountSelectors.forEach((acc) => {
-        cy.contains('button[class*="account"]', acc.titleContains) // Cible le bouton de compte par son titre
+        cy.contains('button[class*="account"]', acc.titleContains) // Target account button by its title
           .should("be.visible")
           .within(() => {
             cy.get('h3[class*="account__title"]').should(
               "contain.text",
               acc.idSuffix,
-            ); // Vérifie l'ID du compte dans le titre
+            ); // Verify account ID in title
             cy.get('p[class*="account__description"]').should(
-              // Vérifie la description (ex: "Available Balance")
+              // Verify description (ex: "Available Balance")
               "have.text",
               acc.balanceText,
             );
-            cy.get('p[class*="account__amount"]') // Vérifie le solde
+            cy.get('p[class*="account__amount"]') // Verify balance
               .invoke("text")
-              .should("match", /€-?\d+(,\d{3})*\.\d{2}$/); // Format €XX,XXX.XX ou €XXXX.XX ou €-XXXX.XX
-            // Le bouton "View transactions" est implicitement le compte lui-même dans ce design
+              .should("match", /€-?\d+(,\d{3})*\.\d{2}$/); // Format €XX,XXX.XX or €XXXX.XX or €-XXXX.XX
+            // The "View transactions" button is implicitly the account itself in this design
           });
       });
     });
 
-    // Vérification plus générique du nombre de comptes si les titres ne sont pas fixes
-    // cy.get("section.account").should("have.length.gte", 1); // Au moins 1 compte
-    // cy.get("section.account").should("have.length", 3); // Si on s'attend à exactement 3 comptes
+    // More generic verification of account count if titles are not fixed
+    // cy.get("section.account").should("have.length.gte", 1); // At least 1 account
+    // cy.get("section.account").should("have.length", 3); // If expecting exactly 3 accounts
 
-    // Pour chaque compte, vérifier les informations essentielles
+    // For each account, verify essential information
     // cy.get("section.account").each(($el) => {
     //   cy.wrap($el).find(".account_title").should("be.visible");
     //   cy.wrap($el).find(".account_amount").should("be.visible");
@@ -103,20 +103,20 @@ describe("Gestion des Comptes Bancaires", () => {
     // });
   });
 
-  it("devrait marquer le compte comme sélectionné et mettre à jour l'affichage sur la page utilisateur", () => {
-    // beforeEach s'occupe déjà de la connexion et de la navigation vers /user
+  it("should mark the account as selected and update the display on the user page", () => {
+    // beforeEach already handles login and navigation to /user
 
-    // Cliquer sur le premier bouton de compte affiché
+    // Click on the first displayed account button
     cy.get('button[class*="account"]').first().as("firstAccount");
     cy.get("@firstAccount").click();
 
-    // Vérifier que le compte cliqué est marqué comme sélectionné (aria-pressed="true")
+    // Verify that the clicked account is marked as selected (aria-pressed="true")
     cy.get("@firstAccount").should("have.attr", "aria-pressed", "true");
 
-    // Vérifier que le chemin de l'URL est toujours /user (avec u minuscule)
+    // Verify that the URL path is still /user (with lowercase u)
     cy.location("pathname").should("eq", "/user");
 
-    // Optionnel: vérifier qu'un autre compte n'est pas sélectionné (s'il y en a plus d'un)
+    // Optional: verify that another account is not selected (if there are more than one)
     cy.get('button[class*="account"]').then(($buttons) => {
       if ($buttons.length > 1) {
         cy.get('button[class*="account"]')
@@ -126,18 +126,18 @@ describe("Gestion des Comptes Bancaires", () => {
     });
   });
 
-  it("devrait être accessible sur la page des comptes bancaires", () => {
-    // Injecter axe-core pour les tests d'accessibilité
+  it("should be accessible on the bank accounts page", () => {
+    // Inject axe-core for accessibility tests
     cy.injectAxe();
 
-    // Test d'accessibilité dédié pour la page des comptes (ignorer les violations de contraste connues)
+    // Dedicated accessibility test for accounts page (ignore known contrast violations)
     cy.checkA11y();
 
-    // Tester l'accessibilité des boutons de compte
+    // Test accessibility of account buttons
     cy.get('button[class*="account"]').first().focus();
     cy.checkA11y();
 
-    // Cliquer sur un compte et tester l'accessibilité
+    // Click on an account and test accessibility
     cy.get('button[class*="account"]').first().click();
     cy.checkA11y(undefined, {
       rules: {
@@ -145,7 +145,7 @@ describe("Gestion des Comptes Bancaires", () => {
       },
     });
 
-    // Tester l'accessibilité après sélection du compte
+    // Test accessibility after account selection
     cy.get('button[class*="account"][aria-pressed="true"]').should("exist");
     cy.checkA11y(undefined, {
       rules: {

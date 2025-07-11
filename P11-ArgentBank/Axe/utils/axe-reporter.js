@@ -128,7 +128,7 @@ export class AxeReporter {
 
   // Template HTML pour les rapports
   createHTMLTemplate(results, metadata) {
-    const timestamp = new Date().toLocaleString("fr-FR");
+    const timestamp = new Date().toLocaleString("en-US");
     const analysis = this.analyzeResults(results);
 
     return `
@@ -161,7 +161,7 @@ export class AxeReporter {
   <div class="container">
     <div class="header">
       <div class="logo">🛡️ ArgentBank - Rapport d'Accessibilité Axe</div>
-      <p>Généré le ${timestamp}</p>
+      <p>Generated on ${timestamp}</p>
     </div>
     
     <div class="summary">

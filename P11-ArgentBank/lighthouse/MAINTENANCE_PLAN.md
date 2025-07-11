@@ -1,167 +1,167 @@
 <!-- @format -->
 
-# Plan de Maintenance Lighthouse
+# Lighthouse Maintenance Plan
 
-## 📅 **Calendrier de maintenance recommandé**
+## 📅 **Recommended maintenance schedule**
 
-### Quotidien (Développement actif)
+### Daily (Active development)
 
-- ✅ Tests rapides avant commits : `./run.sh quick`
-- ✅ Vérification des scores sur pages modifiées
-- 🔍 Surveillance des métriques Core Web Vitals
+- ✅ Quick tests before commits: `./run.sh quick`
+- ✅ Score verification on modified pages
+- 🔍 Core Web Vitals metrics monitoring
 
-### Hebdomadaire
+### Weekly
 
-- 🧹 Nettoyage des rapports : `./clean.sh`
-- 📊 Analyse des tendances de performance
-- 🔄 Mise à jour des baselines si nécessaire
+- 🧹 Report cleanup: `./clean.sh`
+- 📊 Performance trend analysis
+- 🔄 Baseline updates if necessary
 
-### Mensuel
+### Monthly
 
-- 📦 Archivage des rapports : `./migrate-reports.sh`
-- 🔧 Révision des configurations par environnement
-- 📈 Rapport de performance mensuel
+- 📦 Report archiving: `./migrate-reports.sh`
+- 🔧 Configuration review by environment
+- 📈 Monthly performance report
 
-### Trimestriel
+### Quarterly
 
-- 🚀 Mise à jour de Lighthouse vers la dernière version
-- 🔍 Audit complet de la structure des scripts
-- 📋 Révision des seuils de performance
+- 🚀 Lighthouse update to latest version
+- 🔍 Complete audit of script structure
+- 📋 Performance threshold review
 
-## 🔧 **Maintenance préventive**
+## 🔧 **Preventive maintenance**
 
-### Surveillance des fichiers critiques
+### Critical file monitoring
 
-#### À surveiller quotidiennement
+#### To monitor daily
 
 ```bash
-# Vérifier l'intégrité des configs
+# Check config integrity
 ls -la lighthouse/config/
 
-# S'assurer que l'auth fonctionne
+# Ensure auth works
 test -f lighthouse/auth/auth-cookies.json
 ```
 
-#### À vérifier hebdomadairement
+#### To check weekly
 
 ```bash
-# Taille du dossier reports
+# Reports folder size
 du -sh lighthouse/reports/
 
-# Nombre de rapports (ne pas dépasser 50)
+# Number of reports (should not exceed 50)
 find lighthouse/reports/ -name "*.json" | wc -l
 ```
 
-### Indicateurs de santé
+### Health indicators
 
-#### 🟢 Système sain
+#### 🟢 Healthy system
 
-- Suite de tests : 6/6 réussis
-- Rapports générés : < 48h
-- Taille du dossier reports : < 100MB
-- Scores stables sur 7 jours
+- Test suite: 6/6 successful
+- Generated reports: < 48h
+- Reports folder size: < 100MB
+- Stable scores over 7 days
 
-#### 🟡 Attention requise
+#### 🟡 Attention required
 
-- Échecs sporadiques dans la suite
-- Rapports > 72h
-- Taille du dossier > 100MB
-- Baisse des scores > 10%
+- Sporadic failures in suite
+- Reports > 72h
+- Folder size > 100MB
+- Score drop > 10%
 
-#### 🔴 Intervention nécessaire
+#### 🔴 Intervention needed
 
-- Échecs constants (> 50%)
-- Pas de rapports depuis > 7 jours
-- Taille du dossier > 500MB
-- Chute des scores > 25%
+- Constant failures (> 50%)
+- No reports for > 7 days
+- Folder size > 500MB
+- Score drop > 25%
 
-## 🎯 **Checklist de maintenance mensuelle**
+## 🎯 **Monthly maintenance checklist**
 
-### 1. Nettoyage et archivage
+### 1. Cleanup and archiving
 
-- [ ] Exécuter `./clean.sh`
-- [ ] Exécuter `./migrate-reports.sh`
-- [ ] Vérifier l'espace disque disponible
+- [ ] Execute `./clean.sh`
+- [ ] Execute `./migrate-reports.sh`
+- [ ] Check available disk space
 
-### 2. Validation des configurations
+### 2. Configuration validation
 
-- [ ] Tester tous les scripts principaux
-- [ ] Vérifier la validité des cookies d'auth
-- [ ] Valider les seuils par environnement
+- [ ] Test all main scripts
+- [ ] Verify auth cookie validity
+- [ ] Validate thresholds by environment
 
-### 3. Analyse des performances
+### 3. Performance analysis
 
-- [ ] Comparer les métriques du mois
-- [ ] Identifier les régressions persistantes
-- [ ] Mettre à jour les baselines si nécessaire
+- [ ] Compare month's metrics
+- [ ] Identify persistent regressions
+- [ ] Update baselines if necessary
 
 ### 4. Documentation
 
-- [ ] Mettre à jour le README si nécessaire
-- [ ] Documenter les nouveaux scripts ajoutés
-- [ ] Vérifier la pertinence des exemples
+- [ ] Update README if necessary
+- [ ] Document newly added scripts
+- [ ] Verify example relevance
 
-## 🔄 **Processus de mise à jour**
+## 🔄 **Update process**
 
-### Lighthouse (version majeure)
+### Lighthouse (major version)
 
-1. Tester en local d'abord
-2. Vérifier la compatibilité des configs
-3. Mettre à jour les seuils si nécessaire
-4. Valider sur une branche de test
-5. Déployer en production
+1. Test locally first
+2. Check config compatibility
+3. Update thresholds if necessary
+4. Validate on test branch
+5. Deploy to production
 
-### Scripts personnalisés
+### Custom scripts
 
-1. Backup des scripts actuels
-2. Tests unitaires sur les modifications
-3. Validation avec la suite complète
-4. Documentation des changements
+1. Backup current scripts
+2. Unit tests on modifications
+3. Validation with complete suite
+4. Document changes
 
-## 📊 **Métriques de suivi**
+## 📊 **Tracking metrics**
 
-### KPIs de maintenance
+### Maintenance KPIs
 
-- **Disponibilité** : % de tests réussis sur 30 jours
-- **Performance** : Évolution des scores moyens
-- **Maintenance** : Temps entre les nettoyages
-- **Efficacité** : Temps d'exécution des tests
+- **Availability**: % of successful tests over 30 days
+- **Performance**: Average score evolution
+- **Maintenance**: Time between cleanups
+- **Efficiency**: Test execution time
 
-### Alertes automatiques (à implémenter)
+### Automatic alerts (to implement)
 
 ```bash
-# Script de monitoring à ajouter dans crontab
+# Monitoring script to add to crontab
 # 0 9 * * * /path/to/lighthouse/monitor.sh
 ```
 
-## 🛡️ **Bonnes pratiques de maintenance**
+## 🛡️ **Maintenance best practices**
 
-### ✅ À faire
+### ✅ To do
 
-- Conserver un historique des scores (baseline)
-- Documenter les changements de configuration
-- Tester après chaque mise à jour de dépendances
-- Garder des rapports de référence
+- Keep score history (baseline)
+- Document configuration changes
+- Test after each dependency update
+- Keep reference reports
 
-### ❌ À éviter
+### ❌ To avoid
 
-- Supprimer tous les rapports d'un coup
-- Modifier les configs sans backup
-- Ignorer les alertes de régression
-- Laisser s'accumuler trop de rapports
+- Delete all reports at once
+- Modify configs without backup
+- Ignore regression alerts
+- Let too many reports accumulate
 
-## 🔮 **Évolutions futures suggérées**
+## 🔮 **Suggested future evolutions**
 
-### Intégrations potentielles
+### Potential integrations
 
-- **GitHub Actions** : Tests automatiques sur PR
-- **Dashboard** : Visualisation temps réel
-- **Slack/Teams** : Notifications de régression
-- **Grafana** : Métriques historiques
+- **GitHub Actions**: Automatic tests on PR
+- **Dashboard**: Real-time visualization
+- **Slack/Teams**: Regression notifications
+- **Grafana**: Historical metrics
 
-### Améliorations techniques
+### Technical improvements
 
-- Tests parallèles pour plus de rapidité
-- Configuration dynamique par branche
-- Comparaison automatique avec la production
-- Génération de rapports PDF automatisés
+- Parallel tests for faster execution
+- Dynamic configuration per branch
+- Automatic comparison with production
+- Automated PDF report generation

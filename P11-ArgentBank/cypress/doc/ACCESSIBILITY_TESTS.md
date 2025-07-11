@@ -1,41 +1,41 @@
 <!-- @format -->
 
-# Guide des Tests d'Accessibilité avec Cypress-Axe
+# Accessibility Testing Guide with Cypress-Axe
 
-Ce guide explique comment implémenter et maintenir des tests d'accessibilité automatisés avec `cypress-axe` dans le projet ArgentBank.
+This guide explains how to implement and maintain automated accessibility tests with `cypress-axe` in the ArgentBank project.
 
-## 📋 Vue d'ensemble
+## 📋 Overview
 
-Les tests d'accessibilité automatisés permettent de détecter les violations des standards WCAG 2.1 directement dans les tests E2E, assurant que l'application reste accessible à tous les utilisateurs.
+Automated accessibility tests allow detecting WCAG 2.1 standard violations directly in E2E tests, ensuring the application remains accessible to all users.
 
-## 🎯 Objectifs des tests d'accessibilité
+## 🎯 Accessibility testing objectives
 
-- ✅ Vérifier la conformité WCAG 2.1 AA
-- ✅ Détecter les problèmes d'accessibilité automatiquement
-- ✅ Intégrer l'accessibilité dans le processus de développement
-- ✅ Prévenir les régressions d'accessibilité
-- ✅ Générer des rapports détaillés sur les violations
+- ✅ Verify WCAG 2.1 AA compliance
+- ✅ Detect accessibility issues automatically
+- ✅ Integrate accessibility into the development process
+- ✅ Prevent accessibility regressions
+- ✅ Generate detailed reports on violations
 
 ## 🛠️ Configuration
 
-### Installation des dépendances
+### Dependencies installation
 
 ```bash
 pnpm add -D cypress-axe axe-core
 ```
 
-### Configuration dans cypress/support/e2e.ts
+### Configuration in cypress/support/e2e.ts
 
 ```typescript
 import "cypress-axe";
 ```
 
-### Configuration Cypress (cypress.config.ts)
+### Cypress configuration (cypress.config.ts)
 
 ```typescript
 export default defineConfig({
   e2e: {
-    // Configuration du reporter pour les tests d'accessibilité
+    // Reporter configuration for accessibility tests
     reporter: "mochawesome",
     reporterOptions: {
       reportDir: "cypress/reports",
@@ -44,66 +44,66 @@ export default defineConfig({
       json: true,
       timestamp: "mmddyyyy_HHMMss",
     },
-    // ...autres configurations
+    // ...other configurations
   },
 });
 ```
 
-## 📁 Structure des tests d'accessibilité
+## 📁 Accessibility test structure
 
-### Intégration dans les tests existants
+### Integration into existing tests
 
-Les tests d'accessibilité sont intégrés directement dans chaque fichier de test E2E :
+Accessibility tests are integrated directly into each E2E test file:
 
 ```text
 cypress/
 └── e2e/
     ├── auth/
-    │   ├── login.cy.ts          # Tests de connexion + accessibilité
-    │   └── logout.cy.ts         # Tests de déconnexion + accessibilité
+    │   ├── login.cy.ts          # Login tests + accessibility
+    │   └── logout.cy.ts         # Logout tests + accessibility
     ├── accounts/
-    │   └── accounts.cy.ts       # Tests de comptes + accessibilité
+    │   └── accounts.cy.ts       # Account tests + accessibility
     ├── profile/
-    │   └── profile.cy.ts        # Tests de profil + accessibilité
+    │   └── profile.cy.ts        # Profile tests + accessibility
     └── transactions/
-        └── transactions/            # Tests des transactions + accessibilité
-            ├── transactions-display.cy.ts      # Tests d'affichage
-            └── transactions-functionality.cy.ts # Tests de fonctionnalités
+        └── transactions/            # Transaction tests + accessibility
+            ├── transactions-display.cy.ts      # Display tests
+            └── transactions-functionality.cy.ts # Functionality tests
 ```
 
-## 🔧 Utilisation de cypress-axe
+## 🔧 Using cypress-axe
 
-### Pattern de base
+### Basic pattern
 
 ```typescript
-it("devrait être accessible", () => {
-  // Injecter axe-core
+it("should be accessible", () => {
+  // Inject axe-core
   cy.injectAxe();
 
-  // Tester l'accessibilité avec configuration personnalisée
+  // Test accessibility with custom configuration
   cy.checkA11y(undefined, {
     rules: {
-      // Ignorer les violations de contraste connues
+      // Ignore known contrast violations
       "color-contrast": { enabled: false },
     },
   });
 });
 ```
 
-### Pattern avancé avec focus
+### Advanced pattern with focus
 
 ```typescript
-it("devrait être accessible avec navigation clavier", () => {
+it("should be accessible with keyboard navigation", () => {
   cy.injectAxe();
 
-  // Test d'accessibilité initial
+  // Initial accessibility test
   cy.checkA11y(undefined, {
     rules: {
       "color-contrast": { enabled: false },
     },
   });
 
-  // Tester l'accessibilité avec focus sur un élément
+  // Test accessibility with focus on an element
   cy.get('button[class*="account"]').first().focus();
   cy.checkA11y(undefined, {
     rules: {
@@ -113,40 +113,40 @@ it("devrait être accessible avec navigation clavier", () => {
 });
 ```
 
-## 📝 Règles d'accessibilité configurées
+## 📝 Configured accessibility rules
 
-### Règles désactivées et pourquoi
+### Disabled rules and why
 
-1. **color-contrast** : Désactivée temporairement
-   - Raison : Violations de contraste connues dans le design actuel
-   - Action : À traiter dans une itération dédiée au design
+1. **color-contrast**: Temporarily disabled
+   - Reason: Known contrast violations in current design
+   - Action: To be addressed in a dedicated design iteration
 
-### Règles activées par défaut
+### Default enabled rules
 
-- **keyboard** : Navigation clavier
-- **focus** : Gestion du focus
-- **aria** : Attributs ARIA
-- **forms** : Étiquetage des formulaires
-- **headings** : Structure des titres
-- **images** : Textes alternatifs
-- **links** : Accessibilité des liens
+- **keyboard**: Keyboard navigation
+- **focus**: Focus management
+- **aria**: ARIA attributes
+- **forms**: Form labeling
+- **headings**: Heading structure
+- **images**: Alternative text
+- **links**: Link accessibility
 
-## 🚀 Scripts NPM configurés
+## 🚀 Configured NPM scripts
 
-### Tests d'accessibilité spécifiques
+### Specific accessibility tests
 
 ```bash
-# Exécuter tous les tests avec focus accessibilité
+# Run all tests with accessibility focus
 pnpm run test:e2e:a11y
 
-# Exécuter les tests avec rapport consolidé
+# Run tests with consolidated report
 pnpm run test:e2e:a11y:report
 
-# Nettoyer les anciens rapports
+# Clean old reports
 pnpm run test:e2e:clean
 ```
 
-### Scripts dans package.json
+### Scripts in package.json
 
 ```json
 {
@@ -159,22 +159,22 @@ pnpm run test:e2e:clean
 }
 ```
 
-## 📊 Rapports d'accessibilité
+## 📊 Accessibility reports
 
-### Génération des rapports
+### Report generation
 
-Les rapports sont automatiquement générés dans `cypress/reports/` :
+Reports are automatically generated in `cypress/reports/`:
 
-- **Rapports individuels** : `mochawesome_*.json` et `mochawesome_*.html`
-- **Rapport consolidé** : `merged-report.json` et `html/merged-report.html`
+- **Individual reports**: `mochawesome_*.json` and `mochawesome_*.html`
+- **Consolidated report**: `merged-report.json` and `html/merged-report.html`
 
-### Interprétation des résultats
+### Result interpretation
 
-- ✅ **Vert** : Aucune violation détectée
-- ❌ **Rouge** : Violations d'accessibilité trouvées
-- ⚠️ **Orange** : Avertissements à examiner
+- ✅ **Green**: No violations detected
+- ❌ **Red**: Accessibility violations found
+- ⚠️ **Orange**: Warnings to examine
 
-### Exemple de violation
+### Violation example
 
 ```
 Rule ID: aria-label-missing
@@ -183,33 +183,33 @@ Description: Ensure every form element has a label
 Nodes: 2
 ```
 
-## 🔍 Tests par page/fonctionnalité
+## 🔍 Tests by page/functionality
 
-### Page de connexion (`login.cy.ts`)
+### Login page (`login.cy.ts`)
 
 ```typescript
-// Tests d'accessibilité intégrés
-it("devrait permettre à un utilisateur de se connecter", function () {
+// Integrated accessibility tests
+it("should allow a user to log in", function () {
   cy.injectAxe();
   cy.checkA11y(undefined, {
     rules: { "color-contrast": { enabled: false } },
   });
 
-  // ...logique de test de connexion
+  // ...login test logic
 
-  // Test après connexion
+  // Test after login
   cy.checkA11y(undefined, {
     rules: { "color-contrast": { enabled: false } },
   });
 });
 
-it("devrait être accessible sur la page de connexion", () => {
+it("should be accessible on the login page", () => {
   cy.injectAxe();
   cy.checkA11y(undefined, {
     rules: { "color-contrast": { enabled: false } },
   });
 
-  // Tests de focus
+  // Focus tests
   cy.get("input#email").focus();
   cy.checkA11y();
 
@@ -218,39 +218,39 @@ it("devrait être accessible sur la page de connexion", () => {
 });
 ```
 
-### Page des comptes (`accounts.cy.ts`)
+### Accounts page (`accounts.cy.ts`)
 
 ```typescript
-it("devrait être accessible sur la page des comptes", () => {
+it("should be accessible on the accounts page", () => {
   cy.injectAxe();
   cy.checkA11y(undefined, {
     rules: { "color-contrast": { enabled: false } },
   });
 
-  // Test d'accessibilité des boutons de compte
+  // Account button accessibility test
   cy.get('button[class*="account"]').first().focus();
   cy.checkA11y();
 
-  // Test après sélection du compte
+  // Test after account selection
   cy.get('button[class*="account"]').first().click();
   cy.checkA11y();
 });
 ```
 
-### Page des transactions (`transactions-display.cy.ts` et `transactions-functionality.cy.ts`)
+### Transactions page (`transactions-display.cy.ts` and `transactions-functionality.cy.ts`)
 
 ```typescript
-it("devrait être accessible sur la page des transactions", () => {
+it("should be accessible on the transactions page", () => {
   cy.injectAxe();
   cy.checkA11y(undefined, {
     rules: { "color-contrast": { enabled: false } },
   });
 
-  // Test du tableau de transactions
+  // Transaction table test
   cy.get('table[class*="transaction-table"]').should("be.visible");
   cy.checkA11y();
 
-  // Test conditionnel de la pagination (éviter les boutons désactivés)
+  // Conditional pagination test (avoid disabled buttons)
   cy.get('button[class*="pagination"]').then(($buttons) => {
     const enabledButtons = $buttons.filter(":not(:disabled)");
     if (enabledButtons.length > 0) {
@@ -261,18 +261,18 @@ it("devrait être accessible sur la page des transactions", () => {
 });
 ```
 
-## ⚠️ Points d'attention
+## ⚠️ Important considerations
 
-### Injection d'axe-core
+### Axe-core injection
 
-- **Toujours injecter** `cy.injectAxe()` au début de chaque test d'accessibilité
-- **Ne pas injecter** dans `beforeEach` car cela interfère avec le processus de connexion
-- **Injecter individuellement** dans chaque test qui en a besoin
+- **Always inject** `cy.injectAxe()` at the beginning of each accessibility test
+- **Do not inject** in `beforeEach` as it interferes with the login process
+- **Inject individually** in each test that needs it
 
-### Gestion des éléments conditionnels
+### Managing conditional elements
 
 ```typescript
-// ✅ Bon : Vérification conditionnelle
+// ✅ Good: Conditional verification
 cy.get('button[class*="pagination"]').then(($buttons) => {
   const enabledButtons = $buttons.filter(":not(:disabled)");
   if (enabledButtons.length > 0) {
@@ -281,45 +281,45 @@ cy.get('button[class*="pagination"]').then(($buttons) => {
   }
 });
 
-// ❌ Mauvais : Tentative de focus sur un élément désactivé
-cy.get('button[class*="pagination"]').first().focus(); // Peut échouer
+// ❌ Bad: Attempting to focus on a disabled element
+cy.get('button[class*="pagination"]').first().focus(); // May fail
 ```
 
-### Configuration des règles
+### Rule configuration
 
 ```typescript
-// Configuration recommandée pour ignorer les violations connues
+// Recommended configuration to ignore known violations
 const a11yConfig = {
   rules: {
-    "color-contrast": { enabled: false }, // Temporairement désactivé
-    // Ajouter d'autres règles selon les besoins
+    "color-contrast": { enabled: false }, // Temporarily disabled
+    // Add other rules as needed
   },
 };
 
 cy.checkA11y(undefined, a11yConfig);
 ```
 
-## 🚀 Maintenance et évolution
+## 🚀 Maintenance and evolution
 
-### Ajout de nouveaux tests d'accessibilité
+### Adding new accessibility tests
 
-1. **Créer le test de base** avec les vérifications fonctionnelles
-2. **Ajouter l'injection d'axe** : `cy.injectAxe()`
-3. **Ajouter les vérifications** : `cy.checkA11y()`
-4. **Tester les interactions** : focus, navigation clavier, etc.
-5. **Configurer les règles** selon les besoins spécifiques
+1. **Create the basic test** with functional verifications
+2. **Add axe injection**: `cy.injectAxe()`
+3. **Add verifications**: `cy.checkA11y()`
+4. **Test interactions**: focus, keyboard navigation, etc.
+5. **Configure rules** according to specific needs
 
-### Suivi des violations
+### Violation tracking
 
-1. **Exécuter régulièrement** les tests d'accessibilité
-2. **Analyser les rapports** pour identifier les nouvelles violations
-3. **Prioriser les corrections** selon l'impact
-4. **Réactiver les règles** une fois les violations corrigées
+1. **Run regularly** accessibility tests
+2. **Analyze reports** to identify new violations
+3. **Prioritize fixes** according to impact
+4. **Re-enable rules** once violations are fixed
 
-### Intégration CI/CD
+### CI/CD integration
 
 ```yaml
-# Exemple pour GitHub Actions
+# Example for GitHub Actions
 - name: Run accessibility tests
   run: |
     pnpm run test:e2e:a11y:report
@@ -331,20 +331,20 @@ cy.checkA11y(undefined, a11yConfig);
     path: cypress/reports/html/
 ```
 
-## 📚 Ressources
+## 📚 Resources
 
 - [Cypress-Axe Documentation](https://github.com/component-driven/cypress-axe)
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Axe-Core Rules](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
 - [Cypress Best Practices](./BEST_PRACTICES.md)
 
-## 🎯 Prochaines étapes
+## 🎯 Next steps
 
-1. **Corriger les violations de contraste** identifiées
-2. **Ajouter des tests d'accessibilité** pour les nouvelles fonctionnalités
-3. **Automatiser l'exécution** dans la pipeline CI/CD
-4. **Former l'équipe** aux bonnes pratiques d'accessibilité
+1. **Fix contrast violations** identified
+2. **Add accessibility tests** for new features
+3. **Automate execution** in CI/CD pipeline
+4. **Train the team** on accessibility best practices
 
 ---
 
-> **Note** : Ce guide fait partie de la documentation complète des tests Cypress. Consultez également [E2E_TESTS.md](./E2E_TESTS.md) et [BEST_PRACTICES.md](./BEST_PRACTICES.md) pour une vue d'ensemble complète.
+> **Note**: This guide is part of the complete Cypress testing documentation. Also see [E2E_TESTS.md](./E2E_TESTS.md) and [BEST_PRACTICES.md](./BEST_PRACTICES.md) for a complete overview.

@@ -1,73 +1,73 @@
 <!-- @format -->
 
-# Guide des Tests Vitest - ArgentBank
+# Vitest Testing Guide - ArgentBank
 
-## 📋 Vue d'ensemble
+## 📋 Overview
 
-Ce dossier contient la documentation complète pour les tests Vitest du projet ArgentBank. Les fichiers de test restent co-localisés avec leurs composants respectifs pour faciliter la maintenance.
+This folder contains complete documentation for Vitest tests in the ArgentBank project. Test files remain co-located with their respective components to facilitate maintenance.
 
-## 📁 Structure de la documentation
+## 📁 Documentation structure
 
 ```
 Vitest/
-├── README.md                    # Ce fichier - Vue d'ensemble générale
-├── UNIT_TESTS.md               # Guide des tests unitaires
-├── INTEGRATION_TESTS.md        # Guide des tests d'intégration
-├── TEST_ARCHITECTURE.md        # Architecture et conventions
-├── CONFIGURATION.md            # Configuration Vitest
-└── MAINTENANCE.md              # Guide de maintenance
+├── README.md                    # This file - General overview
+├── UNIT_TESTS.md               # Unit testing guide
+├── INTEGRATION_TESTS.md        # Integration testing guide
+├── TEST_ARCHITECTURE.md        # Architecture and conventions
+├── CONFIGURATION.md            # Vitest configuration
+└── MAINTENANCE.md              # Maintenance guide
 ```
 
-## 🧪 Types de tests
+## 🧪 Test types
 
-### Tests Unitaires
+### Unit Tests
 
-- **Localisation** : `*.test.tsx` à côté des composants
-- **Objectif** : Tester la logique isolée des composants
-- **Documentation** : [UNIT_TESTS.md](./UNIT_TESTS.md)
+- **Location**: `*.test.tsx` next to components
+- **Purpose**: Test isolated component logic
+- **Documentation**: [UNIT_TESTS.md](./UNIT_TESTS.md)
 
-### Tests d'Intégration
+### Integration Tests
 
-- **Localisation** : `*.integration.test.tsx` à côté des composants
-- **Objectif** : Tester l'interaction entre composants et services
-- **Documentation** : [INTEGRATION_TESTS.md](./INTEGRATION_TESTS.md)
+- **Location**: `*.integration.test.tsx` next to components
+- **Purpose**: Test interaction between components and services
+- **Documentation**: [INTEGRATION_TESTS.md](./INTEGRATION_TESTS.md)
 
-## 📊 Statistiques actuelles
+## 📊 Current statistics
 
-- **Total des fichiers de test** : 42 fichiers
-- **Tests unitaires** : ~180 tests
-- **Tests d'intégration** : ~64 tests
-- **Couverture globale** : ~88%
+- **Total test files**: 42 files
+- **Unit tests**: ~180 tests
+- **Integration tests**: ~64 tests
+- **Overall coverage**: ~88%
 
-## 🚀 Commandes principales
+## 🚀 Main commands
 
 ```bash
-# Exécuter tous les tests
+# Run all tests
 pnpm test
 
-# Tests en mode développement
+# Tests in development mode
 pnpm test:dev
 
-# Tests en mode watch
+# Tests in watch mode
 pnpm test:watch
 
-# Vérification des types
+# Type checking
 pnpm typecheck
 ```
 
-## 📍 Localisation des tests
+## 📍 Test location
 
-### Tests de composants
+### Component tests
 
 ```
 src/components/
 ├── ComponentName/
 │   ├── ComponentName.tsx
-│   ├── ComponentName.test.tsx           # Tests unitaires
-│   └── ComponentName.integration.test.tsx  # Tests d'intégration (si applicable)
+│   ├── ComponentName.test.tsx           # Unit tests
+│   └── ComponentName.integration.test.tsx  # Integration tests (if applicable)
 ```
 
-### Tests de pages
+### Page tests
 
 ```
 src/pages/
@@ -77,7 +77,7 @@ src/pages/
 │   └── PageName.integration.test.tsx
 ```
 
-### Tests utilitaires et store
+### Utility and store tests
 
 ```
 src/utils/
@@ -90,37 +90,37 @@ src/store/
 │   └── sliceName.test.ts
 ```
 
-## 🎯 Guides spécialisés
+## 🎯 Specialized guides
 
-- **[Architecture des tests](./TEST_ARCHITECTURE.md)** - Conventions et structure
-- **[Tests unitaires](./UNIT_TESTS.md)** - Guide pratique des tests unitaires
-- **[Tests d'intégration](./INTEGRATION_TESTS.md)** - Guide des tests d'intégration
-- **[Configuration](./CONFIGURATION.md)** - Setup et configuration Vitest
-- **[Maintenance](./MAINTENANCE.md)** - Bonnes pratiques de maintenance
+- **[Test Architecture](./TEST_ARCHITECTURE.md)** - Conventions and structure
+- **[Unit Tests](./UNIT_TESTS.md)** - Practical unit testing guide
+- **[Integration Tests](./INTEGRATION_TESTS.md)** - Integration testing guide
+- **[Configuration](./CONFIGURATION.md)** - Vitest setup and configuration
+- **[Maintenance](./MAINTENANCE.md)** - Maintenance best practices
 
-## 🔗 Intégration avec les autres outils de test
+## 🔗 Integration with other testing tools
 
-- **[Lighthouse](../lighthouse/README.md)** - Tests de performance
-- **[Axe](../Axe/README.md)** - Tests d'accessibilité automatisés
-- **[Pa11y](../Pa11y/README.md)** - Tests d'accessibilité complémentaires
+- **[Lighthouse](../lighthouse/README.md)** - Performance testing
+- **[Axe](../Axe/README.md)** - Automated accessibility testing
+- **[Pa11y](../Pa11y/README.md)** - Complementary accessibility testing
 
-## 📝 Pour les développeurs
+## 📝 For developers
 
-### Ajout d'un nouveau test
+### Adding a new test
 
-1. Créer le fichier de test à côté du composant
-2. Suivre les conventions de nommage
-3. Utiliser les patterns documentés
-4. Vérifier la couverture de code
+1. Create test file next to the component
+2. Follow naming conventions
+3. Use documented patterns
+4. Verify code coverage
 
-### Pour les IA
+### For AIs
 
-- Structure cohérente et prévisible
-- Documentation extensive avec exemples
-- Patterns réutilisables documentés
-- Conventions claires pour tous types de tests
+- Consistent and predictable structure
+- Extensive documentation with examples
+- Documented reusable patterns
+- Clear conventions for all test types
 
 ---
 
-**Dernière mise à jour** : 29 mai 2025
-**Mainteneur** : Équipe ArgentBank
+**Last updated**: May 29, 2025
+**Maintainer**: ArgentBank Team

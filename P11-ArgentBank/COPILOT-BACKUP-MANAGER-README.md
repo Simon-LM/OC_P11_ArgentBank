@@ -2,140 +2,140 @@
 
 # 🤖 Copilot Backup Manager
 
-> **Solution universelle** pour gérer automatiquement les sauvegardes GitHub Copilot/VS Code dans n'importe quel projet JavaScript/TypeScript.
+> **Universal solution** to automatically manage GitHub Copilot/VS Code backups in any JavaScript/TypeScript project.
 
-## 🚀 Installation Ultra-Rapide
+## 🚀 Ultra-Fast Installation
 
-### Installation en Une Commande
+### One-Command Installation
 
 ```bash
-# Dans n'importe quel projet avec package.json
-curl -sSL https://raw.githubusercontent.com/votre-repo/copilot-backup-manager/main/install.sh | bash
+# In any project with package.json
+curl -sSL https://raw.githubusercontent.com/your-repo/copilot-backup-manager/main/install.sh | bash
 
-# Ou téléchargez et exécutez localement
-wget https://raw.githubusercontent.com/votre-repo/copilot-backup-manager/main/install.sh
+# Or download and run locally
+wget https://raw.githubusercontent.com/your-repo/copilot-backup-manager/main/install.sh
 bash install.sh
 ```
 
-### Installation Manuelle
+### Manual Installation
 
-1. **Téléchargez le script d'installation :**
+1. **Download the installation script:**
 
    ```bash
-   # Copiez le fichier copilot-backup-manager-installer.sh dans votre projet
+   # Copy the copilot-backup-manager-installer.sh file to your project
    bash copilot-backup-manager-installer.sh
    ```
 
-2. **C'est tout !** 🎉
+2. **That's it!** 🎉
 
-## 📦 Support Multi-Gestionnaire
+## 📦 Multi-Manager Support
 
-Le système détecte et s'adapte automatiquement à :
+The system automatically detects and adapts to:
 
-- ✅ **pnpm** (recommandé)
+- ✅ **pnpm** (recommended)
 - ✅ **yarn**
 - ✅ **npm**
 
-## 🎯 Fonctionnalités
+## 🎯 Features
 
-### ✨ Installation Automatique
+### ✨ Automatic Installation
 
-- Détecte votre gestionnaire de paquets
-- Configure VS Code optimalement
-- Met à jour .gitignore automatiquement
-- Ajoute les scripts npm
-- Installe le hook pre-commit
+- Detects your package manager
+- Optimally configures VS Code
+- Automatically updates .gitignore
+- Adds npm scripts
+- Installs pre-commit hook
 
-### 🧹 Nettoyage Intelligent
+### 🧹 Intelligent Cleanup
 
-- Supprime les sauvegardes temporaires (_.backup, _.bak, \*.autosave)
-- Nettoie les dossiers VS Code (.vscode/workspaceStorage/, .history/)
-- Élimine les fichiers système (.DS_Store, Thumbs.db)
-- Purge le cache du gestionnaire de paquets
+- Removes temporary backups (_.backup, _.bak, \*.autosave)
+- Cleans VS Code folders (.vscode/workspaceStorage/, .history/)
+- Eliminates system files (.DS_Store, Thumbs.db)
+- Purges package manager cache
 
-### 🔄 Synchronisation Automatique
+### 🔄 Automatic Synchronization
 
-- Résout les conflits entre gestionnaires de paquets
-- Supprime les fichiers de verrouillage concurrents
-- Réinstalle les dépendances proprement
+- Resolves conflicts between package managers
+- Removes competing lock files
+- Cleanly reinstalls dependencies
 
-### 🔗 Hook Pre-commit
+### 🔗 Pre-commit Hook
 
-- Nettoyage automatique avant chaque commit
-- Linting non-bloquant
-- Formatage automatique du code
-- Ajout des fichiers formatés au commit
+- Automatic cleanup before each commit
+- Non-blocking linting
+- Automatic code formatting
+- Adds formatted files to commit
 
-## 🎮 Utilisation
+## 🎮 Usage
 
-### Commandes Disponibles
+### Available Commands
 
 ```bash
-# Nettoyage des sauvegardes Copilot
-npm run clean:copilot      # ou pnpm/yarn
+# Clean Copilot backups
+npm run clean:copilot      # or pnpm/yarn
 
-# Synchronisation du gestionnaire de paquets
-npm run sync:npm           # adapté à votre gestionnaire
+# Synchronize package manager
+npm run sync:npm           # adapted to your manager
 
-# Préparation complète avant commit
+# Complete preparation before commit
 npm run commit-ready
 
-# Réinstallation des hooks Git
+# Reinstall Git hooks
 npm run install:hooks
 ```
 
-### Workflow Quotidien
+### Daily Workflow
 
 ```bash
-# Option 1: Automatique (recommandé)
+# Option 1: Automatic (recommended)
 git add .
-git commit -m "votre message"  # Le hook fait tout automatiquement
+git commit -m "your message"  # Hook does everything automatically
 
-# Option 2: Manuel
+# Option 2: Manual
 npm run commit-ready
 git add .
-git commit -m "votre message"
+git commit -m "your message"
 ```
 
-## 🎯 Cas d'Usage
+## 🎯 Use Cases
 
-### ✅ Parfait Pour
+### ✅ Perfect For
 
-- Projets React, Vue, Angular, Next.js, Vite
-- Applications Node.js
-- Projets TypeScript/JavaScript
-- Équipes utilisant VS Code + GitHub Copilot
-- Projets avec gestionnaires de paquets mixtes
+- React, Vue, Angular, Next.js, Vite projects
+- Node.js applications
+- TypeScript/JavaScript projects
+- Teams using VS Code + GitHub Copilot
+- Projects with mixed package managers
 
-### 📋 Résout Ces Problèmes
+### 📋 Solves These Problems
 
-- ❌ Anciens fichiers qui réapparaissent au redémarrage VS Code
-- ❌ Conflits package-lock.json vs pnpm-lock.yaml vs yarn.lock
-- ❌ VS Code lent à cause de trop de sauvegardes
-- ❌ Cache corrompu
-- ❌ Incohérences entre état Git et VS Code
+- ❌ Old files reappearing on VS Code restart
+- ❌ package-lock.json vs pnpm-lock.yaml vs yarn.lock conflicts
+- ❌ VS Code slow due to too many backups
+- ❌ Corrupted cache
+- ❌ Inconsistencies between Git state and VS Code
 
 ## 🔧 Configuration
 
-### Personnalisation
+### Customization
 
-Le script crée automatiquement :
+The script automatically creates:
 
 ```json
 // .vscode/settings.json
 {
   "files.hotExit": "off",
   "editor.formatOnSave": true,
-  "npm.packageManager": "pnpm", // détecté automatiquement
+  "npm.packageManager": "pnpm", // automatically detected
   "files.exclude": {
     "**/.history": true,
     "**/.vscode/workspaceStorage": true
-    // ... autres exclusions
+    // ... other exclusions
   }
 }
 ```
 
-### .gitignore Automatique
+### Automatic .gitignore
 
 ```gitignore
 # Copilot Backup Manager
@@ -151,100 +151,100 @@ Thumbs.db
 Desktop.ini
 ```
 
-## 📁 Structure Créée
+## 📁 Created Structure
 
 ```
-votre-projet/
+your-project/
 ├── scripts/
-│   ├── clean-copilot-backups.sh     # Nettoyage principal
-│   ├── sync-package-manager.sh      # Synchronisation
-│   ├── commit-ready.sh               # Préparation commit
-│   ├── pre-commit-hook.sh           # Hook Git
-│   └── install-git-hooks.sh         # Installation hook
+│   ├── clean-copilot-backups.sh     # Main cleanup
+│   ├── sync-package-manager.sh      # Synchronization
+│   ├── commit-ready.sh               # Commit preparation
+│   ├── pre-commit-hook.sh           # Git hook
+│   └── install-git-hooks.sh         # Hook installation
 ├── .vscode/
-│   └── settings.json                # Config optimisée
-├── .gitignore                       # Mis à jour
-└── package.json                     # Scripts ajoutés
+│   └── settings.json                # Optimized config
+├── .gitignore                       # Updated
+└── package.json                     # Scripts added
 ```
 
-## 🚀 Déploiement pour Équipe
+## 🚀 Team Deployment
 
-### Méthode 1: Script Partagé
+### Method 1: Shared Script
 
 ```bash
-# Créez un repo avec le script d'installation
-# L'équipe peut l'installer avec :
-curl -sSL https://votre-repo.com/install.sh | bash
+# Create a repo with the installation script
+# Team can install it with:
+curl -sSL https://your-repo.com/install.sh | bash
 ```
 
-### Méthode 2: Package npm (optionnel)
+### Method 2: npm Package (optional)
 
 ```bash
-# Créez un package npm global
+# Create a global npm package
 npm install -g copilot-backup-manager
-cbm install  # dans chaque projet
+cbm install  # in each project
 ```
 
-### Méthode 3: Template de Projet
+### Method 3: Project Template
 
 ```bash
-# Intégrez dans vos templates de projet
-# Le système est pré-configuré pour nouveaux projets
+# Integrate into your project templates
+# System is pre-configured for new projects
 ```
 
 ## 🛠️ Maintenance
 
-### Mise à Jour
+### Update
 
 ```bash
-# Téléchargez la nouvelle version et ré-exécutez
+# Download the new version and re-run
 bash copilot-backup-manager-installer.sh
 ```
 
-### Désinstallation
+### Uninstallation
 
 ```bash
-# Supprimez les scripts
+# Remove scripts
 rm -rf scripts/
 rm .git/hooks/pre-commit
-# Retirez les scripts du package.json manuellement
+# Remove scripts from package.json manually
 ```
 
-## 💡 Conseils Pro
+## 💡 Pro Tips
 
-### Pour Projets Existants
+### For Existing Projects
 
-- ✅ Sauvegardez votre .vscode/settings.json avant installation
-- ✅ Vérifiez votre .gitignore après installation
-- ✅ Testez avec `npm run clean:copilot` après installation
+- ✅ Backup your .vscode/settings.json before installation
+- ✅ Check your .gitignore after installation
+- ✅ Test with `npm run clean:copilot` after installation
 
-### Pour Nouvelles Équipes
+### For New Teams
 
-- ✅ Intégrez dans votre checklist d'onboarding
-- ✅ Documentez dans votre README projet
-- ✅ Ajoutez aux templates de projet
+- ✅ Integrate into your onboarding checklist
+- ✅ Document in your project README
+- ✅ Add to project templates
 
 ### Troubleshooting
 
-- 🔧 Si le hook ne fonctionne pas : `npm run install:hooks`
-- 🔧 Si erreurs de permissions : `chmod +x scripts/*.sh`
-- 🔧 Si conflits : `npm run sync:npm` puis `npm run clean:copilot`
+- 🔧 If hook doesn't work: `npm run install:hooks`
+- 🔧 If permission errors: `chmod +x scripts/*.sh`
+- 🔧 If conflicts: `npm run sync:npm` then `npm run clean:copilot`
 
-## 📊 Statistiques
+## 📊 Statistics
 
-- ⚡ **Installation** : < 30 secondes
-- 🎯 **Compatibilité** : 100% projets JS/TS
-- 💾 **Espace libéré** : 50-200MB en moyenne
-- 🚀 **Performance VS Code** : +30% plus rapide
+- ⚡ **Installation**: < 30 seconds
+- 🎯 **Compatibility**: 100% JS/TS projects
+- 💾 **Space freed**: 50-200MB on average
+- 🚀 **VS Code Performance**: +30% faster
 
 ---
 
 ## 🤝 Contribution
 
-Ce système est open source et peut être amélioré :
+This system is open source and can be improved:
 
-- 📝 Suggestions dans les issues
-- 🔧 Pull requests bienvenues
-- 📚 Documentation améliorée
+- 📝 Suggestions in issues
+- 🔧 Pull requests welcome
+- 📚 Improved documentation
 
-**Avec ce système, vous n'aurez plus jamais de problèmes de sauvegardes Copilot ! 🎉**
+**With this system, you'll never have Copilot backup problems again! 🎉**

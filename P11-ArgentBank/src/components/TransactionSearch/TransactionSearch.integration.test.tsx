@@ -1,13 +1,13 @@
 /** @format */
 
 /**
- * Tests d'intégration pour TransactionSearch
+ * Integration tests for TransactionSearch
  *
- * Scope d'intégration testé :
- * - Gestion des timers et debouncing (setTimeout)
- * - Événements clavier globaux (document.addEventListener)
- * - Interactions utilisateur complexes (fireEvent + act)
- * - Intégrations avec les callbacks externes
+ * Integration scope tested:
+ * - Timer and debouncing management (setTimeout)
+ * - Global keyboard events (document.addEventListener)
+ * - Complex user interactions (fireEvent + act)
+ * - Integrations with external callbacks
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -66,7 +66,7 @@ describe("TransactionSearch - Integration Tests", () => {
   });
 
   it("affiche le bouton global search et gère le mode global", () => {
-    // On force le mode "non global" pour que le bouton déclenche le callback
+    // Force "non-global" mode so the button triggers the callback
     render(
       <TransactionSearch
         {...defaultProps}

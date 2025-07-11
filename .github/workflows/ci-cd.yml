@@ -741,22 +741,22 @@ jobs:
       PREVIEW_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
 
     steps:
-      - name: 📥 Checkout code # ← MANQUE !
+      - name: 📥 Checkout code # ← MISSING !
         uses: actions/checkout@v4
 
-      - name: 📦 Setup pnpm # ← MANQUE !
+      - name: 📦 Setup pnpm # ← MISSING !
         uses: pnpm/action-setup@v4
         with:
           version: 8
 
-      - name: 🟢 Setup Node.js # ← MANQUE !
+      - name: 🟢 Setup Node.js # ← MISSING !
         uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: "pnpm"
           cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 
-      - name: 📦 Cache Cypress binary # ← MANQUE !
+      - name: 📦 Cache Cypress binary # ← MISSING !
         uses: actions/cache@v3
         with:
           path: ~/.cache/Cypress
@@ -764,13 +764,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cypress-
 
-      - name: 📦 Install dependencies # ← MANQUE !
+      - name: 📦 Install dependencies # ← MISSING !
         run: pnpm install --no-frozen-lockfile
 
-      - name: 🔧 Install Cypress binary # ← MANQUE !
+      - name: 🔧 Install Cypress binary # ← MISSING !
         run: pnpm exec cypress install
 
-      - name: 🗃️ Generate Prisma Client # ← MANQUE !
+      - name: 🗃️ Generate Prisma Client # ← MISSING !
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
@@ -838,7 +838,7 @@ jobs:
       preview-url: ${{ needs.cypress-tests.outputs.preview-url }}
     strategy:
       matrix:
-        device: [desktop, mobile] # ← GARDE LA MATRICE DEVICE
+        device: [desktop, mobile] # ← KEEP THE DEVICE MATRIX
       fail-fast: false
 
     steps:

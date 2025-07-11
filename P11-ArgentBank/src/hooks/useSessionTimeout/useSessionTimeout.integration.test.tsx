@@ -1,13 +1,13 @@
 /** @format */
 
 /**
- * Tests d'intégration pour useSessionTimeout
+ * Integration tests for useSessionTimeout
  *
- * Scope d'intégration :
- * - Intégration Redux + dispatch
- * - Gestion des timers et événements globaux
- * - Lifecycle des event listeners
- * - Tests d'interactions utilisateur complexes
+ * Integration scope:
+ * - Redux + dispatch integration
+ * - Timer and global event management
+ * - Event listener lifecycle
+ * - Complex user interaction testing
  */
 
 import { renderHook } from "@testing-library/react";
@@ -20,14 +20,14 @@ import type { ReactNode } from "react";
 
 const mockDispatch = vi.fn();
 
-// Configuration du store Redux pour les tests
+// Redux store configuration for tests
 const mockStore = configureStore({
   reducer: {
     users: () => ({ isAuthenticated: true }),
   },
 });
 
-// Mock de react-redux
+// react-redux mock
 vi.mock("react-redux", async () => {
   const actual = await vi.importActual("react-redux");
   return {
@@ -53,7 +53,7 @@ describe("useSessionTimeout - Integration Tests", () => {
     vi.restoreAllMocks();
   });
 
-  test("déclenche logoutUser après le délai spécifié", () => {
+  test("triggers logoutUser after specified timeout", () => {
     renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
       wrapper: TestWrapper,
     });
@@ -63,51 +63,51 @@ describe("useSessionTimeout - Integration Tests", () => {
     expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
   });
 
-  test("réinitialise le timer sur mousemove", () => {
+  test("resets timer on mousemove", () => {
     renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
       wrapper: TestWrapper,
     });
 
-    // Avance de 3 secondes
+    // Advance by 3 seconds
     vi.advanceTimersByTime(3000);
 
-    // Simule un mouvement de souris
+    // Simulates mouse movement
     window.dispatchEvent(new MouseEvent("mousemove"));
 
-    // Avance de 3 secondes supplémentaires
+    // Advance by 3 additional seconds
     vi.advanceTimersByTime(3000);
 
-    // Ne devrait pas être déconnecté
+    // Should not be logged out
     expect(mockDispatch).not.toHaveBeenCalled();
 
-    // Avance jusqu'à la fin du nouveau délai
+    // Advance to the end of the new timeout
     vi.advanceTimersByTime(2000);
     expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
   });
 
-  test("réinitialise le timer sur keydown", () => {
+  test("resets timer on keydown", () => {
     renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
       wrapper: TestWrapper,
     });
 
-    // Avance de 3 secondes
+    // Advance by 3 seconds
     vi.advanceTimersByTime(3000);
 
-    // Simule une frappe clavier (keydown)
+    // Simulates keydown
     window.dispatchEvent(new KeyboardEvent("keydown"));
 
-    // Avance de 3 secondes supplémentaires
+    // Advance by 3 additional seconds
     vi.advanceTimersByTime(3000);
 
-    // Ne devrait pas être déconnecté
+    // Should not be logged out
     expect(mockDispatch).not.toHaveBeenCalled();
 
-    // Avance jusqu'à la fin du nouveau délai
+    // Advance to the end of the new timeout
     vi.advanceTimersByTime(2000);
     expect(mockDispatch).toHaveBeenCalledWith(logoutUser());
   });
 
-  test("nettoie les event listeners au démontage", () => {
+  test("cleans up event listeners on unmount", () => {
     const { unmount } = renderHook(() => useSessionTimeout(TEST_TIMEOUT), {
       wrapper: TestWrapper,
     });

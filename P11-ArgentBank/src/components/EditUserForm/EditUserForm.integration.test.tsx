@@ -1,10 +1,10 @@
 /** @format */
 
 /**
- * Tests d'intégration pour le composant EditUserForm
+ * Integration tests for the EditUserForm component
  *
- * Ces tests couvrent la validation des formulaires,
- * les interactions utilisateur complexes et l'accessibilité.
+ * These tests cover form validation,
+ * complex user interactions and accessibility.
  */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
@@ -51,7 +51,7 @@ describe("EditUserForm - Tests d'intégration", () => {
     });
   });
 
-  test("affiche une erreur quand le userName est vide", async () => {
+  test("displays error when userName is empty", async () => {
     render(
       <EditUserForm
         currentUser={mockUser}
@@ -72,7 +72,7 @@ describe("EditUserForm - Tests d'intégration", () => {
     });
   });
 
-  test("affiche une erreur quand le userName contient uniquement des espaces", async () => {
+  test("displays error when userName contains only spaces", async () => {
     render(
       <EditUserForm
         currentUser={mockUser}

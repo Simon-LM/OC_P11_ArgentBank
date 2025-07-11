@@ -2,10 +2,10 @@
 
 // cypress/e2e/auth/logout.cy.ts
 
-// Import de l'interface User commune
+// Import of common User interface
 import type { User } from "../../support/types";
 
-describe("Déconnexion de l'utilisateur", () => {
+describe("User logout", () => {
   beforeEach(() => {
     cy.session("logout-valid-user-session", () => {
       cy.fixture<User[]>("users.json").then((usersData) => {
@@ -17,7 +17,7 @@ describe("Déconnexion de l'utilisateur", () => {
           !validUser.userName
         ) {
           throw new Error(
-            "Utilisateur valide non trouvé ou informations manquantes dans les fixtures.",
+            "Valid user not found or missing information in fixtures.",
           );
         }
         cy.visit("/signin");
@@ -39,29 +39,29 @@ describe("Déconnexion de l'utilisateur", () => {
     cy.visit("/user");
   });
 
-  it("devrait permettre à un utilisateur de se déconnecter", () => {
-    // Injecter axe-core pour les tests d'accessibilité
+  it("should allow a user to log out", () => {
+    // Inject axe-core for accessibility tests
     cy.injectAxe();
 
-    // Test d'accessibilité de la page utilisateur avant déconnexion (ignorer les violations de contraste connues)
+    // Accessibility test of user page before logout (ignore known contrast violations)
     cy.checkA11y();
 
-    // Cliquer sur le bouton de déconnexion (Sign Out)
-    // Le sélecteur cible le lien qui contient "Sign Out"
+    // Click on logout button (Sign Out)
+    // Selector targets the link containing "Sign Out"
     cy.contains("Sign Out").click();
 
-    // Vérifications après la déconnexion
-    cy.url().should("eq", `${Cypress.config("baseUrl")}/`); // Doit rediriger vers la page d'accueil, compatible local/CI
-    cy.url().should("not.include", "/user"); // Ne doit plus être sur la page utilisateur
+    // Verifications after logout
+    cy.url().should("eq", `${Cypress.config("baseUrl")}/`); // Should redirect to home page, local/CI compatible
+    cy.url().should("not.include", "/user"); // Should no longer be on user page
 
-    // Test d'accessibilité de la page d'accueil après déconnexion (ignorer les violations de contraste connues)
+    // Accessibility test of home page after logout (ignore known contrast violations)
     cy.checkA11y();
 
-    // Vérifier que le lien "Sign In" est à nouveau visible
+    // Verify that "Sign In" link is visible again
     cy.contains("Sign In").should("be.visible");
 
-    // Vérifier que les éléments spécifiques à l'utilisateur connecté ne sont plus visibles
-    // Par exemple, le nom d'utilisateur dans l'en-tête ou le lien "Sign Out"
+    // Verify that logged-in user specific elements are no longer visible
+    // For example, username in header or "Sign Out" link
     cy.fixture<User[]>("users.json").then((usersData) => {
       const validUser = usersData.find((user) => user.type === "valid");
       if (validUser && validUser.userName) {
@@ -72,14 +72,14 @@ describe("Déconnexion de l'utilisateur", () => {
     });
     cy.contains("Sign Out").should("not.exist");
   });
-  it("devrait être accessible sur la page utilisateur connectée", () => {
-    // Injecter axe-core pour les tests d'accessibilité
+  it("should be accessible on the logged-in user page", () => {
+    // Inject axe-core for accessibility tests
     cy.injectAxe();
 
-    // Test d'accessibilité dédié pour la page utilisateur connectée (ignorer les violations de contraste connues)
+    // Dedicated accessibility test for logged-in user page (ignore known contrast violations)
     cy.checkA11y();
 
-    // Tester l'accessibilité après focus sur les éléments de navigation
+    // Test accessibility after focusing on navigation elements
     cy.contains("Sign Out").focus();
     cy.checkA11y();
   });

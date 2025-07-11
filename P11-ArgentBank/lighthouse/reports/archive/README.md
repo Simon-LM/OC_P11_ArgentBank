@@ -1,16 +1,16 @@
 <!-- @format -->
 
-# Archives des rapports Lighthouse
+# Lighthouse Report Archives
 
-Ce dossier contient les archives des anciens rapports Lighthouse organisés par date. Les rapports sont automatiquement archivés lorsqu'ils ont plus de 7 jours.
+This folder contains archives of old Lighthouse reports organized by date. Reports are automatically archived when they are more than 7 days old.
 
-## Dernière archivage
+## Latest archiving
 
-**Date :** 2025-05-27  
-**Rapports archivés :** 7 fichiers du 2025-05-26  
-**Action :** Archivage manuel des rapports du 2025-05-26 après validation des nouveaux rapports du 2025-05-27
+**Date:** 2025-05-27  
+**Archived reports:** 7 files from 2025-05-26  
+**Action:** Manual archiving of 2025-05-26 reports after validation of new 2025-05-27 reports
 
-### Rapports archivés (2025-05-26)
+### Archived reports (2025-05-26)
 
 - accueil---desktop-2025-05-26_16-40-38.html
 - accueil---mobile-2025-05-26_16-40-38.html
@@ -24,33 +24,33 @@ Ce dossier contient les archives des anciens rapports Lighthouse organisés par 
 
 ```plaintext
 archive/
-├── YYYY-MM-DD/        # Date de génération du rapport
-│   ├── lighthouse-*.html  # Rapports HTML par date
-│   └── lighthouse-*.json  # Données JSON par date
-├── ...                # Autres dates
+├── YYYY-MM-DD/        # Report generation date
+│   ├── lighthouse-*.html  # HTML reports by date
+│   └── lighthouse-*.json  # JSON data by date
+├── ...                # Other dates
 ```
 
-## Utilisation
+## Usage
 
-Pour archiver manuellement les anciens rapports :
+To manually archive old reports:
 
 ```bash
-# Depuis le dossier lighthouse
+# From the lighthouse folder
 pnpm archive
 ```
 
-Ou directement :
+Or directly:
 
 ```bash
 ./clean.sh --archive
 ```
 
-## Conservation des données
+## Data retention
 
-Les archives sont conservées pour :
+Archives are kept to:
 
-- Suivre l'évolution des performances au fil du temps
-- Comparer les mesures entre différentes versions
-- Documenter les améliorations apportées à l'application
+- Track performance evolution over time
+- Compare measurements between different versions
+- Document improvements made to the application
 
-Les rapports archivés ne sont pas supprimés lors du nettoyage standard des rapports.
+Archived reports are not deleted during standard report cleanup.

@@ -1,17 +1,17 @@
 <!-- @format -->
 
-# 🔍 DIAGNOSTIC FINAL - Tests Lighthouse ArgentBank
+# 🔍 FINAL DIAGNOSIS - Lighthouse Tests ArgentBank
 
-## 📊 État actuel des tests
+## 📊 Current test status
 
-### ✅ Ce qui fonctionne correctement
+### ✅ What works correctly
 
-1. **Authentification intégrée** : ✅ Opérationnelle (CI/CD et local)
-2. **Routage SPA** : ✅ Les bonnes pages sont testées
-3. **Seuils CI/CD** : ✅ Durcis et synchronisés
-4. **Configuration throttling** : ✅ Synchronisée entre local et CI/CD
+1. **Integrated authentication**: ✅ Operational (CI/CD and local)
+2. **SPA routing**: ✅ The right pages are tested
+3. **CI/CD thresholds**: ✅ Hardened and synchronized
+4. **Throttling configuration**: ✅ Synchronized between local and CI/CD
 
-### ⚠️ Différences constatées (NORMALES)
+### ⚠️ Observed differences (NORMAL)
 
 | Aspect             | Local (vercel dev) | CI/CD (Vercel production) |
 | ------------------ | ------------------ | ------------------------- |
@@ -20,7 +20,7 @@
 | **FCP**            | 3.1-6.8s           | ~1s                       |
 | **LCP**            | 5.6-13.0s          | ~2s                       |
 | **HTTPS**          | ❌ (HTTP local)    | ✅ (HTTPS Vercel)         |
-| **Optimisations**  | ❌ (mode dev)      | ✅ (build prod)           |
+| **Optimizations**  | ❌ (dev mode)      | ✅ (prod build)           |
 
 ## 🎯 Cause racine identifiée
 

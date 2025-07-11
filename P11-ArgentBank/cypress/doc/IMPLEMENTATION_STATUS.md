@@ -1,52 +1,52 @@
 <!-- @format -->
 
-# Implémentation des Tests d'Accessibilité avec Cypress-Axe - TERMINÉE ✅
+# Accessibility Testing Implementation with Cypress-Axe - COMPLETED ✅
 
-## 📊 Résumé de l'Implémentation
+## 📊 Implementation Summary
 
-L'implémentation des tests d'accessibilité avec `cypress-axe` dans l'application ArgentBank est **TERMINÉE** et **100% FONCTIONNELLE**.
+The implementation of accessibility testing with `cypress-axe` in the ArgentBank application is **COMPLETED** and **100% FUNCTIONAL**.
 
-## 🎯 Objectifs Atteints
+## 🎯 Achieved Objectives
 
 ### ✅ Configuration
 
-- **cypress-axe v1.6.0** installé et configuré
-- Configuration Cypress mise à jour avec le reporter Mochawesome
-- Support d'accessibilité ajouté dans `cypress/support/e2e.ts`
+- **cypress-axe v1.6.0** installed and configured
+- Cypress configuration updated with Mochawesome reporter
+- Accessibility support added in `cypress/support/e2e.ts`
 
-### ✅ Tests d'Accessibilité Implémentés
+### ✅ Implemented Accessibility Tests
 
-#### 1. Tests d'Authentification (`auth/`)
+#### 1. Authentication Tests (`auth/`)
 
-- **login.cy.ts** : 3 tests avec vérifications d'accessibilité
-- **logout.cy.ts** : 2 tests avec vérifications d'accessibilité
+- **login.cy.ts**: 3 tests with accessibility verifications
+- **logout.cy.ts**: 2 tests with accessibility verifications
 
-#### 2. Tests de Profil Utilisateur (`profile/`)
+#### 2. User Profile Tests (`profile/`)
 
-- **profile.cy.ts** : 8 tests avec vérifications d'accessibilité
+- **profile.cy.ts**: 8 tests with accessibility verifications
 
-#### 3. Tests de Comptes Bancaires (`accounts/`)
+#### 3. Bank Accounts Tests (`accounts/`)
 
-- **accounts.cy.ts** : 3 tests avec vérifications d'accessibilité
+- **accounts.cy.ts**: 3 tests with accessibility verifications
 
-#### 4. Tests de Transactions (`transactions/`)
+#### 4. Transactions Tests (`transactions/`)
 
-- **transactions-display.cy.ts** : 3 tests avec vérifications d'accessibilité (affichage, navigation, accessibilité)
-- **transactions-functionality.cy.ts** : 3 tests avec vérifications d'accessibilité (recherche, notes/catégories, pagination)
+- **transactions-display.cy.ts**: 3 tests with accessibility verifications (display, navigation, accessibility)
+- **transactions-functionality.cy.ts**: 3 tests with accessibility verifications (search, notes/categories, pagination)
 
-#### 5. Tests Cross-Browser (`cross-browser/`)
+#### 5. Cross-Browser Tests (`cross-browser/`)
 
-- **cross-browser.cy.ts** : 3 tests avec vérifications d'accessibilité
+- **cross-browser.cy.ts**: 3 tests with accessibility verifications
 
-#### 6. Tests de Cas Limites (`edge-cases/`)
+#### 6. Edge Cases Tests (`edge-cases/`)
 
-- **edge-cases.cy.ts** : 4 tests avec vérifications d'accessibilité
+- **edge-cases.cy.ts**: 4 tests with accessibility verifications
 
-#### 7. Tests Réseau (`network/`)
+#### 7. Network Tests (`network/`)
 
-- **network-errors.cy.ts** : 3 tests avec vérifications d'accessibilité
+- **network-errors.cy.ts**: 3 tests with accessibility verifications
 
-### ✅ Configuration du Reporting
+### ✅ Reporting Configuration
 
 - **Mochawesome** configuré pour générer des rapports HTML
 - Rapports individuels et consolidés disponibles

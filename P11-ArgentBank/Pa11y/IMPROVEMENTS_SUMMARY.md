@@ -1,120 +1,120 @@
 <!-- @format -->
 
-# Pa11y - Résumé des Améliorations Implémentées
+# Pa11y - Implemented Improvements Summary
 
-## 🎯 Statut : TERMINÉ ✅
+## 🎯 Status: COMPLETED ✅
 
-**Date de finalisation** : 27 mai 2025  
-**Toutes les fonctionnalités demandées ont été implémentées avec succès**
+**Completion date**: May 27, 2025  
+**All requested features have been successfully implemented**
 
-## 🚀 Fonctionnalités Implémentées
+## 🚀 Implemented Features
 
-### 1. ✅ Noms de fichiers horodatés (Suggestion utilisateur)
+### 1. ✅ Timestamped file names (User suggestion)
 
-**Format automatique** : `YYYY-MM-DD_HH-mm-ss_description.png`
+**Automatic format**: `YYYY-MM-DD_HH-mm-ss_description.png`
 
-**Exemples** :
+**Examples**:
 
 - `2025-05-27_21-52-07_debug_before_button_search.png`
 - `2025-05-27_21-52-08_debug_before_submit_click.png`
 - `2025-05-27_21-51-58_user_page_after_auth.png`
 
-**Implémenté dans** :
+**Implemented in**:
 
-- ✅ `pa11y-auth.js` - Toutes les captures de debug et erreur
-- ✅ `run-pa11y-tests.js` - Captures de succès
-- ✅ `pa11y-ci.config.cjs` - Configuration dynamique (limité par JSON)
+- ✅ `pa11y-auth.js` - All debug and error captures
+- ✅ `run-pa11y-tests.js` - Success captures
+- ✅ `pa11y-ci.config.cjs` - Dynamic configuration (limited by JSON)
 
-### 2. ✅ Configuration Pa11y Entièrement Fonctionnelle
+### 2. ✅ Fully Functional Pa11y Configuration
 
-**Tests confirmés** :
+**Confirmed tests**:
 
-- ✅ **Page d'accueil** (`/`) : 0 problèmes d'accessibilité
-- ✅ **Page de connexion** (`/signIn`) : 0 problèmes d'accessibilité
-- ✅ **Page utilisateur** (`/user`) : 3 problèmes mineurs identifiés
+- ✅ **Home page** (`/`): 0 accessibility issues
+- ✅ **Login page** (`/signIn`): 0 accessibility issues
+- ✅ **User page** (`/user`): 3 minor issues identified
 
-**Authentification robuste** :
+**Robust authentication**:
 
-- ✅ Script d'authentification avec imports ES6 fixés
-- ✅ Gestion des redirections (`/User` au lieu de `/user`)
-- ✅ Captures de debug à chaque étape critique
-- ✅ Délais optimisés pour la stabilité
+- ✅ Authentication script with fixed ES6 imports
+- ✅ Redirect management (`/User` instead of `/user`)
+- ✅ Debug captures at each critical step
+- ✅ Optimized delays for stability
 
-### 3. ✅ Organisation des Captures d'Écran
+### 3. ✅ Screenshot Organization
 
-**Structure organisée** :
+**Organized structure**:
 
 ```text
 Pa11y/screenshots/
-├── debug/     # Captures pendant l'authentification
-├── errors/    # Captures en cas d'erreur
-└── success/   # Captures des tests réussis
+├── debug/     # Captures during authentication
+├── errors/    # Captures in case of error
+└── success/   # Captures of successful tests
 ```
 
-**Captures automatiques** :
+**Automatic captures**:
 
-- ✅ Debug avant recherche de bouton
-- ✅ Debug avant clic de soumission
-- ✅ Erreur si mauvaise page après login
-- ✅ Erreur si échec de vérification de contenu
-- ✅ Erreur générale du script d'authentification
-- ✅ Succès pour chaque page testée
+- ✅ Debug before button search
+- ✅ Debug before submit click
+- ✅ Error if wrong page after login
+- ✅ Error if content verification failure
+- ✅ General authentication script error
+- ✅ Success for each tested page
 
-### 4. ✅ Documentation Complète
+### 4. ✅ Complete Documentation
 
-**README mis à jour avec** :
+**README updated with**:
 
-- ✅ Configuration fonctionnelle complète
-- ✅ Instructions d'utilisation `vercel dev` vs `pnpm run dev`
-- ✅ Explication des méthodes de test (script personnalisé vs Pa11y-CI)
-- ✅ Troubleshooting pour les problèmes courants
-- ✅ Documentation des noms de fichiers horodatés
+- ✅ Complete functional configuration
+- ✅ Usage instructions `vercel dev` vs `pnpm run dev`
+- ✅ Explanation of test methods (custom script vs Pa11y-CI)
+- ✅ Troubleshooting for common issues
+- ✅ Documentation of timestamped file names
 
-## 🔧 Commandes de Test
+## 🔧 Test Commands
 
-### Méthode Recommandée (Avec Horodatage)
+### Recommended Method (With Timestamping)
 
 ```bash
-# Démarrer le serveur
+# Start the server
 vercel dev
 
-# Dans un autre terminal
+# In another terminal
 pnpm run test:a11y
 ```
 
-### Méthode Alternative (Sans Horodatage)
+### Alternative Method (Without Timestamping)
 
 ```bash
 npx pa11y-ci --config Pa11y/pa11y-ci.json --threshold 3
 ```
 
-## 📊 Résultats de Test Actuels
+## 📊 Current Test Results
 
-### ✅ Tests Fonctionnels
+### ✅ Functional Tests
 
-- **Home** : 0 problèmes
-- **SignIn** : 0 problèmes
-- **User** : 3 problèmes mineurs (contraste et table caption)
+- **Home**: 0 issues
+- **SignIn**: 0 issues
+- **User**: 3 minor issues (contrast and table caption)
 
-### 🔍 Problèmes Identifiés (Page User)
+### 🔍 Identified Issues (User Page)
 
-1. **Contraste insuffisant** (ratio 3.81:1 au lieu de 4.5:1)
+1. **Insufficient contrast** (ratio 3.81:1 instead of 4.5:1)
 
-   - Sélecteurs : `#search-formats`, `#keyboard-shortcuts > small`
-   - Recommandation : changer couleur vers `#000f25`
+   - Selectors: `#search-formats`, `#keyboard-shortcuts > small`
+   - Recommendation: change color to `#000f25`
 
-2. **Table de mise en page avec caption**
-   - Sélecteur : `#main-content > div > section:nth-child(4) > table`
-   - Recommandation : retirer le caption ou utiliser une vraie table de données
+2. **Layout table with caption**
+   - Selector: `#main-content > div > section:nth-child(4) > table`
+   - Recommendation: remove caption or use a real data table
 
 ## 🎉 Conclusion
 
-**Toutes les fonctionnalités ont été implémentées avec succès** :
+**All features have been successfully implemented**:
 
-1. ✅ **Horodatage automatique** des captures d'écran
-2. ✅ **Configuration Pa11y fonctionnelle** sur les 3 pages
-3. ✅ **Authentification robuste** avec gestion d'erreurs
-4. ✅ **Organisation des fichiers** claire et logique
-5. ✅ **Documentation complète** et à jour
+1. ✅ **Automatic timestamping** of screenshots
+2. ✅ **Functional Pa11y configuration** on 3 pages
+3. ✅ **Robust authentication** with error handling
+4. ✅ **Clear and logical file organization**
+5. ✅ **Complete and up-to-date documentation**
 
-**La configuration Pa11y est maintenant prête pour la production et la maintenance continue de l'accessibilité.**
+**Pa11y configuration is now ready for production and continuous accessibility maintenance.**

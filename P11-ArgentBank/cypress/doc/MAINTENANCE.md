@@ -2,7 +2,7 @@
 
 # Guide de Maintenance des Tests Cypress
 
-Ce guide fournit les bonnes pratiques pour maintenir et faire évoluer les tests Cypress dans le projet ArgentBank sur le long terme.
+This guide provides best practices for maintaining and evolving Cypress tests in the ArgentBank project over the long term.
 
 ## 🔄 Cycle de vie des tests E2E
 
@@ -236,7 +236,7 @@ describe("Account operations", () => {
 });
 ```
 
-## 🚀 Faire évoluer la suite de tests
+## 🚀 Evolving the test suite
 
 ### Stratégies d'extension
 

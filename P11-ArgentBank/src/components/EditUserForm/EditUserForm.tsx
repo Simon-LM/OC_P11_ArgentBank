@@ -60,7 +60,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   });
 
   const handleSave = async (data: FormData) => {
-    // Ne faites pas de retour manuel ici :
+    // Do not return manually here:
     // if (!data.userName.trim()) { return false; }
     onSave(data);
   };

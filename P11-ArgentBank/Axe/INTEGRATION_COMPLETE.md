@@ -1,38 +1,38 @@
 <!-- @format -->
 
-# ✅ Intégration Axe Complète - Résumé Final
+# ✅ Complete Axe Integration - Final Summary
 
-## 🎯 Objectif Atteint
+## 🎯 Objective Achieved
 
-**Mission :** Intégrer les tests d'accessibilité Axe directement dans les tests existants pour éviter la duplication et simplifier la maintenance.
+**Mission:** Integrate Axe accessibility tests directly into existing tests to avoid duplication and simplify maintenance.
 
-**Résultat :** ✅ **SUCCÈS COMPLET** - Tous les tests d'accessibilité sont maintenant intégrés dans les fichiers de test existants.
+**Result:** ✅ **COMPLETE SUCCESS** - All accessibility tests are now integrated into existing test files.
 
-## 📊 Récapitulatif des Changements
+## 📊 Changes Summary
 
-### ✅ Fichiers de Tests Modifiés (Axe Intégré)
+### ✅ Modified Test Files (Axe Integrated)
 
-| Fichier                                             | Tests Ajoutés                                                  | Status    |
-| --------------------------------------------------- | -------------------------------------------------------------- | --------- |
-| `src/pages/home/Home.test.tsx`                      | 1 test d'accessibilité                                         | ✅ Validé |
-| `src/pages/signIn/SignIn.test.tsx`                  | 3 tests d'accessibilité (violations générales, ARIA, headings) | ✅ Validé |
-| `src/App.test.tsx`                                  | Tests pour home, sign-in et error pages                        | ✅ Validé |
-| `src/components/EditUserForm/EditUserForm.test.tsx` | 1 test d'accessibilité                                         | ✅ Validé |
-| `src/components/Features/Features.test.tsx`         | 1 test d'accessibilité                                         | ✅ Validé |
-| `src/layouts/header/Header.test.tsx`                | Tests logged out/logged in                                     | ✅ Validé |
-| `src/layouts/footer/Footer.test.tsx`                | Tests normal et privacy expanded                               | ✅ Validé |
+| File                                                | Added Tests                                                | Status       |
+| --------------------------------------------------- | ---------------------------------------------------------- | ------------ |
+| `src/pages/home/Home.test.tsx`                      | 1 accessibility test                                       | ✅ Validated |
+| `src/pages/signIn/SignIn.test.tsx`                  | 3 accessibility tests (general violations, ARIA, headings) | ✅ Validated |
+| `src/App.test.tsx`                                  | Tests for home, sign-in and error pages                    | ✅ Validated |
+| `src/components/EditUserForm/EditUserForm.test.tsx` | 1 accessibility test                                       | ✅ Validated |
+| `src/components/Features/Features.test.tsx`         | 1 accessibility test                                       | ✅ Validated |
+| `src/layouts/header/Header.test.tsx`                | Tests logged out/logged in                                 | ✅ Validated |
+| `src/layouts/footer/Footer.test.tsx`                | Tests normal and privacy expanded                          | ✅ Validated |
 
-### 🗑️ Fichiers Supprimés (Nettoyage)
+### 🗑️ Deleted Files (Cleanup)
 
-- ❌ `src/utils/axe-setup.ts` (doublon supprimé)
-- ❌ `Axe/tests/*` (tous les tests en doublon supprimés)
-- ❌ `Axe/config/vitest.axe.config.ts` (configuration obsolète)
-- ❌ `Axe/setup/testSetup.ts` (setup obsolète)
-- ❌ `Axe/setup/` (dossier vide supprimé)
+- ❌ `src/utils/axe-setup.ts` (duplicate removed)
+- ❌ `Axe/tests/*` (all duplicate tests removed)
+- ❌ `Axe/config/vitest.axe.config.ts` (obsolete configuration)
+- ❌ `Axe/setup/testSetup.ts` (obsolete setup)
+- ❌ `Axe/setup/` (empty folder removed)
 
-### 🧹 Scripts Package.json Nettoyés
+### 🧹 Package.json Scripts Cleaned
 
-**Scripts supprimés :**
+**Removed scripts:**
 
 ```json
 "test:axe": "vitest run --config Axe/config/vitest.axe.config.ts",
@@ -42,7 +42,7 @@
 "test:axe-report": "vitest run --config Axe/config/vitest.axe.config.ts --reporter=verbose"
 ```
 
-**Scripts conservés :**
+**Preserved scripts:**
 
 ```json
 "test": "vitest run",

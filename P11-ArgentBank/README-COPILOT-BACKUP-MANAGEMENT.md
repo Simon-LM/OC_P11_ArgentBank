@@ -1,195 +1,195 @@
 <!-- @format -->
 
-# 🤖 Gestion des Sauvegardes GitHub Copilot - Guide Rapide
+# 🤖 GitHub Copilot Backup Management - Quick Guide
 
-> **Solution automatique** pour éviter les conflits de sauvegardes Copilot/VS Code lors des redémarrages et commits avec pnpm
+> **Automatic solution** to prevent Copilot/VS Code backup conflicts during restarts and commits with pnpm
 
-## 🚀 Utilisation Rapide
+## 🚀 Quick Usage
 
-### Commandes Essentielles
+### Essential Commands
 
 ```bash
-# Nettoyage des sauvegardes Copilot
+# Clean Copilot backups
 pnpm run clean:copilot
 
-# Synchronisation pnpm (résout les conflits npm/pnpm)
+# Synchronize pnpm (resolves npm/pnpm conflicts)
 pnpm run sync:pnpm
 
-# Préparation complète avant commit
+# Complete preparation before commit
 pnpm run commit-ready
 
-# Installation du hook automatique (une seule fois)
+# Install automatic hook (one time only)
 bash scripts/install-git-hooks.sh
 ```
 
-## 🔧 Installation Initiale
+## 🔧 Initial Setup
 
-### 1. Installer le Hook Pre-commit (Une seule fois)
+### 1. Install Pre-commit Hook (One time only)
 
 ```bash
 bash scripts/install-git-hooks.sh
 ```
 
-### 2. Tester la Configuration
+### 2. Test Configuration
 
 ```bash
-# Test du nettoyage
+# Test cleanup
 pnpm run clean:copilot
 
-# Test de la synchronisation
+# Test synchronization
 pnpm run sync:pnpm
 
-# Test complet
+# Complete test
 pnpm run commit-ready
 ```
 
-## 🔄 Workflow Quotidien
+## 🔄 Daily Workflow
 
-### Développement Standard
+### Standard Development
 
 ```bash
-# 1. Développer normalement dans VS Code
-# ... coder, sauvegarder, etc ...
+# 1. Develop normally in VS Code
+# ... code, save, etc ...
 
-# 2. Avant un commit important (optionnel)
+# 2. Before an important commit (optional)
 pnpm run commit-ready
 
-# 3. Commit normal - le hook s'exécute automatiquement
+# 3. Normal commit - hook executes automatically
 git add .
-git commit -m "feat: nouvelle fonctionnalité"
+git commit -m "feat: new feature"
 ```
 
-### Actions Automatiques du Hook
+### Automatic Hook Actions
 
-Lors de chaque commit, le hook exécute automatiquement :
+On each commit, the hook automatically executes:
 
-- ✅ Nettoie les sauvegardes VS Code/Copilot
-- ✅ Supprime `package-lock.json` (conflit npm/pnpm)
-- ✅ Vérifie que pnpm est utilisé correctement
-- ✅ Exécute ESLint et Prettier
+- ✅ Cleans VS Code/Copilot backups
+- ✅ Removes `package-lock.json` (npm/pnpm conflict)
+- ✅ Verifies pnpm is used correctly
+- ✅ Runs ESLint and Prettier
 
-## 🚨 Résolution des Problèmes Courants
+## 🚨 Common Problem Resolution
 
-### Problème : `package-lock.json` Réapparaît
+### Problem: `package-lock.json` Reappears
 
 ```bash
-# Le hook le supprime automatiquement, ou manuellement :
+# The hook removes it automatically, or manually:
 rm package-lock.json
 pnpm install
 ```
 
-### Problème : Sauvegardes Corrompues
+### Problem: Corrupted Backups
 
 ```bash
-# Nettoyage complet
+# Complete cleanup
 pnpm run clean:copilot
 
-# Redémarrer VS Code après nettoyage
+# Restart VS Code after cleanup
 ```
 
-### Problème : Hook Ne Se Déclenche Pas
+### Problem: Hook Doesn't Trigger
 
 ```bash
-# Réinstaller le hook
+# Reinstall the hook
 bash scripts/install-git-hooks.sh
 
-# Tester manuellement
+# Test manually
 .git/hooks/pre-commit
 ```
 
-### Problème : Cache pnpm Corrompu
+### Problem: Corrupted pnpm Cache
 
 ```bash
-# Nettoyer et réinstaller
+# Clean and reinstall
 rm -rf node_modules/
 pnpm store prune
 pnpm install
 ```
 
-## 💡 Bonnes Pratiques
+## 💡 Best Practices
 
-### ✅ À Faire
+### ✅ Do
 
-- **Toujours utiliser pnpm** dans ce projet
-- **Laisser le hook activé** pour la cohérence
-- **Exécuter `pnpm run commit-ready`** avant les commits importants
-- **Nettoyer régulièrement** avec `pnpm run clean:copilot`
+- **Always use pnpm** in this project
+- **Keep the hook enabled** for consistency
+- **Run `pnpm run commit-ready`** before important commits
+- **Clean regularly** with `pnpm run clean:copilot`
 
-### ❌ À Éviter
+### ❌ Don't
 
-- **Ne pas utiliser npm** dans ce projet pnpm
-- **Ne pas contourner le hook** sauf cas exceptionnels
-- **Ne pas ignorer les avertissements** des scripts
+- **Don't use npm** in this pnpm project
+- **Don't bypass the hook** except in exceptional cases
+- **Don't ignore script warnings**
 
-## 🔍 Commandes de Diagnostic
+## 🔍 Diagnostic Commands
 
 ```bash
-# Vérifier l'état Git
+# Check Git status
 git status
 
-# Vérifier les hooks installés
+# Check installed hooks
 ls -la .git/hooks/pre-commit
 
-# Tester les performances
+# Test performance
 time pnpm run commit-ready
 
-# Vérifier la configuration VS Code
+# Check VS Code configuration
 cat .vscode/settings.json | grep -E "(hotExit|packageManager)"
 ```
 
-## 🎯 Cas d'Usage Spécifiques
+## 🎯 Specific Use Cases
 
-### Contourner Temporairement le Hook
+### Temporarily Bypass Hook
 
 ```bash
-# Commit sans hook (urgence seulement)
-git commit --no-verify -m "commit d'urgence"
+# Commit without hook (emergency only)
+git commit --no-verify -m "emergency commit"
 
-# Désactiver temporairement
+# Temporarily disable
 mv .git/hooks/pre-commit .git/hooks/pre-commit.disabled
 
-# Réactiver
+# Re-enable
 mv .git/hooks/pre-commit.disabled .git/hooks/pre-commit
 ```
 
-### Migration d'un Projet npm
+### Migration from npm Project
 
 ```bash
-# 1. Supprimer les artifacts npm
+# 1. Remove npm artifacts
 rm package-lock.json
 rm -rf node_modules/
 
-# 2. Installer avec pnpm
+# 2. Install with pnpm
 pnpm install
 
-# 3. Installer les hooks
+# 3. Install hooks
 bash scripts/install-git-hooks.sh
 
-# 4. Premier nettoyage
+# 4. First cleanup
 pnpm run commit-ready
 ```
 
-## 📁 Architecture des Scripts
+## 📁 Script Architecture
 
 ```
 scripts/
-├── clean-copilot-backups.sh    # Nettoyage des sauvegardes
-├── sync-pnpm.sh                # Synchronisation pnpm
-├── install-git-hooks.sh        # Installation des hooks
-└── pre-commit-hook.sh           # Hook pre-commit
+├── clean-copilot-backups.sh    # Backup cleanup
+├── sync-pnpm.sh                # pnpm synchronization
+├── install-git-hooks.sh        # Hook installation
+└── pre-commit-hook.sh           # Pre-commit hook
 
 .vscode/
-└── settings.json                # Configuration VS Code optimisée
+└── settings.json                # Optimized VS Code configuration
 ```
 
-## 🔗 Liens Utiles
+## 🔗 Useful Links
 
-- [Guide Complet Détaillé](./COPILOT_MANAGEMENT_GUIDE.md) - Documentation exhaustive
-- [Documentation pnpm](https://pnpm.io/motivation)
+- [Complete Detailed Guide](./COPILOT_MANAGEMENT_GUIDE.md) - Comprehensive documentation
+- [pnpm Documentation](https://pnpm.io/motivation)
 - [VS Code Settings Reference](https://code.visualstudio.com/docs/getstarted/settings)
 
 ---
 
-**✨ Avec cette configuration, vos sauvegardes Copilot sont gérées automatiquement !**
+**✨ With this configuration, your Copilot backups are managed automatically!**
 
-_Dernière mise à jour : 31 mai 2025_
+_Last updated: May 31, 2025_

@@ -1,93 +1,93 @@
 <!-- @format -->
 
-# 📋 Résumé - Workflow Vercel Automatisé
+# 📋 Summary - Automated Vercel Workflow
 
-## ✅ Configuration terminée
+## ✅ Configuration completed
 
-Votre système d'automatisation Vercel est maintenant entièrement opérationnel avec gestion Git intégrée !
+Your Vercel automation system is now fully operational with integrated Git management!
 
-## 🔄 Workflow quotidien
+## 🔄 Daily workflow
 
-### **Développement local**
-
-```bash
-pnpm vercel:dev
-# ➜ Supprime vercel.json et lance vercel dev
-```
-
-### **Avant de committer - 3 options selon le contexte**
-
-```bash
-# ⚡⚡⚡ Option 1: Restauration simple (2 sec)
-pnpm vercel:commit       # Juste restaure vercel.json
-
-# ⚡⚡ Option 2: Préparation quotidienne (15-20 sec) - RECOMMANDÉE
-pnpm commit-ready        # Restaure + nettoie + aperçu Git
-git add .
-git commit -m "feat: ma nouvelle fonctionnalité"
-
-# ⚡ Option 3: Commit important (30-45 sec)
-pnpm pre-commit          # Restaure + nettoie + lint + formatage
-git add .
-git commit -m "feat: fonctionnalité majeure"
-```
-
-### **Après le commit (retour en dev)**
+### **Local development**
 
 ```bash
 pnpm vercel:dev
-# ➜ Re-supprime vercel.json pour continuer le développement
+# ➜ Removes vercel.json and launches vercel dev
 ```
 
-### **Déploiement production**
+### **Before committing - 3 options depending on context**
+
+```bash
+# ⚡⚡⚡ Option 1: Simple restoration (2 sec)
+pnpm vercel:commit       # Just restores vercel.json
+
+# ⚡⚡ Option 2: Daily preparation (15-20 sec) - RECOMMENDED
+pnpm commit-ready        # Restores + cleans + Git preview
+git add .
+git commit -m "feat: my new feature"
+
+# ⚡ Option 3: Important commit (30-45 sec)
+pnpm pre-commit          # Restores + cleans + lint + formatting
+git add .
+git commit -m "feat: major feature"
+```
+
+### **After commit (back to dev)**
+
+```bash
+pnpm vercel:dev
+# ➜ Re-removes vercel.json to continue development
+```
+
+### **Production deployment**
 
 ```bash
 pnpm vercel:prod
-# ➜ Garantit vercel.json et lance vercel --prod
+# ➜ Ensures vercel.json and launches vercel --prod
 ```
 
-## 📁 État des fichiers
+## 📁 File status
 
-### **Dans Git (repository)**
+### **In Git (repository)**
 
-- ✅ `vercel.json` - **Committé** (pour Vercel automatique)
-- ✅ `vercel.only-prod.json` - **Committé** (sauvegarde)
+- ✅ `vercel.json` - **Committed** (for automatic Vercel)
+- ✅ `vercel.only-prod.json` - **Committed** (backup)
 
-### **En local pendant dev**
+### **Locally during dev**
 
-- ❌ `vercel.json` - **Supprimé** (pour éviter conflits avec vercel dev)
-- ✅ `vercel.only-prod.json` - **Présent** (source de vérité)
+- ❌ `vercel.json` - **Removed** (to avoid conflicts with vercel dev)
+- ✅ `vercel.only-prod.json` - **Present** (source of truth)
 
-## 🎯 Scripts disponibles
+## 🎯 Available scripts
 
-| Script               | Action                  | Usage         | Vitesse |
-| -------------------- | ----------------------- | ------------- | ------- |
-| `pnpm vercel:dev`    | Dev local               | Quotidien     | ⚡⚡    |
-| `pnpm vercel:prod`   | Production              | Déploiement   | ⚡⚡    |
-| `pnpm vercel:commit` | Restaure vercel.json    | Ponctuel      | ⚡⚡⚡  |
-| `pnpm commit-ready`  | Prépare commit + aperçu | **Quotidien** | ⚡⚡    |
-| `pnpm pre-commit`    | Commit complet + lint   | Important     | ⚡      |
-| `pnpm vercel:clean`  | Nettoie vercel.json     | Dépannage     | ⚡⚡⚡  |
+| Script               | Action                    | Usage        | Speed  |
+| -------------------- | ------------------------- | ------------ | ------ |
+| `pnpm vercel:dev`    | Local dev                 | Daily        | ⚡⚡   |
+| `pnpm vercel:prod`   | Production                | Deployment   | ⚡⚡   |
+| `pnpm vercel:commit` | Restores vercel.json      | Occasional   | ⚡⚡⚡ |
+| `pnpm commit-ready`  | Prepares commit + preview | **Daily**    | ⚡⚡   |
+| `pnpm pre-commit`    | Full commit + lint        | Important    | ⚡     |
+| `pnpm vercel:clean`  | Cleans vercel.json        | Troubleshoot | ⚡⚡⚡ |
 
-## 🔒 Sécurités intégrées
+## 🔒 Built-in security
 
-✅ **Impossible d'oublier `vercel.json`** - Restauré automatiquement avant commit
-✅ **Impossible de conflit en dev** - Supprimé automatiquement pour `vercel dev`
-✅ **CI/CD compatible** - Scripts utilisables dans les pipelines
-✅ **Git propre** - `vercel.json` retiré du `.gitignore`, présent dans le repo
+✅ **Impossible to forget `vercel.json`** - Automatically restored before commit
+✅ **Impossible dev conflicts** - Automatically removed for `vercel dev`
+✅ **CI/CD compatible** - Scripts usable in pipelines
+✅ **Clean Git** - `vercel.json` removed from `.gitignore`, present in repo
 
-## 🛠️ Modification de config
+## 🛠️ Config modification
 
-Pour changer la configuration Vercel :
+To change the Vercel configuration:
 
-1. **Modifier** `vercel.only-prod.json` (jamais `vercel.json` directement)
-2. **Tester** avec `pnpm vercel:prod`
-3. **Committer** avec `pnpm commit-ready`
+1. **Modify** `vercel.only-prod.json` (never `vercel.json` directly)
+2. **Test** with `pnpm vercel:prod`
+3. **Commit** with `pnpm commit-ready`
 
-## 🎉 Résultat
+## 🎉 Result
 
-Plus jamais de renommage manuel ! Le workflow est entièrement automatisé et sécurisé.
+No more manual renaming! The workflow is fully automated and secure.
 
 ---
 
-_Système mis en place le 2 juin 2025 - Compatible pnpm + Git + Vercel CI/CD_
+_System implemented on June 2, 2025 - Compatible with pnpm + Git + Vercel CI/CD_

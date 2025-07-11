@@ -1,74 +1,74 @@
 <!-- @format -->
 
-# Guide d'Installation et Configuration de Cypress
+# Cypress Installation and Configuration Guide
 
-Ce guide explique comment installer, configurer et démarrer avec Cypress pour les tests E2E dans le projet ArgentBank.
+This guide explains how to install, configure, and get started with Cypress for E2E testing in the ArgentBank project.
 
 ## 🚀 Installation
 
-### Prérequis
+### Prerequisites
 
-- Node.js (version 14.x ou supérieure)
-- npm ou pnpm (nous utilisons pnpm dans ce projet)
-- Projet ArgentBank fonctionnel
+- Node.js (version 14.x or higher)
+- npm or pnpm (we use pnpm in this project)
+- Functional ArgentBank project
 
-### Installation de Cypress
+### Cypress Installation
 
 ```bash
-# Ajouter Cypress comme dépendance de développement
+# Add Cypress as a development dependency
 pnpm add cypress @testing-library/cypress --save-dev
 
-# Initialiser Cypress (crée la structure de répertoire)
+# Initialize Cypress (creates directory structure)
 pnpm cypress open
 ```
 
-## ⚙️ Configuration de base
+## ⚙️ Basic Configuration
 
-### Structure de répertoire
+### Directory Structure
 
-Après l'initialisation, Cypress créera la structure suivante :
+After initialization, Cypress will create the following structure:
 
 ```
 cypress/
-├── e2e/               # Tests E2E
-├── fixtures/          # Données de test
-├── support/           # Helpers et commandes personnalisées
-│   ├── commands.js    # Commandes personnalisées
-│   └── e2e.js         # Configuration globale
-└── downloads/         # Fichiers téléchargés pendant les tests
+├── e2e/               # E2E tests
+├── fixtures/          # Test data
+├── support/           # Helpers and custom commands
+│   ├── commands.js    # Custom commands
+│   └── e2e.js         # Global configuration
+└── downloads/         # Files downloaded during tests
 ```
 
-### Configuration de base (cypress.config.js)
+### Basic Configuration (cypress.config.js)
 
 ```javascript
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: "http://localhost:5173", // URL de base de l'application
+    baseUrl: "http://localhost:5173", // Application base URL
     viewportWidth: 1280,
     viewportHeight: 720,
-    video: false, // Désactiver l'enregistrement vidéo par défaut
+    video: false, // Disable video recording by default
     screenshotOnRunFailure: true,
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     setupNodeEvents(on, config) {
-      // Hooks d'événements de Node
+      // Node event hooks
     },
   },
 });
 ```
 
-## 🔌 Intégration avec Testing Library
+## 🔌 Testing Library Integration
 
-Pour une expérience de test plus ergonomique, nous intégrons Testing Library :
+For a more ergonomic testing experience, we integrate Testing Library:
 
-### Configuration dans support/commands.js
+### Configuration in support/commands.js
 
 ```javascript
 // cypress/support/commands.js
 import "@testing-library/cypress/add-commands";
 
-// Commandes personnalisées supplémentaires
+// Additional custom commands
 Cypress.Commands.add("login", (username, password) => {
   cy.visit("/login");
   cy.findByLabelText("Email").type(username);
@@ -77,11 +77,11 @@ Cypress.Commands.add("login", (username, password) => {
 });
 ```
 
-## 🔧 Configuration avancée
+## 🔧 Advanced Configuration
 
-### Environnements multiples
+### Multiple Environments
 
-Pour tester sur différents environnements (développement, staging, production) :
+To test on different environments (development, staging, production):
 
 ```javascript
 // cypress.config.js
@@ -93,10 +93,10 @@ module.exports = defineConfig({
       apiUrl: "http://localhost:3001/api/v1",
     },
     setupNodeEvents(on, config) {
-      // Modification de la configuration en fonction de l'environnement
+      // Configuration modification based on environment
       const environment = config.env.environment || "development";
 
-      // Charger les variables d'environnement spécifiques
+      // Load environment-specific variables
       config.env = {
         ...config.env,
         ...(environment === "production"
@@ -110,21 +110,21 @@ module.exports = defineConfig({
 });
 ```
 
-### Gestion des connexions
+### Session Management
 
 ```javascript
 // cypress/support/e2e.js
 beforeEach(() => {
-  // Restaurer les cookies entre les tests pour maintenir la session
+  // Restore cookies between tests to maintain session
   cy.restoreLocalStorage();
 });
 
 afterEach(() => {
-  // Sauvegarder les cookies après chaque test
+  // Save cookies after each test
   cy.saveLocalStorage();
 });
 
-// Commandes pour sauvegarder/restaurer le localStorage
+// Commands to save/restore localStorage
 Cypress.Commands.add("saveLocalStorage", () => {
   cy.window().then((win) => {
     Object.keys(win.localStorage).forEach((key) => {
@@ -142,9 +142,9 @@ Cypress.Commands.add("restoreLocalStorage", () => {
 });
 ```
 
-## 🔗 Intégration CI/CD
+## 🔗 CI/CD Integration
 
-### Configuration pour GitHub Actions
+### GitHub Actions Configuration
 
 ```yaml
 # .github/workflows/cypress.yml
@@ -202,7 +202,7 @@ pnpm cypress run --spec "cypress/e2e/auth/login.cy.js"
 pnpm cypress run --browser chrome
 ```
 
-### Intégration avec npm scripts
+### Integration with npm scripts
 
 Ajoutez ces scripts dans votre `package.json` :
 

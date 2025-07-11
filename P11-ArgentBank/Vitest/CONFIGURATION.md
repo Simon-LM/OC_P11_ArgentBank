@@ -1,8 +1,8 @@
 <!-- @format -->
 
-# Configuration Vitest - ArgentBank
+# Vitest Configuration - ArgentBank
 
-## 🔧 Configuration principale
+## 🔧 Main Configuration
 
 ### vitest.config.ts
 
@@ -15,29 +15,29 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: "./src/setupTests.ts", // Chemin vers le fichier de configuration des tests
+    setupFiles: "./src/setupTests.ts", // Path to test configuration file
     coverage: {
-      provider: "v8", // ou 'istanbul'
+      provider: "v8", // or 'istanbul'
       reporter: ["text", "json", "html"],
-      reportsDirectory: "./coverage", // Répertoire de sortie des rapports
-      include: ["src/**/*.{ts,tsx}"], // Fichiers à inclure dans la couverture
+      reportsDirectory: "./coverage", // Reports output directory
+      include: ["src/**/*.{ts,tsx}"], // Files to include in coverage
       exclude: [
-        // Fichiers à exclure de la couverture
+        // Files to exclude from coverage
         "src/main.tsx",
         "src/vite-env.d.ts",
         "src/**/*.test.{ts,tsx}",
         "src/setupTests.ts",
-        "src/generated/**/*", // Exclure les fichiers générés
-        "src/mockData/**/*", // Exclure les données mockées
-        "src/types/**/*", // Exclure les définitions de types
+        "src/generated/**/*", // Exclude generated files
+        "src/mockData/**/*", // Exclude mocked data
+        "src/types/**/*", // Exclude type definitions
       ],
-      all: true, // Afficher la couverture pour tous les fichiers, même non testés
+      all: true, // Show coverage for all files, even untested ones
     },
   },
 });
 ```
 
-## 🛠️ Setup des tests
+## 🛠️ Test Setup
 
 ### src/setupTests.ts
 
@@ -45,7 +45,7 @@ export default defineConfig({
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
-// Mock des APIs Web non disponibles dans jsdom
+// Mock Web APIs not available in jsdom
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({

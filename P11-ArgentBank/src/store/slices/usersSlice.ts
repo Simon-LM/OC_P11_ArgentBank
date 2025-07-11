@@ -145,7 +145,7 @@ export const fetchAccounts = createAsyncThunk<
   }
   try {
     const response = await fetch("/api/accounts", {
-      // Appeler la nouvelle route
+      // Call the new route
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -228,7 +228,7 @@ export const searchTransactions = createAsyncThunk<
   }
 
   try {
-    // Construire l'URL avec les paramètres de recherche
+    // Build URL with search parameters
     const queryParams = new URLSearchParams();
     if (params.accountId) queryParams.set("accountId", params.accountId);
     if (params.searchTerm) queryParams.set("searchTerm", params.searchTerm);
@@ -289,7 +289,7 @@ export const searchTransactions = createAsyncThunk<
   }
 });
 
-// Création du slice
+// Creating the slice
 const usersSlice = createSlice({
   name: "users",
   initialState,
@@ -372,19 +372,19 @@ const usersSlice = createSlice({
       const filters = action.payload;
 
       if (filters.category) {
-        // Vous pourriez ajouter une propriété à UsersState comme activeCategory
+        // You could add a property to UsersState like activeCategory
         // state.activeCategory = filters.category;
       }
 
       if (filters.fromDate || filters.toDate) {
-        // Vous pourriez ajouter une propriété comme activeDateRange
+        // You could add a property like activeDateRange
         // state.activeDateRange = {
         //   from: filters.fromDate,
         //   to: filters.toDate
         // };
       }
 
-      // Réinitialiser la page
+      // Reset page
       if (state.pagination) {
         state.pagination.page = 1;
       } else {
@@ -410,7 +410,7 @@ const usersSlice = createSlice({
         (state, action: PayloadAction<Account[]>) => {
           state.accountsStatus = "succeeded";
           state.accounts = action.payload;
-          // Optionnel: sélectionner le premier compte par défaut ?
+          // Optional: select first account by default?
           // if (state.accounts.length > 0 && state.selectedAccountId === null) {
           //  state.selectedAccountId = state.accounts[0].id;
           // }

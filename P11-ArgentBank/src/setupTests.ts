@@ -7,12 +7,12 @@ import { vi } from "vitest";
 vi.mock("react-intersection-observer", () => ({
   useInView: () => ({
     ref: vi.fn(),
-    inView: true, // Ou false, selon le comportement par défaut que vous souhaitez simuler
+    inView: true, // Or false, depending on the default behavior you want to simulate
     entry: null,
   }),
 }));
 
-// Mock global pour window.matchMedia
+// Global mock for window.matchMedia
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: (query: string) => ({

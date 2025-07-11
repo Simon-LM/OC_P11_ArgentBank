@@ -5,7 +5,7 @@ import { setAuthState, logoutUser } from "../store/slices/usersSlice";
 import { AppDispatch } from "../store/Store";
 import { usernameBlacklist } from "./blacklist";
 
-// Schéma pour la réponse de l'API de connexion (login)
+// Schema for login API response
 const loginResponseSchema = z.object({
   status: z.number(),
   message: z.string(),
@@ -14,7 +14,7 @@ const loginResponseSchema = z.object({
   }),
 });
 
-// Schéma pour la réponse de l'API de profil utilisateur (User Profile)
+// Schema for user profile API response
 const profileResponseSchema = z.object({
   status: z.number(),
   message: z.string(),
@@ -49,10 +49,10 @@ export { loginSchema };
 type LoginCredentials = z.infer<typeof loginSchema>;
 
 export const loginUser = async (credentials: LoginCredentials) => {
-  // Validation des données avec Zod
+  // Data validation with Zod
   const parsedCredentials = loginSchema.safeParse(credentials);
   if (!parsedCredentials.success) {
-    // Si la validation échoue, une erreur est lancée
+    // If validation fails, an error is thrown
     throw new Error(parsedCredentials.error.message);
   }
 
@@ -95,10 +95,10 @@ export const loginUser = async (credentials: LoginCredentials) => {
       throw new Error(errorMessage);
     }
 
-    // Vérifier que la réponse est au format JSON
+    // Verify that the response is in JSON format
     const data = await response.json();
 
-    // Validation de la réponse API avec Zod
+    // API response validation with Zod
     const parsedResponse = loginResponseSchema.safeParse(data);
     if (!parsedResponse.success) {
       throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
@@ -106,21 +106,21 @@ export const loginUser = async (credentials: LoginCredentials) => {
 
     const token = parsedResponse.data.body.token;
 
-    // Définir la durée de session (ex: 1 heure)
-    const expiresAt = new Date().getTime() + 5 * 60 * 1000; // 5 min en ms
+    // Set session duration (e.g. 1 hour)
+    const expiresAt = new Date().getTime() + 5 * 60 * 1000; // 5 min in ms
 
-    // Stocker le token et l'expiration dans sessionStorage
+    // Store token and expiration in sessionStorage
     sessionStorage.setItem("authToken", token);
     sessionStorage.setItem("expiresAt", expiresAt.toString());
 
     try {
       const userProfile = await fetchUserProfile(token);
-      // Stocker les infos importantes en session
+      // Store important information in session
       sessionStorage.setItem("userId", userProfile.id);
       sessionStorage.setItem("currentUserName", userProfile.userName);
     } catch (error) {
       console.warn("Couldn't fetch user profile after login:", error);
-      // Continue quand même, l'utilisateur est connecté
+      // Continue anyway, the user is logged in
     }
 
     return parsedResponse.data;
@@ -129,11 +129,11 @@ export const loginUser = async (credentials: LoginCredentials) => {
     throw error;
   }
 };
-// Fonction pour récupérer le profil utilisateur après connexion
+// Function to fetch user profile after login
 export const fetchUserProfile = async (token: string) => {
   try {
     const response = await fetch("/api/user/profile", {
-      // Modification de la route
+      // Route modification
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -147,7 +147,7 @@ export const fetchUserProfile = async (token: string) => {
 
     const data = await response.json();
 
-    // Validation de la réponse API avec Zod
+    // API response validation with Zod
     const parsedResponse = profileResponseSchema.safeParse(data);
     if (!parsedResponse.success) {
       throw new Error(JSON.stringify(parsedResponse.error.issues, null, 2));
@@ -155,7 +155,7 @@ export const fetchUserProfile = async (token: string) => {
 
     const user = parsedResponse.data.body;
 
-    // Si accounts est absent, on initialise avec un tableau vide
+    // If accounts is missing, initialize with empty array
     if (!user.accounts) {
       user.accounts = [];
     }
@@ -192,7 +192,7 @@ export const updateUserProfile = async (userName: string, token: string) => {
       throw new Error("Username contains inappropriate words or terms");
     }
 
-    // Récupère ou génère un token CSRF
+    // Retrieve or generate a CSRF token
     const csrfToken =
       sessionStorage.getItem("csrfToken") || generateCSRFToken();
 
@@ -251,7 +251,7 @@ export const initializeAuth = () => {
       } else {
         try {
           const userProfile = await fetchUserProfile(token);
-          // Utiliser le userName stocké dans sessionStorage s'il existe
+          // Use the userName stored in sessionStorage if it exists
           if (storedUserName) {
             userProfile.userName = storedUserName;
           }

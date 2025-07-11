@@ -1,10 +1,10 @@
 <!-- @format -->
 
-# Comparaison technique : Pa11y vs Cypress en CI/CD
+# Technical Comparison: Pa11y vs Cypress in CI/CD
 
-## Configuration Pa11y (Fonctionne ✅)
+## Pa11y Configuration (Working ✅)
 
-### 1. Installation d'environnement
+### 1. Environment Installation
 
 ```bash
 # Install Pa11y and dependencies globally - use full puppeteer with bundled Chrome
@@ -18,7 +18,7 @@ export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
 npx puppeteer browsers install chrome
 ```
 
-### 2. Headers de bypass Vercel
+### 2. Vercel Bypass Headers
 
 ```javascript
 // Add Vercel protection bypass headers
@@ -31,7 +31,7 @@ if (bypassSecret) {
 }
 ```
 
-### 3. Configuration Puppeteer
+### 3. Puppeteer Configuration
 
 ```javascript
 const browser = await puppeteer.launch({
@@ -40,59 +40,59 @@ const browser = await puppeteer.launch({
 });
 
 const page = await browser.newPage();
-// Headers configurés AVANT navigation
+// Headers configured BEFORE navigation
 await page.setExtraHTTPHeaders({
   "x-vercel-protection-bypass": process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
 });
 ```
 
-## Configuration Cypress (Échoue ❌)
+## Cypress Configuration (Failing ❌)
 
-### 1. Installation d'environnement
+### 1. Environment Installation
 
 ```bash
 # Cache Cypress binary
 - name: 📦 Cache Cypress binary
   uses: actions/cache@v3
   with:
-    path: ~/.cache/Cypress  # Electron, pas Chrome
+    path: ~/.cache/Cypress  # Electron, not Chrome
 
 # Install Cypress binary
-pnpm exec cypress install  # Installe Electron
+pnpm exec cypress install  # Installs Electron
 ```
 
-### 2. Headers de bypass Vercel
+### 2. Vercel Bypass Headers
 
 ```typescript
-// ❌ MANQUANT : Pas de configuration des headers de bypass
-// Cypress essaie d'accéder directement à l'URL sans authentification
-cy.visit("/signin"); // Échoue en CI/CD
+// ❌ MISSING: No bypass header configuration
+// Cypress tries to access URL directly without authentication
+cy.visit("/signin"); // Fails in CI/CD
 ```
 
-### 3. Configuration navigateur
+### 3. Browser Configuration
 
 ```typescript
-// Cypress utilise Electron par défaut
-// Pas de configuration explicite des headers HTTP
-// baseUrl configurée mais pas d'authentification
+// Cypress uses Electron by default
+// No explicit HTTP header configuration
+// baseUrl configured but no authentication
 ```
 
-## Différences clés
+## Key Differences
 
-| Aspect             | Pa11y                | Cypress            |
-| ------------------ | -------------------- | ------------------ |
-| **Navigateur**     | Chrome via Puppeteer | Electron           |
-| **Headers HTTP**   | ✅ Configurés        | ❌ Manquants       |
-| **Environnement**  | Variables explicites | Variables ignorées |
-| **Authentication** | Avant navigation     | Pas implémentée    |
-| **CI/CD Status**   | ✅ Fonctionne        | ❌ Échoue          |
+| Aspect             | Pa11y                | Cypress           |
+| ------------------ | -------------------- | ----------------- |
+| **Browser**        | Chrome via Puppeteer | Electron          |
+| **HTTP Headers**   | ✅ Configured        | ❌ Missing        |
+| **Environment**    | Explicit variables   | Ignored variables |
+| **Authentication** | Before navigation    | Not implemented   |
+| **CI/CD Status**   | ✅ Working           | ❌ Failing        |
 
-## Solution requise pour Cypress
+## Required Solution for Cypress
 
 ```typescript
-// Ajouter dans cypress/support/e2e.ts
+// Add to cypress/support/e2e.ts
 beforeEach(() => {
-  // Configurer les headers de bypass pour CI/CD
+  // Configure bypass headers for CI/CD
   if (Cypress.env("CI") && Cypress.env("VERCEL_AUTOMATION_BYPASS_SECRET")) {
     cy.intercept("**", (req) => {
       req.headers["x-vercel-protection-bypass"] = Cypress.env(
@@ -103,4 +103,4 @@ beforeEach(() => {
 });
 ```
 
-Date : 22 juin 2025
+Date: June 22, 2025

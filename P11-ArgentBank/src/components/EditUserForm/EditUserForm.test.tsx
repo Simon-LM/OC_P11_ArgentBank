@@ -32,7 +32,7 @@ describe("EditUserForm", () => {
     expect(screen.getByLabelText(/Last Name/i)).toHaveValue("Stark");
   });
 
-  test("appelle onCancel quand le bouton Cancel est cliqué", () => {
+  test("calls onCancel when Cancel button is clicked", () => {
     render(
       <EditUserForm
         currentUser={mockUser}
@@ -45,7 +45,7 @@ describe("EditUserForm", () => {
     expect(mockOnCancel).toHaveBeenCalled();
   });
 
-  test("valide que les champs firstName et lastName sont en lecture seule", () => {
+  test("validates that firstName and lastName fields are read-only", () => {
     render(
       <EditUserForm
         currentUser={mockUser}

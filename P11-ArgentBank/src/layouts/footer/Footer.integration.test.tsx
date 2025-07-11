@@ -1,12 +1,12 @@
 /** @format */
 
 /**
- * Tests d'intégration pour Footer
+ * Integration tests for Footer
  *
- * Scope d'intégration :
- * - Interactions utilisateur (toggle privacy)
- * - Tests d'accessibilité avec axe-core
- * - Validation de la conformité WCAG
+ * Integration scope:
+ * - User interactions (toggle privacy)
+ * - Accessibility tests with axe-core
+ * - WCAG compliance validation
  */
 
 import { render, screen, fireEvent } from "@testing-library/react";
@@ -64,7 +64,7 @@ describe("Footer - Integration Tests", () => {
     );
   });
 
-  // Tests d'accessibilité
+  // Accessibility tests
   test("has no accessibility violations", async () => {
     const { container } = render(<Footer />);
     const results = await axe(container);

@@ -1,48 +1,48 @@
 <!-- @format -->
 
-# Pa11y - Tests d'Accessibilité Web
+# Pa11y - Web Accessibility Tests
 
-## 📋 Vue d'ensemble
+## 📋 Overview
 
-Pa11y est un outil de test d'accessibilité automatisé qui analyse les pages web selon les standards WCAG (Web Content Accessibility Guidelines). Ce projet utilise Pa11y pour tester l'accessibilité de l'application ArgentBank sur 3 pages principales :
+Pa11y is an automated accessibility testing tool that analyzes web pages according to WCAG (Web Content Accessibility Guidelines) standards. This project uses Pa11y to test the accessibility of the ArgentBank application on 3 main pages:
 
-- **Page d'accueil** (`/`) - Page publique sans authentification
-- **Page de connexion** (`/signIn`) - Page de connexion utilisateur
-- **Tableau de bord utilisateur** (`/user`) - Page privée nécessitant une authentification
+- **Home page** (`/`) - Public page without authentication
+- **Login page** (`/signIn`) - User login page
+- **User dashboard** (`/user`) - Private page requiring authentication
 
-## 🚀 Démarrage rapide
+## 🚀 Quick start
 
-**Étapes essentielles pour lancer Pa11y avec Vercel dev** :
+**Essential steps to launch Pa11y with Vercel dev**:
 
-1. **Démarrer le serveur avec fonctions serverless** :
+1. **Start server with serverless functions**:
 
    ```bash
    vercel dev
    ```
 
-2. **Noter le port affiché** (ex: `Available at http://localhost:3001`)
+2. **Note the displayed port** (e.g.: `Available at http://localhost:3001`)
 
-3. **Mettre à jour la configuration Pa11y** :
+3. **Update Pa11y configuration**:
 
    ```bash
    pnpm run test:a11y-update-port
-   # ou manuellement :
+   # or manually:
    # pnpm run test:a11y-update-port 3001
    ```
 
-4. **Lancer les tests d'accessibilité** :
+4. **Run accessibility tests**:
 
    ```bash
    pnpm run test:a11y
    ```
 
-**⚠️ Important** : Utilisez toujours `vercel dev` au lieu de `pnpm run dev` pour les fonctions serverless !
+**⚠️ Important**: Always use `vercel dev` instead of `pnpm run dev` for serverless functions!
 
-## 🚀 Prérequis
+## 🚀 Prerequisites
 
-### Gestionnaire de paquets
+### Package manager
 
-Ce projet utilise **pnpm** comme gestionnaire de paquets. Assurez-vous qu'il est installé :
+This project uses **pnpm** as package manager. Make sure it's installed:
 
 ```bash
 npm install -g pnpm
@@ -377,7 +377,7 @@ Pour vérifier que tout fonctionne correctement :
 
 Si tout fonctionne, vous devriez voir des rapports d'accessibilité et des captures d'écran dans `Pa11y/screenshots/`.
 
-## 🔗 Intégration avec le projet
+## 🔗 Integration with the project
 
 ### Scripts pnpm
 

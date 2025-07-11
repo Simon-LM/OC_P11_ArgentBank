@@ -1,17 +1,17 @@
 <!-- @format -->
 
-# 🚀 Documentation CI/CD - ArgentBank
+# 🚀 CI/CD Documentation - ArgentBank
 
-## 📋 Vue d'ensemble
+## 📋 Overview
 
-Cette documentation décrit la stratégie de déploiement continu (CI/CD) pour le projet ArgentBank avec GitHub Actions et Vercel, en tenant compte de la configuration Root Directory.
+This documentation describes the continuous deployment (CI/CD) strategy for the ArgentBank project with GitHub Actions and Vercel, taking into account the Root Directory configuration.
 
-## 🏗️ Architecture CI/CD
+## 🏗️ CI/CD Architecture
 
-### Configuration Vercel actuelle
+### Current Vercel Configuration
 
 ```yaml
-Configuration Vercel:
+Vercel Configuration:
 ├── Root Directory: P11-ArgentBank/
 ├── Build Command: pnpm build
 ├── Output Directory: dist/
@@ -19,65 +19,65 @@ Configuration Vercel:
 └── Node.js Version: 18.x
 ```
 
-### Workflow GitHub Actions proposé (Architecture cible)
+### Proposed GitHub Actions Workflow (Target Architecture)
 
 ```text
-Workflow Unique Sécurisé (complete-ci-cd.yml)
-├── 🔍 Phase 1: Tests de Base (CI)
-│   ├── ESLint (bloquant)
-│   ├── TypeScript Check (bloquant)
-│   ├── Tests Unitaires (bloquant)
-│   └── Build (bloquant)
-├── 🚀 Phase 2: Déploiement Preview
-│   ├── Deploy Preview Vercel (si Phase 1 OK)
-│   └── Récupération URL Preview
-├── 🧪 Phase 3: Tests Avancés sur Preview
-│   ├── Tests E2E Cypress (bloquant)
-│   ├── Tests Accessibilité Pa11y (bloquant - priorité absolue)
-│   └── Tests Performance Lighthouse (warning seulement)
+Unified Secure Workflow (complete-ci-cd.yml)
+├── 🔍 Phase 1: Basic Tests (CI)
+│   ├── ESLint (blocking)
+│   ├── TypeScript Check (blocking)
+│   ├── Unit Tests (blocking)
+│   └── Build (blocking)
+├── 🚀 Phase 2: Preview Deployment
+│   ├── Deploy Preview Vercel (if Phase 1 OK)
+│   └── Preview URL Retrieval
+├── 🧪 Phase 3: Advanced Tests on Preview
+│   ├── Cypress E2E Tests (blocking)
+│   ├── Pa11y Accessibility Tests (blocking - absolute priority)
+│   └── Lighthouse Performance Tests (warning only)
 ├── ✅ Phase 4: Auto-promotion Production
-│   ├── Conditions: toutes les phases précédentes OK + branch main
-│   └── Déploiement Production automatique
-└── 📊 Phase 5: Analyse (parallèle, non-bloquante)
+│   ├── Conditions: all previous phases OK + main branch
+│   └── Automatic Production Deployment
+└── 📊 Phase 5: Analysis (parallel, non-blocking)
     ├── Coverage Report
     ├── Bundle Size Analysis
     └── Security Audit
 ```
 
-### Architecture actuelle (workflows séparés - PROBLÈME)
+### Current Architecture (separate workflows - PROBLEM)
 
-⚠️ **Problème critique identifié :** Les workflows actuels sont indépendants et ne se bloquent pas mutuellement !
+⚠️ **Critical problem identified:** Current workflows are independent and don't block each other!
 
 ```text
-État actuel DANGEREUX:
-├── ci.yml → Peut échouer ❌
-├── accessibility-performance.yml → Peut échouer ❌
-└── deploy.yml → DÉPLOIE QUAND MÊME ✅ (PROBLÈME!)
+Current DANGEROUS state:
+├── ci.yml → Can fail ❌
+├── accessibility-performance.yml → Can fail ❌
+└── deploy.yml → DEPLOYS ANYWAY ✅ (PROBLEM!)
 ```
 
-**Conséquence :** Le déploiement production peut se faire même si les tests d'accessibilité ou les tests unitaires échouent !
+**Consequence:** Production deployment can happen even if accessibility tests or unit tests fail!
 
-## 📁 Structure des workflows
+## 📁 Workflow Structure
 
-### **Architecture actuelle (workflows séparés)**
+### **Current Architecture (separate workflows)**
 
 ```text
 .github/workflows/
-├── ci.yml                         # Tests de base (lint, typecheck, test, build)
-├── deploy.yml                     # Déploiement Vercel (preview/production)
-├── accessibility-performance.yml  # Tests E2E, Lighthouse, Pa11y
+├── ci.yml                         # Basic tests (lint, typecheck, test, build)
+├── deploy.yml                     # Vercel deployment (preview/production)
+├── accessibility-performance.yml  # E2E, Lighthouse, Pa11y tests
 └── analysis.yml                   # Coverage, bundle, security
 ```
 
-### **Architecture cible (workflow unique sécurisé)**
+### **Target Architecture (unified secure workflow)**
 
 ```text
 .github/workflows/
-├── complete-ci-cd.yml            # Workflow unique avec toutes les étapes
-├── [LEGACY] ci.yml               # À supprimer après migration
-├── [LEGACY] deploy.yml           # À supprimer après migration
-├── [LEGACY] accessibility-performance.yml # À supprimer après migration
-└── analysis.yml                  # Conservé (optionnel, non-bloquant)
+├── complete-ci-cd.yml            # Unified workflow with all steps
+├── [LEGACY] ci.yml               # To be removed after migration
+├── [LEGACY] deploy.yml           # To be removed after migration
+├── [LEGACY] accessibility-performance.yml # To be removed after migration
+└── analysis.yml                  # Kept (optional, non-blocking)
 ```
 
 ## 🎯 Stratégie de déploiement (Architecture cible)

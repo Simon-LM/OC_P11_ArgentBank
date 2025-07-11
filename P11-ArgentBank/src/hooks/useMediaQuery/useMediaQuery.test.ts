@@ -12,7 +12,7 @@ import {
 } from "vitest";
 import useMediaQuery from "./useMediaQuery";
 
-// Définit le type de l'objet retourné par notre simulation de matchMedia
+// Defines the type of object returned by our matchMedia simulation
 interface MockMediaQueryListInstance {
   matches: boolean;
   media: string;
@@ -25,10 +25,10 @@ interface MockMediaQueryListInstance {
   simulateChange: (newMatches: boolean) => void;
 }
 
-// Helper pour simuler window.matchMedia
+// Helper to simulate window.matchMedia
 const createMatchMediaMock = (initialMatches: boolean) => {
   const listeners: Array<(event: Partial<MediaQueryListEvent>) => void> = [];
-  // Cet état est capturé par la fermeture de mockImplementation et simulateChange
+  // This state is captured by the closure of mockImplementation and simulateChange
   let currentMatchesState = initialMatches;
 
   const mockFn = vi
@@ -40,8 +40,8 @@ const createMatchMediaMock = (initialMatches: boolean) => {
         },
         media: query,
         onchange: null,
-        addListener: vi.fn(), // Déprécié
-        removeListener: vi.fn(), // Déprécié
+        addListener: vi.fn(), // Deprecated
+        removeListener: vi.fn(), // Deprecated
         addEventListener: vi.fn(
           (
             type: string,
@@ -66,9 +66,9 @@ const createMatchMediaMock = (initialMatches: boolean) => {
           },
         ),
         dispatchEvent: vi.fn(),
-        // Fonction pour simuler un changement de media query
+        // Function to simulate a media query change
         simulateChange: (newMatchesValue: boolean) => {
-          currentMatchesState = newMatchesValue; // Met à jour l'état capturé
+          currentMatchesState = newMatchesValue; // Updates the captured state
           const eventArg = {
             matches: currentMatchesState,
             media: query,
@@ -85,7 +85,7 @@ let currentMock: ReturnType<typeof createMatchMediaMock>; // Type: vi.Mock<[stri
 
 describe("useMediaQuery hook", () => {
   beforeEach(() => {
-    // Par défaut, la media query ne correspond pas
+    // By default, the media query does not match
     currentMock = createMatchMediaMock(false);
     Object.defineProperty(window, "matchMedia", {
       writable: true,
@@ -95,7 +95,7 @@ describe("useMediaQuery hook", () => {
   });
 
   afterEach(() => {
-    // Nettoyer le mock
+    // Clean up the mock
     vi.restoreAllMocks();
   });
 
@@ -106,7 +106,7 @@ describe("useMediaQuery hook", () => {
   });
 
   test("should return true when media query matches initially", () => {
-    // Simuler une correspondance initiale en recréant le mock
+    // Simulate initial match by recreating the mock
     currentMock = createMatchMediaMock(true);
     Object.defineProperty(window, "matchMedia", {
       value: currentMock,
@@ -118,60 +118,60 @@ describe("useMediaQuery hook", () => {
 
   test("should update when media query changes from false to true", () => {
     const { result } = renderHook(() => useMediaQuery("(min-width: 768px)"));
-    expect(result.current).toBe(false); // Vérification initiale
+    expect(result.current).toBe(false); // Initial verification
 
     act(() => {
-      // Obtenir l'instance retournée par l'appel à window.matchMedia (currentMock)
+      // Get the instance returned by the call to window.matchMedia (currentMock)
       const mqlInstance = currentMock.mock.results[0].value;
       mqlInstance.simulateChange(true);
     });
 
-    expect(result.current).toBe(true); // Vérification après changement
+    expect(result.current).toBe(true); // Verification after change
   });
 
   test("should update when media query changes from true to false", () => {
-    // Simuler une correspondance initiale
+    // Simulate initial match
     currentMock = createMatchMediaMock(true);
     Object.defineProperty(window, "matchMedia", {
       value: currentMock,
     });
 
     const { result } = renderHook(() => useMediaQuery("(min-width: 768px)"));
-    expect(result.current).toBe(true); // Vérification initiale
+    expect(result.current).toBe(true); // Initial verification
 
     act(() => {
       const mqlInstance = currentMock.mock.results[0].value;
       mqlInstance.simulateChange(false);
     });
 
-    expect(result.current).toBe(false); // Vérification après changement
+    expect(result.current).toBe(false); // Verification after change
   });
 
   test("should add and remove event listener correctly", () => {
     const query = "(max-width: 600px)";
     const { unmount } = renderHook(() => useMediaQuery(query));
 
-    // Vérifier que addEventListener a été appelé
+    // Verify that addEventListener was called
     const matchMediaInstance = currentMock.mock.results[0].value;
     expect(matchMediaInstance.addEventListener).toHaveBeenCalledWith(
       "change",
       expect.any(Function),
     );
 
-    // Simuler le démontage
+    // Simulate unmounting
     unmount();
 
-    // Vérifier que removeEventListener a été appelé avec le même handler
+    // Verify that removeEventListener was called with the same handler
     expect(matchMediaInstance.removeEventListener).toHaveBeenCalledWith(
       "change",
-      (matchMediaInstance.addEventListener as Mock).mock.calls[0][1], // Récupère le handler passé à addEventListener
+      (matchMediaInstance.addEventListener as Mock).mock.calls[0][1], // Gets the handler passed to addEventListener
     );
   });
 
   test("should re-evaluate and re-attach listener if query string changes", () => {
     const initialQuery = "(min-width: 768px)";
     const newQuery = "(min-width: 1024px)";
-    currentMock = createMatchMediaMock(false); // État initial pour initialQuery
+    currentMock = createMatchMediaMock(false); // Initial state for initialQuery
     Object.defineProperty(window, "matchMedia", { value: currentMock });
 
     const { rerender, result } = renderHook(
@@ -185,8 +185,8 @@ describe("useMediaQuery hook", () => {
     expect(window.matchMedia).toHaveBeenCalledWith(initialQuery);
     const initialMatchMediaInstance = currentMock.mock.results[0].value;
 
-    // Change la query et simule que la nouvelle query correspond
-    // Il faut recréer le mock pour changer l'état initial que `useMediaQuery` verra pour la nouvelle query
+    // Change the query and simulate that the new query matches
+    // We need to recreate the mock to change the initial state that `useMediaQuery` will see for the new query
     act(() => {
       currentMock = createMatchMediaMock(true);
       Object.defineProperty(window, "matchMedia", { value: currentMock });
@@ -194,22 +194,22 @@ describe("useMediaQuery hook", () => {
 
     rerender({ query: newQuery });
 
-    // Après rerender, useMediaQuery s'exécute à nouveau avec newQuery.
-    // window.matchMedia (notre currentMock mis à jour) est appelé.
+    // After rerender, useMediaQuery runs again with newQuery.
+    // window.matchMedia (our updated currentMock) is called.
     expect(window.matchMedia).toHaveBeenCalledWith(newQuery);
-    // Le hook devrait maintenant refléter l'état du nouveau mock (true).
+    // The hook should now reflect the state of the new mock (true).
     expect(result.current).toBe(true);
 
-    // Vérifier que l'ancien listener a été retiré (sur l'instance originale)
+    // Verify that the old listener was removed (on the original instance)
     expect(initialMatchMediaInstance.removeEventListener).toHaveBeenCalledWith(
       "change",
       expect.any(Function),
     );
 
-    // Vérifier qu'un nouveau listener a été ajouté (sur la nouvelle instance, si applicable, ou le mock actuel)
-    // currentMock.mock.results[0] est l'appel pour initialQuery
-    // currentMock.mock.results[1] est l'appel pour newQuery
-    const newMatchMediaInstance = currentMock.mock.results[0].value; // Le mock a été réinitialisé, donc c'est le premier appel au *nouveau* mock
+    // Verify that a new listener has been added (on the new instance, if applicable, or the current mock)
+    // currentMock.mock.results[0] is the call for initialQuery
+    // currentMock.mock.results[1] is the call for newQuery
+    const newMatchMediaInstance = currentMock.mock.results[0].value; // The mock has been reset, so this is the first call to the *new* mock
     expect(newMatchMediaInstance.addEventListener).toHaveBeenCalledWith(
       "change",
       expect.any(Function),

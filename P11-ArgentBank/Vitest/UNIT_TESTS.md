@@ -1,27 +1,27 @@
 <!-- @format -->
 
-# Guide des Tests Unitaires - Vitest
+# Unit Testing Guide - Vitest
 
-## 🎯 Objectif
+## 🎯 Objective
 
-Les tests unitaires vérifient le comportement isolé des composants, fonctions et classes. Ils testent une unité de code de manière indépendante, sans dépendances externes.
+Unit tests verify the isolated behavior of components, functions, and classes. They test a unit of code independently, without external dependencies.
 
-## 📂 Localisation
+## 📂 Location
 
-Les tests unitaires sont nommés `*.test.tsx` ou `*.test.ts` et placés à côté du fichier testé :
+Unit tests are named `*.test.tsx` or `*.test.ts` and placed next to the tested file:
 
 ```
 src/components/Button/
 ├── Button.tsx
-├── Button.test.tsx          # ← Tests unitaires ici
+├── Button.test.tsx          # ← Unit tests here
 └── button.module.scss
 ```
 
-## 🧪 Types de tests unitaires
+## 🧪 Types of Unit Tests
 
-### 1. Tests de composants React
+### 1. React Component Tests
 
-#### Exemple basique
+#### Basic Example
 
 ```typescript
 // Button.test.tsx
@@ -45,9 +45,9 @@ describe('Button Component', () => {
 });
 ```
 
-### 2. Tests de fonctions utilitaires
+### 2. Utility Function Tests
 
-#### Exemple
+#### Example
 
 ```typescript
 // formatCurrency.test.ts

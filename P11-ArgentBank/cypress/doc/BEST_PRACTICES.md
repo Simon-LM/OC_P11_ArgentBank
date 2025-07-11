@@ -1,17 +1,17 @@
 <!-- @format -->
 
-# Guide des meilleures pratiques pour Cypress
+# Cypress Best Practices Guide
 
-Ce guide détaille les meilleures pratiques à suivre lors du développement de tests E2E avec Cypress pour le projet ArgentBank.
+This guide details the best practices to follow when developing E2E tests with Cypress for the ArgentBank project.
 
-## 📋 Structure des tests
+## 📋 Test Structure
 
-### Organisation par comportements utilisateur
+### Organization by User Behaviors
 
 ```javascript
 // cypress/e2e/auth/login.cy.js
 
-// ✅ Bon: Organisé par comportements utilisateur
+// ✅ Good: Organized by user behaviors
 describe("Authentication", () => {
   context("When a user logs in", () => {
     it("should access dashboard with valid credentials", () => {
@@ -30,7 +30,7 @@ describe("Authentication", () => {
   });
 });
 
-// ❌ Éviter: Tests sans structure claire
+// ❌ Avoid: Tests without clear structure
 describe("Login tests", () => {
   it("test 1", () => {
     // ...
@@ -41,13 +41,13 @@ describe("Login tests", () => {
 });
 ```
 
-### Structure par page ou fonctionnalité
+### Structure by Page or Feature
 
 ```
 cypress/e2e/
-├── auth/                # Tests d'authentification
-│   ├── login.cy.js      # Connexion
-│   └── logout.cy.js     # Déconnexion
+├── auth/                # Authentication tests
+│   ├── login.cy.js      # Login
+│   └── logout.cy.js     # Logout
 ├── profile/             # Tests de profil utilisateur
 │   └── edit-profile.cy.js
 ├── accounts/            # Tests des comptes
@@ -276,7 +276,7 @@ sizes.forEach((size) => {
 
 ## ♿ Tests d'accessibilité
 
-### Intégration avec cypress-axe
+### Integration with cypress-axe
 
 ```javascript
 // cypress/support/e2e.js
@@ -638,7 +638,7 @@ cy.get("[data-testid=account-balance]")
 
 ---
 
-Ce guide des meilleures pratiques aidera à maintenir une suite de tests Cypress cohérente, maintenable et fiable pour le projet ArgentBank. Adaptez ces pratiques selon les besoins spécifiques du projet et de l'équipe.
+This best practices guide will help maintain a consistent, maintainable, and reliable Cypress test suite for the ArgentBank project. Adapt these practices according to the specific needs of the project and team.
 
 ## 📚 Documentation connexe
 

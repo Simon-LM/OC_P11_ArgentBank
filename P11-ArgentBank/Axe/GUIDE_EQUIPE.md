@@ -1,84 +1,84 @@
 <!-- @format -->
 
-# 🎯 Guide d'Utilisation Axe - Framework d'Accessibilité ArgentBank
+# 🎯 Axe Usage Guide - ArgentBank Accessibility Framework
 
-## ✅ Installation Complète - Status
+## ✅ Complete Installation - Status
 
-**Date d'installation :** 28 mai 2025  
-**Status :** ✅ Configuré et opérationnel  
-**Version Axe :** 4.10.3  
-**Framework :** Vitest + Jest-Axe
+**Installation Date:** May 28, 2025  
+**Status:** ✅ Configured and operational  
+**Axe Version:** 4.10.3  
+**Framework:** Vitest + Jest-Axe
 
-## 🚀 Tests Fonctionnels
+## 🚀 Functional Tests
 
-### Tests Actuellement Opérationnels
+### Currently Operational Tests
 
 ```bash
-# ✅ Tests de base - 4 tests passants
+# ✅ Basic tests - 4 passing tests
 pnpm test:axe
 
-# ✅ Tests avec surveillance continue
+# ✅ Tests with continuous monitoring
 pnpm test:axe-watch
 
-# ✅ Tests avec rapports détaillés
+# ✅ Tests with detailed reports
 pnpm test:axe-report
 ```
 
-### 📊 Résultats des Tests
+### 📊 Test Results
 
-**Dernière exécution :** ✅ 12/12 tests passants
+**Last execution:** ✅ 12/12 passing tests
 
-- `simple.axe.test.tsx` : 4/4 ✅
-- `components.axe.test.tsx` : 8/8 ✅
+- `simple.axe.test.tsx`: 4/4 ✅
+- `components.axe.test.tsx`: 8/8 ✅
 
-## 🎯 Tests Couverts
+## 🎯 Covered Tests
 
-### 1. Tests de Formulaires
+### 1. Form Tests
 
-- ✅ Labels appropriés pour tous les champs
-- ✅ Associations label/input correctes
-- ✅ Attributs aria-required configurés
-- ✅ Messages d'erreur accessibles
+- ✅ Appropriate labels for all fields
+- ✅ Correct label/input associations
+- ✅ Configured aria-required attributes
+- ✅ Accessible error messages
 
-### 2. Tests de Navigation
+### 2. Navigation Tests
 
-- ✅ Ordre de tabulation logique
-- ✅ Focus visible et gérable
-- ✅ Navigation au clavier fonctionnelle
+- ✅ Logical tab order
+- ✅ Visible and manageable focus
+- ✅ Functional keyboard navigation
 
-### 3. Tests de Contenu
+### 3. Content Tests
 
-- ✅ Structure des titres (h1, h2, h3...)
-- ✅ Texte alternatif pour les images
-- ✅ Zones de contenu identifiées
+- ✅ Header structure (h1, h2, h3...)
+- ✅ Alternative text for images
+- ✅ Content areas identified
 
-### 4. Tests de Contraste
+### 4. Contrast Tests
 
-- ✅ Configuration prête (désactivé en mode test unitaire)
-- 🎯 À activer pour les tests d'intégration
+- ✅ Configuration ready (disabled in unit test mode)
+- 🎯 To enable for integration tests
 
-## 📁 Structure Opérationnelle
+## 📁 Operational Structure
 
 ```
-Axe/ ✅ Configuré
+Axe/ ✅ Configured
 ├── config/
-│   ├── axe.config.js ✅          # Règles WCAG 2.1 AA
-│   └── vitest.axe.config.ts ✅   # Configuration Vitest
+│   ├── axe.config.js ✅          # WCAG 2.1 AA rules
+│   └── vitest.axe.config.ts ✅   # Vitest configuration
 ├── tests/
-│   ├── simple.axe.test.tsx ✅    # Tests de base validés
-│   └── components.axe.test.tsx ✅ # Tests composants mockés
+│   ├── simple.axe.test.tsx ✅    # Validated basic tests
+│   └── components.axe.test.tsx ✅ # Mocked component tests
 ├── utils/
-│   ├── axe-setup.js ✅           # Mocks et configuration
-│   └── axe-reporter.js ✅        # Rapports personnalisés
+│   ├── axe-setup.js ✅           # Mocks and configuration
+│   └── axe-reporter.js ✅        # Custom reports
 ├── reports/ ✅
-│   ├── html/ ✅                  # Rapports visuels
-│   └── json/ ✅                  # Données structurées
-└── README.md ✅                  # Documentation complète
+│   ├── html/ ✅                  # Visual reports
+│   └── json/ ✅                  # Structured data
+└── README.md ✅                  # Complete documentation
 ```
 
-## 🔧 Commands Prêtes à l'Emploi
+## 🔧 Ready-to-Use Commands
 
-### Scripts Configurés dans package.json
+### Scripts Configured in package.json
 
 ```json
 {
@@ -90,12 +90,12 @@ Axe/ ✅ Configuré
 }
 ```
 
-## 📝 Comment Ajouter de Nouveaux Tests
+## 📝 How to Add New Tests
 
-### 1. Test d'un Nouveau Composant
+### 1. Test for a New Component
 
 ```tsx
-// Axe/tests/mon-nouveau-composant.axe.test.tsx
+// Axe/tests/my-new-component.axe.test.tsx
 import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
@@ -103,16 +103,16 @@ import "../utils/axe-setup.js";
 
 expect.extend(toHaveNoViolations);
 
-const MonComposant = () => (
+const MyComponent = () => (
   <div>
-    <h2>Mon Titre</h2>
-    <p>Mon contenu accessible</p>
+    <h2>My Title</h2>
+    <p>My accessible content</p>
   </div>
 );
 
-describe("MonComposant - Tests d'accessibilité", () => {
-  it("ne doit pas avoir de violations", async () => {
-    const { container } = render(<MonComposant />);
+describe("MyComponent - Accessibility Tests", () => {
+  it("should not have violations", async () => {
+    const { container } = render(<MyComponent />);
 
     const results = await axe(container);
     expect(results).toHaveNoViolations();
@@ -120,11 +120,11 @@ describe("MonComposant - Tests d'accessibilité", () => {
 });
 ```
 
-### 2. Test avec Règles Spécifiques
+### 2. Test with Specific Rules
 
 ```tsx
-it("doit avoir des formulaires accessibles", async () => {
-  const { container } = render(<MonFormulaire />);
+it("should have accessible forms", async () => {
+  const { container } = render(<MyForm />);
 
   const results = await axe(container, {
     rules: {
@@ -137,55 +137,55 @@ it("doit avoir des formulaires accessibles", async () => {
 });
 ```
 
-## 🎯 Règles WCAG 2.1 AA Configurées
+## 🎯 WCAG 2.1 AA Rules Configured
 
-### ✅ Activées et Testées
+### ✅ Enabled and Tested
 
-- `label` : Labels de formulaires
-- `image-alt` : Texte alternatif des images
-- `heading-order` : Hiérarchie des titres
-- `tabindex` : Navigation clavier
-- `button-name` : Accessibilité des boutons
-- `input-button-name` : Noms des champs de saisie
+- `label`: Form labels
+- `image-alt`: Image alternative text
+- `heading-order`: Heading hierarchy
+- `tabindex`: Keyboard navigation
+- `button-name`: Button accessibility
+- `input-button-name`: Input field names
 
-### 🎯 Disponibles pour Configuration
+### 🎯 Available for Configuration
 
-- `color-contrast` : Contraste des couleurs
-- `landmark-one-main` : Zone principale unique
-- `page-has-heading-one` : Titre principal H1
+- `color-contrast`: Color contrast
+- `landmark-one-main`: Unique main zone
+- `page-has-heading-one`: Main H1 title
 
-## 📊 Rapports Automatiques
+## 📊 Automatic Reports
 
-### Après Chaque Test
+### After Each Test
 
-1. **Console** : Résultats immédiats
-2. **JSON** : `Axe/reports/json/results.json`
-3. **HTML** : `Axe/reports/html/index.html`
-4. **Couverture** : Métriques de qualité
+1. **Console**: Immediate results
+2. **JSON**: `Axe/reports/json/results.json`
+3. **HTML**: `Axe/reports/html/index.html`
+4. **Coverage**: Quality metrics
 
-### Visualiser les Rapports
+### View Reports
 
 ```bash
-# Voir le rapport HTML dans le navigateur
+# View HTML report in browser
 npx vite preview --outDir Axe/reports/html
 ```
 
-## 🚨 Résolution de Problèmes
+## 🚨 Troubleshooting
 
-### Erreurs Communes Résolues ✅
+### Common Errors Resolved ✅
 
-1. **"unknown rule focusable-content"** → ✅ Corrigé
-2. **"unknown rule alt-text"** → ✅ Corrigé
-3. **"window.matchMedia not defined"** → ✅ Mock configuré
-4. **"No test suite found"** → ✅ Configuration Vitest corrigée
+1. **"unknown rule focusable-content"** → ✅ Fixed
+2. **"unknown rule alt-text"** → ✅ Fixed
+3. **"window.matchMedia not defined"** → ✅ Mock configured
+4. **"No test suite found"** → ✅ Vitest configuration fixed
 
-### Si Nouveaux Problèmes
+### If New Problems
 
-1. **Vérifier les noms de règles** : [Liste officielle Axe](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
-2. **Consulter les logs** : Mode verbose activé
-3. **Tester individuellement** : Un fichier à la fois
+1. **Check rule names**: [Official Axe list](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
+2. **Check logs**: Verbose mode enabled
+3. **Test individually**: One file at a time
 
-## 🔄 Intégration CI/CD (Recommandations)
+## 🔄 CI/CD Integration (Recommendations)
 
 ### GitHub Actions
 
@@ -211,45 +211,45 @@ jobs:
           path: Axe/reports/
 ```
 
-## 📈 Prochaines Étapes Recommandées
+## 📈 Recommended Next Steps
 
-### 🎯 À Court Terme
+### 🎯 Short Term
 
-1. **Tester les vrais composants** : Remplacer les mocks
-2. **Tests de pages** : Ajouter des tests d'intégration
-3. **Contraste des couleurs** : Activer pour les tests visuels
+1. **Test real components**: Replace mocks
+2. **Page tests**: Add integration tests
+3. **Color contrast**: Enable for visual tests
 
-### 🎯 À Moyen Terme
+### 🎯 Medium Term
 
-1. **Intégration CI/CD** : Automatisation complète
-2. **Seuils de qualité** : Définir des KPIs
-3. **Formation équipe** : Documentation et formation
+1. **CI/CD integration**: Complete automation
+2. **Quality thresholds**: Define KPIs
+3. **Team training**: Documentation and training
 
-### 🎯 À Long Terme
+### 🎯 Long Term
 
-1. **Monitoring continu** : Surveillance en production
-2. **Tests utilisateurs** : Validation avec utilisateurs réels
-3. **Optimisation** : Performance et couverture
+1. **Continuous monitoring**: Production surveillance
+2. **User tests**: Validation with real users
+3. **Optimization**: Performance and coverage
 
-## ✨ Résumé : Ready to Use !
+## ✨ Summary: Ready to Use!
 
-**✅ Installation :** Complète et fonctionnelle  
-**✅ Configuration :** WCAG 2.1 AA prête  
-**✅ Tests :** 12/12 passants  
-**✅ Rapports :** JSON + HTML automatiques  
-**✅ Scripts :** Intégrés dans package.json  
-**✅ Documentation :** Complète et à jour
+**✅ Installation:** Complete and functional  
+**✅ Configuration:** WCAG 2.1 AA ready  
+**✅ Tests:** 12/12 passing  
+**✅ Reports:** Automatic JSON + HTML  
+**✅ Scripts:** Integrated in package.json  
+**✅ Documentation:** Complete and up-to-date
 
-**🚀 L'équipe peut maintenant :**
+**🚀 The team can now:**
 
-- Lancer `pnpm test:axe` pour valider l'accessibilité
-- Ajouter de nouveaux tests facilement
-- Intégrer dans le processus de développement
-- Générer des rapports automatiquement
+- Run `pnpm test:axe` to validate accessibility
+- Add new tests easily
+- Integrate into development process
+- Generate reports automatically
 
 ---
 
-**👥 Pour l'équipe de développement :**  
-_Ce framework est prêt à l'emploi. Suivez les exemples ci-dessus pour ajouter vos tests d'accessibilité et maintenir la conformité WCAG 2.1 AA d'ArgentBank._
+**👥 For the development team:**  
+_This framework is ready to use. Follow the examples above to add your accessibility tests and maintain WCAG 2.1 AA compliance for ArgentBank._
 
-**📞 Support :** Consulter la documentation complète dans `Axe/README.md`
+**📞 Support:** Check complete documentation in `Axe/README.md`

@@ -46,7 +46,7 @@ describe("isMatomoLoaded", () => {
     expect(isMatomoLoaded()).toBe(true);
   });
   it("retourne false si _paq n'existe pas", () => {
-    // @ts-expect-error: suppression intentionnelle de window._paq pour tester isMatomoLoaded sans _paq
+    // @ts-expect-error: intentional suppression of window._paq to test isMatomoLoaded without _paq
     delete window._paq;
     expect(isMatomoLoaded()).toBe(false);
   });

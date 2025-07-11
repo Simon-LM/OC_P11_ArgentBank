@@ -1,439 +1,439 @@
 <!-- @format -->
 
-# Axe - Tests d'Accessibilité Intégrés
+# Axe - Integrated Accessibility Tests
 
-## 📋 Vue d'ensemble
+## 📋 Overview
 
-Axe-core est un moteur de test d'accessibilité intégré directement dans les
-tests existants de l'application ArgentBank. Cette approche moderne permet de
-tester l'accessibilité en même temps que les fonctionnalités.
+Axe-core is an accessibility testing engine integrated directly into the
+existing tests of the ArgentBank application. This modern approach allows
+testing accessibility at the same time as functionality.
 
-## 🚀 Approche Intégrée
+## 🚀 Integrated Approach
 
-✅ **Tests unifiés** - Accessibilité intégrée dans chaque test de composant
-✅ **Maintenance simplifiée** - Pas de duplication de tests
-✅ **Coverage automatique** - Tous les composants testés incluent l'accessibilité
-✅ **CI/CD optimisé** - Un seul pipeline de tests
-✅ **Developer Experience** - Tests d'accessibilité lors du développement
+✅ **Unified tests** - Accessibility integrated into each component test
+✅ **Simplified maintenance** - No test duplication
+✅ **Automatic coverage** - All tested components include accessibility
+✅ **Optimized CI/CD** - Single test pipeline
+✅ **Developer Experience** - Accessibility tests during development
 
 ## 🏗️ Architecture
 
-### Structure principale
+### Main structure
 
-- **Axe/config/** - Configuration des règles WCAG
-- **Axe/utils/** - Setup global pour tous les tests
-- **Axe/reports/** - Rapports générés
-- **src/\*\*/\*.test.tsx** - Tests intégrés dans les composants
+- **Axe/config/** - WCAG rules configuration
+- **Axe/utils/** - Global setup for all tests
+- **Axe/reports/** - Generated reports
+- **src/\*\*/\*.test.tsx** - Tests integrated into components
 
-### Fichiers concernés
+### Affected files
 
-| Composant    | Fichier de test                                   | Status     |
-| ------------ | ------------------------------------------------- | ---------- |
-| EditUserForm | src/components/EditUserForm/EditUserForm.test.tsx | ✅ Intégré |
-| Features     | src/components/Features/Features.test.tsx         | ✅ Intégré |
-| Home         | `src/pages/home/Home.test.tsx`                    | ✅ Intégré |
-| SignIn       | `src/pages/signIn/SignIn.test.tsx`                | ✅ Intégré |
-| Header       | `src/layouts/header/Header.test.tsx`              | ✅ Intégré |
-| Footer       | `src/layouts/footer/Footer.test.tsx`              | ✅ Intégré |
+| Component    | Test file                                         | Status        |
+| ------------ | ------------------------------------------------- | ------------- |
+| EditUserForm | src/components/EditUserForm/EditUserForm.test.tsx | ✅ Integrated |
+| Features     | src/components/Features/Features.test.tsx         | ✅ Integrated |
+| Home         | `src/pages/home/Home.test.tsx`                    | ✅ Integrated |
+| SignIn       | `src/pages/signIn/SignIn.test.tsx`                | ✅ Integrated |
+| Header       | `src/layouts/header/Header.test.tsx`              | ✅ Integrated |
+| Footer       | `src/layouts/footer/Footer.test.tsx`              | ✅ Integrated |
 
-## 📦 Dépendances
+## 📦 Dependencies
 
-### Packages installés
+### Installed packages
 
-**Installation :** `pnpm add -D @axe-core/react axe-core jest-axe`
+**Installation:** `pnpm add -D @axe-core/react axe-core jest-axe`
 
-- **@axe-core/react** - Intégration React pour Axe
-- **axe-core** - Moteur principal d'analyse d'accessibilité
-- **jest-axe** - Matchers Jest/Vitest pour les tests
+- **@axe-core/react** - React integration for Axe
+- **axe-core** - Main accessibility analysis engine
+- **jest-axe** - Jest/Vitest matchers for tests
 
 ## ⚙️ Configuration
 
-### Configuration Axe
+### Axe Configuration
 
-**Fichier :** `Axe/config/axe.config.js`
+**File:** `Axe/config/axe.config.js`
 
-**Règles WCAG configurées :**
+**Configured WCAG rules:**
 
-- Contraste des couleurs (color-contrast)
-- Navigation au clavier (keyboard)
-- Gestion du focus (focus-management)
+- Color contrast (color-contrast)
+- Keyboard navigation (keyboard)
+- Focus management (focus-management)
 
-**Standards testés :** WCAG 2.1 A, AA, AAA
+**Tested standards:** WCAG 2.1 A, AA, AAA
 
-### Setup centralisé
+### Centralized setup
 
-**Fichier :** `Axe/utils/axe-setup.js`
+**File:** `Axe/utils/axe-setup.js`
 
-Ce fichier contient la configuration globale pour tous les tests d'accessibilité.
+This file contains the global configuration for all accessibility tests.
 
-## 🧪 Utilisation
+## 🧪 Usage
 
-### Commands principales
+### Main commands
 
-- **Tous les tests :** `pnpm run test`
-- **Mode watch :** `pnpm run test:watch`
-- **Mode développement :** `pnpm run test:dev`
+- **All tests:** `pnpm run test`
+- **Watch mode:** `pnpm run test:watch`
+- **Development mode:** `pnpm run test:dev`
 
-### Import dans les tests
+### Import in tests
 
-**Pattern standard pour chaque fichier de test :**
+**Standard pattern for each test file:**
 
-1. Importer jest-axe : `import { axe } from "jest-axe";`
-2. Importer le setup : `import "../../../Axe/utils/axe-setup.js";`
-3. Ajouter le test d'accessibilité
+1. Import jest-axe: `import { axe } from "jest-axe";`
+2. Import setup: `import "../../../Axe/utils/axe-setup.js";`
+3. Add accessibility test
 
-### Exemple de test
+### Test example
 
-**Test d'accessibilité type :**
+**Typical accessibility test:**
 
-Le test vérifie qu'il n'y a aucune violation d'accessibilité dans le composant rendu.
-La fonction axe analyse le DOM et retourne un rapport de conformité WCAG.
+The test verifies that there are no accessibility violations in the rendered component.
+The axe function analyzes the DOM and returns a WCAG compliance report.
 
-## 📊 Standards et Conformité
+## 📊 Standards and Compliance
 
-### Niveaux WCAG testés
+### Tested WCAG levels
 
-- **WCAG 2.1 A** - Niveau de base
-- **WCAG 2.1 AA** - Niveau standard (requis)
-- **WCAG 2.1 AAA** - Niveau avancé (optionnel)
+- **WCAG 2.1 A** - Basic level
+- **WCAG 2.1 AA** - Standard level (required)
+- **WCAG 2.1 AAA** - Advanced level (optional)
 
-### Règles principales vérifiées
+### Main verified rules
 
-1. **Contraste des couleurs** - Ratio minimum 4.5:1
-2. **Navigation au clavier** - Tous les éléments accessibles
-3. **Étiquettes des formulaires** - Labels appropriés
-4. **Structure sémantique** - Headings et landmarks
-5. **Texte alternatif** - Images et médias
+1. **Color contrast** - Minimum ratio 4.5:1
+2. **Keyboard navigation** - All elements accessible
+3. **Form labels** - Appropriate labels
+4. **Semantic structure** - Headings and landmarks
+5. **Alternative text** - Images and media
 
-## 🔍 Comparaison Axe vs Pa11y
+## 🔍 Axe vs Pa11y Comparison
 
-| Aspect                 | Axe CLI (Tests unitaires)     | Pa11y (Tests navigateur)        |
-| ---------------------- | ----------------------------- | ------------------------------- |
-| **Type**               | Tests unitaires JSDOM         | Tests navigateur statiques      |
-| **Rendu visuel**       | ❌ JSDOM - pas de CSS calculé | ✅ Navigateur - CSS complet     |
-| **Contraste couleurs** | ❌ **Ne peut PAS détecter**   | ✅ **Détecte correctement**     |
-| **Structure DOM**      | ✅ Excellent                  | ✅ Excellent                    |
-| **Navigation clavier** | ⚠️ Limité (simulation)        | ⚠️ État statique seulement      |
-| **Intégration**        | Dans le code                  | Scripts externes                |
-| **Rapidité**           | ⚡ Très rapide                | 🐌 Plus lent                    |
-| **Couverture**         | Composants isolés             | Pages complètes (état statique) |
-| **CI/CD**              | ✅ Natif                      | ✅ Via scripts                  |
+| Aspect                  | Axe CLI (Unit tests)       | Pa11y (Browser tests)         |
+| ----------------------- | -------------------------- | ----------------------------- |
+| **Type**                | JSDOM unit tests           | Static browser tests          |
+| **Visual rendering**    | ❌ JSDOM - no computed CSS | ✅ Browser - complete CSS     |
+| **Color contrast**      | ❌ **CANNOT detect**       | ✅ **Detects correctly**      |
+| **DOM structure**       | ✅ Excellent               | ✅ Excellent                  |
+| **Keyboard navigation** | ⚠️ Limited (simulation)    | ⚠️ Static state only          |
+| **Integration**         | In code                    | External scripts              |
+| **Speed**               | ⚡ Very fast               | 🐌 Slower                     |
+| **Coverage**            | Isolated components        | Complete pages (static state) |
+| **CI/CD**               | ✅ Native                  | ✅ Via scripts                |
 
-### ⚠️ Limitation critique d'Axe CLI
+### ⚠️ Critical Axe CLI limitation
 
-**Axe CLI ne peut PAS détecter les violations de contraste** car :
+**Axe CLI CANNOT detect contrast violations** because:
 
-- Il s'exécute dans JSDOM (simulation DOM)
-- Les styles CSS ne sont pas calculés/rendus visuellement
-- Pas d'accès aux couleurs finales affichées à l'écran
+- It runs in JSDOM (DOM simulation)
+- CSS styles are not computed/visually rendered
+- No access to final colors displayed on screen
 
-**Pa11y détecte les contrastes** car :
+**Pa11y detects contrasts** because:
 
-- Il utilise Puppeteer avec un vrai navigateur (Chromium)
-- Les styles sont complètement calculés et rendus
-- Analyse des couleurs réellement affichées
+- It uses Puppeteer with a real browser (Chromium)
+- Styles are completely computed and rendered
+- Analysis of actually displayed colors
 
-## 💡 Bonnes Pratiques
+## 💡 Best Practices
 
-### Architecture recommandée
+### Recommended architecture
 
-1. **Centralisation** - Tout le code Axe dans le dossier `Axe/`
-2. **Setup unique** - Un seul fichier `Axe/utils/axe-setup.js`
-3. **Configuration partagée** - Règles communes dans `Axe/config/`
-4. **Tests intégrés** - Ajout aux tests existants, pas de doublons
-5. **Imports relatifs** - Chemins depuis `src/` vers `Axe/`
+1. **Centralization** - All Axe code in `Axe/` folder
+2. **Unique setup** - Single `Axe/utils/axe-setup.js` file
+3. **Shared configuration** - Common rules in `Axe/config/`
+4. **Integrated tests** - Add to existing tests, no duplicates
+5. **Relative imports** - Paths from `src/` to `Axe/`
 
-### Règles de développement
+### Development rules
 
-✅ **Import obligatoire** - Toujours importer `axe-setup.js` dans chaque test
-✅ **Test minimum** - Un test d'accessibilité par composant React
-✅ **Configuration centralisée** - Utiliser `Axe/config/` plutôt qu'inline
-✅ **Correction des violations** - Corriger avant merge
-✅ **Documentation des exceptions** - Justifier si nécessaire
+✅ **Mandatory import** - Always import `axe-setup.js` in each test
+✅ **Minimum test** - One accessibility test per React component
+✅ **Centralized configuration** - Use `Axe/config/` rather than inline
+✅ **Fix violations** - Correct before merge
+✅ **Document exceptions** - Justify if necessary
 
-### Avantages de l'approche intégrée
+### Benefits of integrated approach
 
-| Aspect              | Avant (doublons)       | Après (intégré)       |
-| ------------------- | ---------------------- | --------------------- |
-| **Maintenance**     | 🔴 2x plus de fichiers | ✅ Fichiers unifiés   |
-| **Synchronisation** | 🔴 Risque de décalage  | ✅ Toujours synchrone |
-| **Coverage**        | 🔴 Partiel             | ✅ 100% automatique   |
-| **Performance**     | 🔴 Tests séparés       | ✅ Tests groupés      |
+| Aspect              | Before (duplicates) | After (integrated)     |
+| ------------------- | ------------------- | ---------------------- |
+| **Maintenance**     | 🔴 2x more files    | ✅ Unified files       |
+| **Synchronization** | 🔴 Risk of drift    | ✅ Always synchronized |
+| **Coverage**        | 🔴 Partial          | ✅ 100% automatic      |
+| **Performance**     | 🔴 Separate tests   | ✅ Grouped tests       |
 
-## 🎯 Objectifs et Métriques
+## 🎯 Goals and Metrics
 
-### KPIs d'accessibilité
+### Accessibility KPIs
 
-- **0 violations critiques** - Impact "critical"
-- **< 5 violations sérieuses** - Impact "serious"
-- **100% couverture composants** - Tous les composants testés
-- **Temps d'exécution < 30s** - Performance des tests
+- **0 critical violations** - "critical" impact
+- **< 5 serious violations** - "serious" impact
+- **100% component coverage** - All components tested
+- **Execution time < 30s** - Test performance
 
-## 🐛 Dépannage
+## 🐛 Troubleshooting
 
-### Problèmes courants
+### Common issues
 
-**Tests lents :**
+**Slow tests:**
 
-- Solution: Tester des composants isolés
-- Éviter les tests de pages entières
+- Solution: Test isolated components
+- Avoid full page tests
 
-**Faux positifs :**
+**False positives:**
 
-- Solution: Configuration des règles personnalisées
-- Exclusion de règles spécifiques si justifié
+- Solution: Custom rule configuration
+- Exclude specific rules if justified
 
-**Intégration Vitest :**
+**Vitest integration:**
 
-- Solution: Matchers jest-axe correctement configurés
-- Vérifier l'import du setup centralisé
+- Solution: jest-axe matchers correctly configured
+- Verify centralized setup import
 
-## 🎯 Recommandations d'usage
+## 🎯 Usage recommendations
 
-### Pour les tests de contraste couleurs
+### For color contrast tests
 
-- **Utiliser Pa11y** pour les violations de contraste (tests navigateur)
-- **Utiliser l'extension Axe navigateur** pour l'analyse manuelle complète
-- **Axe CLI** sera silencieux sur les contrastes ⚠️
+- **Use Pa11y** for contrast violations (browser tests)
+- **Use Axe browser extension** for complete manual analysis
+- **Axe CLI** will be silent on contrasts ⚠️
 
-### Pour les autres violations d'accessibilité
+### For other accessibility violations
 
-- **Axe CLI** est parfait pour la structure DOM, labels, roles, etc.
-- Tests rapides et intégrés au workflow de développement
+- **Axe CLI** is perfect for DOM structure, labels, roles, etc.
+- Fast tests integrated into development workflow
 
-### Stratégie recommandée
+### Recommended strategy
 
 ```bash
-# Tests unitaires accessibilité (structure DOM)
+# Unit accessibility tests (DOM structure)
 npm test
 
-# Tests navigateur accessibilité (contraste + rendu complet)
+# Browser accessibility tests (contrast + complete rendering)
 npm run pa11y
 ```
 
-## 📊 Classification correcte des types de tests
+## 📊 Correct classification of test types
 
-### 🏗️ **Architecture de test d'accessibilité**
+### 🏗️ **Accessibility test architecture**
 
 ```text
-Tests d'Accessibilité
-├── 🧪 Tests Unitaires (Axe CLI)
-│   ├── Structure DOM/ARIA
-│   ├── Règles spécifiques
-│   └── États composants React
+Accessibility Tests
+├── 🧪 Unit Tests (Axe CLI)
+│   ├── DOM/ARIA structure
+│   ├── Specific rules
+│   └── React component states
 │
-├── 🌐 Tests Navigateur (Pa11y)
-│   ├── Rendu CSS complet
-│   ├── Contraste couleurs
-│   └── Pages complètes statiques
+├── 🌐 Browser Tests (Pa11y)
+│   ├── Complete CSS rendering
+│   ├── Color contrast
+│   └── Complete static pages
 │
-├── 🔄 Tests E2E + Accessibilité (Cypress + Axe)
-│   ├── Parcours utilisateur complets
-│   ├── Interactions dynamiques
-│   ├── États après actions utilisateur
-│   ├── Rendu CSS complet + interactions
-│   └── Flux métier accessibles
+├── 🔄 E2E + Accessibility Tests (Cypress + Axe)
+│   ├── Complete user journeys
+│   ├── Dynamic interactions
+│   ├── States after user actions
+│   ├── Complete CSS rendering + interactions
+│   └── Accessible business flows
 │
-└── 🧪 Tests Unitaires (Axe CLI)
+└── 🧪 Unit Tests (Axe CLI)
 ```
 
-### 🎯 **Pa11y = Tests navigateur statiques**
+### 🎯 **Pa11y = Static browser tests**
 
-Pa11y n'est **pas du E2E** mais du **"Browser Testing"** :
+Pa11y is **not E2E** but **"Browser Testing"**:
 
-- ✅ **Vrai navigateur** (Puppeteer/Chromium)
-- ✅ **CSS calculé** et rendu complet
-- ❌ **Pas d'interactions** utilisateur
-- ❌ **Pas de navigation** entre pages
-- ❌ **Pas de scénarios** métier
+- ✅ **Real browser** (Puppeteer/Chromium)
+- ✅ **Computed CSS** and complete rendering
+- ❌ **No user interactions**
+- ❌ **No navigation** between pages
+- ❌ **No business scenarios**
 
-## 🎯 Violations qu'Axe CLI détecte MIEUX que Pa11y
+## 🎯 Violations that Axe CLI detects BETTER than Pa11y
 
-### 🔍 Avantages spécifiques d'Axe CLI
+### 🔍 Specific advantages of Axe CLI
 
-| Type de violation               | Axe CLI          | Pa11y                       | Pourquoi Axe CLI est meilleur     |
-| ------------------------------- | ---------------- | --------------------------- | --------------------------------- |
-| **Tests règles spécifiques**    | ✅ **Excellent** | ⚠️ Limité                   | Configuration fine par règle      |
-| **Tests composants isolés**     | ✅ **Parfait**   | ❌ Pages entières seulement | Tests unitaires précis            |
-| **Analyses ARIA avancées**      | ✅ **Excellent** | ⚠️ Basique                  | Moteur Axe natif plus sophistiqué |
-| **Tests états dynamiques**      | ✅ **Parfait**   | ⚠️ Difficile                | Contrôle des états React          |
-| **Tests formulaires complexes** | ✅ **Excellent** | ⚠️ Basique                  | Analyse fine des attributs        |
-| **Règles personnalisées**       | ✅ **Excellent** | ❌ Impossible               | Configuration JavaScript          |
+| Type of violation            | Axe CLI          | Pa11y              | Why Axe CLI is better                |
+| ---------------------------- | ---------------- | ------------------ | ------------------------------------ |
+| **Specific rule tests**      | ✅ **Excellent** | ⚠️ Limited         | Fine configuration per rule          |
+| **Isolated component tests** | ✅ **Perfect**   | ❌ Full pages only | Precise unit tests                   |
+| **Advanced ARIA analyses**   | ✅ **Excellent** | ⚠️ Basic           | More sophisticated native Axe engine |
+| **Dynamic state tests**      | ✅ **Perfect**   | ⚠️ Difficult       | React state control                  |
+| **Complex form tests**       | ✅ **Excellent** | ⚠️ Basic           | Fine attribute analysis              |
+| **Custom rules**             | ✅ **Excellent** | ❌ Impossible      | JavaScript configuration             |
 
-## 🚀 Axe + Cypress : La Combinaison Ultime
+## 🚀 Axe + Cypress: The Ultimate Combination
 
-### 🎯 **Pourquoi ajouter Axe à Cypress ?**
+### 🎯 **Why add Axe to Cypress?**
 
-**Cypress + Axe** combine le **meilleur des deux mondes** :
+**Cypress + Axe** combines the **best of both worlds**:
 
-| Aspect                     | Cypress seul   | Cypress + Axe              | Avantage                         |
+| Aspect                     | Cypress alone  | Cypress + Axe              | Advantage                        |
 | -------------------------- | -------------- | -------------------------- | -------------------------------- |
-| **Interactions réelles**   | ✅ Parfait     | ✅ **Parfait**             | Navigation, clics, formulaires   |
-| **Rendu CSS complet**      | ✅ Parfait     | ✅ **Parfait**             | Contraste, layout, responsive    |
-| **États dynamiques**       | ⚠️ Basique     | ✅ **Axe analyse l'état**  | Accessibilité après interactions |
-| **Tests ARIA avancés**     | ❌ Manuel      | ✅ **Automatique Axe**     | Règles WCAG sophistiquées        |
-| **Violations spécifiques** | ❌ Manuel      | ✅ **Moteur Axe complet**  | Configuration fine des règles    |
-| **Rapports détaillés**     | ⚠️ Screenshots | ✅ **Rapports Axe + logs** | Diagnostic précis des violations |
+| **Real interactions**      | ✅ Perfect     | ✅ **Perfect**             | Navigation, clicks, forms        |
+| **Complete CSS rendering** | ✅ Perfect     | ✅ **Perfect**             | Contrast, layout, responsive     |
+| **Dynamic states**         | ⚠️ Basic       | ✅ **Axe analyzes state**  | Accessibility after interactions |
+| **Advanced ARIA tests**    | ❌ Manual      | ✅ **Automatic Axe**       | Sophisticated WCAG rules         |
+| **Specific violations**    | ❌ Manual      | ✅ **Complete Axe engine** | Fine rule configuration          |
+| **Detailed reports**       | ⚠️ Screenshots | ✅ **Axe reports + logs**  | Precise violation diagnosis      |
 
-### 🧪 **Violations UNIQUES détectées par Cypress + Axe**
+### 🧪 **UNIQUE violations detected by Cypress + Axe**
 
-#### 1. **Accessibilité post-interaction**
+#### 1. **Post-interaction accessibility**
 
-- Test l'accessibilité APRÈS chaque interaction utilisateur
-- Vérification des états dynamiques des composants
-- Validation du focus management après actions
+- Test accessibility AFTER each user interaction
+- Verification of dynamic component states
+- Focus management validation after actions
 
-#### 2. **Navigation dynamique accessible**
+#### 2. **Accessible dynamic navigation**
 
-- Parcours utilisateur complet avec vérifications à chaque étape
-- Test des états intermédiaires des formulaires
-- Validation de l'accessibilité page par page
+- Complete user journey with checks at each step
+- Test of intermediate form states
+- Page-by-page accessibility validation
 
-#### 3. **États d'erreur accessibles**
+#### 3. **Accessible error states**
 
-- Test des messages d'erreur et leur accessibilité
-- Vérification du focus sur les champs en erreur
-- Validation des annonces pour les lecteurs d'écran
+- Test error messages and their accessibility
+- Focus verification on error fields
+- Screen reader announcement validation
 
-#### 4. **Composants conditionnels**
+#### 4. **Conditional components**
 
-- Test des éléments qui apparaissent/disparaissent dynamiquement
-- Dropdown, modals, tooltips accessibles
-- Validation des interactions complexes
+- Test elements that appear/disappear dynamically
+- Accessible dropdowns, modals, tooltips
+- Complex interaction validation
 
-### 🎯 **Installation Cypress + Axe**
+### 🎯 **Installing Cypress + Axe**
 
-**Dépendances requises :**
+**Required dependencies:**
 
-- `cypress` - Framework de test E2E
-- `cypress-axe` - Plugin d'intégration Axe pour Cypress
+- `cypress` - E2E testing framework
+- `cypress-axe` - Axe integration plugin for Cypress
 
-**Configuration :**
+**Configuration:**
 
-- Fichier de configuration : `cypress/support/commands.js`
-- Import du plugin cypress-axe
-- Commandes personnalisées pour les règles d'accessibilité
+- Configuration file: `cypress/support/commands.js`
+- Import cypress-axe plugin
+- Custom commands for accessibility rules
 
-### 📊 **Stratégie de test complète recommandée**
+### 📊 **Recommended comprehensive testing strategy**
 
-| Type de test                | Outil          | Fréquence   | Couverture                   |
-| --------------------------- | -------------- | ----------- | ---------------------------- |
-| **Développement quotidien** | Axe CLI (Jest) | Chaque push | Composants isolés            |
-| **Contraste couleurs**      | Pa11y          | Nightly     | Pages statiques complètes    |
-| **Parcours utilisateur**    | Cypress + Axe  | Pre-release | Interactions + accessibilité |
-| **Audit complet**           | Extension Axe  | Mensuel     | Analyse manuelle experte     |
+| Test type             | Tool           | Frequency   | Coverage                     |
+| --------------------- | -------------- | ----------- | ---------------------------- |
+| **Daily development** | Axe CLI (Jest) | Each push   | Isolated components          |
+| **Color contrast**    | Pa11y          | Nightly     | Complete static pages        |
+| **User journeys**     | Cypress + Axe  | Pre-release | Interactions + accessibility |
+| **Complete audit**    | Axe Extension  | Monthly     | Expert manual analysis       |
 
-### 🚀 **Exemple concret pour ArgentBank**
+### 🚀 **Concrete example for ArgentBank**
 
-**Test E2E + Accessibilité du login :**
+**E2E + Accessibility login test:**
 
-**Étapes du test automatisé :**
+**Automated test steps:**
 
-1. **Page initiale** - Vérification accessibilité page login
-2. **Saisie username** - Test état intermédiaire formulaire
-3. **Saisie password** - Validation champs complétés
-4. **Soumission** - Test interaction et navigation
-5. **Page dashboard** - Accessibilité après connexion
-6. **Menu utilisateur** - Test éléments dynamiques
+1. **Initial page** - Login page accessibility verification
+2. **Username input** - Intermediate form state test
+3. **Password input** - Completed field validation
+4. **Submission** - Interaction and navigation test
+5. **Dashboard page** - Accessibility after login
+6. **User menu** - Dynamic element testing
 
-**Test gestion d'erreurs :**
+**Error handling test:**
 
-- Login avec champs vides
-- Validation messages d'erreur accessibles
-- Vérification du focus management correct
+- Login with empty fields
+- Accessible error message validation
+- Correct focus management verification
 
-### 🎯 **Violations détectées UNIQUEMENT par Cypress + Axe**
+### 🎯 **Violations detected ONLY by Cypress + Axe**
 
-1. **Focus management dynamique** - Où va le focus après une action ?
-2. **ARIA live regions** - Annonces dynamiques fonctionnent-elles ?
-3. **Navigation séquentielle** - Tab order après interactions
-4. **États ARIA dynamiques** - `aria-expanded`, `aria-selected` après clic
-5. **Contraste en contexte** - Couleurs d'états (hover, focus, error)
-6. **Landmarks dynamiques** - Navigation entre sections après actions
+1. **Dynamic focus management** - Where does focus go after an action?
+2. **ARIA live regions** - Do dynamic announcements work?
+3. **Sequential navigation** - Tab order after interactions
+4. **Dynamic ARIA states** - `aria-expanded`, `aria-selected` after click
+5. **Contextual contrast** - State colors (hover, focus, error)
+6. **Dynamic landmarks** - Navigation between sections after actions
 
-### ✨ **Résumé : Triple couverture d'accessibilité**
+### ✨ **Summary: Triple accessibility coverage**
 
 ```text
-🏗️ Architecture complète d'accessibilité
+🏗️ Complete accessibility architecture
 
-1. 🧪 Axe CLI (Tests unitaires)
-   └── Développement quotidien, composants isolés
+1. 🧪 Axe CLI (Unit tests)
+   └── Daily development, isolated components
 
-2. 🌐 Pa11y (Tests navigateur statiques)
-   └── Contraste couleurs, rendu CSS complet
+2. 🌐 Pa11y (Static browser tests)
+   └── Color contrast, complete CSS rendering
 
-3. 🚀 Cypress + Axe (Tests E2E + accessibilité)
-   └── Parcours utilisateur, interactions réelles, états dynamiques
+3. 🚀 Cypress + Axe (E2E + accessibility tests)
+   └── User journeys, real interactions, dynamic states
 ```
 
-**Cette approche triple garantit une accessibilité parfaite à tous les niveaux !**
+**This triple approach ensures perfect accessibility at all levels!**
 
-### 🧪 Exemples concrets - Axe CLI détecte
+### 🧪 Concrete examples - Axe CLI detects
 
-#### 1. **Violations ARIA sophistiquées**
+#### 1. **Sophisticated ARIA violations**
 
-**Règles avancées détectées par Axe CLI :**
+**Advanced rules detected by Axe CLI:**
 
-- `aria-command-name` - Noms des commandes ARIA
-- `aria-input-field-name` - Noms des champs de saisie
-- `aria-required-children` - Enfants ARIA requis
-- `aria-valid-attr-value` - Valeurs d'attributs ARIA valides
-- `form-field-multiple-labels` - Labels multiples sur les formulaires
+- `aria-command-name` - ARIA command names
+- `aria-input-field-name` - Input field names
+- `aria-required-children` - Required ARIA children
+- `aria-valid-attr-value` - Valid ARIA attribute values
+- `form-field-multiple-labels` - Multiple labels on forms
 
-#### 2. **Structure complexe des formulaires**
+#### 2. **Complex form structure**
 
-- Labels manquants sur des champs cachés
-- Attributs `aria-describedby` incorrects
-- Relations `aria-labelledby` brisées
-- Validation d'état `aria-invalid`
+- Missing labels on hidden fields
+- Incorrect `aria-describedby` attributes
+- Broken `aria-labelledby` relationships
+- `aria-invalid` state validation
 
-#### 3. **Tests d'états dynamiques**
+#### 3. **Dynamic state tests**
 
-**Test de l'accessibilité avant/après interaction :**
+**Accessibility testing before/after interaction:**
 
-- Simulation d'interactions utilisateur (clic, saisie)
-- Analyse des états des composants après changement
-- Validation de l'accessibilité dans tous les états
+- User interaction simulation (click, input)
+- Component state analysis after changes
+- Accessibility validation in all states
 
-#### 4. **Violation de structure sémantique**
+#### 4. **Semantic structure violations**
 
-- Ordre des headings (h1 → h3 sans h2)
-- Landmarks manquants ou mal placés
-- Structure de liste incorrecte
+- Heading order (h1 → h3 without h2)
+- Missing or misplaced landmarks
+- Incorrect list structure
 
-#### 5. **Tests règles spécifiques métier**
+#### 5. **Business-specific rule tests**
 
-**Configuration sur mesure pour votre application :**
+**Custom configuration for your application:**
 
-- `region: enabled` - Landmarks obligatoires
-- `skip-link: enabled` - Liens d'évitement requis
-- `landmark-unique: enabled` - Landmarks uniques
+- `region: enabled` - Required landmarks
+- `skip-link: enabled` - Required skip links
+- `landmark-unique: enabled` - Unique landmarks
 
-#### 6. **Validation composants React**
+#### 6. **React component validation**
 
-- Props d'accessibilité manquantes
-- États ARIA incorrects dans les hooks
-- Context d'accessibilité brisé
+- Missing accessibility props
+- Incorrect ARIA states in hooks
+- Broken accessibility context
 
-### ⚡ Performance et précision
+### ⚡ Performance and precision
 
-**Axe CLI** est plus **rapide et précis** pour :
+**Axe CLI** is **faster and more precise** for:
 
-- Tests de régression accessibilité
-- Validation continue en développement
-- Détection early de violations structurelles
-- Tests d'intégration composants
+- Accessibility regression tests
+- Continuous validation in development
+- Early detection of structural violations
+- Component integration tests
 
-**Pa11y** reste meilleur pour :
+**Pa11y** remains better for:
 
-- Contraste couleurs (rendu visuel)
-- Tests utilisateur final complets
-- Validation pages entières
+- Color contrast (visual rendering)
+- Complete end-user tests
+- Full page validation
 
 ---
 
-**✨ Axe est installé et prêt pour les tests d'accessibilité automatisés !**
+**✨ Axe is installed and ready for automated accessibility testing!**
 
-_Dernière mise à jour : 28 mai 2025_
-_Version : 1.0.0_
-_Status : ✅ Installé et configuré_
+_Last updated: May 28, 2025_
+_Version: 1.0.0_
+_Status: ✅ Installed and configured_

@@ -117,7 +117,7 @@ ArgentBank is fully responsive and tested on various devices:
 ArgentBank prioritizes digital accessibility:
 
 - WCAG 2.1 AA compliant
-- Conforme aux normes RGAA (Référentiel Général d'Amélioration de l'Accessibilité)
+- Compliant with RGAA standards (General Repository for Accessibility Improvement)
 - Proper semantic HTML structure
 - Keyboard navigation support
 - ARIA attributes for complex components

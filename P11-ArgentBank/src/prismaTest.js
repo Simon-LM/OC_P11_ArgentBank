@@ -7,10 +7,10 @@ import { PrismaClient } from "./generated/prisma/index.js";
 // const { PrismaClient } = require("./generated/prisma/index.js");
 const prisma = new PrismaClient();
 async function main() {
-  // Récupérer tous les utilisateurs
+  // Retrieve all users
   const users = await prisma.user.findMany();
   console.log("Tous les utilisateurs :", users);
-  // Récupérer un utilisateur précis
+  // Retrieve a specific user
   const tony = await prisma.user.findUnique({
     where: { email: "tony@stark.com" },
   });

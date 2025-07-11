@@ -87,7 +87,7 @@ const Header: React.FC = () => {
                   type="button"
                   aria-label="Sign out and return to home page"
                 >
-                  {/* Remplacer l'icône Font Awesome par le composant React Icon */}
+                  {/* Replace Font Awesome icon with React Icon component */}
                   <FaSignOutAlt aria-hidden="true" className="nav-icon" />
                   <span>Sign Out</span>
                 </button>
@@ -105,7 +105,7 @@ const Header: React.FC = () => {
                 className="header__nav-item"
                 aria-label="Sign In to your account"
               >
-                {/* Remplacer l'icône Font Awesome par le composant React Icon */}
+                {/* Replace Font Awesome icon with React Icon component */}
                 <FaUserCircle aria-hidden="true" className="nav-icon" />
                 <span>Sign In</span>
               </Link>

@@ -26,7 +26,7 @@ vi.mock("../../hooks/useMatomo/useMatomo", () => ({
   isMatomoLoaded: () => false,
 }));
 
-// Mock des actions async pour éviter les déclenchements automatiques
+// Mock async actions to avoid automatic triggers
 vi.mock("../../store/slices/usersSlice", async () => {
   const actual = await vi.importActual("../../store/slices/usersSlice");
   return {
@@ -70,12 +70,12 @@ const createMockTransaction = (index: number) => ({
 });
 
 describe("User Component - Tests d'intégration", () => {
-  // Reducer de test personnalisé qui ignore les actions mockées
+  // Custom test reducer that ignores mocked actions
   const testReducer = (
     state: UsersState = {} as UsersState,
     action: { type: string },
   ) => {
-    // Ignorer les actions mockées pour maintenir l'état configuré
+    // Ignore mocked actions to maintain configured state
     if (action.type?.startsWith("mock/")) {
       return state;
     }
@@ -108,7 +108,7 @@ describe("User Component - Tests d'intégration", () => {
       transactionsStatus: "succeeded",
       transactionsError: null,
       searchResults: [],
-      searchStatus: "idle", // Changer de "succeeded" à "idle" pour éviter les recherches automatiques
+      searchStatus: "idle", // Changed from "succeeded" to "idle" to avoid automatic searches
       searchError: null,
       pagination: {
         total: 0,
@@ -186,7 +186,7 @@ describe("User Component - Tests d'intégration", () => {
     const mockTrackPageView = vi.fn();
     const mockTrackSiteSearch = vi.fn();
 
-    // Utiliser mockImplementation au lieu de mockReturnValue
+    // Use mockImplementation instead of mockReturnValue
     vi.mocked(matomoHooks.useMatomo).mockImplementation(() => ({
       trackEvent: mockTrackEvent,
       trackPageView: mockTrackPageView,
@@ -218,7 +218,7 @@ describe("User Component - Tests d'intégration", () => {
       accounts: multipleAccounts,
     });
 
-    // Utiliser les labels accessibles corrects basés sur le DOM rendu
+    // Use correct accessible labels based on rendered DOM
     const savingsButton = screen.getByLabelText(
       /Account 2 of 2. savings account, number x9876, Available Balance: €5000.00./i,
     );
@@ -247,10 +247,10 @@ describe("User Component - Tests d'intégration", () => {
       },
     });
 
-    // Vérifier que la table de résultats est présente d'abord
+    // Verify that results table is present first
     expect(screen.getByRole("table")).toBeInTheDocument();
 
-    // Vérifier que la pagination est présente
+    // Verify that pagination is present
     expect(
       screen.getByLabelText(/transaction pagination/i),
     ).toBeInTheDocument();
@@ -273,7 +273,7 @@ describe("User Component - Tests d'intégration", () => {
       },
     });
 
-    // Vérifier que la table de résultats est présente d'abord
+    // Verify that results table is present first
     expect(screen.getByRole("table")).toBeInTheDocument();
 
     const prevButton = screen.getByLabelText(/go to previous page/i);
@@ -297,7 +297,7 @@ describe("User Component - Tests d'intégration", () => {
       },
     });
 
-    // Vérifier que la table de résultats est présente d'abord
+    // Verify that results table is present first
     expect(screen.getByRole("table")).toBeInTheDocument();
 
     const nextButton = screen.getByLabelText(/go to next page/i);
@@ -321,10 +321,10 @@ describe("User Component - Tests d'intégration", () => {
       },
     });
 
-    // Vérifier que la table de résultats est présente d'abord
+    // Verify that results table is present first
     expect(screen.getByRole("table")).toBeInTheDocument();
 
-    // Vérifier la présence d'ellipses et des pages importantes avec des sélecteurs plus spécifiques
+    // Verify presence of ellipses and important pages with more specific selectors
     expect(
       screen.getByRole("button", { name: "Go to page 1" }),
     ).toBeInTheDocument();
@@ -369,7 +369,7 @@ describe("User Component - Tests d'intégration", () => {
       /Account 2 of 2. savings account, number x9876/i,
     );
 
-    // Test navigation avec flèches
+    // Test navigation with arrows
     firstAccount.focus();
     fireEvent.keyDown(firstAccount, { key: "ArrowUp" });
 
@@ -398,24 +398,24 @@ describe("User Component - Tests d'intégration", () => {
       searchStatus: "succeeded",
     });
 
-    // Le test vérifie que la table est rendue et peut recevoir le focus
+    // Test verifies that the table is rendered and can receive focus
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
   });
 
   test("handles missing authentication token", async () => {
-    // Reset tous les mocks pour ce test
+    // Reset all mocks for this test
     vi.clearAllMocks();
 
-    // Configurer le mock pour ne pas être appelé quand il n'y a pas de token
+    // Configure mock to not be called when there is no token
     vi.mocked(authService.updateUserProfile).mockImplementation(() => {
       throw new Error("updateUserProfile should not be called without token");
     });
 
     const consoleSpy = vi.spyOn(console, "error");
 
-    // Créer le store et le state manuellement SANS définir le token
-    sessionStorage.removeItem("authToken"); // S'assurer qu'il n'y a pas de token
+    // Create store and state manually WITHOUT defining token
+    sessionStorage.removeItem("authToken"); // Ensure there is no token
 
     const initialState: UsersState = {
       currentUser: mockUser,
@@ -457,7 +457,7 @@ describe("User Component - Tests d'intégration", () => {
       },
     });
 
-    // Rendre le composant sans utiliser renderUser() qui redéfinit le token
+    // Render component without using renderUser() which redefines token
     render(
       <Provider store={store}>
         <User />
@@ -471,7 +471,7 @@ describe("User Component - Tests d'intégration", () => {
       expect(consoleSpy).toHaveBeenCalledWith("No auth token found.");
     });
 
-    // Vérifier que updateUserProfile n'a pas été appelé
+    // Verify that updateUserProfile was not called
     expect(authService.updateUserProfile).not.toHaveBeenCalled();
   });
 });

@@ -49,7 +49,7 @@ export default Features;
 // 	return (
 // 		<div id="main-content" tabIndex={-1}>
 // 			<div className="hero" data-testid="hero">
-// 				{/* Hero code reste inchangé */}
+// 				{/* Hero code remains unchanged */}
 // 				<div className="hero__image-container">
 // 					{!heroImageError && (
 // 						<picture className="hero__picture">

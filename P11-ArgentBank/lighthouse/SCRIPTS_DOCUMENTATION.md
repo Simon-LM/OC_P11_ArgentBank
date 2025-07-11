@@ -1,71 +1,71 @@
 <!-- @format -->
 
-# Documentation des Scripts Lighthouse
+# Lighthouse Scripts Documentation
 
-## 📁 **Structure et rôles des scripts**
+## 📁 **Scripts structure and roles**
 
-### `/scripts/` - Scripts d'exécution
+### `/scripts/` - Execution scripts
 
-| Script                     | Rôle                                       | Usage recommandé                   |
-| -------------------------- | ------------------------------------------ | ---------------------------------- |
-| `lighthouse-test-suite.js` | Suite complète de 6 tests (mobile/desktop) | Tests complets avant déploiement   |
-| `lighthouse-runner.js`     | Runner principal avec gestion d'auth       | Tests individuels de pages         |
-| `lighthouse-auth-v2.js`    | Test avec authentification automatique     | Tests des pages protégées          |
-| `lighthouse-analyzer.js`   | Analyse des rapports JSON générés          | Analyse post-test et comparaisons  |
-| `lighthouse-regression.js` | Détection des régressions de performance   | Tests CI/CD et validation continue |
+| Script                     | Role                                       | Recommended usage                     |
+| -------------------------- | ------------------------------------------ | ------------------------------------- |
+| `lighthouse-test-suite.js` | Complete suite of 6 tests (mobile/desktop) | Full tests before deployment          |
+| `lighthouse-runner.js`     | Main runner with auth management           | Individual page tests                 |
+| `lighthouse-auth-v2.js`    | Test with automatic authentication         | Protected pages tests                 |
+| `lighthouse-analyzer.js`   | Analysis of generated JSON reports         | Post-test analysis and comparisons    |
+| `lighthouse-regression.js` | Performance regression detection           | CI/CD tests and continuous validation |
 
-### `/lib/` - Bibliothèques utilitaires
+### `/lib/` - Utility libraries
 
-| Fichier                  | Fonction                                | Dépendances |
-| ------------------------ | --------------------------------------- | ----------- |
-| `analyzer.js`            | Analyse et parsing des rapports         | Aucune      |
-| `auth-v2.js`             | Gestion de l'authentification Puppeteer | puppeteer   |
-| `regression.js`          | Comparaison avec baseline               | analyzer.js |
-| `analyze-performance.js` | Métriques de performance détaillées     | Aucune      |
+| File                     | Function                            | Dependencies |
+| ------------------------ | ----------------------------------- | ------------ |
+| `analyzer.js`            | Analysis and parsing of reports     | None         |
+| `auth-v2.js`             | Puppeteer authentication management | puppeteer    |
+| `regression.js`          | Baseline comparison                 | analyzer.js  |
+| `analyze-performance.js` | Detailed performance metrics        | None         |
 
 ### `/config/` - Configuration
 
-| Fichier                   | Objectif                               | Modification        |
-| ------------------------- | -------------------------------------- | ------------------- |
-| `lighthouse.config.js`    | Configuration Lighthouse personnalisée | Rarement            |
-| `lighthouse-ci.config.js` | Configuration pour CI/CD               | Selon environnement |
+| File                      | Purpose                         | Modification             |
+| ------------------------- | ------------------------------- | ------------------------ |
+| `lighthouse.config.js`    | Custom Lighthouse configuration | Rarely                   |
+| `lighthouse-ci.config.js` | CI/CD configuration             | According to environment |
 
-### Scripts utilitaires (racine)
+### Utility scripts (root)
 
-| Script               | Usage                          | Fréquence    |
-| -------------------- | ------------------------------ | ------------ |
-| `run.sh`             | Lancement rapide des tests     | Quotidienne  |
-| `clean.sh`           | Nettoyage des anciens rapports | Hebdomadaire |
-| `migrate-reports.sh` | Migration vers archive/        | Mensuelle    |
+| Script               | Usage                 | Frequency |
+| -------------------- | --------------------- | --------- |
+| `run.sh`             | Quick test launch     | Daily     |
+| `clean.sh`           | Old reports cleanup   | Weekly    |
+| `migrate-reports.sh` | Migration to archive/ | Monthly   |
 
-## 🎯 **Recommandations d'usage**
+## 🎯 **Usage recommendations**
 
-### Tests quotidiens (développement)
+### Daily tests (development)
 
 ```bash
-# Test rapide pendant le développement
+# Quick test during development
 ./run.sh quick
 
-# Test complet avant commit
+# Complete test before commit
 pnpm test:suite
 ```
 
-### Tests de validation (CI/CD)
+### Validation tests (CI/CD)
 
 ```bash
-# Détection de régressions
+# Regression detection
 pnpm test:regression
 
-# Validation complète
+# Complete validation
 pnpm test:ci
 ```
 
-### Maintenance périodique
+### Periodic maintenance
 
 ```bash
-# Nettoyage hebdomadaire
+# Weekly cleanup
 ./clean.sh
 
-# Archivage mensuel
+# Monthly archiving
 ./migrate-reports.sh
 ```

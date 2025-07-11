@@ -78,7 +78,7 @@ async function analyzeReport(filePath) {
 
     const analysis = {
       url: report.finalUrl,
-      timestamp: new Date(report.fetchTime).toLocaleString("fr-FR"),
+      timestamp: new Date(report.fetchTime).toLocaleString("en-US"),
       device: report.configSettings.formFactor,
       categories: {},
       metrics: {},
@@ -263,7 +263,7 @@ function generateHTMLReport(analyses) {
     <div class="header">
         <h1>📊 Analyse des Rapports Lighthouse</h1>
         <p>Génération automatique des métriques de performance</p>
-        <p style="color: #6b7280; font-size: 0.9rem;">Généré le ${new Date().toLocaleDateString("fr-FR")} à ${new Date().toLocaleTimeString("fr-FR")}</p>
+        <p style="color: #6b7280; font-size: 0.9rem;">Generated on ${new Date().toLocaleDateString("en-US")} at ${new Date().toLocaleTimeString("en-US")}</p>
     </div>
   `;
 

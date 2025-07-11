@@ -63,7 +63,7 @@ const testSuites = [
 ];
 
 async function runTestSuite() {
-  console.log("🧪 DÉMARRAGE DE LA SUITE DE TESTS LIGHTHOUSE");
+  console.log("🧪 STARTING LIGHTHOUSE TEST SUITE");
   console.log("=============================================\n");
 
   // Générer un horodatage pour cette session de tests
@@ -151,7 +151,7 @@ async function runTestSuite() {
   }
 
   // Résumé final
-  console.log("\n📊 RÉSUMÉ DE LA SUITE DE TESTS");
+  console.log("\n📊 TEST SUITE SUMMARY");
   console.log("===============================");
 
   const successful = results.filter((r) => r.status === "success");
@@ -272,7 +272,7 @@ async function createReportsIndex(successfulTests, timestamp) {
 <body>
     <div class="header">
         <h1>📊 Rapports Lighthouse - ArgentBank</h1>
-        <p>Suite de tests de performance générée le ${new Date().toLocaleDateString("fr-FR")} à ${new Date().toLocaleTimeString("fr-FR")}</p>
+        <p>Performance test suite generated on ${new Date().toLocaleDateString("en-US")} at ${new Date().toLocaleTimeString("en-US")}</p>
     </div>
     
     <div class="timestamp-info">

@@ -1,23 +1,23 @@
 <!-- @format -->
 
-# 🔐 Configuration des secrets Vercel pour GitHub Actions
+# 🔐 Vercel Secrets Configuration for GitHub Actions
 
-## ✅ État actuel des secrets
+## ✅ Current secrets status
 
-**Secrets déjà configurés :**
+**Already configured secrets:**
 
-- ✅ `VERCEL_TOKEN` - Configuré (2 semaines)
-- ✅ `SMTP_USERNAME` - Configuré (2 semaines)
-- ✅ `SMTP_PASSWORD` - Configuré (2 semaines)
+- ✅ `VERCEL_TOKEN` - Configured (2 weeks)
+- ✅ `SMTP_USERNAME` - Configured (2 weeks)
+- ✅ `SMTP_PASSWORD` - Configured (2 weeks)
 
-**Secrets manquants pour Phase 2 :**
+**Missing secrets for Phase 2:**
 
 - ❌ `VERCEL_PROJECT_ID`
 - ❌ `VERCEL_ORG_ID`
 
-## 📝 Action requise
+## 📝 Required action
 
-### Ajouter sur GitHub : Settings → Secrets and variables → Actions → New repository secret
+### Add on GitHub: Settings → Secrets and variables → Actions → New repository secret
 
 #### 1. VERCEL_PROJECT_ID
 
@@ -33,20 +33,20 @@ Name: VERCEL_ORG_ID
 Value: team_GxFkKw0gw04KLOSezINs1eQB
 ```
 
-## 🚀 Après configuration
+## 🚀 After configuration
 
-Une fois ces 2 secrets ajoutés :
+Once these 2 secrets are added:
 
-- ✅ Le workflow `deploy.yml` fonctionnera
-- ✅ Déploiement automatique Preview sur les PR
-- ✅ Déploiement automatique Production sur main
+- ✅ The `deploy.yml` workflow will work
+- ✅ Automatic Preview deployment on PRs
+- ✅ Automatic Production deployment on main
 
-## 📊 Workflow actuel
+## 📊 Current workflow
 
-1. **✅ CI** (ci.yml) - Fonctionne parfaitement
-2. **⏳ Deploy** (deploy.yml) - En attente des secrets
-3. **🗑️ Debug** (debug.yml) - Supprimé (temporaire)
+1. **✅ CI** (ci.yml) - Works perfectly
+2. **⏳ Deploy** (deploy.yml) - Waiting for secrets
+3. **🗑️ Debug** (debug.yml) - Deleted (temporary)
 
 ---
 
-_IDs récupérés depuis `.vercel/project.json` le 11 juin 2025_
+_IDs retrieved from `.vercel/project.json` on June 11, 2025_

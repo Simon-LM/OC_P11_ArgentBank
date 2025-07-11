@@ -60,7 +60,7 @@
   // Position relative pour le conteneur parent
   position: relative;
 
-  // Pseudo-élément qui servira de "coussin interne"
+  // Pseudo-element that serves as "internal cushion"
   &::before {
     content: "";
     position: absolute;
@@ -68,15 +68,15 @@
     left: 0;
     right: 0;
     bottom: 0;
-    // Créer le cadre intérieur (l'inverse du padding)
-    pointer-events: none; // Ne pas interférer avec les clics
+    // Create inner frame (inverse of padding)
+    pointer-events: none; // Do not interfere with clicks
     box-shadow: inset 0 0 0
       min(calc(#{$horizontal-px}px + #{$vw-factor}vw), #{$max-spacing-px}px);
   }
 
-  // Conteneur pour le contenu réel
+  // Container for actual content
   & > * {
-    // S'assurer que tout le contenu est à l'intérieur du "coussin"
+    // Ensure all content is inside the "cushion"
     margin: min(calc(#{$vertical-px}px + #{$vw-factor}vw), #{$max-spacing-px}px)
       min(calc(#{$horizontal-px}px + #{$vw-factor}vw), #{$max-spacing-px}px);
   }
@@ -213,12 +213,12 @@
 
 // 	gap: #{$gap-rem}rem;
 
-// 	// Assure que les éléments flexbox peuvent réduire sous la taille de contenu minimale
+// 	// Ensures that flexbox elements can shrink below minimum content size
 // 	& > * {
 // 		min-width: 0;
 // 	}
 // }
-// // Point clé : Le min-width: 0 pour les enfants est crucial - cette règle souvent oubliée permet aux enfants flexbox de se rétrécir en-dessous de leur largeur minimale intrinsèque, évitant les débordements en cas de texte long ou de zoom important.
+// // Key point: The min-width: 0 for children is crucial - this often forgotten rule allows flexbox children to shrink below their intrinsic minimum width, avoiding overflow with long text or high zoom levels.
 
 // @mixin flex-item-adaptive($basis-percent: 100, $min-width-rem: 15) {
 // 	flex-grow: 1;
@@ -277,8 +277,8 @@
 // }
 
 // /**
-//  * Mixin pour les éléments enfants de flex
-//  * Combinaison de flex-item-adaptive et gestion du texte
+//  * Mixin for flex child elements
+//  * Combination of flex-item-adaptive and text handling
 //  */
 // @mixin a11y-flex-item(
 // 	$basis-percent: 100,
@@ -418,7 +418,7 @@
 // }
 
 // /**
-//  * Élément flex avec gestion optimale du zoom
+//  * Flex element with optimal zoom handling
 //  */
 // @mixin a11y-flex-item(
 // 	$basis-percent: 100,

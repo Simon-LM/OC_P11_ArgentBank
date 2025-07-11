@@ -1,12 +1,12 @@
 /** @format */
 /**
- * @fileoverview Tests d'intégration pour le composant App
+ * @fileoverview Integration tests for the App component
  *
- * Scope d'intégration testé :
- * - Navigation et routage entre les pages
- * - Protection des routes avec authentification
- * - Intégration Redux store pour l'état d'authentification
- * - Gestion des routes invalides (404)
+ * Integration scope tested:
+ * - Navigation and routing between pages
+ * - Route protection with authentication
+ * - Redux store integration for authentication state
+ * - Invalid route handling (404)
  */
 import { describe, test, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
@@ -15,12 +15,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer, { UsersState } from "./store/slices/usersSlice";
 import App from "./App";
 
-// Définir RootState
+// Define RootState
 interface RootState {
   users: UsersState;
 }
 
-// Store mock avec le state correct
+// Mock store with correct state
 const createTestStore = (isAuthenticated = false) => {
   const preloadedState: RootState = {
     users: {
@@ -89,7 +89,7 @@ describe("App - Integration Tests", () => {
     ).toBeInTheDocument();
   });
 
-  test("protège la route /user sans authentification", async () => {
+  test("protects /user route without authentication", async () => {
     const unauthenticatedStore = createTestStore(false);
 
     window.history.pushState({}, "", "/user");

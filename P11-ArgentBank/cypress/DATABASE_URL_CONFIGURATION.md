@@ -1,16 +1,16 @@
 <!-- @format -->
 
-# 🔧 Configuration DATABASE_URL pour Vercel Preview CI/CD
+# 🔧 DATABASE_URL Configuration for Vercel Preview CI/CD
 
-## 🎯 Problème identifié et résolu
+## 🎯 Problem Identified and Resolved
 
-**CAUSE** : Les tests Cypress fonctionnent en local car ils utilisent la vraie base de données VPS, mais échouent en CI/CD car Vercel Preview utilise une fausse DATABASE_URL.
+**CAUSE**: Cypress tests work locally because they use the real VPS database, but fail in CI/CD because Vercel Preview uses a fake DATABASE_URL.
 
-**SOLUTION** : Configurer DATABASE_URL dans les secrets GitHub pour que Vercel Preview utilise la vraie base de données.
+**SOLUTION**: Configure DATABASE_URL in GitHub secrets so Vercel Preview uses the real database.
 
-## ✅ Modifications apportées au CI/CD
+## ✅ Changes Made to CI/CD
 
-### 1. Déploiement Vercel avec vraie DATABASE_URL
+### 1. Vercel Deployment with Real DATABASE_URL
 
 ```yaml
 - name: 🚀 Deploy to Vercel Preview
@@ -20,7 +20,7 @@
     PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN --env DATABASE_URL="$DATABASE_URL")
 ```
 
-### 2. Génération Prisma avec vraie DATABASE_URL
+### 2. Prisma Generation with Real DATABASE_URL
 
 ```yaml
 - name: 🗃️ Generate Prisma Client
@@ -31,48 +31,48 @@
     pnpm exec prisma generate
 ```
 
-## 🔐 Configuration GitHub Secrets requise
+## 🔐 Required GitHub Secrets Configuration
 
-Il faut ajouter le secret `DATABASE_URL` dans GitHub :
+The `DATABASE_URL` secret must be added to GitHub:
 
-### Étapes à suivre
+### Steps to Follow
 
-1. **Aller dans GitHub** : `Settings` > `Secrets and variables` > `Actions`
+1. **Go to GitHub**: `Settings` > `Secrets and variables` > `Actions`
 
-2. **Ajouter un nouveau secret** :
+2. **Add a new secret**:
 
-   - **Name** : `DATABASE_URL`
-   - **Value** : `postgresql://argentbank_user:azRyPtf0A&w^RZkfJy@51.38.236.82:5432/argentbank?schema=public`
+   - **Name**: `DATABASE_URL`
+   - **Value**: `postgresql://argentbank_user:azRyPtf0A&w^RZkfJy@51.38.236.82:5432/argentbank?schema=public`
 
-3. **Sauvegarder** le secret
+3. **Save** the secret
 
-## 🎯 Résultat attendu
+## 🎯 Expected Result
 
-Après configuration du secret :
+After secret configuration:
 
-### ✅ Comportement unifié
+### ✅ Unified Behavior
 
-- **Local** : `http://localhost:3000/api` → VPS Database
-- **CI/CD** : `https://[preview].vercel.app/api` → **MÊME VPS Database**
+- **Local**: `http://localhost:3000/api` → VPS Database
+- **CI/CD**: `https://[preview].vercel.app/api` → **SAME VPS Database**
 
-### ✅ Tests Cypress
+### ✅ Cypress Tests
 
-- **Utilisateur** : `tony@stark.com` / `password123` (existe sur VPS)
-- **Authentification** : ✅ Fonctionne
-- **Tests avancés** : ✅ Fonctionnent (profil, transactions, etc.)
+- **User**: `tony@stark.com` / `password123` (exists on VPS)
+- **Authentication**: ✅ Works
+- **Advanced tests**: ✅ Work (profile, transactions, etc.)
 
 ## 🧪 Validation
 
-Une fois le secret configuré, tous les tests Cypress devraient passer en CI/CD car :
+Once the secret is configured, all Cypress tests should pass in CI/CD because:
 
-1. Vercel Preview aura accès à la vraie base de données
-2. L'utilisateur `tony@stark.com` existera
-3. Les données de test seront disponibles
+1. Vercel Preview will have access to the real database
+2. User `tony@stark.com` will exist
+3. Test data will be available
 
-## 📋 Statut
+## 📋 Status
 
-- ✅ **Headers Vercel bypass** : Configurés (fonctionnent)
-- ⏳ **DATABASE_URL secret** : À configurer dans GitHub
-- ⏳ **Tests complets** : Fonctionneront après configuration
+- ✅ **Vercel bypass headers**: Configured (working)
+- ⏳ **DATABASE_URL secret**: To be configured in GitHub
+- ⏳ **Complete tests**: Will work after configuration
 
-Date : 22 juin 2025
+Date: June 22, 2025

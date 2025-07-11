@@ -1,34 +1,34 @@
 <!-- @format -->
 
-# Guide de Résolution - Problèmes de Session Cypress
+# Troubleshooting Guide - Cypress Session Issues
 
-## 🚨 Problème : "This session already exists"
+## 🚨 Problem: "This session already exists"
 
 ### **Cause**
 
-Les sessions Cypress persistent entre les fichiers de test avec `cacheAcrossSpecs: true`, causant des conflits d'identifiants.
+Cypress sessions persist between test files with `cacheAcrossSpecs: true`, causing identifier conflicts.
 
-### **Solutions Implémentées**
+### **Implemented Solutions**
 
-#### 1. **Identifiants de Session Uniques**
+#### 1. **Unique Session Identifiers**
 
 ```typescript
-// Avant (problématique)
+// Before (problematic)
 cy.loginWithSession(validUser);
 
-// Après (solution)
+// After (solution)
 cy.loginWithSession(validUser, {
   sessionId: "unique-test-identifier",
   cacheAcrossSpecs: false,
 });
 ```
 
-#### 2. **Options de Configuration**
+#### 2. **Configuration Options**
 
-- **`sessionId`** : Identifiant unique pour éviter les conflits
-- **`cacheAcrossSpecs`** : `false` par défaut pour éviter les conflits entre fichiers
+- **`sessionId`**: Unique identifier to avoid conflicts
+- **`cacheAcrossSpecs`**: `false` by default to avoid conflicts between files
 
-#### 3. **Pattern Recommandé par Fichier de Test**
+#### 3. **Recommended Pattern per Test File**
 
 ```typescript
 // cross-browser.cy.ts
@@ -50,49 +50,49 @@ cy.loginWithSession(validUser, {
 });
 ```
 
-## 🛠️ **Commandes de Débogage**
+## 🛠️ **Debugging Commands**
 
-### **Nettoyer les Sessions Manuellement**
+### **Manually Clean Sessions**
 
 ```bash
-# Utiliser le script de nettoyage
+# Use the cleanup script
 ./scripts/clean-cypress-sessions.sh
 
-# Ou manuellement
+# Or manually
 rm -rf cypress/.sessions
 rm -rf cypress/screenshots
 rm -rf cypress/videos
 rm -rf cypress/reports
 ```
 
-### **Vérifier les Sessions Actives**
+### **Check Active Sessions**
 
 ```typescript
-// Dans un test Cypress
+// In a Cypress test
 cy.getAllSessions().then((sessions) => {
-  console.log("Sessions actives:", sessions);
+  console.log("Active sessions:", sessions);
 });
 ```
 
-### **Forcer une Nouvelle Session**
+### **Force a New Session**
 
 ```typescript
-// Méthode 1: Utiliser un timestamp unique
+// Method 1: Use unique timestamp
 const timestamp = Date.now();
 cy.loginWithSession(validUser, { sessionId: `test-${timestamp}` });
 
-// Méthode 2: Nettoyer avant de créer
+// Method 2: Clean before creating
 cy.clearAllSessions();
 cy.loginWithSession(validUser, { sessionId: "fresh-session" });
 ```
 
-## 🔄 **Patterns de Session par Contexte**
+## 🔄 **Session Patterns by Context**
 
-### **Tests Isolés (Recommandé)**
+### **Isolated Tests (Recommended)**
 
 ```typescript
 beforeEach(() => {
-  // Chaque test a sa propre session
+  // Each test has its own session
   const testName = Cypress.currentTest.title.replace(/\s+/g, "-");
   cy.loginWithSession(validUser, {
     sessionId: testName,
@@ -101,13 +101,13 @@ beforeEach(() => {
 });
 ```
 
-### **Session Partagée dans un Fichier**
+### **Shared Session in a File**
 
 ```typescript
 let sessionId: string;
 
 before(() => {
-  // Générer un ID unique pour ce fichier de test
+  // Generate unique ID for this test file
   sessionId = `${Cypress.spec.name}-${Date.now()}`;
 });
 
@@ -116,19 +116,19 @@ beforeEach(() => {
 });
 ```
 
-### **Session Globale (Usage Avancé)**
+### **Global Session (Advanced Usage)**
 
 ```typescript
-// Seulement si vraiment nécessaire
+// Only if really necessary
 cy.loginWithSession(validUser, {
   sessionId: "global-session",
   cacheAcrossSpecs: true,
 });
 ```
 
-## 🐛 **Debugging des Sessions**
+## 🐛 **Session Debugging**
 
-### **Ajouter des Logs**
+### **Add Logs**
 
 ```typescript
 Cypress.Commands.add("loginWithSession", (user: User, options = {}) => {
@@ -153,47 +153,47 @@ Cypress.Commands.add("loginWithSession", (user: User, options = {}) => {
 });
 ```
 
-### **Vérifier l'État des Sessions**
+### **Check Session State**
 
 ```javascript
-// Dans la console du navigateur Cypress
+// In Cypress browser console
 Cypress.session.getCurrentSessions().then((sessions) => {
   console.table(sessions);
 });
 ```
 
-## 🎯 **Meilleures Pratiques**
+## 🎯 **Best Practices**
 
-### **✅ À Faire**
+### **✅ To Do**
 
-- Utiliser des `sessionId` uniques par contexte de test
-- Définir `cacheAcrossSpecs: false` par défaut
-- Nettoyer les sessions entre les runs en cas de problème
-- Utiliser des noms descriptifs pour les `sessionId`
+- Use unique `sessionId` per test context
+- Set `cacheAcrossSpecs: false` by default
+- Clean sessions between runs when issues occur
+- Use descriptive names for `sessionId`
 
-### **❌ À Éviter**
+### **❌ To Avoid**
 
-- Réutiliser le même `sessionId` dans plusieurs fichiers
-- Utiliser `cacheAcrossSpecs: true` sans justification
-- Créer des sessions sans validation appropriée
-- Ignorer les erreurs de conflit de session
+- Reusing the same `sessionId` in multiple files
+- Using `cacheAcrossSpecs: true` without justification
+- Creating sessions without proper validation
+- Ignoring session conflict errors
 
-## 🚀 **Commands Utiles**
+## 🚀 **Useful Commands**
 
 ```bash
-# Tests avec nettoyage préalable
+# Tests with prior cleanup
 ./scripts/clean-cypress-sessions.sh && npm run cypress:run
 
-# Test d'un fichier spécifique
+# Test specific file
 npx cypress run --spec "cypress/e2e/auth/rate-limiting-test.cy.ts"
 
-# Mode debug avec logs détaillés
+# Debug mode with detailed logs
 DEBUG=cypress:session npx cypress run
 ```
 
-## 📊 **Monitoring des Sessions**
+## 📊 **Session Monitoring**
 
-Pour surveiller l'utilisation des sessions en CI/CD, ajouter dans `cypress.config.ts` :
+To monitor session usage in CI/CD, add to `cypress.config.ts`:
 
 ```typescript
 setupNodeEvents(on, config) {
@@ -208,4 +208,4 @@ setupNodeEvents(on, config) {
 }
 ```
 
-Cette approche garantit que chaque fichier de test utilise ses propres sessions sans conflits.
+This approach ensures that each test file uses its own sessions without conflicts.

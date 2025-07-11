@@ -1,62 +1,62 @@
 <!-- @format -->
 
-# Guide de Maintenance des Tests - Vitest
+# Test Maintenance Guide - Vitest
 
-Ce guide fournit les bonnes pratiques pour maintenir les tests Vitest du projet ArgentBank sur le long terme.
+This guide provides best practices for maintaining Vitest tests in the ArgentBank project over the long term.
 
-## 🔄 Cycle de vie des tests
+## 🔄 Test lifecycle
 
-### Quand mettre à jour les tests
+### When to update tests
 
-- ✅ Lors de changements de l'API d'un composant
-- ✅ Lors d'ajout de nouvelles fonctionnalités
-- ✅ Lors de correction de bugs
-- ✅ Lors de changements de dépendances majeures
-- ✅ Lors de refactoring
+- ✅ When component APIs change
+- ✅ When adding new features
+- ✅ When fixing bugs
+- ✅ When major dependencies change
+- ✅ When refactoring
 
-### Signes que les tests ont besoin d'attention
+### Signs that tests need attention
 
-- 🚩 Tests échouant sans modifications du code testé
-- 🚩 Tests peu fiables (passant/échouant aléatoirement)
-- 🚩 Couverture de code diminuant
-- 🚩 Tests prenant de plus en plus de temps
-- 🚩 Tests contenant trop de mocks ou de complexité
+- 🚩 Tests failing without changes to tested code
+- 🚩 Unreliable tests (randomly passing/failing)
+- 🚩 Decreasing code coverage
+- 🚩 Tests taking increasingly long
+- 🚩 Tests containing too many mocks or complexity
 
-## 📈 Amélioration continue
+## 📈 Continuous improvement
 
-### Analyse des tests existants
+### Analyzing existing tests
 
 ```bash
-# Identifier les tests les plus lents
+# Identify slowest tests
 pnpm test -- --reporter=verbose | grep "took"
 
-# Identifier les tests qui échouent le plus souvent
+# Identify most frequently failing tests
 pnpm test:watch -- --reporterUpdateInterval=1000
 ```
 
-### Refactoring de tests
+### Test refactoring
 
-Principes à suivre :
+Principles to follow:
 
-1. **Clarifier l'intention** : Noms de tests explicites
-2. **Simplifier** : Réduire la complexité et les dépendances
-3. **Consolider** : Regrouper les tests similaires
-4. **Isoler** : Assurer l'indépendance des tests
+1. **Clarify intent**: Explicit test names
+2. **Simplify**: Reduce complexity and dependencies
+3. **Consolidate**: Group similar tests
+4. **Isolate**: Ensure test independence
 
-Exemple de refactoring :
+Refactoring example:
 
 ```typescript
-// Avant
+// Before
 it('test that component works', () => {
   render(<Component prop1="a" prop2="b" prop3="c" prop4="d" />);
   fireEvent.click(screen.getByText('Click'));
   expect(screen.getByText('Result')).toBeInTheDocument();
 });
 
-// Après
+// After
 it('displays result when button is clicked', () => {
   // Arrangement
-  const defaultProps = { prop1: "a", prop2: "b", prop3: "c", prop4: "d" }; // Définir defaultProps
+  const defaultProps = { prop1: "a", prop2: "b", prop3: "c", prop4: "d" }; // Define defaultProps
   render(<Component {...defaultProps} />);
   const button = screen.getByRole('button', { name: /click/i });
 
@@ -68,93 +68,93 @@ it('displays result when button is clicked', () => {
 });
 ```
 
-## 🐛 Résolution de problèmes courants
+## 🐛 Common problem resolution
 
-### Tests instables (flaky)
+### Flaky tests
 
-Causes fréquentes :
+Common causes:
 
-- Attentes asynchrones mal gérées
-- Dépendances entre tests
-- Timeouts trop courts
-- État global non réinitialisé
+- Poorly managed asynchronous expectations
+- Dependencies between tests
+- Timeouts too short
+- Global state not reset
 
-Solutions :
+Solutions:
 
-- Utiliser `waitFor` ou `findBy*` pour les opérations asynchrones
-- Ajouter `vi.clearAllMocks()` dans `afterEach`
-- Augmenter les timeouts pour les tests lents
-- Isoler chaque test avec un état initial propre
+- Use `waitFor` or `findBy*` for asynchronous operations
+- Add `vi.clearAllMocks()` in `afterEach`
+- Increase timeouts for slow tests
+- Isolate each test with clean initial state
 
 ```typescript
-// Correction d'un test asynchrone instable
+// Fixing an unstable asynchronous test
 it('fetches and displays data', async () => {
   // Setup mocks
-  const mockFetchData = vi.fn(); // Assurez-vous que mockFetchData est défini
+  const mockFetchData = vi.fn(); // Ensure mockFetchData is defined
   mockFetchData.mockResolvedValue({ name: 'Test User' });
 
   render(<UserProfile userId="123" />);
 
-  // Utiliser findBy au lieu de getBy pour attendre le résultat
+  // Use findBy instead of getBy to wait for result
   await screen.findByText('Test User');
   expect(mockFetchData).toHaveBeenCalledWith('123');
 });
 ```
 
-### Problèmes de mémoire
+### Memory issues
 
-Si les tests consomment trop de mémoire :
+If tests consume too much memory:
 
-- Exécuter les tests par groupes plus petits
-- Nettoyer les ressources dans `afterEach`
-- Surveiller les fuites mémoire avec `--logHeapUsage`
+- Run tests in smaller groups
+- Clean up resources in `afterEach`
+- Monitor memory leaks with `--logHeapUsage`
 
 ```bash
-# Détecter les fuites mémoire
+# Detect memory leaks
 pnpm test -- --logHeapUsage
 ```
 
-## 📊 Surveillance de la qualité
+## 📊 Quality monitoring
 
-### Métriques clés
+### Key metrics
 
-1. **Couverture de code** : Maintenir ou améliorer la couverture existante
-2. **Temps d'exécution** : Garder les tests rapides (< 30s pour la suite complète)
-3. **Fiabilité** : 0% de tests instables
-4. **Maintenabilité** : Code de test lisible et bien structuré
+1. **Code coverage**: Maintain or improve existing coverage
+2. **Execution time**: Keep tests fast (< 30s for complete suite)
+3. **Reliability**: 0% flaky tests
+4. **Maintainability**: Readable and well-structured test code
 
-### Revues régulières
+### Regular reviews
 
-Planifier des revues trimestrielles pour :
+Schedule quarterly reviews to:
 
-- Identifier les zones sous-testées
-- Améliorer les tests lents
-- Mettre à jour les mocks obsolètes
-- Simplifier les tests complexes
+- Identify under-tested areas
+- Improve slow tests
+- Update obsolete mocks
+- Simplify complex tests
 
-## 🚀 Mise à niveau des dépendances
+## 🚀 Dependency upgrades
 
-### Stratégie de mise à jour
+### Update strategy
 
-1. **Préparation** :
+1. **Preparation**:
 
-   - Capturer les métriques actuelles (couverture, vitesse)
-   - Exécuter tous les tests pour avoir un baseline
+   - Capture current metrics (coverage, speed)
+   - Run all tests to have a baseline
 
-2. **Mise à jour progressive** :
+2. **Progressive update**:
 
-   - Mettre à jour une dépendance à la fois
-   - Exécuter les tests après chaque mise à jour
-   - Documenter les changements nécessaires
+   - Update one dependency at a time
+   - Run tests after each update
+   - Document necessary changes
 
-3. **Vérification** :
-   - Comparer les métriques avant/après
-   - Vérifier que tous les tests passent
-   - Rechercher les avertissements de dépréciation
+3. **Verification**:
+   - Compare before/after metrics
+   - Verify all tests pass
+   - Check for deprecation warnings
 
-### Dépendances critiques
+### Critical dependencies
 
-Pour les mises à jour majeures de ces dépendances, vérifier la compatibilité :
+For major updates of these dependencies, verify compatibility:
 
 - Vitest
 - Testing Library
@@ -163,34 +163,34 @@ Pour les mises à jour majeures de ces dépendances, vérifier la compatibilité
 - TypeScript
 
 ```bash
-# Vérifier les dépendances obsolètes
+# Check outdated dependencies
 pnpm outdated
 
-# Mettre à jour une dépendance spécifique
+# Update a specific dependency
 pnpm update @testing-library/react
 
-# Mettre à jour toutes les dépendances de test
+# Update all test dependencies
 pnpm update -r "@testing-library/*" vitest
 ```
 
-## 🧰 Outils de diagnostic
+## 🧰 Diagnostic tools
 
-### Débogage des tests
+### Test debugging
 
 ```bash
-# Mode debug avec pause
+# Debug mode with pause
 pnpm test:debug -- Button.test.tsx
 
-# Mode UI
+# UI mode
 pnpm test:ui
 
-# Mode verbose
+# Verbose mode
 pnpm test -- --reporter=verbose
 ```
 
-### Scripts utiles
+### Useful scripts
 
-Ajouter ces scripts à `package.json` :
+Add these scripts to `package.json`:
 
 ```json
 {
@@ -203,67 +203,67 @@ Ajouter ces scripts à `package.json` :
 }
 ```
 
-## 📝 Documentation continue
+## 📝 Continuous documentation
 
-### Documentation des patterns
+### Pattern documentation
 
-Pour chaque nouveau pattern de test :
+For each new test pattern:
 
-1. Documenter le problème résolu
-2. Fournir un exemple minimal
-3. Expliquer quand l'utiliser
-4. Ajouter à la documentation appropriée
+1. Document the problem solved
+2. Provide a minimal example
+3. Explain when to use it
+4. Add to appropriate documentation
 
-### Bibliothèque de tests
+### Test library
 
-Maintenir une bibliothèque d'exemples de tests pour les cas courants :
+Maintain a library of test examples for common cases:
 
-- Formulaires avec validation
-- Requêtes API
-- Composants contrôlés vs non-contrôlés
-- Routes protégées
-- État global avec Redux
+- Forms with validation
+- API requests
+- Controlled vs uncontrolled components
+- Protected routes
+- Global state with Redux
 
-## 👥 Bonnes pratiques d'équipe
+## 👥 Team best practices
 
 ### Code reviews
 
-Checklist pour les revues de code de test :
+Checklist for test code reviews:
 
-- [ ] Les tests vérifient le comportement, pas l'implémentation
-- [ ] Les noms de tests sont descriptifs et basés sur le comportement
-- [ ] Les arrangements, actions et assertions sont clairement séparés
-- [ ] Les mocks sont minimaux et explicites
-- [ ] Les tests sont indépendants les uns des autres
+- [ ] Tests verify behavior, not implementation
+- [ ] Test names are descriptive and behavior-based
+- [ ] Arrangements, actions and assertions are clearly separated
+- [ ] Mocks are minimal and explicit
+- [ ] Tests are independent of each other
 
-### Sessions de pair-testing
+### Pair-testing sessions
 
-Organiser des sessions où deux développeurs :
+Organize sessions where two developers:
 
-1. Écrivent des tests ensemble
-2. Examinent et améliorent des tests existants
-3. Partagent des techniques et astuces
+1. Write tests together
+2. Review and improve existing tests
+3. Share techniques and tips
 
-## 🔄 Intégration continue
+## 🔄 Continuous integration
 
-### Optimisation du pipeline CI
+### CI pipeline optimization
 
-1. **Mise en cache** :
+1. **Caching**:
 
-   - Mettre en cache les dépendances node_modules
-   - Mettre en cache les résultats de compilation TypeScript
+   - Cache node_modules dependencies
+   - Cache TypeScript compilation results
 
-2. **Parallélisation** :
+2. **Parallelization**:
 
-   - Diviser les tests en groupes équilibrés
-   - Exécuter les groupes en parallèle
+   - Divide tests into balanced groups
+   - Run groups in parallel
 
-3. **Fail fast** :
-   - Échouer dès le premier test en échec
-   - Exécuter d'abord les tests les plus susceptibles d'échouer
+3. **Fail fast**:
+   - Fail on first test failure
+   - Run most likely to fail tests first
 
 ```yaml
-# Exemple d'optimisation dans GitHub Actions
+# Example optimization in GitHub Actions
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -283,30 +283,30 @@ jobs:
         run: pnpm test -- --exclude="^(Authentication|User)"
 ```
 
-## 🚦 Maintenance préventive
+## 🚦 Preventive maintenance
 
-### Vérifications régulières
+### Regular checks
 
-Exécuter ces vérifications mensuellement :
+Run these checks monthly:
 
 ```bash
-# Vérifier les tests lents
+# Check slow tests
 pnpm test -- --reporter=verbose | grep -B 1 -A 1 "took.*>100ms"
 
-# Vérifier les avertissements
+# Check warnings
 pnpm test -- 2>&1 | grep -i "warning\|deprecated"
 
-# Vérifier les tests désactivés
+# Check disabled tests
 grep -r "it.skip\|describe.skip\|test.skip" --include="*.test.*" src/
 ```
 
-### Plan de nettoyage
+### Cleanup plan
 
-1. **Tests ignorés** : Examiner et corriger ou supprimer les tests `.skip`
-2. **Tests dupliqués** : Consolider les tests redondants
-3. **Tests obsolètes** : Supprimer les tests pour les fonctionnalités retirées
-4. **Mocks inutilisés** : Nettoyer les mocks et fixtures non utilisés
+1. **Ignored tests**: Review and fix or remove `.skip` tests
+2. **Duplicate tests**: Consolidate redundant tests
+3. **Obsolete tests**: Remove tests for removed features
+4. **Unused mocks**: Clean up unused mocks and fixtures
 
 ---
 
-**Navigation** : [Configuration](./CONFIGURATION.md) | [Architecture des tests](./TEST_ARCHITECTURE.md)
+**Navigation**: [Configuration](./CONFIGURATION.md) | [Test Architecture](./TEST_ARCHITECTURE.md)

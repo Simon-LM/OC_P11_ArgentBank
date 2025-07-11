@@ -1,53 +1,53 @@
 <!-- @format -->
 
-# Solutions Implémentées pour les Problèmes de Rate Limiting Cypress
+# Implemented Solutions for Cypress Rate Limiting Issues
 
-## 🚨 Problèmes Identifiés
+## 🚨 Identified Problems
 
-Basés sur l'analyse des logs Vercel :
+Based on Vercel logs analysis:
 
-- **HTTP 429 - Too Many Requests** : Rate limiting déclenché par les tests Cypress
-- **JWT malformed** : Tokens corrompus en environnement Vercel
-- **Tests en parallèle** : Multiples connexions simultanées saturant l'API
+- **HTTP 429 - Too Many Requests**: Rate limiting triggered by Cypress tests
+- **JWT malformed**: Corrupted tokens in Vercel environment
+- **Parallel tests**: Multiple simultaneous connections saturating the API
 
-## ✅ Solutions Implémentées
+## ✅ Implemented Solutions
 
-### 1. **Commandes Cypress Personnalisées avec Protection Rate Limiting**
+### 1. **Custom Cypress Commands with Rate Limiting Protection**
 
 #### `cy.smartLogin(email, password, options?)`
 
-- **Délai minimum** de 2 secondes entre les tentatives de connexion
-- **Gestion automatique des erreurs 429** avec retry logic
-- **Header Vercel bypass** ajouté automatiquement en CI
-- **Timeouts étendus** pour les environnements lents
+- **Minimum delay** of 2 seconds between login attempts
+- **Automatic 429 error handling** with retry logic
+- **Vercel bypass header** automatically added in CI
+- **Extended timeouts** for slow environments
 
 #### `cy.loginWithSession(user)`
 
-- **Persistence de session** entre les tests
-- **Évite les reconnexions** multiples inutiles
-- **Cache cross-specs** pour optimiser l'exécution
+- **Session persistence** between tests
+- **Avoids multiple** unnecessary reconnections
+- **Cross-specs cache** to optimize execution
 
 #### `cy.visitWithBypass(url, options?)`
 
-- **Header Vercel protection-bypass** automatique en CI
-- **Transparent en local** - aucun impact sur les tests locaux
+- **Automatic Vercel protection-bypass header** in CI
+- **Transparent locally** - no impact on local tests
 
-### 2. **Configuration Cypress Optimisée**
+### 2. **Optimized Cypress Configuration**
 
 ```typescript
 // cypress.config.ts
 export default defineConfig({
   e2e: {
-    experimentalRunAllSpecs: false, // Désactive l'exécution parallèle
-    defaultCommandTimeout: 15000, // Timeouts étendus
+    experimentalRunAllSpecs: false, // Disable parallel execution
+    defaultCommandTimeout: 15000, // Extended timeouts
     requestTimeout: 15000,
     responseTimeout: 15000,
     retries: {
-      runMode: 2, // Retry en CI
-      openMode: 0, // Pas de retry en local
+      runMode: 2, // Retry in CI
+      openMode: 0, // No retry locally
     },
     setupNodeEvents(on, config) {
-      // Délai de 3s entre chaque fichier de test en CI
+      // 3s delay between each test file in CI
       on("after:spec", () => {
         return new Promise((resolve) => {
           setTimeout(resolve, isCI ? 3000 : 1000);
@@ -58,9 +58,9 @@ export default defineConfig({
 });
 ```
 
-### 3. **Refactoring des Tests Existants**
+### 3. **Refactoring of Existing Tests**
 
-#### Avant (Problématique) :
+#### Before (Problematic):
 
 ```typescript
 beforeEach(() => {
@@ -69,7 +69,7 @@ beforeEach(() => {
 
 it("test", () => {
   cy.get<User[]>("@usersData").then((usersData) => {
-    // Connexion manuelle répétée
+    // Repeated manual login
     cy.visit("/signin");
     cy.get("input#email").type(user.email);
     cy.get("input#password").type(user.password);
@@ -78,7 +78,7 @@ it("test", () => {
 });
 ```
 
-#### Après (Optimisé) :
+#### After (Optimized):
 
 ```typescript
 let validUser: User;
@@ -90,58 +90,58 @@ before(() => {
 });
 
 beforeEach(() => {
-  cy.loginWithSession(validUser); // Session réutilisée
+  cy.loginWithSession(validUser); // Reused session
 });
 
 it("test", () => {
-  cy.visitWithBypass("/user"); // Déjà connecté
-  // Tests sans reconnexion
+  cy.visitWithBypass("/user"); // Already logged in
+  // Tests without reconnection
 });
 ```
 
-### 4. **Tests de Validation**
+### 4. **Validation Tests**
 
-Nouveau fichier : `cypress/e2e/auth/rate-limiting-test.cy.ts`
+New file: `cypress/e2e/auth/rate-limiting-test.cy.ts`
 
-- **Tests de connexions multiples** sans déclencher le rate limiting
-- **Validation de la session persistence**
-- **Gestion des erreurs 429**
-- **Vérification du header Vercel bypass**
-- **Tests de performance** (mesure des délais)
+- **Multiple login tests** without triggering rate limiting
+- **Session persistence validation**
+- **429 error handling**
+- **Vercel bypass header verification**
+- **Performance tests** (delay measurements)
 
-## 🎯 Avantages des Solutions
+## 🎯 Solution Benefits
 
-### **Pour les Tests Locaux** :
+### **For Local Tests**:
 
-- ✅ **Aucun impact négatif** - les solutions sont conditionnelles
-- ✅ **Performance améliorée** avec la session persistence
-- ✅ **Stabilité accrue** avec les timeouts étendus
+- ✅ **No negative impact** - solutions are conditional
+- ✅ **Improved performance** with session persistence
+- ✅ **Increased stability** with extended timeouts
 
-### **Pour les Tests CI/CD** :
+### **For CI/CD Tests**:
 
-- ✅ **Élimination du rate limiting** avec les délais automatiques
-- ✅ **Header Vercel bypass** pour contourner les protections
-- ✅ **Retry logic** pour gérer les erreurs intermittentes
-- ✅ **Session persistence** pour réduire les appels API
+- ✅ **Rate limiting elimination** with automatic delays
+- ✅ **Vercel bypass header** to circumvent protections
+- ✅ **Retry logic** to handle intermittent errors
+- ✅ **Session persistence** to reduce API calls
 
-### **Compatibilité** :
+### **Compatibility**:
 
-- ✅ **Rétrocompatible** avec les tests existants
-- ✅ **Progressive adoption** - peut être appliqué test par test
-- ✅ **Zero breaking changes** pour l'équipe
+- ✅ **Backward compatible** with existing tests
+- ✅ **Progressive adoption** - can be applied test by test
+- ✅ **Zero breaking changes** for the team
 
-## 🚀 Utilisation
+## 🚀 Usage
 
-### Migration Rapide :
+### Quick Migration:
 
-1. Remplacer `cy.visit("/signin")` + login manuel par `cy.smartLogin(email, password)`
-2. Utiliser `cy.loginWithSession(user)` dans `beforeEach` pour les tests nécessitant une authentification
-3. Remplacer `cy.visit()` par `cy.visitWithBypass()` en CI
+1. Replace `cy.visit("/signin")` + manual login with `cy.smartLogin(email, password)`
+2. Use `cy.loginWithSession(user)` in `beforeEach` for tests requiring authentication
+3. Replace `cy.visit()` with `cy.visitWithBypass()` in CI
 
-### Exemple de Migration :
+### Migration Example:
 
 ```typescript
-// Ancien code
+// Old code
 it("test", () => {
   cy.visit("/signin");
   cy.get("input#email").type("tony@stark.com");
@@ -150,31 +150,31 @@ it("test", () => {
   cy.url().should("include", "/user");
 });
 
-// Nouveau code
+// New code
 it("test", () => {
   cy.smartLogin("tony@stark.com", "password123");
-  // cy.url().should("include", "/user"); // Automatique dans smartLogin
+  // cy.url().should("include", "/user"); // Automatic in smartLogin
 });
 ```
 
-## 📊 Impact Attendu
+## 📊 Expected Impact
 
-### **Réduction des Erreurs 429** :
+### **429 Error Reduction**:
 
-- Avant : ~15-20 erreurs 429 par run CI
-- Après : 0-2 erreurs 429 par run CI (avec retry automatique)
+- Before: ~15-20 429 errors per CI run
+- After: 0-2 429 errors per CI run (with automatic retry)
 
-### **Temps d'Exécution** :
+### **Execution Time**:
 
-- **Local** : Réduction de ~30% grâce à la session persistence
-- **CI** : Augmentation de ~20% due aux délais de sécurité, mais 100% de succès
+- **Local**: ~30% reduction thanks to session persistence
+- **CI**: ~20% increase due to safety delays, but 100% success
 
-### **Stabilité** :
+### **Stability**:
 
-- **Avant** : ~60% de succès en CI
-- **Après** : ~95% de succès en CI (objectif)
+- **Before**: ~60% success in CI
+- **After**: ~95% success in CI (target)
 
-## 🔧 Variables d'Environnement Requises
+## 🔧 Required Environment Variables
 
 ```bash
 # CI Environment
@@ -183,11 +183,11 @@ CYPRESS_BASE_URL=https://your-vercel-preview.vercel.app
 VERCEL_AUTOMATION_BYPASS_SECRET=your-secret-key
 ```
 
-## 📝 Prochaines Étapes
+## 📝 Next Steps
 
-1. ✅ **Valider** les nouvelles commandes avec le test `rate-limiting-test.cy.ts`
-2. 🔄 **Migrer progressivement** les autres fichiers de tests
-3. 📊 **Surveiller les métriques** CI pour confirmer l'amélioration
-4. 🔧 **Ajuster les délais** si nécessaire selon les performances observées
+1. ✅ **Validate** new commands with `rate-limiting-test.cy.ts` test
+2. 🔄 **Progressively migrate** other test files
+3. 📊 **Monitor CI metrics** to confirm improvement
+4. 🔧 **Adjust delays** if necessary based on observed performance
 
-Les solutions sont **prêtes à être testées** et peuvent être **appliquées progressivement** sans impacter l'existant.
+The solutions are **ready to be tested** and can be **applied progressively** without impacting existing code.

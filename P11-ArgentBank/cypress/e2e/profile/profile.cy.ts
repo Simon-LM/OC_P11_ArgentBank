@@ -1,9 +1,9 @@
 /** @format */
 
-// Import de l'interface User commune
+// Import of common User interface
 import type { User } from "../../support/types";
 
-describe("Gestion de Profil Utilisateur", () => {
+describe("User Profile Management", () => {
   let validUser: User | undefined;
 
   before(function () {
@@ -16,9 +16,7 @@ describe("Gestion de Profil Utilisateur", () => {
         !validUser.password ||
         !validUser.userName
       ) {
-        throw new Error(
-          "Fixture users.json: utilisateur valide incomplet ou manquant",
-        );
+        throw new Error("Fixture users.json: incomplete or missing valid user");
       }
     });
   });
@@ -80,11 +78,11 @@ describe("Gestion de Profil Utilisateur", () => {
       .should("be.visible");
   });
 
-  it("devrait afficher correctement les informations de l'utilisateur sur la page de profil", function () {
+  it("should correctly display user information on the profile page", function () {
     cy.injectAxe();
     cy.checkA11y();
     const user = validUser!;
-    // La page /User est celle où le profil est affiché ou modifiable
+    // The /User page is where the profile is displayed or editable
     cy.contains("h2", "Welcome back").should("be.visible");
     cy.contains("button", "Edit User").should("be.visible");
     cy.contains("button", "Edit User").click();
@@ -114,11 +112,11 @@ describe("Gestion de Profil Utilisateur", () => {
     }
   });
 
-  it("devrait permettre à un utilisateur de modifier son nom d'utilisateur avec succès", function () {
+  it("should allow a user to successfully modify their username", function () {
     const user = validUser!;
     if (!user.userName) {
       throw new Error(
-        "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test de modification.",
+        "Valid user or original username not found for modification test.",
       );
     }
     const originalUserName = user.userName;
@@ -139,21 +137,21 @@ describe("Gestion de Profil Utilisateur", () => {
     cy.contains("button", "Save").click();
     cy.contains("button", "Edit User").should("be.visible");
     cy.get(".header__nav-item span").should("contain.text", originalUserName);
-    cy.log("Nom d'utilisateur réinitialisé.");
+    cy.log("Username reset.");
   });
 
-  it("devrait annuler la modification du nom d'utilisateur", function () {
+  it("should cancel username modification", function () {
     const user = validUser!;
     if (!user.userName) {
       throw new Error(
-        "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test d'annulation.",
+        "Valid user or original username not found for cancellation test.",
       );
     }
     const originalUserName = user.userName;
     const tempUserName = "TempUserName123";
     if (originalUserName === tempUserName) {
       throw new Error(
-        "Le nom d'utilisateur temporaire doit être différent de l'original pour ce test.",
+        "Temporary username must be different from original for this test.",
       );
     }
     cy.contains("button", "Edit User").click();
@@ -168,11 +166,11 @@ describe("Gestion de Profil Utilisateur", () => {
     cy.contains("button", "Cancel").click();
   });
 
-  it("devrait afficher une erreur si le nom d'utilisateur est soumis vide", function () {
+  it("should display an error if username is submitted empty", function () {
     const user = validUser!;
     if (!user.userName) {
       throw new Error(
-        "Utilisateur valide ou nom d'utilisateur original non trouvé pour le test de validation.",
+        "Valid user or original username not found for validation test.",
       );
     }
     cy.contains("button", "Edit User").click();
@@ -189,7 +187,7 @@ describe("Gestion de Profil Utilisateur", () => {
     cy.contains("button", "Edit User").should("be.visible");
   });
 
-  it("devrait afficher une erreur si le nom d'utilisateur dépasse 10 caractères", function () {
+  it("should display an error if username exceeds 10 characters", function () {
     const user = validUser!;
     if (!user.userName) {
       throw new Error(
@@ -212,7 +210,7 @@ describe("Gestion de Profil Utilisateur", () => {
     cy.contains("button", "Edit User").should("be.visible");
   });
 
-  it("devrait afficher une erreur si le nom d'utilisateur contient des caractères non autorisés", function () {
+  it("should display an error if username contains unauthorized characters", function () {
     const user = validUser!;
     if (!user.userName) {
       throw new Error(
@@ -238,7 +236,7 @@ describe("Gestion de Profil Utilisateur", () => {
     cy.contains("button", "Edit User").should("be.visible");
   });
 
-  it("devrait afficher une erreur si le nom d'utilisateur est sur liste noire", function () {
+  it("should display an error if username is blacklisted", function () {
     const user = validUser!;
     if (!user.userName) {
       throw new Error(
@@ -261,7 +259,7 @@ describe("Gestion de Profil Utilisateur", () => {
     cy.contains("button", "Edit User").should("be.visible");
   });
 
-  it("devrait être accessible sur la page de profil utilisateur", function () {
+  it("should be accessible on the user profile page", function () {
     // Injecter axe-core et tester l'accessibilité dédié pour la page de profil (ignorer les violations de contraste connues)
     cy.injectAxe();
     cy.checkA11y();

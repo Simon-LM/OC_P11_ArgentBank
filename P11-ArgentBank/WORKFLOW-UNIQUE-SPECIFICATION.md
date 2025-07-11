@@ -1,26 +1,26 @@
 <!-- @format -->
 
-# 🚀 Workflow Unique CI/CD - Spécification Technique
+# 🚀 Unified CI/CD Workflow - Technical Specification
 
-## 📋 Vue d'ensemble
+## 📋 Overview
 
-Ce document décrit la spécification technique du workflow unique `complete-ci-cd.yml` qui remplace les workflows séparés pour assurer une sécurité maximale des déploiements.
+This document describes the technical specification of the unified `complete-ci-cd.yml` workflow that replaces separate workflows to ensure maximum deployment security.
 
-## 🚨 Problème résolu
+## 🚨 Problem solved
 
-**Problème critique identifié :**
+**Critical problem identified:**
 
-- Les workflows `ci.yml`, `deploy.yml` et `accessibility-performance.yml` sont indépendants
-- `deploy.yml` peut déployer en production même si les tests d'accessibilité échouent
-- Aucune dépendance entre les workflows = risque de déploiement défaillant
+- `ci.yml`, `deploy.yml` and `accessibility-performance.yml` workflows are independent
+- `deploy.yml` can deploy to production even if accessibility tests fail
+- No dependencies between workflows = risk of failing deployment
 
-**Solution :**
+**Solution:**
 
-- Workflow unique avec dépendances strictes (`needs`)
-- Approche Preview First (tests avant production)
-- Auto-promotion seulement si TOUS les tests passent
+- Single workflow with strict dependencies (`needs`)
+- Preview First approach (tests before production)
+- Auto-promotion only if ALL tests pass
 
-## 🏗️ Architecture du workflow unique
+## 🏗️ Unified workflow architecture
 
 ```mermaid
 graph TD
@@ -30,14 +30,14 @@ graph TD
     C -->|✅| E[deploy-preview]
     E --> F[accessibility-tests]
     F --> G{Tests OK?}
-    G -->|❌| H[STOP - Preview seulement]
+    G -->|❌| H[STOP - Preview only]
     G -->|✅ + main| I[promote-production]
-    G -->|✅ + autre| J[Preview seulement]
+    G -->|✅ + other| J[Preview only]
 ```
 
-## 📋 Structure détaillée des jobs
+## 📋 Detailed job structure
 
-### **Job 1 : `ci-tests`** (Phase CI classique)
+### **Job 1: `ci-tests`** (Classic CI phase)
 
 ```yaml
 ci-tests:
@@ -48,21 +48,21 @@ ci-tests:
   steps:
     - checkout, setup-node, pnpm, cache
     - prisma-generate
-    - lint (BLOQUANT)
-    - typecheck (BLOQUANT)
-    - test (BLOQUANT)
-    - build (BLOQUANT)
+    - lint (BLOCKING)
+    - typecheck (BLOCKING)
+    - test (BLOCKING)
+    - build (BLOCKING)
     - upload-build-artifacts
 ```
 
-**Conditions de blocage :**
+**Blocking conditions:**
 
 - ❌ ESLint errors
 - ❌ TypeScript errors
 - ❌ Unit test failures
 - ❌ Build failures
 
-### **Job 2 : `deploy-preview`** (Déploiement Preview)
+### **Job 2: `deploy-preview`** (Preview deployment)
 
 ```yaml
 deploy-preview:
@@ -76,17 +76,17 @@ deploy-preview:
     - checkout, setup-node, pnpm
     - download-build-artifacts
     - vercel-config-prod
-    - deploy-vercel-preview (sans --prod)
+    - deploy-vercel-preview (without --prod)
     - capture-preview-url
 ```
 
-**Objectif :**
+**Objective:**
 
-- Deploy sur URL Preview Vercel unique
-- Récupération de l'URL pour les tests suivants
-- Pas de déploiement production à ce stade
+- Deploy to unique Vercel Preview URL
+- Capture URL for subsequent tests
+- No production deployment at this stage
 
-### **Job 3 : `accessibility-tests`** (Tests sur Preview)
+### **Job 3: `accessibility-tests`** (Tests on Preview)
 
 ```yaml
 accessibility-tests:
@@ -105,19 +105,19 @@ accessibility-tests:
     - upload-test-reports
 ```
 
-**Tests exécutés :**
+**Tests executed:**
 
-- ✅ **Cypress E2E** : Navigation complète (BLOQUANT)
-- ✅ **Pa11y Accessibility** : Conformité WCAG 2.1 AA (BLOQUANT - PRIORITÉ ABSOLUE)
-- ⚠️ **Lighthouse Performance** : Métriques Core Web Vitals (WARNING seulement)
+- ✅ **Cypress E2E**: Complete navigation (BLOCKING)
+- ✅ **Pa11y Accessibility**: WCAG 2.1 AA compliance (BLOCKING - ABSOLUTE PRIORITY)
+- ⚠️ **Lighthouse Performance**: Core Web Vitals metrics (WARNING only)
 
-**Conditions de blocage :**
+**Blocking conditions:**
 
-- ❌ Échec tests Cypress
-- ❌ Violations d'accessibilité Pa11y
-- ⚠️ Performance Lighthouse < 70% (warning, ne bloque pas)
+- ❌ Cypress test failure
+- ❌ Pa11y accessibility violations
+- ⚠️ Lighthouse Performance < 70% (warning, doesn't block)
 
-### **Job 4 : `promote-production`** (Auto-promotion)
+### **Job 4: `promote-production`** (Auto-promotion)
 
 ```yaml
 promote-production:
@@ -132,149 +132,149 @@ promote-production:
     - notify-success
 ```
 
-**Conditions d'exécution :**
+**Execution conditions:**
 
-- ✅ `ci-tests` a réussi
-- ✅ `deploy-preview` a réussi
-- ✅ `accessibility-tests` a réussi
-- ✅ Branche `main` uniquement
+- ✅ `ci-tests` succeeded
+- ✅ `deploy-preview` succeeded
+- ✅ `accessibility-tests` succeeded
+- ✅ `main` branch only
 
-## 🔄 Scénarios d'exécution
+## 🔄 Execution scenarios
 
-### **Scénario 1 : Pull Request**
+### **Scenario 1: Pull Request**
 
 ```yaml
-Déclencheur: Pull Request vers main/develop
+Trigger: Pull Request to main/develop
 ├── ci-tests ✅
 ├── deploy-preview ✅
 ├── accessibility-tests ✅
-└── promote-production ❌ (skip - pas main branch)
-Résultat: Preview déployé et testé, production inchangée
+└── promote-production ❌ (skip - not main branch)
+Result: Preview deployed and tested, production unchanged
 ```
 
-### **Scénario 2 : Push sur main (succès complet)**
+### **Scenario 2: Push to main (complete success)**
 
 ```yaml
-Déclencheur: Push sur main
+Trigger: Push to main
 ├── ci-tests ✅
 ├── deploy-preview ✅
 ├── accessibility-tests ✅
 └── promote-production ✅ (auto-promotion)
-Résultat: Preview + Production mis à jour
+Result: Preview + Production updated
 ```
 
-### **Scénario 3 : Échec de tests (sécurité)**
+### **Scenario 3: Test failure (security)**
 
 ```yaml
-Déclencheur: Push sur main
+Trigger: Push to main
 ├── ci-tests ✅
 ├── deploy-preview ✅
-├── accessibility-tests ❌ (Pa11y échoue)
-└── promote-production ❌ (bloqué)
-Résultat: Preview disponible pour debug, production protégée
+├── accessibility-tests ❌ (Pa11y fails)
+└── promote-production ❌ (blocked)
+Result: Preview available for debug, production protected
 ```
 
-## ⚡ Optimisations et performances
+## ⚡ Optimizations and performance
 
 ### **Cache Strategy**
 
 ```yaml
-Cache partagé entre jobs:
-├── ~/.pnpm-store (dépendances)
-├── ~/.cache/Cypress (binaires Cypress)
-├── node_modules/.cache (cache Vite)
-└── Build artifacts (partagés via upload/download)
+Shared cache between jobs:
+├── ~/.pnpm-store (dependencies)
+├── ~/.cache/Cypress (Cypress binaries)
+├── node_modules/.cache (Vite cache)
+└── Build artifacts (shared via upload/download)
 ```
 
-### **Parallélisation**
+### **Parallelization**
 
 ```yaml
-Tests parallèles (matrix strategy):
+Parallel tests (matrix strategy):
 ├── cypress (E2E tests)
 ├── pa11y (Accessibility tests)
 └── lighthouse (Performance tests)
-Temps estimé: 8-12 minutes (au lieu de 20+ séquentiel)
+Estimated time: 8-12 minutes (instead of 20+ sequential)
 ```
 
 ### **Conditional Execution**
 
 ```yaml
-Optimisations selon contexte:
-├── Skip promotion si branche feature
-├── Cache hits pour rebuilds rapides
-├── Matrix fail-fast (arrêt rapide si échec)
-└── Artifacts cleanup automatique
+Context-based optimizations:
+├── Skip promotion if feature branch
+├── Cache hits for fast rebuilds
+├── Matrix fail-fast (quick stop if failure)
+└── Automatic artifacts cleanup
 ```
 
-## 🛡️ Sécurité et monitoring
+## 🛡️ Security and monitoring
 
-### **Points de contrôle**
+### **Control points**
 
 ```yaml
-Sécurité renforcée:
-├── Impossible de bypass les tests (needs: strict)
-├── Production accessible uniquement via promotion
-├── Preview isolé pour tests sans risque
-└── Rollback automatique en cas d'échec
+Enhanced security:
+├── Impossible to bypass tests (needs: strict)
+├── Production accessible only via promotion
+├── Isolated preview for risk-free testing
+└── Automatic rollback on failure
 ```
 
 ### **Monitoring**
 
 ```yaml
-Métriques surveillées:
-├── Temps d'exécution par phase
-├── Taux de succès par type de test
-├── Performance Lighthouse trends
-└── Fréquence des échecs d'accessibilité
+Monitored metrics:
+├── Execution time per phase
+├── Success rate by test type
+├── Lighthouse performance trends
+└── Accessibility failure frequency
 ```
 
-## 📝 Plan de migration
+## 📝 Migration plan
 
-### **Étape 1 : Création et test**
+### **Step 1: Creation and testing**
 
 ```bash
-# Créer le nouveau workflow
+# Create the new workflow
 .github/workflows/complete-ci-cd.yml
 
-# Tester sur branche feature
+# Test on feature branch
 git checkout -b test/new-workflow
 git push origin test/new-workflow
-# Vérifier que seul le preview se déploie
+# Verify only preview deploys
 ```
 
-### **Étape 2 : Migration temporaire**
+### **Step 2: Temporary migration**
 
 ```bash
-# Backup des anciens workflows
+# Backup old workflows
 mv ci.yml ci.yml.backup
 mv deploy.yml deploy.yml.backup
 mv accessibility-performance.yml accessibility-performance.yml.backup
 
-# Test sur main
+# Test on main
 git push origin main
-# Vérifier la séquence complète
+# Verify complete sequence
 ```
 
-### **Étape 3 : Validation et nettoyage**
+### **Step 3: Validation and cleanup**
 
 ```bash
-# Après validation (2-3 commits)
+# After validation (2-3 commits)
 rm *.backup
 git add .
 git commit -m "feat: migrate to secure unified CI/CD workflow"
 ```
 
-## 🎯 Avantages du workflow unique
+## 🎯 Advantages of unified workflow
 
-| Aspect          | Avant (séparés)                      | Après (unique)                    |
-| --------------- | ------------------------------------ | --------------------------------- |
-| **Sécurité**    | ❌ Risque déploiement défaillant     | ✅ Impossible de bypass les tests |
-| **Performance** | ⚠️ Setup dupliqué 3x                 | ✅ Setup unique + cache partagé   |
-| **Maintenance** | ❌ 3 fichiers à maintenir            | ✅ 1 fichier centralisé           |
-| **Visibilité**  | ❌ Statuts dispersés                 | ✅ Pipeline unique clair          |
-| **Debug**       | ❌ Difficile de voir les dépendances | ✅ Séquence linéaire évidente     |
+| Aspect          | Before (separate)             | After (unified)                |
+| --------------- | ----------------------------- | ------------------------------ |
+| **Security**    | ❌ Risk of failing deployment | ✅ Impossible to bypass tests  |
+| **Performance** | ⚠️ Setup duplicated 3x        | ✅ Single setup + shared cache |
+| **Maintenance** | ❌ 3 files to maintain        | ✅ 1 centralized file          |
+| **Visibility**  | ❌ Scattered statuses         | ✅ Clear single pipeline       |
+| **Debug**       | ❌ Hard to see dependencies   | ✅ Obvious linear sequence     |
 
 ---
 
-**Dernière mise à jour** : 14 juin 2025  
-**Statut** : Spécification technique - Prêt pour implémentation
+**Last updated**: June 14, 2025  
+**Status**: Technical specification - Ready for implementation

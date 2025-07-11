@@ -1,37 +1,37 @@
 <!-- @format -->
 
-# Plan d'Optimisation Lighthouse
+# Lighthouse Optimization Plan
 
-## 🔧 **Optimisations potentielles identifiées**
+## 🔧 **Identified potential optimizations**
 
-### 1. **Consolidation des scripts**
+### 1. **Script consolidation**
 
-#### Scripts à conserver séparément (✅ Optimal)
+#### Scripts to keep separate (✅ Optimal)
 
-- `lighthouse-test-suite.js` - Suite complète, utilisée en CI/CD
-- `lighthouse-auth-v2.js` - Authentification spécialisée
-- `lighthouse-analyzer.js` - Analyse post-test
+- `lighthouse-test-suite.js` - Complete suite, used in CI/CD
+- `lighthouse-auth-v2.js` - Specialized authentication
+- `lighthouse-analyzer.js` - Post-test analysis
 
-#### Possibilités de consolidation (🤔 À évaluer)
+#### Consolidation possibilities (🤔 To evaluate)
 
-- `lighthouse-runner.js` + `lighthouse-regression.js` → Script unifié avec paramètres
+- `lighthouse-runner.js` + `lighthouse-regression.js` → Unified script with parameters
 
-### 2. **Amélioration de la structure `/lib/`**
+### 2. **Improvement of `/lib/` structure**
 
 ```
 /lib/
 ├── core/
-│   ├── analyzer.js         # Analyse de base
-│   └── performance.js      # Métriques détaillées
+│   ├── analyzer.js         # Basic analysis
+│   └── performance.js      # Detailed metrics
 ├── auth/
-│   └── auth-v2.js         # Authentification
+│   └── auth-v2.js         # Authentication
 └── testing/
-    └── regression.js       # Tests de régression
+    └── regression.js       # Regression tests
 ```
 
-### 3. **Configuration centralisée**
+### 3. **Centralized configuration**
 
-#### Actuel (✅ Bon)
+#### Current (✅ Good)
 
 ```
 /config/
@@ -39,79 +39,79 @@
 └── lighthouse-ci.config.js
 ```
 
-#### Améliorations suggérées
+#### Suggested improvements
 
 ```
 /config/
-├── base.config.js          # Configuration de base
+├── base.config.js          # Base configuration
 ├── environments/
-│   ├── dev.config.js       # Développement
+│   ├── dev.config.js       # Development
 │   ├── ci.config.js        # CI/CD
 │   └── prod.config.js      # Production
-└── thresholds.json         # Seuils par environnement
+└── thresholds.json         # Thresholds by environment
 ```
 
-## 📊 **Métriques de performance actuelles**
+## 📊 **Current performance metrics**
 
-### Environnement de développement (scores observés)
+### Development environment (observed scores)
 
-- **Performance** : 56-64% (normal pour dev)
-- **Accessibilité** : 95-100% (excellent)
-- **Bonnes pratiques** : 95-100% (excellent)
-- **SEO** : 90-100% (très bon)
+- **Performance**: 56-64% (normal for dev)
+- **Accessibility**: 95-100% (excellent)
+- **Best practices**: 95-100% (excellent)
+- **SEO**: 90-100% (very good)
 
-### Objectifs par environnement
+### Targets by environment
 
-| Environnement | Performance | Accessibilité | Bonnes pratiques | SEO  |
-| ------------- | ----------- | ------------- | ---------------- | ---- |
-| Développement | ≥50%        | ≥95%          | ≥90%             | ≥85% |
-| CI/CD         | ≥60%        | ≥95%          | ≥95%             | ≥90% |
-| Production    | ≥90%        | 100%          | 100%             | 100% |
+| Environment | Performance | Accessibility | Best practices | SEO  |
+| ----------- | ----------- | ------------- | -------------- | ---- |
+| Development | ≥50%        | ≥95%          | ≥90%           | ≥85% |
+| CI/CD       | ≥60%        | ≥95%          | ≥95%           | ≥90% |
+| Production  | ≥90%        | 100%          | 100%           | 100% |
 
-## 🎯 **Actions recommandées**
+## 🎯 **Recommended actions**
 
-### Priorité 1 (Court terme - 1 semaine)
+### Priority 1 (Short term - 1 week)
 
-- [ ] Créer `/config/environments/` pour les configurations spécialisées
-- [ ] Ajouter validation des seuils dans `lighthouse-test-suite.js`
-- [ ] Documenter les scripts dans `SCRIPTS_DOCUMENTATION.md`
+- [ ] Create `/config/environments/` for specialized configurations
+- [ ] Add threshold validation in `lighthouse-test-suite.js`
+- [ ] Document scripts in `SCRIPTS_DOCUMENTATION.md`
 
-### Priorité 2 (Moyen terme - 1 mois)
+### Priority 2 (Medium term - 1 month)
 
-- [ ] Réorganiser `/lib/` selon la structure proposée
-- [ ] Créer script de setup automatique (`setup.sh`)
-- [ ] Ajouter tests unitaires pour les bibliothèques
+- [ ] Reorganize `/lib/` according to proposed structure
+- [ ] Create automatic setup script (`setup.sh`)
+- [ ] Add unit tests for libraries
 
-### Priorité 3 (Long terme - 3 mois)
+### Priority 3 (Long term - 3 months)
 
-- [ ] Intégration avec système de monitoring continu
-- [ ] Dashboard de visualisation des tendances
-- [ ] Alertes automatiques sur les régressions
+- [ ] Integration with continuous monitoring system
+- [ ] Trend visualization dashboard
+- [ ] Automatic alerts on regressions
 
-## 🛠️ **Scripts d'amélioration suggérés**
+## 🛠️ **Suggested improvement scripts**
 
-### `setup.sh` - Configuration automatique
+### `setup.sh` - Automatic configuration
 
 ```bash
 #!/bin/bash
-# Vérification des prérequis
-# Installation des dépendances
-# Configuration initiale
+# Prerequisites verification
+# Dependencies installation
+# Initial configuration
 ```
 
-### `monitor.sh` - Surveillance continue
+### `monitor.sh` - Continuous monitoring
 
 ```bash
 #!/bin/bash
-# Tests planifiés
-# Alertes sur régressions
-# Rapports automatiques
+# Scheduled tests
+# Regression alerts
+# Automatic reports
 ```
 
-### `compare.sh` - Comparaison entre branches
+### `compare.sh` - Branch comparison
 
 ```bash
 #!/bin/bash
-# Comparaison feature vs main
-# Détection des impacts performance
+# Feature vs main comparison
+# Performance impact detection
 ```

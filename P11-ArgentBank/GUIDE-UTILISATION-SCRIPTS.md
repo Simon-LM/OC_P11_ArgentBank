@@ -1,294 +1,294 @@
 <!-- @format -->
 
-# 🚀 Guide d'Utilisation des Scripts de Gestion Copilot
+# 🚀 Copilot Management Scripts Usage Guide
 
-## 📋 Vue d'Ensemble
+## 📋 Overview
 
-Votre projet dispose d'un système complet de gestion automatique des sauvegardes GitHub Copilot et des conflits pnpm/npm. Voici comment l'utiliser efficacement.
+Your project has a complete automatic management system for GitHub Copilot backups and pnpm/npm conflicts. Here's how to use it effectively.
 
-## 🎯 Scripts Disponibles
+## 🎯 Available Scripts
 
-### 1. Scripts de Nettoyage
+### 1. Cleanup Scripts
 
 #### `pnpm run clean:copilot`
 
-**Usage :** Nettoie toutes les sauvegardes automatiques de Copilot
+**Usage:** Cleans all Copilot automatic backups
 
 ```bash
 pnpm run clean:copilot
 ```
 
-**Quand l'utiliser :**
+**When to use:**
 
-- Avant chaque commit important
-- Quand VS Code devient lent
-- Après une session de développement intensive
+- Before each important commit
+- When VS Code becomes slow
+- After an intensive development session
 
 #### `pnpm run sync:pnpm`
 
-**Usage :** Synchronise les dépendances et résout les conflits npm/pnpm
+**Usage:** Synchronizes dependencies and resolves npm/pnpm conflicts
 
 ```bash
 pnpm run sync:pnpm
 ```
 
-**Quand l'utiliser :**
+**When to use:**
 
-- Après l'installation de nouvelles dépendances
-- Quand vous voyez des conflits package-lock.json vs pnpm-lock.yaml
-- En cas d'erreurs de dépendances
+- After installing new dependencies
+- When you see package-lock.json vs pnpm-lock.yaml conflicts
+- In case of dependency errors
 
-### 2. Script Tout-en-Un
+### 2. All-in-One Script
 
 #### `pnpm run commit-ready`
 
-**Usage :** Prépare complètement le projet pour un commit
+**Usage:** Completely prepares the project for a commit
 
 ```bash
 pnpm run commit-ready
 ```
 
-**Ce qu'il fait :**
+**What it does:**
 
-- ✅ Nettoie les sauvegardes Copilot
-- ✅ Synchronise pnpm
-- ✅ Affiche le statut Git
+- ✅ Cleans Copilot backups
+- ✅ Synchronizes pnpm
+- ✅ Displays Git status
 
-**Utilisation recommandée :** Avant chaque commit important
+**Recommended usage:** Before each important commit
 
-### 3. Hook Automatique (Pre-commit)
+### 3. Automatic Hook (Pre-commit)
 
-#### Installation (une seule fois)
+#### Installation (one time only)
 
 ```bash
 bash scripts/install-git-hooks.sh
 ```
 
-**Ce qui se passe automatiquement à chaque commit :**
+**What happens automatically on each commit:**
 
-1. 🧹 Nettoyage des sauvegardes Copilot
-2. 🔄 Synchronisation pnpm
-3. 🔍 Linting du code (warnings seulement, n'empêche pas le commit)
-4. 🎨 Formatage automatique du code
-5. ➕ Ajout des fichiers formatés au commit
+1. 🧹 Copilot backup cleanup
+2. 🔄 pnpm synchronization
+3. 🔍 Code linting (warnings only, doesn't prevent commit)
+4. 🎨 Automatic code formatting
+5. ➕ Adding formatted files to commit
 
-## 🔄 Workflows Recommandés
+## 🔄 Recommended Workflows
 
-### Workflow 1 : Développement Quotidien
+### Workflow 1: Daily Development
 
 ```bash
-# 1. Travail normal dans VS Code
-# 2. Le hook s'occupe automatiquement du nettoyage à chaque commit
+# 1. Normal work in VS Code
+# 2. Hook automatically handles cleanup on each commit
 git add .
-git commit -m "feat: nouvelle fonctionnalité"
+git commit -m "feat: new feature"
 ```
 
-### Workflow 2 : Nettoyage Manuel
+### Workflow 2: Manual Cleanup
 
 ```bash
-# Si vous voulez nettoyer manuellement
+# If you want to clean manually
 pnpm run clean:copilot
 
-# Ou préparation complète
+# Or complete preparation
 pnpm run commit-ready
 git add .
-git commit -m "refactor: amélioration du code"
+git commit -m "refactor: code improvement"
 ```
 
-### Workflow 3 : Résolution de Problèmes
+### Workflow 3: Problem Resolution
 
 ```bash
-# En cas de conflits ou de problèmes
-pnpm run sync:pnpm        # Résout les conflits de dépendances
-pnpm run clean:copilot    # Nettoie les sauvegardes
-pnpm run commit-ready     # Vérification complète
+# In case of conflicts or issues
+pnpm run sync:pnpm        # Resolves dependency conflicts
+pnpm run clean:copilot    # Cleans backups
+pnpm run commit-ready     # Complete verification
 ```
 
-## 🎯 Utilisation SANS Commit
+## 🎯 Usage WITHOUT Commit
 
-### ⚡ Réponses Directes à vos Questions
+### ⚡ Direct Answers to Your Questions
 
-**Q: Le nettoyage se fait automatiquement lors des commits ?**  
-✅ **OUI** - Le hook pre-commit nettoie automatiquement à chaque `git commit`
+**Q: Does cleanup happen automatically during commits?**  
+✅ **YES** - The pre-commit hook automatically cleans on each `git commit`
 
-**Q: Comment synchroniser sans commiter ?**  
-✅ **OUI** - Utilisez exactement : `pnpm run clean:copilot`
+**Q: How to synchronize without committing?**  
+✅ **YES** - Use exactly: `pnpm run clean:copilot`
 
-**Q: Que faire avant de fermer VS Code sans commit ?**  
-✅ **OUI** - Exécutez : `pnpm run clean:copilot`
+**Q: What to do before closing VS Code without commit?**  
+✅ **YES** - Execute: `pnpm run clean:copilot`
 
-### 🔄 Scénarios Pratiques SANS Commit
+### 🔄 Practical Scenarios WITHOUT Commit
 
-#### Scénario 1 : Fin de session de travail
+#### Scenario 1: End of work session
 
 ```bash
-# Avant de fermer VS Code sans commiter
+# Before closing VS Code without committing
 pnpm run clean:copilot
 ```
 
-**Pourquoi ?** Nettoie les sauvegardes temporaires accumulées pendant la session.
+**Why?** Cleans temporary backups accumulated during the session.
 
-#### Scénario 2 : VS Code devient lent
+#### Scenario 2: VS Code becomes slow
 
 ```bash
-# Pendant que vous développez
+# While you're developing
 pnpm run clean:copilot
 ```
 
-**Pourquoi ?** Libère l'espace disque et améliore les performances.
+**Why?** Frees disk space and improves performance.
 
-#### Scénario 3 : Longue session de développement
+#### Scenario 3: Long development session
 
 ```bash
-# Toutes les 2-3 heures, ou quand VS Code ralentit
+# Every 2-3 hours, or when VS Code slows down
 pnpm run clean:copilot
 ```
 
-**Pourquoi ?** Évite l'accumulation excessive de sauvegardes temporaires.
+**Why?** Prevents excessive accumulation of temporary backups.
 
-#### Scénario 4 : Changement de branche sans commit
+#### Scenario 4: Branch change without commit
 
 ```bash
-# Avant de changer de branche avec des modifications non commitées
+# Before changing branch with uncommitted modifications
 pnpm run clean:copilot
-git stash push -m "WIP: travail en cours"
-git checkout autre-branche
+git stash push -m "WIP: work in progress"
+git checkout other-branch
 ```
 
-**Pourquoi ?** Évite les conflits de sauvegardes entre branches.
+**Why?** Avoids backup conflicts between branches.
 
-#### Scénario 5 : Redémarrage de VS Code fréquent
+#### Scenario 5: Frequent VS Code restart
 
 ```bash
-# Si vous redémarrez souvent VS Code
+# If you restart VS Code often
 pnpm run clean:copilot
 ```
 
-**Pourquoi ?** Évite les conflits de restauration de session.
+**Why?** Avoids session restoration conflicts.
 
-## 🎮 Commandes de Développement
+## 🎮 Development Commands
 
-### Scripts de Test
+### Test Scripts
 
 ```bash
-# Tests unitaires
-pnpm test                 # Tests en mode production
-pnpm run test:watch      # Tests en mode watch
+# Unit tests
+pnpm test                 # Tests in production mode
+pnpm run test:watch      # Tests in watch mode
 
-# Tests E2E
-pnpm run test:e2e        # Tests Cypress
-pnpm run cypress:open    # Interface Cypress
+# E2E tests
+pnpm run test:e2e        # Cypress tests
+pnpm run cypress:open    # Cypress interface
 
-# Tests d'accessibilité
+# Accessibility tests
 pnpm run test:a11y       # Pa11y
 ```
 
-### Scripts de Build
+### Build Scripts
 
 ```bash
-pnpm run build           # Build production
-pnpm run build:analyze   # Build avec analyse des bundles
-pnpm run dev             # Serveur de développement
+pnpm run build           # Production build
+pnpm run build:analyze   # Build with bundle analysis
+pnpm run dev             # Development server
 ```
 
-### Scripts de Qualité Code
+### Code Quality Scripts
 
 ```bash
 pnpm run lint            # Linting
-pnpm run format          # Formatage Prettier
-pnpm run typecheck       # Vérification TypeScript
+pnpm run format          # Prettier formatting
+pnpm run typecheck       # TypeScript verification
 ```
 
-## 🚨 Gestion des Problèmes
+## 🚨 Problem Management
 
-### Problème : VS Code s'ouvre automatiquement
+### Problem: VS Code opens automatically
 
-**Solution :** ✅ Déjà résolu ! Le script `sync-vscode.sh` a été modifié pour ne plus ouvrir VS Code automatiquement.
+**Solution:** ✅ Already resolved! The `sync-vscode.sh` script has been modified to no longer open VS Code automatically.
 
-### Problème : Conflits package-lock.json vs pnpm-lock.yaml
+### Problem: package-lock.json vs pnpm-lock.yaml conflicts
 
 ```bash
 pnpm run sync:pnpm
 ```
 
-### Problème : VS Code devient lent
+### Problem: VS Code becomes slow
 
 ```bash
 pnpm run clean:copilot
 ```
 
-### Problème : Le hook ne fonctionne pas
+### Problem: Hook doesn't work
 
 ```bash
-# Réinstaller le hook
+# Reinstall the hook
 bash scripts/install-git-hooks.sh
 
-# Vérifier les permissions
+# Check permissions
 chmod +x ../.git/hooks/pre-commit
 ```
 
-## 📊 Statut du Système
+## 📊 System Status
 
-### Vérifier que tout fonctionne
+### Verify everything works
 
 ```bash
-# 1. Tester le nettoyage
+# 1. Test cleanup
 pnpm run clean:copilot
 
-# 2. Tester la synchronisation
+# 2. Test synchronization
 pnpm run sync:pnpm
 
-# 3. Vérifier le hook
+# 3. Verify hook
 ls -la ../.git/hooks/pre-commit
 
-# 4. Test complet
+# 4. Complete test
 pnpm run commit-ready
 ```
 
-### Configuration VS Code
+### VS Code Configuration
 
-Les paramètres dans `.vscode/settings.json` empêchent la création excessive de sauvegardes :
+Settings in `.vscode/settings.json` prevent excessive backup creation:
 
 - `"files.hotExit": "off"`
 - `"editor.formatOnSave": true`
-- Configuration pnpm optimisée
+- Optimized pnpm configuration
 
-## 💡 Conseils d'Utilisation
+## 💡 Usage Tips
 
-### ✅ Bonnes Pratiques
+### ✅ Best Practices
 
-- Laissez le hook pre-commit gérer automatiquement le nettoyage
-- Utilisez `pnpm run commit-ready` avant les commits importants
-- Exécutez `pnpm run clean:copilot` après de longues sessions de développement
+- Let the pre-commit hook automatically handle cleanup
+- Use `pnpm run commit-ready` before important commits
+- Execute `pnpm run clean:copilot` after long development sessions
 
-### ❌ À Éviter
+### ❌ To Avoid
 
-- Ne pas désactiver le hook pre-commit
-- Ne pas mélanger npm et pnpm (utilisez toujours pnpm)
-- Ne pas ignorer les warnings de linting (même s'ils n'empêchent pas le commit)
+- Don't disable the pre-commit hook
+- Don't mix npm and pnpm (always use pnpm)
+- Don't ignore linting warnings (even if they don't prevent commit)
 
-## 🔧 Personnalisation
+## 🔧 Customization
 
-### Modifier le comportement du hook
+### Modify hook behavior
 
-Éditez `scripts/pre-commit-hook.sh` pour :
+Edit `scripts/pre-commit-hook.sh` to:
 
-- Ajouter d'autres vérifications
-- Modifier les règles de linting
-- Changer les patterns de nettoyage
+- Add other verifications
+- Modify linting rules
+- Change cleanup patterns
 
-### Ajouter de nouveaux scripts
+### Add new scripts
 
-Ajoutez dans `package.json` section `scripts` et créez le fichier correspondant dans `scripts/`.
+Add to `package.json` in the `scripts` section and create the corresponding file in `scripts/`.
 
 ---
 
 ## 📞 Support
 
-Si vous rencontrez des problèmes :
+If you encounter problems:
 
-1. Vérifiez les logs dans le terminal
-2. Consultez `COPILOT_MANAGEMENT_GUIDE.md` pour les détails techniques
-3. Réinstallez le hook avec `bash scripts/install-git-hooks.sh`
+1. Check logs in the terminal
+2. Consult `COPILOT_MANAGEMENT_GUIDE.md` for technical details
+3. Reinstall the hook with `bash scripts/install-git-hooks.sh`
 
-**Le système est maintenant entièrement automatique ! 🎉**
+**The system is now fully automatic! 🎉**

@@ -1,131 +1,131 @@
 <!-- @format -->
 
-# 🎉 **PACKAGE PRÊT !** - Copilot Backup Manager
+# 🎉 **PACKAGE READY!** - Copilot Backup Manager
 
-## ✅ **Test Réussi**
+## ✅ **Test Successful**
 
-Le package a été testé avec succès sur un projet vide et **TOUT FONCTIONNE** !
+The package has been successfully tested on an empty project and **EVERYTHING WORKS**!
 
-### 🧪 Tests Validés
+### 🧪 Validated Tests
 
-- ✅ **Installation automatique** - Scripts créés et configurés
-- ✅ **Configuration VS Code** - Paramètres optimaux appliqués
-- ✅ **Scripts npm** - Ajoutés au package.json automatiquement
-- ✅ **Hook pre-commit** - Installé et fonctionnel
-- ✅ **Nettoyage automatique** - Supprime les fichiers `.backup`, `.tmp`, etc.
-- ✅ **Synchronisation paquets** - Détecte et utilise le bon gestionnaire
+- ✅ **Automatic installation** - Scripts created and configured
+- ✅ **VS Code configuration** - Optimal settings applied
+- ✅ **npm scripts** - Added to package.json automatically
+- ✅ **Pre-commit hook** - Installed and functional
+- ✅ **Automatic cleanup** - Removes `.backup`, `.tmp`, etc. files
+- ✅ **Package synchronization** - Detects and uses the right manager
 
-## 📦 **Contenu du Package**
+## 📦 **Package Contents**
 
 ```
 copilot-backup-manager-package/
-├── copilot-backup-manager-installer.sh  # Script d'installation principal
-├── README.md                            # Documentation complète
-├── INSTALLATION-RAPIDE.md               # Guide rapide
-└── test.sh                             # Script de validation
+├── copilot-backup-manager-installer.sh  # Main installation script
+├── README.md                            # Complete documentation
+├── INSTALLATION-RAPIDE.md               # Quick guide
+└── test.sh                             # Validation script
 ```
 
-**Archive disponible :** `copilot-backup-manager.tar.gz`
+**Available archive:** `copilot-backup-manager.tar.gz`
 
-## 🚀 **Installation pour Nouveau Projet**
+## 🚀 **Installation for New Project**
 
-### Méthode 1 : Archive
+### Method 1: Archive
 
 ```bash
-# Extraire l'archive dans votre projet
+# Extract the archive in your project
 tar -xzf copilot-backup-manager.tar.gz
-cd votre-projet/
+cd your-project/
 bash copilot-backup-manager-installer.sh
 ```
 
-### Méthode 2 : Copie Direct
+### Method 2: Direct Copy
 
 ```bash
-# Copier le dossier
-cp -r copilot-backup-manager-package/ /chemin/vers/nouveau-projet/
-cd /chemin/vers/nouveau-projet/
+# Copy the folder
+cp -r copilot-backup-manager-package/ /path/to/new-project/
+cd /path/to/new-project/
 bash copilot-backup-manager-installer.sh
 ```
 
-### Méthode 3 : URL (si hébergé)
+### Method 3: URL (if hosted)
 
 ```bash
-# Téléchargement direct
-curl -sSL https://votre-repo.com/copilot-backup-manager-installer.sh | bash
+# Direct download
+curl -sSL https://your-repo.com/copilot-backup-manager-installer.sh | bash
 ```
 
-## 🎯 **Après Installation**
+## 🎯 **After Installation**
 
-### Commandes Disponibles
+### Available Commands
 
 ```bash
-npm run clean:copilot      # Nettoyage des sauvegardes
-npm run sync:npm           # Synchronisation gestionnaire paquets
-npm run commit-ready       # Préparation complète
-npm run install:hooks      # Réinstaller hooks Git
+npm run clean:copilot      # Backup cleanup
+npm run sync:npm           # Package manager synchronization
+npm run commit-ready       # Complete preparation
+npm run install:hooks      # Reinstall Git hooks
 ```
 
-### Workflow Automatique
+### Automatic Workflow
 
 ```bash
-# Le hook pre-commit gère tout automatiquement
+# The pre-commit hook handles everything automatically
 git add .
-git commit -m "votre message"  # ← Nettoyage automatique !
+git commit -m "your message"  # ← Automatic cleanup!
 ```
 
-## 💡 **Avantages**
+## 💡 **Benefits**
 
-- 🚀 **Installation < 30 secondes**
-- 🎯 **Compatible tous projets JS/TS**
-- 🔧 **Détection automatique npm/yarn/pnpm**
-- 🛡️ **Sûr** - Ne modifie jamais votre code
-- 🔄 **Hook automatique** - Plus rien à faire manuellement
-- 📋 **Multi-plateforme** - Linux, macOS, Windows
+- 🚀 **Installation < 30 seconds**
+- 🎯 **Compatible with all JS/TS projects**
+- 🔧 **Automatic npm/yarn/pnpm detection**
+- 🛡️ **Safe** - Never modifies your code
+- 🔄 **Automatic hook** - Nothing more to do manually
+- 📋 **Multi-platform** - Linux, macOS, Windows
 
-## 🎮 **Pour Équipe**
+## 🎮 **For Teams**
 
-### Onboarding Nouveau Développeur
+### New Developer Onboarding
 
 ```bash
-# 1. Clone le projet
-git clone votre-repo
-cd votre-projet
+# 1. Clone the project
+git clone your-repo
+cd your-project
 
-# 2. Installer le gestionnaire Copilot (une seule fois)
+# 2. Install the Copilot manager (one time only)
 bash copilot-backup-manager-installer.sh
 
-# 3. C'est tout ! Le hook gère automatiquement le reste
+# 3. That's it! The hook automatically handles the rest
 ```
 
-### Template de Projet
+### Project Template
 
-Intégrez `copilot-backup-manager-installer.sh` dans vos templates de projet pour que tous les nouveaux projets soient automatiquement configurés.
+Integrate `copilot-backup-manager-installer.sh` into your project templates so all new projects are automatically configured.
 
-## 🔧 **Personnalisation**
+## 🔧 **Customization**
 
-Modifiez les scripts dans `scripts/` selon vos besoins :
+Modify scripts in `scripts/` according to your needs:
 
-- `clean-copilot-backups.sh` - Patterns de nettoyage
-- `pre-commit-hook.sh` - Actions du hook
-- `sync-package-manager.sh` - Gestion des dépendances
+- `clean-copilot-backups.sh` - Cleanup patterns
+- `pre-commit-hook.sh` - Hook actions
+- `sync-package-manager.sh` - Dependency management
 
-## 📊 **Statistiques du Test**
+## 📊 **Test Statistics**
 
-- ⚡ **Temps d'installation** : 8 secondes
-- 🧹 **Fichiers nettoyés** : 2/2 (test2.backup, temp.tmp)
-- 🔗 **Hook fonctionnel** : ✅
-- 📦 **Scripts ajoutés** : 4/4
-- ⚙️ **VS Code configuré** : ✅
+- ⚡ **Installation time**: 8 seconds
+- 🧹 **Files cleaned**: 2/2 (test2.backup, temp.tmp)
+- 🔗 **Hook functional**: ✅
+- 📦 **Scripts added**: 4/4
+- ⚙️ **VS Code configured**: ✅
 
 ---
 
-## 🎉 **Prêt pour Déploiement !**
+## 🎉 **Ready for Deployment!**
 
-**Vous pouvez maintenant utiliser ce package dans tous vos projets !**
+**You can now use this package in all your projects!**
 
-1. **Gardez** `copilot-backup-manager.tar.gz` comme archive de référence
-2. **Partagez** avec votre équipe
-3. **Intégrez** dans vos templates de projets
-4. **Documentez** dans vos guides d'onboarding
+1. **Keep** `copilot-backup-manager.tar.gz` as a reference archive
+2. **Share** with your team
+3. **Integrate** into your project templates
+4. **Document** in your onboarding guides
 
-**Fini les problèmes de sauvegardes Copilot ! 🚀**
+**No more Copilot backup problems! 🚀**

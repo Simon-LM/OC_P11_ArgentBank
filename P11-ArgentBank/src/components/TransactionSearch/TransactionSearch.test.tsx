@@ -18,7 +18,7 @@ describe("TransactionSearch - Unit Tests", () => {
     vi.clearAllMocks();
   });
 
-  it("affiche le champ de recherche et le label", () => {
+  it("displays search field and label", () => {
     render(<TransactionSearch {...defaultProps} />);
     expect(screen.getByLabelText(/filter transactions/i)).toBeInTheDocument();
 
@@ -28,7 +28,7 @@ describe("TransactionSearch - Unit Tests", () => {
     expect(tips.tagName).toBe("P");
   });
 
-  it("affiche la valeur initiale dans l'input", () => {
+  it("displays initial value in input", () => {
     render(
       <TransactionSearch
         {...defaultProps}
@@ -43,7 +43,7 @@ describe("TransactionSearch - Unit Tests", () => {
     expect(input).toHaveValue("test initial");
   });
 
-  it("affiche le bouton clear quand il y a du texte", () => {
+  it("displays clear button when there is text", () => {
     render(
       <TransactionSearch
         {...defaultProps}
@@ -55,44 +55,44 @@ describe("TransactionSearch - Unit Tests", () => {
     expect(clearBtn).toBeInTheDocument();
   });
 
-  it("n'affiche pas le bouton clear quand le champ est vide", () => {
+  it("does not display clear button when field is empty", () => {
     render(<TransactionSearch {...defaultProps} />);
 
     const clearBtn = screen.queryByLabelText(/clear search/i);
     expect(clearBtn).not.toBeInTheDocument();
   });
 
-  it("affiche le spinner quand isLoading est true", () => {
+  it("displays spinner when isLoading is true", () => {
     render(<TransactionSearch {...defaultProps} isLoading={true} />);
     expect(screen.getByText("⟳")).toBeInTheDocument();
   });
 
-  it("n'affiche pas le spinner quand isLoading est false", () => {
+  it("does not display spinner when isLoading is false", () => {
     render(<TransactionSearch {...defaultProps} isLoading={false} />);
     expect(screen.queryByText("⟳")).not.toBeInTheDocument();
   });
 
-  it("affiche le bouton global search quand un compte est sélectionné", () => {
+  it("displays global search button when an account is selected", () => {
     render(<TransactionSearch {...defaultProps} />);
 
     const globalBtn = screen.getByRole("button", { name: /global search/i });
     expect(globalBtn).toBeInTheDocument();
   });
 
-  it("n'affiche pas le bouton global search quand aucun compte n'est sélectionné", () => {
+  it("does not display global search button when no account is selected", () => {
     render(<TransactionSearch {...defaultProps} selectedAccount={null} />);
 
     const globalBtn = screen.queryByRole("button", { name: /global search/i });
     expect(globalBtn).not.toBeInTheDocument();
   });
 
-  it("indique le mode global actif avec aria-pressed", () => {
+  it("indicates active global mode with aria-pressed", () => {
     render(
       <TransactionSearch
         {...defaultProps}
         searchParams={{
           ...defaultProps.searchParams,
-          accountId: undefined, // Mode global
+          accountId: undefined, // Global mode
         }}
       />,
     );
@@ -103,7 +103,7 @@ describe("TransactionSearch - Unit Tests", () => {
     expect(globalBtn).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("indique le mode non-global avec aria-pressed", () => {
+  it("indicates non-global mode with aria-pressed", () => {
     render(
       <TransactionSearch
         {...defaultProps}

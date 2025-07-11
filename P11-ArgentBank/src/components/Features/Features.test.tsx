@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import Features from "./Features";
 
 describe("Features Component", () => {
-  test("rend le composant Features avec tous ses éléments", () => {
+  test("renders Features component with all its elements", () => {
     render(<Features />);
 
     const heading = screen.getByRole("heading", {
@@ -22,7 +22,7 @@ describe("Features Component", () => {
     expect(screen.getByText("Security you can trust")).toBeInTheDocument();
   });
 
-  test("affiche les icônes avec les bons labels", () => {
+  test("displays icons with correct labels", () => {
     render(<Features />);
 
     expect(screen.getByText(/Chat icon representing/)).toBeInTheDocument();
@@ -30,14 +30,14 @@ describe("Features Component", () => {
     expect(screen.getByText(/Security shield icon/)).toBeInTheDocument();
   });
 
-  test("rend la structure correcte du composant", () => {
+  test("renders correct component structure", () => {
     const { container } = render(<Features />);
 
     expect(container.querySelector("section.features")).toBeInTheDocument();
     expect(container.getElementsByClassName("feature-item")).toHaveLength(3);
   });
 
-  test("affiche les descriptions des features", () => {
+  test("displays feature descriptions", () => {
     render(<Features />);
 
     expect(

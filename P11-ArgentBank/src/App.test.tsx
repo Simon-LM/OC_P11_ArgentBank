@@ -7,7 +7,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer, { UsersState } from "./store/slices/usersSlice";
 import App from "./App";
 
-// Store mock avec le state correct
+// Mock store with correct state
 const createTestStore = () => {
   const preloadedState = {
     users: {
@@ -44,7 +44,7 @@ describe("App", () => {
     store = createTestStore();
   });
 
-  test("affiche la page Home par défaut", async () => {
+  test("displays Home page by default", async () => {
     render(
       <Provider store={store}>
         <App />
@@ -54,7 +54,7 @@ describe("App", () => {
     expect(await screen.findByText(/No fees./i)).toBeInTheDocument();
   });
 
-  test("affiche le Header sur toutes les pages", () => {
+  test("displays Header on all pages", () => {
     render(
       <Provider store={store}>
         <App />
@@ -64,7 +64,7 @@ describe("App", () => {
     expect(screen.getByRole("banner")).toBeInTheDocument();
   });
 
-  test("affiche le Footer sur toutes les pages", () => {
+  test("displays Footer on all pages", () => {
     render(
       <Provider store={store}>
         <App />

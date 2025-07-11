@@ -1,101 +1,103 @@
 <!-- @format -->
 
 ````bash
-# Développement local
+# Local development
 pnpm run vercel:dev
-# Équivalent à : vercel dev (avec suppression automatique de vercel.json)
+# Equivalent to: vercel dev (with automatic vercel.json removal)
 
 # Production
 pnpm run vercel:prod
-# Équivalent à : vercel --prod (avec création automatique de vercel.json)
+# Equivalent to: vercel --prod (with automatic vercel.json creation)
 
-# Configuration manuelle
-pnpm run vercel:config dev   # Prépare pour dev
-pnpm run vercel:config prod  # Prépare pour prod
-pnpm run vercel:config clean # Nettoie vercel.json
+# Manual configuration
+pnpm run vercel:config dev   # Prepare for dev
+pnpm run vercel:config prod  # Prepare for prod
+pnpm run vercel:config clean # Clean vercel.json
 
-# Workflow Git - 3 niveaux selon vos besoins
-pnpm run vercel:commit   # 🎯 Simple: Restaure uniquement vercel.json
-pnpm run commit-ready    # ⚡ Rapide: Prépare commit + aperçu Git (usage quotidien)
-pnpm run pre-commit      # 🔍 Complet: Lint + formatage + tout (commit important)
+# Git Workflow - 3 levels according to your needs
+pnpm run vercel:commit   # 🎯 Simple: Only restore vercel.json
+pnpm run commit-ready    # ⚡ Fast: Prepare commit + Git preview (daily usage)
+pnpm run pre-commit      # 🔍 Complete: Lint + formatting + everything (important commit)
 
-# Nettoyage
+# Cleanup
 pnpm run vercel:clean
-# Supprime vercel.json si présent
-```on Vercel - Guide d'utilisation
+# Remove vercel.json if present
+```
 
-Ce guide explique comment utiliser l'automatisation pour gérer les configurations Vercel selon l'environnement, avec un workflow Git intégré.
+# 🚀 Vercel Automation - Usage Guide
 
-## 🎯 Problème résolu
+This guide explains how to use automation to manage Vercel configurations according to environment, with integrated Git workflow.
 
-- **En local** : `vercel dev` ne fonctionne pas avec un fichier `vercel.json`
-- **En production** : `vercel --prod` a absolument besoin du fichier `vercel.json`
-- **Git/CI-CD** : Le repository doit contenir `vercel.json` pour les déploiements automatiques Vercel
-- **Solution** : Automatisation complète via des scripts pnpm avec workflow Git intégré
+## 🎯 Problem Solved
 
-## 📋 Scripts disponibles
+- **Locally**: `vercel dev` doesn't work with a `vercel.json` file
+- **In production**: `vercel --prod` absolutely needs the `vercel.json` file
+- **Git/CI-CD**: The repository must contain `vercel.json` for automatic Vercel deployments
+- **Solution**: Complete automation via pnpm scripts with integrated Git workflow
 
-### Scripts pnpm (recommandés)
+## 📋 Available Scripts
+
+### pnpm Scripts (recommended)
 
 ```bash
-# Développement local
+# Local development
 pnpm run vercel:dev
-# Équivalent à : vercel dev (avec suppression automatique de vercel.json)
+# Equivalent to: vercel dev (with automatic vercel.json removal)
 
 # Production
 pnpm run vercel:prod
-# Équivalent à : vercel --prod (avec création automatique de vercel.json)
+# Equivalent to: vercel --prod (with automatic vercel.json creation)
 
-# Configuration manuelle
-pnpm run vercel:config dev   # Prépare pour dev
-pnpm run vercel:config prod  # Prépare pour prod
-pnpm run vercel:config clean # Nettoie vercel.json
+# Manual configuration
+pnpm run vercel:config dev   # Prepare for dev
+pnpm run vercel:config prod  # Prepare for prod
+pnpm run vercel:config clean # Clean vercel.json
 
-# Nettoyage
+# Cleanup
 pnpm run vercel:clean
-# Supprime vercel.json si présent
+# Remove vercel.json if present
 ````
 
-### Script bash direct
+### Direct bash script
 
 ```bash
-# Si vous préférez utiliser le script directement
-./scripts/vercel-config.sh dev    # Prépare pour développement
-./scripts/vercel-config.sh prod   # Prépare pour production
-./scripts/vercel-config.sh clean  # Nettoie les fichiers
+# If you prefer using the script directly
+./scripts/vercel-config.sh dev    # Prepare for development
+./scripts/vercel-config.sh prod   # Prepare for production
+./scripts/vercel-config.sh clean  # Clean files
 ```
 
-## 🔄 Workflow recommandé
+## 🔄 Recommended Workflow
 
-### 1. Développement local
+### 1. Local development
 
 ```bash
 pnpm run vercel:dev
 ```
 
-✅ Le script supprime automatiquement `vercel.json` puis lance `vercel dev`
+✅ Script automatically removes `vercel.json` then runs `vercel dev`
 
-### 2. Déploiement production
+### 2. Production deployment
 
 ```bash
 pnpm run vercel:prod
 ```
 
-✅ Le script copie `vercel.only-prod.json` vers `vercel.json` puis lance `vercel --prod`
+✅ Script copies `vercel.only-prod.json` to `vercel.json` then runs `vercel --prod`
 
-### 3. Workflow Git intégré
+### 3. Integrated Git workflow
 
 ```bash
-# Pendant le développement
-pnpm run vercel:dev          # vercel.json est supprimé
+# During development
+pnpm run vercel:dev          # vercel.json is removed
 
-# Avant de committer - 3 options selon le contexte:
+# Before committing - 3 options depending on context:
 
-# 🎯 Option 1: Restauration simple (rapide)
-pnpm run vercel:commit       # Juste restaure vercel.json
+# 🎯 Option 1: Simple restoration (fast)
+pnpm run vercel:commit       # Just restore vercel.json
 
-# ⚡ Option 2: Préparation quotidienne (recommandée)
-pnpm run commit-ready        # Restaure + nettoie + aperçu Git
+# ⚡ Option 2: Daily preparation (recommended)
+pnpm run commit-ready        # Restore + clean + Git preview
 git add .
 git commit -m "feat: ..."   # vercel.json est inclus dans le commit
 

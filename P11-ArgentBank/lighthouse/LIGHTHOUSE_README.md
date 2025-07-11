@@ -1,86 +1,86 @@
 <!-- @format -->
 
-# Tests de Performance avec Lighthouse
+# Performance Testing with Lighthouse
 
-## 📊 Approche de test
+## 📊 Testing approach
 
-ArgentBank utilise Lighthouse pour mesurer et améliorer les performances, l'accessibilité, les bonnes pratiques et le SEO de l'application. Notre approche de test est conçue pour garantir une expérience utilisateur optimale tout en tenant compte des différences entre les environnements.
+ArgentBank uses Lighthouse to measure and improve the application's performance, accessibility, best practices, and SEO. Our testing approach is designed to ensure optimal user experience while accounting for differences between environments.
 
-## 🗄️ Structure des rapports
+## 🗄️ Report structure
 
-Les rapports de test sont organisés comme suit :
+Test reports are organized as follows:
 
-- **reports/** : Contient les rapports actuels et récents
-- **reports/archive/** : Stocke les anciens rapports pour référence historique
+- **reports/**: Contains current and recent reports
+- **reports/archive/**: Stores old reports for historical reference
 
-## 🔍 Résultats Lighthouse en production
+## 🔍 Production Lighthouse results
 
-Notre application atteint d'excellents scores en production :
+Our application achieves excellent scores in production:
 
-### Version Mobile
+### Mobile Version
 
-- **Performance** : 94/100
-- **Accessibilité** : 100/100
-- **Bonnes pratiques** : 100/100
-- **SEO** : 100/100
+- **Performance**: 94/100
+- **Accessibility**: 100/100
+- **Best Practices**: 100/100
+- **SEO**: 100/100
 
-### Version Desktop
+### Desktop Version
 
-- **Performance** : 100/100
-- **Accessibilité** : 100/100
-- **Bonnes pratiques** : 100/100
-- **SEO** : 100/100
+- **Performance**: 100/100
+- **Accessibility**: 100/100
+- **Best Practices**: 100/100
+- **SEO**: 100/100
 
-## 🛠️ Suite de tests Lighthouse
+## 🛠️ Lighthouse test suite
 
-Nous avons développé une suite complète de tests Lighthouse qui permet de :
+We have developed a complete Lighthouse test suite that allows us to:
 
-- Tester les pages principales (accueil, connexion, profil)
-- Tester les pages avec authentification
-- Comparer les performances avec une référence (baseline)
-- Détecter les régressions de performance
+- Test main pages (home, login, profile)
+- Test pages with authentication
+- Compare performance with a baseline
+- Detect performance regressions
 
-## 📈 Stratégie de test dans différents environnements
+## 📈 Testing strategy in different environments
 
-Les scores Lighthouse peuvent varier considérablement selon l'environnement :
+Lighthouse scores can vary significantly depending on the environment:
 
-| Environnement | Caractéristiques                              | Approche de test                  |
-| ------------- | --------------------------------------------- | --------------------------------- |
-| Développement | Ressources limitées, serveur de développement | Détection des régressions         |
-| CI/CD         | Environnement standardisé, headless           | Seuils adaptés (~50% performance) |
-| Production    | Optimisé, mise en cache, CDN                  | Scores élevés (>90%)              |
+| Environment | Characteristics                       | Testing approach               |
+| ----------- | ------------------------------------- | ------------------------------ |
+| Development | Limited resources, development server | Regression detection           |
+| CI/CD       | Standardized environment, headless    | Adapted thresholds (~50% perf) |
+| Production  | Optimized, caching, CDN               | High scores (>90%)             |
 
-## 🧪 Comment exécuter les tests
+## 🧪 How to run tests
 
 ```bash
-# Se placer dans le dossier lighthouse
+# Navigate to lighthouse folder
 cd lighthouse
 
-# Test standard
+# Standard test
 pnpm test
 
-# Suite complète de tests
+# Complete test suite
 pnpm test:suite
 
-# Test avec authentification
+# Test with authentication
 pnpm test:auth
 
-# Test rapide
+# Quick test
 pnpm test:quick
 
-# Vérifier les régressions
+# Check regressions
 pnpm test:ci
 pnpm test:regression
 
-# Archiver les anciens rapports (> 7 jours)
+# Archive old reports (> 7 days)
 pnpm archive
 ```
 
-## 🔬 Bonnes pratiques implémentées
+## 🔬 Implemented best practices
 
-- Compression de texte
-- Minification du JavaScript
-- Optimisation des images
-- Préchargement des ressources critiques
-- Réduction des changements de mise en page (CLS)
-- Structure HTML sémantique pour l'accessibilité
+- Text compression
+- JavaScript minification
+- Image optimization
+- Critical resource preloading
+- Cumulative Layout Shift (CLS) reduction
+- Semantic HTML structure for accessibility

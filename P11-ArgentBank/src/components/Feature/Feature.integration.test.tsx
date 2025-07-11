@@ -1,11 +1,11 @@
 /** @format */
 
 /**
- * Tests d'intégration pour Feature
+ * Integration Tests for Feature
  *
- * Scope d'intégration :
- * - Gestion d'erreurs des images (fireEvent.error)
- * - Tests d'interactions utilisateur
+ * Integration scope:
+ * - Image error handling (fireEvent.error)
+ * - User interaction tests
  */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";

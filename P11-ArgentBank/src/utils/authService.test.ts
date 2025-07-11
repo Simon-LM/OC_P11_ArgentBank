@@ -50,12 +50,12 @@ describe("loginUser Function", () => {
   });
 
   test("throws an error for invalid credentials", async () => {
-    // Mock de la réponse fetch pour simuler une erreur de connexion
+    // Mock fetch response to simulate a connection error
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       status: 401,
-      headers: new Headers({ "Content-Type": "application/json" }), // Simuler un header JSON
-      json: async () => mockInvalidLoginResponse, // mockInvalidLoginResponse contient { status: 401, message: "invalid signature" }
+      headers: new Headers({ "Content-Type": "application/json" }), // Simulate JSON header
+      json: async () => mockInvalidLoginResponse, // mockInvalidLoginResponse contains { status: 401, message: "invalid signature" }
     });
 
     await expect(
@@ -98,8 +98,8 @@ describe("loginUser Function", () => {
         email: "user@example.com",
         password: "password",
       }),
-      // L'erreur attendue est celle levée par le dernier catch dans loginUser,
-      // qui est l'erreur originale de text() dans ce cas, car authService la relance.
+      // The expected error is the one thrown by the last catch in loginUser,
+      // which is the original error from text() in this case, since authService rethrows it.
     ).rejects.toThrow("Failed to read text");
   });
 });

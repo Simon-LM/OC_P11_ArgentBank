@@ -22,7 +22,7 @@ export const usernameBlacklist = [
   "bitch",
   "bastard",
 
-  // Français
+  // French
   "putain",
   "merde",
   "connard",

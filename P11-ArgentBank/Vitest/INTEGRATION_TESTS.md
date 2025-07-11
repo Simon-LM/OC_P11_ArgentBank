@@ -1,28 +1,28 @@
 <!-- @format -->
 
-# Guide des Tests d'Intégration - Vitest
+# Integration Testing Guide - Vitest
 
-## 🎯 Objectif
+## 🎯 Objective
 
-Les tests d'intégration vérifient l'interaction entre plusieurs composants, services ou modules. Ils testent des workflows complets et la communication entre différentes parties de l'application.
+Integration tests verify the interaction between multiple components, services or modules. They test complete workflows and communication between different parts of the application.
 
-## 📂 Localisation
+## 📂 Location
 
-Les tests d'intégration sont nommés `*.integration.test.tsx` et placés à côté du composant principal :
+Integration tests are named `*.integration.test.tsx` and placed next to the main component:
 
 ```
 src/pages/User/
 ├── User.tsx
-├── User.test.tsx                    # Tests unitaires
-├── User.integration.test.tsx        # ← Tests d'intégration ici
+├── User.test.tsx                    # Unit tests
+├── User.integration.test.tsx        # ← Integration tests here
 └── user.module.scss
 ```
 
-## 🧪 Types de tests d'intégration
+## 🧪 Integration test types
 
-### 1. Tests de flux utilisateur complets
+### 1. Complete user flow tests
 
-#### Exemple : Processus d'authentification
+#### Example: Authentication process
 
 ```typescript
 // SignIn.integration.test.tsx
@@ -47,7 +47,7 @@ describe('SignIn Integration', () => {
   it('completes full authentication flow', async () => {
     renderSignInWithProviders();
 
-    // Étape 1: Remplir le formulaire
+    // Step 1: Fill the form
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'test@example.com' }
     });
@@ -55,10 +55,10 @@ describe('SignIn Integration', () => {
       target: { value: 'password123' }
     });
 
-    // Étape 2: Soumettre
+    // Step 2: Submit
     fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
-    // Étape 3: Vérifier le résultat
+    // Step 3: Verify the result
     await waitFor(() => {
       expect(screen.getByText(/welcome/i)).toBeInTheDocument();
     });
@@ -66,9 +66,9 @@ describe('SignIn Integration', () => {
 });
 ```
 
-### 2. Tests d'interaction Redux + Composants
+### 2. Redux + Component interaction tests
 
-#### Exemple : Gestion d'état avec actions
+#### Example: State management with actions
 
 ```typescript
 // User.integration.test.tsx
@@ -109,10 +109,10 @@ describe('User Page Integration', () => {
       </Provider>
     );
 
-    // Sélectionner un compte
+    // Select an account
     fireEvent.click(screen.getByText(/checking/i));
 
-    // Vérifier que les transactions sont filtrées
+    // Verify that transactions are filtered
     await waitFor(() => {
       expect(screen.getByText(/transactions for checking/i)).toBeInTheDocument();
     });
@@ -120,9 +120,9 @@ describe('User Page Integration', () => {
 });
 ```
 
-### 3. Tests d'API avec mocking
+### 3. API tests with mocking
 
-#### Exemple : Interaction avec services externes
+#### Example: Interaction with external services
 
 ```typescript
 // TransactionSearch.integration.test.tsx
@@ -131,7 +131,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import TransactionSearch from './TransactionSearch';
 import * as transactionService from '../../services/transactionService';
 
-// Mock du service
+// Service mock
 vi.mock('../../services/transactionService');
 const mockedTransactionService = vi.mocked(transactionService);
 
@@ -152,13 +152,13 @@ describe('TransactionSearch Integration', () => {
 
     render(<TransactionSearch />);
 
-    // Effectuer une recherche
+    // Perform a search
     fireEvent.change(screen.getByLabelText(/search/i), {
       target: { value: 'coffee' }
     });
     fireEvent.click(screen.getByRole('button', { name: /search/i }));
 
-    // Vérifier les résultats
+    // Verify results
     await waitFor(() => {
       expect(screen.getByText('Coffee Shop')).toBeInTheDocument();
       expect(mockedTransactionService.searchTransactions).toHaveBeenCalledWith({
@@ -169,9 +169,9 @@ describe('TransactionSearch Integration', () => {
 });
 ```
 
-## 📋 Patterns et conventions
+## 📋 Patterns and conventions
 
-### Structure d'un test d'intégration
+### Integration test structure
 
 ```typescript
 describe('ComponentName Integration', () => {
@@ -186,7 +186,7 @@ describe('ComponentName Integration', () => {
     );
   };
 
-  // Tests de workflow complets
+  // Complete workflow tests
   describe('Complete User Workflows', () => {
     it('completes end-to-end user action', async () => {
       // Arrange - Setup initial state
@@ -195,29 +195,29 @@ describe('ComponentName Integration', () => {
     });
   });
 
-  // Tests d'interaction entre composants
+  // Component interaction tests
   describe('Component Interactions', () => {
     it('parent and child communicate correctly', async () => {
-      // Test communication props/events
+      // Test props/events communication
     });
   });
 
-  // Tests avec données asynchrones
+  // Tests with asynchronous data
   describe('Async Data Flows', () => {
     it('handles loading and error states', async () => {
-      // Test états de chargement et erreurs
+      // Test loading and error states
     });
   });
 });
 ```
 
-### Conventions de nommage
+### Naming conventions
 
-- **Fichiers** : `ComponentName.integration.test.tsx`
-- **Suites** : `describe('ComponentName Integration', () => {})`
-- **Tests** : `it('completes [workflow description]', async () => {})`
+- **Files**: `ComponentName.integration.test.tsx`
+- **Suites**: `describe('ComponentName Integration', () => {})`
+- **Tests**: `it('completes [workflow description]', async () => {})`
 
-### Helpers réutilisables
+### Reusable helpers
 
 #### Provider wrapper
 
@@ -251,37 +251,37 @@ const renderWithContext = (
 
 ## 🔧 Mocking strategies
 
-### Services API
+### API Services
 
 ```typescript
-// Mock complet du module
+// Complete module mock
 vi.mock("../../services/apiService", () => ({
   fetchUserData: vi.fn(),
   updateUserProfile: vi.fn(),
   deleteUser: vi.fn(),
 }));
 
-// Mock partiel
+// Partial mock
 vi.mock("../../services/apiService", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    fetchUserData: vi.fn(), // Mock seulement cette fonction
+    fetchUserData: vi.fn(), // Mock only this function
   };
 });
 ```
 
-### Store Redux
+### Redux Store
 
 ```typescript
-// Store de test avec état initial
+// Test store with initial state
 const createMockStore = (preloadedState = {}) => {
   return configureStore({
     reducer: rootReducer,
     preloadedState,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
-        serializableCheck: false, // Désactiver pour les tests
+        serializableCheck: false, // Disable for tests
       }),
   });
 };
@@ -290,7 +290,7 @@ const createMockStore = (preloadedState = {}) => {
 ### Navigation
 
 ```typescript
-// Mock de react-router-dom
+// Mock react-router-dom
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async (importOriginal) => {
   const actual = await importOriginal();
@@ -302,123 +302,123 @@ vi.mock("react-router-dom", async (importOriginal) => {
 });
 ```
 
-## 📊 Tests d'intégration existants
+## 📊 Existing integration tests
 
-### Pages principales
+### Main pages
 
 - ✅ `SignIn.integration.test.tsx`
 
-  - Flux d'authentification complet
-  - Gestion des erreurs
-  - Redirection après connexion
+  - Complete authentication flow
+  - Error handling
+  - Post-login redirection
 
 - ✅ `User.integration.test.tsx`
 
-  - Sélection de comptes
-  - Filtrage de transactions
+  - Account selection
+  - Transaction filtering
   - Pagination
-  - Gestion des tokens d'authentification
+  - Authentication token management
 
 - ✅ `Home.integration.test.tsx`
-  - Navigation entre sections
-  - Interaction avec les fonctionnalités
+  - Navigation between sections
+  - Feature interactions
 
-### Composants complexes
+### Complex components
 
 - ✅ `TransactionSearch.integration.test.tsx`
 
-  - Recherche avec filtres
-  - Pagination des résultats
-  - États de chargement
+  - Search with filters
+  - Result pagination
+  - Loading states
 
 - ✅ `EditUserForm.integration.test.tsx`
-  - Validation de formulaire
-  - Soumission et gestion d'erreurs
-  - Mise à jour du store
+  - Form validation
+  - Submission and error handling
+  - Store updates
 
-## 🎯 Scénarios de test types
+## 🎯 Typical test scenarios
 
-### Flux d'authentification
+### Authentication flow
 
-1. **Connexion réussie**
+1. **Successful login**
 
-   - Saisie des identifiants
-   - Soumission du formulaire
-   - Redirection vers dashboard
-   - Mise à jour du state global
+   - Credential entry
+   - Form submission
+   - Dashboard redirection
+   - Global state update
 
-2. **Gestion d'erreurs**
-   - Identifiants incorrects
-   - Problèmes réseau
-   - Token expiré
+2. **Error handling**
+   - Incorrect credentials
+   - Network issues
+   - Expired token
 
-### Gestion des données
+### Data management
 
-1. **Chargement initial**
+1. **Initial loading**
 
-   - Fetch des données utilisateur
-   - Affichage des comptes
-   - Chargement des transactions
+   - User data fetch
+   - Account display
+   - Transaction loading
 
-2. **Interactions utilisateur**
-   - Sélection de compte
-   - Recherche de transactions
+2. **User interactions**
+   - Account selection
+   - Transaction search
    - Pagination
-   - Mise à jour des données
+   - Data updates
 
-## 🚀 Commandes utiles
+## 🚀 Useful commands
 
 ```bash
-# Tests d'intégration seulement
+# Integration tests only
 pnpm test -- --grep="integration"
 
-# Test d'intégration spécifique
+# Specific integration test
 pnpm test -- User.integration.test.tsx
 
-# Avec coverage pour l'intégration
+# With coverage for integration
 pnpm test -- --coverage --grep="integration"
 
-# Mode watch pour développement
+# Watch mode for development
 pnpm test:watch -- --grep="integration"
 ```
 
-## 📝 Checklist pour nouveaux tests
+## 📝 Checklist for new tests
 
-### Planification
+### Planning
 
-- [ ] Identifier le workflow à tester
-- [ ] Définir l'état initial nécessaire
-- [ ] Lister les interactions utilisateur
-- [ ] Prévoir les assertions finales
+- [ ] Identify workflow to test
+- [ ] Define required initial state
+- [ ] List user interactions
+- [ ] Plan final assertions
 
-### Implémentation
+### Implementation
 
-- [ ] Setup correct des providers
-- [ ] Mocking approprié des dépendances
-- [ ] Actions utilisateur réalistes
-- [ ] Attentes asynchrones gérées
+- [ ] Correct provider setup
+- [ ] Appropriate dependency mocking
+- [ ] Realistic user actions
+- [ ] Asynchronous expectations handled
 
 ### Validation
 
-- [ ] Test reproduit un cas d'usage réel
-- [ ] Pas de over-testing (redondance avec tests unitaires)
-- [ ] Robuste aux changements d'implémentation
-- [ ] Temps d'exécution raisonnable
+- [ ] Test reproduces real use case
+- [ ] No over-testing (redundancy with unit tests)
+- [ ] Robust to implementation changes
+- [ ] Reasonable execution time
 
-## 🔗 Liens avec autres tests
+## 🔗 Links with other tests
 
-### Complémentarité
+### Complementarity
 
-- **Tests unitaires** : Logique isolée
-- **Tests d'intégration** : Workflows complets ← **Vous êtes ici**
-- **Tests E2E (Cypress)** : Interface utilisateur réelle
+- **Unit tests**: Isolated logic
+- **Integration tests**: Complete workflows ← **You are here**
+- **E2E tests (Cypress)**: Real user interface
 
 ### Coordination
 
-- Éviter la duplication entre types de tests
-- Focus sur les interactions entre modules
-- Tester les cas limites du workflow
+- Avoid duplication between test types
+- Focus on module interactions
+- Test workflow edge cases
 
 ---
 
-**Étape suivante** : [Architecture des tests](./TEST_ARCHITECTURE.md)
+**Next step**: [Test Architecture](./TEST_ARCHITECTURE.md)

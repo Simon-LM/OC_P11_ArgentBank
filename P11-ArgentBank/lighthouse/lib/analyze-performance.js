@@ -204,7 +204,7 @@ if (fs.existsSync(desktopJsonPath)) {
 const summaryPath = path.join(reportsDir, "performance-summary.md");
 let summaryContent = `# 📊 Rapport d'Analyse des Performances - ArgentBank
 
-*Généré automatiquement le ${new Date().toLocaleString("fr-FR")}*
+*Automatically generated on ${new Date().toLocaleString("en-US")}*
 
 ## 🎯 Résumé Exécutif
 

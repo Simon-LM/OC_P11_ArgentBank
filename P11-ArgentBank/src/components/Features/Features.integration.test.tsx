@@ -1,11 +1,11 @@
 /** @format */
 
 /**
- * Tests d'intégration pour Features
+ * Integration tests for Features
  *
- * Scope d'intégration :
- * - Tests d'accessibilité avec axe-core
- * - Validation de la conformité WCAG
+ * Integration scope:
+ * - Accessibility tests with axe-core
+ * - WCAG compliance validation
  */
 
 import { describe, test, expect } from "vitest";
@@ -15,7 +15,7 @@ import Features from "./Features";
 import "../../../Axe/utils/axe-setup.js";
 
 describe("Features - Integration Tests", () => {
-  // Tests d'accessibilité
+  // Accessibility tests
   test("has no accessibility violations", async () => {
     const { container } = render(<Features />);
     const results = await axe(container);

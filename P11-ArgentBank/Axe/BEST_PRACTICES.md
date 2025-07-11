@@ -1,48 +1,48 @@
 <!-- @format -->
 
-# 🎯 Guide des Bonnes Pratiques - Accessibilité ArgentBank
+# 🎯 Best Practices Guide - ArgentBank Accessibility
 
-## 🏆 Standards de Qualité
+## 🏆 Quality Standards
 
-### Objectifs de Conformité WCAG 2.1 AA
+### WCAG 2.1 AA Compliance Objectives
 
-#### ✅ Niveau A (Minimum)
+#### ✅ Level A (Minimum)
 
-- **Texte alternatif** : Toutes les images ont un attribut `alt` approprié
-- **Structure HTML** : Utilisation correcte des balises sémantiques
-- **Navigation clavier** : Tous les éléments interactifs accessibles au clavier
-- **Labels de formulaires** : Tous les champs ont des labels explicites
+- **Alternative text**: All images have appropriate `alt` attributes
+- **HTML structure**: Correct use of semantic tags
+- **Keyboard navigation**: All interactive elements accessible via keyboard
+- **Form labels**: All fields have explicit labels
 
-#### ✅ Niveau AA (Standard ArgentBank)
+#### ✅ Level AA (ArgentBank Standard)
 
-- **Contraste des couleurs** : Ratio minimum 4.5:1 pour le texte normal
-- **Redimensionnement** : Interface utilisable jusqu'à 200% de zoom
-- **Navigation cohérente** : Ordre logique de tabulation
-- **Identification des erreurs** : Messages d'erreur clairs et accessibles
+- **Color contrast**: Minimum 4.5:1 ratio for normal text
+- **Resizing**: Interface usable up to 200% zoom
+- **Consistent navigation**: Logical tab order
+- **Error identification**: Clear and accessible error messages
 
-## 🎨 Guidelines de Design Accessible
+## 🎨 Accessible Design Guidelines
 
-### Couleurs et Contrastes
+### Colors and Contrasts
 
 ```scss
-// ✅ Contrastes recommandés
-$color-primary: #00bc77; // Contraste 7.8:1 sur blanc
-$color-text: #2c3e50; // Contraste 8.2:1 sur blanc
-$color-error: #e74c3c; // Contraste 5.4:1 sur blanc
+// ✅ Recommended contrasts
+$color-primary: #00bc77; // 7.8:1 contrast on white
+$color-text: #2c3e50; // 8.2:1 contrast on white
+$color-error: #e74c3c; // 5.4:1 contrast on white
 
-// ❌ Éviter
-$color-light-gray: #cccccc; // Contraste insuffisant 2.1:1
+// ❌ Avoid
+$color-light-gray: #cccccc; // Insufficient contrast 2.1:1
 ```
 
-### Typographie
+### Typography
 
 ```scss
-// ✅ Tailles minimales
-$font-size-base: 16px; // Minimum pour le corps de texte
-$font-size-small: 14px; // Minimum pour les annotations
-$line-height: 1.5; // Interlignage recommandé
+// ✅ Minimum sizes
+$font-size-base: 16px; // Minimum for body text
+$font-size-small: 14px; // Minimum for annotations
+$line-height: 1.5; // Recommended line spacing
 
-// ✅ Hiérarchie des titres
+// ✅ Heading hierarchy
 h1 {
   font-size: 2.25rem;
 } // 36px
@@ -54,9 +54,9 @@ h3 {
 } // 24px
 ```
 
-## 🔧 Patterns de Développement
+## 🔧 Development Patterns
 
-### Formulaires Accessibles
+### Accessible Forms
 
 #### ✅ Structure Recommandée
 

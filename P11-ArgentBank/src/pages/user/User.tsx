@@ -108,7 +108,7 @@ const User: React.FC = () => {
   }, [dispatch, isAuthenticated, accountsStatus, transactionsStatus]);
 
   useEffect(() => {
-    // Uniquement à l'initialisation
+    // Only on initialization
     if (searchStatus === "idle") {
       if (
         isAuthenticated ||
@@ -140,21 +140,21 @@ const User: React.FC = () => {
         page: 1,
       }));
 
-      // Mettre à jour l'URL du navigateur
+      // Update browser URL
       const newUrl = new URL(window.location.href);
       if (selectedAccountId) {
         newUrl.searchParams.set("accountId", selectedAccountId);
       } else {
-        // Si selectedAccountId est null/undefined (par exemple, "All transactions"), le supprimer de l'URL
+        // If selectedAccountId is null/undefined (e.g., "All transactions"), remove it from URL
         newUrl.searchParams.delete("accountId");
       }
-      // Utiliser replaceState pour éviter d'ajouter à l'historique du navigateur pour de simples changements de filtre
+      // Use replaceState to avoid adding to browser history for simple filter changes
       window.history.replaceState({ path: newUrl.href }, "", newUrl.href);
     }
   }, [selectedAccountId, searchParams.accountId]);
 
   useEffect(() => {
-    // Mettre à jour l'URL du navigateur lorsque le terme de recherche change
+    // Update browser URL when search term changes
     const newUrl = new URL(window.location.href);
     if (searchParams.searchTerm) {
       newUrl.searchParams.set("searchTerm", searchParams.searchTerm);
@@ -165,7 +165,7 @@ const User: React.FC = () => {
   }, [searchParams.searchTerm]);
 
   useEffect(() => {
-    // Mettre à jour l'URL du navigateur lorsque la page change
+    // Update browser URL when page changes
     const newUrl = new URL(window.location.href);
     if (searchParams.page && searchParams.page > 1) {
       newUrl.searchParams.set("page", searchParams.page.toString());
@@ -292,13 +292,13 @@ const User: React.FC = () => {
   return (
     <>
       <div className={user["user-page"]}>
-        {/* --- Section Accueil et Édition --- */}
+        {/* --- Home and Edit Section --- */}
 
         {isAuthenticated && currentUser ? (
           <>
             <h2 className={user["user__title"]}>
               <span>Welcome back</span>
-              {currentUser && ( // Afficher le nom seulement si currentUser existe
+              {currentUser && ( // Show name only if currentUser exists
                 <span className={user["user__title-name"]}>
                   {`${currentUser.firstName} ${currentUser.lastName}!`}
                 </span>
@@ -573,7 +573,7 @@ const User: React.FC = () => {
                       {actionFeedback}
                     </div>
 
-                    {/* --- Contrôles de Pagination --- */}
+                    {/* --- Pagination Controls --- */}
                     {pagination.pages > 1 && (
                       <nav
                         className={user["pagination__nav"]}
@@ -591,9 +591,9 @@ const User: React.FC = () => {
                         </div>
 
                         <div className={user["pagination__numbers"]}>
-                          {/* Afficher seulement quelques pages au milieu si trop nombreuses */}
+                          {/* Show only a few pages in the middle if too many */}
                           {pageNumbers.length <= 7 ? (
-                            // Afficher toutes les pages si 7 ou moins
+                            // Show all pages if 7 or fewer
                             pageNumbers.map((number) => (
                               <button
                                 key={number}
@@ -616,9 +616,9 @@ const User: React.FC = () => {
                               </button>
                             ))
                           ) : (
-                            // Pagination intelligente pour de nombreuses pages
+                            // Smart pagination for many pages
                             <>
-                              {/* Première page toujours visible */}
+                              {/* First page always visible */}
                               <button
                                 onClick={() => handlePageChange(1)}
                                 className={classNames(
@@ -636,14 +636,14 @@ const User: React.FC = () => {
                                 1
                               </button>
 
-                              {/* Ellipse si nécessaire */}
+                              {/* Ellipsis if needed */}
                               {pagination.page > 3 && (
                                 <span className={user["pagination__ellipsis"]}>
                                   ...
                                 </span>
                               )}
 
-                              {/* Pages autour de la page courante */}
+                              {/* Pages around current page */}
                               {pageNumbers
                                 .filter(
                                   (num) =>
@@ -674,7 +674,7 @@ const User: React.FC = () => {
                                   </button>
                                 ))}
 
-                              {/* Ellipse si nécessaire */}
+                              {/* Ellipsis if needed */}
                               {pagination.page < pagination.pages - 2 && (
                                 <span
                                   className={user["pagination__ellipsis"]}
@@ -684,7 +684,7 @@ const User: React.FC = () => {
                                 </span>
                               )}
 
-                              {/* Dernière page toujours visible */}
+                              {/* Last page always visible */}
                               <button
                                 onClick={() =>
                                   handlePageChange(pagination.pages)

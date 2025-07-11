@@ -10,7 +10,7 @@ describe("useSessionTimeout", () => {
   });
 
   test("accepts timeout parameter", () => {
-    // Test structurel minimal sans rendu
-    expect(useSessionTimeout.length).toBe(1); // Attend 1 paramètre
+    // Minimal structural test without rendering
+    expect(useSessionTimeout.length).toBe(1); // Expects 1 parameter
   });
 });

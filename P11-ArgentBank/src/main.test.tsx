@@ -32,7 +32,7 @@ describe("Root rendering", () => {
       </StrictMode>,
     );
 
-    // Vérifiez si certains éléments spécifiques de l'App sont rendus
+    // Check if specific App elements are rendered
     expect(getByText(/No fees./i)).toBeInTheDocument();
   });
 });

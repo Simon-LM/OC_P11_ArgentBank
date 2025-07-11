@@ -1,36 +1,36 @@
 <!-- @format -->
 
-# Configuration Markdownlint
+# Markdownlint Configuration
 
-Ce fichier configure les règles markdownlint pour le projet ArgentBank.
+This file configures markdownlint rules for the ArgentBank project.
 
-## Règles désactivées
+## Disabled Rules
 
-Les règles suivantes ont été désactivées car elles ne posent pas de problème sur GitHub et peuvent parfois être trop restrictives :
+The following rules have been disabled because they do not pose problems on GitHub and can sometimes be too restrictive:
 
-- **MD010** : Tabulations dans le code (acceptable avec les outils modernes)
-- **MD013** : Longueur de ligne (acceptable sur GitHub avec défilement horizontal)
-- **MD022** : Lignes vides autour des titres (pas critique pour GitHub, peut être trop restrictif)
-- **MD024** : Titres dupliqués (acceptable dans différentes sections)
-- **MD026** : Ponctuation dans les titres (les ":" sont courants et acceptables)
-- **MD031** : Lignes vides autour des blocs de code (pas critique pour la lisibilité)
-- **MD032** : Lignes vides autour des listes (pas critique pour GitHub)
-- **MD034** : URLs nues dans les tableaux (acceptable sur GitHub, liens cliquables)
-- **MD036** : Emphase utilisée comme titre (acceptable dans certains contextes)
-- **MD037** : Espaces dans les marqueurs d'emphase (bien géré par GitHub)
-- **MD040** : Langue des blocs de code (pas toujours nécessaire)
-- **MD041** : Première ligne doit être un titre H1 (pas toujours requis)
+- **MD010**: Tabs in code (acceptable with modern tools)
+- **MD013**: Line length (acceptable on GitHub with horizontal scrolling)
+- **MD022**: Blank lines around headings (not critical for GitHub, can be too restrictive)
+- **MD024**: Duplicate headings (acceptable in different sections)
+- **MD026**: Punctuation in headings (":" are common and acceptable)
+- **MD031**: Blank lines around code blocks (not critical for readability)
+- **MD032**: Blank lines around lists (not critical for GitHub)
+- **MD034**: Bare URLs in tables (acceptable on GitHub, clickable links)
+- **MD036**: Emphasis used as heading (acceptable in certain contexts)
+- **MD037**: Spaces in emphasis markers (well handled by GitHub)
+- **MD040**: Language of code blocks (not always necessary)
+- **MD041**: First line must be H1 heading (not always required)
 
-## Règles conservées
+## Preserved Rules
 
-Toutes les autres règles markdownlint restent actives pour maintenir la qualité et la cohérence de la documentation.
+All other markdownlint rules remain active to maintain documentation quality and consistency.
 
-## Utilisation
+## Usage
 
 ```bash
-# Vérifier tous les fichiers markdown
+# Check all markdown files
 npx markdownlint "**/*.md" --ignore node_modules
 
-# Vérifier un fichier spécifique
+# Check a specific file
 npx markdownlint README.md
 ```

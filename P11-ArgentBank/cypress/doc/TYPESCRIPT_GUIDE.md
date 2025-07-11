@@ -1,12 +1,12 @@
 <!-- @format -->
 
-# Guide TypeScript pour Cypress - ArgentBank
+# TypeScript Guide for Cypress - ArgentBank
 
-Guide concis des types TypeScript pour les tests Cypress du projet ArgentBank.
+Concise guide for TypeScript types in Cypress tests for the ArgentBank project.
 
-## 🎯 Types centralisés
+## 🎯 Centralized types
 
-**Fichier** : `cypress/support/types.ts`
+**File**: `cypress/support/types.ts`
 
 ```typescript
 export interface User {
@@ -37,18 +37,18 @@ export interface Transaction {
 }
 ```
 
-## 🔧 Utilisation pratique
+## 🔧 Practical usage
 
-### Import dans les tests
+### Import in tests
 
 ```typescript
 import type { User, Account, Transaction } from "../../support/types";
 ```
 
-### Typage des fixtures
+### Typing fixtures
 
 ```typescript
-describe("Tests typés", () => {
+describe("Typed tests", () => {
   beforeEach(() => {
     cy.fixture<User[]>("users.json").as("usersData");
   });
@@ -64,7 +64,7 @@ describe("Tests typés", () => {
 });
 ```
 
-### Commandes personnalisées
+### Custom commands
 
 ```typescript
 // cypress/support/commands.ts
@@ -100,21 +100,21 @@ Cypress.Commands.add("fillUserForm", (userData: Partial<User>) => {
 }
 ```
 
-## ✅ Avantages
+## ✅ Advantages
 
-- **Type Safety** : Validation à la compilation
-- **IntelliSense** : Autocomplétion intelligente
-- **Cohérence** : Source unique de vérité
-- **Maintenabilité** : Refactoring sécurisé
+- **Type Safety**: Compilation-time validation
+- **IntelliSense**: Smart autocompletion
+- **Consistency**: Single source of truth
+- **Maintainability**: Safe refactoring
 
-## 🚀 Bonnes pratiques
+## 🚀 Best practices
 
-1. **Types d'union stricts** : `"valid" | "invalid"` plutôt que `string`
-2. **Propriétés optionnelles** : Utiliser `?` pour les champs non obligatoires
-3. **Toujours typer les fixtures** : `cy.fixture<User[]>("users.json")`
-4. **Import centralisé** : Éviter la duplication des interfaces
+1. **Strict union types**: `"valid" | "invalid"` rather than `string`
+2. **Optional properties**: Use `?` for non-mandatory fields
+3. **Always type fixtures**: `cy.fixture<User[]>("users.json")`
+4. **Centralized imports**: Avoid interface duplication
 
 ---
 
-**Statut** : ✅ Implémenté  
-**Dernière mise à jour** : 30 mai 2025
+**Status**: ✅ Implemented  
+**Last update**: May 30, 2025

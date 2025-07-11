@@ -1,12 +1,12 @@
 /** @format */
 
-// Import de l'interface User commune
+// Import of common User interface
 import type { User } from "../../support/types";
 
 const transactionTableSelector = 'table[class*="transaction-table"]';
-const accountSelectedClassName = "account--selected"; // Basé sur user.module.scss
+const accountSelectedClassName = "account--selected"; // Based on user.module.scss
 
-// Sélecteurs pour les éléments de transaction
+// Selectors for transaction elements
 const selectors = {
   transactionRow: `${transactionTableSelector} tbody tr[class*="transaction-row_"]`,
   transactionCell: 'td[class*="transaction-row__cell"]',
@@ -18,34 +18,34 @@ const selectors = {
   accountButton: 'button[class*="account"]',
 } as const;
 
-// Fonction utilitaire pour convertir une date DD/MM/YYYY en objet Date
+// Utility function to convert DD/MM/YYYY date to Date object
 const parseTransactionDate = (dateStr: string): Date => {
   const parts = dateStr.split("/"); // Format DD/MM/YYYY
   return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
 };
 
-// Fonction utilitaire pour vérifier le tri par date décroissante
+// Utility function to verify descending date sorting
 const verifyDateSortingDescending = (dates: string[]): void => {
   expect(dates.length).to.be.gt(0);
   const dateObjects = dates.map(parseTransactionDate);
   for (let i = 0; i < dateObjects.length - 1; i++) {
     expect(dateObjects[i].getTime()).to.be.gte(
       dateObjects[i + 1].getTime(),
-      `Date à l'index ${i} (${dates[i]}) devrait être >= à la date à l'index ${i + 1} (${dates[i + 1]})`,
+      `Date at index ${i} (${dates[i]}) should be >= to date at index ${i + 1} (${dates[i + 1]})`,
     );
   }
 };
 
-describe("Affichage des Transactions", () => {
+describe("Transaction Display", () => {
   beforeEach(() => {
-    // Intercepts doivent être définis avant cy.session pour être utilisables dans la session
+    // Intercepts must be defined before cy.session to be usable within the session
     cy.intercept("POST", "/api/user/login").as("loginRequest");
     cy.intercept("GET", "/api/user/profile").as("profileRequest");
     cy.intercept("GET", "/api/accounts").as("accountsRequest");
     cy.intercept("GET", "/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
-    // Attendre un peu avant chaque login pour éviter le rate limiting Vercel gratuit
+    // Wait a bit before each login to avoid Vercel free rate limiting
     cy.wait(2000);
     cy.session("validUserSession", () => {
       cy.fixture<User[]>("users.json").as("usersData");

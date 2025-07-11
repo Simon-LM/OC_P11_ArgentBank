@@ -16,7 +16,7 @@
   // height: 19rem;
   height: clamp(15rem, 40vh, 25rem) !important;
   overflow: hidden !important;
-  // aspect-ratio: 1440 / 400; // Temporairement désactivé pour corriger le débordement
+  // aspect-ratio: 1440 / 400; // Temporarily disabled to fix overflow
   width: 100% !important;
   max-width: 100% !important;
 

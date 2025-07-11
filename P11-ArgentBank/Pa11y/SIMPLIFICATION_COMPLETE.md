@@ -1,118 +1,118 @@
 <!-- @format -->
 
-# 🎉 Simplification Pa11y - Terminée avec Succès
+# 🎉 Pa11y Simplification - Successfully Completed
 
-## 📋 Résumé de la Simplification
+## 📋 Simplification Summary
 
-La configuration Pa11y a été **simplifiée avec succès** en supprimant les fichiers obsolètes et en consolidant vers une approche unifiée basée sur les scripts personnalisés.
+The Pa11y configuration has been **successfully simplified** by removing obsolete files and consolidating to a unified approach based on custom scripts.
 
-## ✅ Actions Réalisées
+## ✅ Actions Completed
 
-### 1. **Suppression des Fichiers Obsolètes**
+### 1. **Removal of Obsolete Files**
 
-- ❌ `pa11y-ci.json` - Configuration JSON obsolète
-- ❌ `pa11y-ci.config.cjs` - Configuration CommonJS obsolète
-- ❌ Dépendance `pa11y-ci` dans `package.json`
+- ❌ `pa11y-ci.json` - Obsolete JSON configuration
+- ❌ `pa11y-ci.config.cjs` - Obsolete CommonJS configuration
+- ❌ `pa11y-ci` dependency in `package.json`
 
-### 2. **Mise à Jour de la Documentation**
+### 2. **Documentation Update**
 
-- ✅ `README.md` - Suppression de toutes les références à Pa11y-CI
-- ✅ Simplification vers une seule méthode de test
-- ✅ Mise à jour des exemples et commandes
-- ✅ Correction des sections de dépannage
+- ✅ `README.md` - Removed all references to Pa11y-CI
+- ✅ Simplified to a single test method
+- ✅ Updated examples and commands
+- ✅ Corrected troubleshooting sections
 
-### 3. **Mise à Jour des Scripts**
+### 3. **Scripts Update**
 
-- ✅ `validate-setup.js` - Suppression des vérifications obsolètes
-- ✅ `update-port.js` - Adaptation pour la nouvelle structure
-- ✅ Validation de tous les scripts utilitaires
+- ✅ `validate-setup.js` - Removed obsolete checks
+- ✅ `update-port.js` - Adapted for new structure
+- ✅ Validated all utility scripts
 
-## 🔧 Structure Finale Simplifiée
+## 🔧 Final Simplified Structure
 
 ```text
 Pa11y/
-├── pa11y-auth.js              # Script d'authentification
-├── run-pa11y-tests.js         # Script de test principal (UNIQUE)
-├── update-port.js             # Script de mise à jour des ports
-├── validate-setup.js          # Script de validation
-├── README.md                  # Documentation complète
-└── screenshots/               # Captures d'écran organisées
-    ├── success/              # Captures de réussite
-    ├── debug/                # Captures de débogage
-    └── errors/               # Captures d'erreur
+├── pa11y-auth.js              # Authentication script
+├── run-pa11y-tests.js         # Main test script (UNIQUE)
+├── update-port.js             # Port update script
+├── validate-setup.js          # Validation script
+├── README.md                  # Complete documentation
+└── screenshots/               # Organized screenshots
+    ├── success/              # Success captures
+    ├── debug/                # Debug captures
+    └── errors/               # Error captures
 ```
 
-## 🚀 Méthode de Test Unique
+## 🚀 Single Test Method
 
-### Commandes Disponibles
+### Available Commands
 
 ```bash
-# Méthode principale recommandée
+# Main recommended method
 pnpm run test:a11y
 
-# Ou directement
+# Or directly
 node Pa11y/run-pa11y-tests.js
 
-# Scripts utilitaires
-pnpm run test:a11y-update-port    # Mise à jour automatique du port
-pnpm run test:a11y-validate       # Validation de la configuration
+# Utility scripts
+pnpm run test:a11y-update-port    # Automatic port update
+pnpm run test:a11y-validate       # Configuration validation
 ```
 
-## ✅ Tests de Validation
+## ✅ Validation Tests
 
-### Fonctionnalités Vérifiées
+### Verified Features
 
-- ✅ **Script de validation** : Toutes les vérifications passent
-- ✅ **Script de mise à jour** : Détection et mise à jour automatique des ports
-- ✅ **Tests d'accessibilité** :
-  - Page d'accueil : ✅ Aucun problème
-  - Page de connexion : ✅ Aucun problème
-  - Page utilisateur : ⚠️ 3 problèmes détectés (contraste + tableau)
-- ✅ **Authentification automatique** : Fonctionne parfaitement
-- ✅ **Captures d'écran** : Génération automatique confirmée
-- ✅ **Gestion d'erreurs** : Code de sortie approprié
+- ✅ **Validation script**: All checks pass
+- ✅ **Update script**: Automatic port detection and update
+- ✅ **Accessibility tests**:
+  - Home page: ✅ No issues
+  - Login page: ✅ No issues
+  - User page: ⚠️ 3 issues detected (contrast + table)
+- ✅ **Automatic authentication**: Works perfectly
+- ✅ **Screenshots**: Automatic generation confirmed
+- ✅ **Error handling**: Appropriate exit code
 
-### Problèmes d'Accessibilité Détectés
+### Accessibility Issues Detected
 
-La page utilisateur présente 3 problèmes WCAG2AA :
+The user page has 3 WCAG2AA issues:
 
-1. **Contraste insuffisant** (×2) - Ratio 3.81:1 au lieu de 4.5:1 minimum
-2. **Tableau de mise en page** - Contient un élément caption inapproprié
+1. **Insufficient contrast** (×2) - Ratio 3.81:1 instead of minimum 4.5:1
+2. **Layout table** - Contains inappropriate caption element
 
-## 📊 Avantages de la Simplification
+## 📊 Simplification Benefits
 
-### ✅ Avantages
+### ✅ Benefits
 
-- **Configuration unifiée** : Plus de confusion entre méthodes
-- **Maintenance simplifiée** : Un seul script à maintenir
-- **Documentation claire** : Approche unique documentée
-- **Flexibilité maintenue** : Toutes les fonctionnalités conservées
-- **Performance identique** : Aucune perte de fonctionnalité
+- **Unified configuration**: No more confusion between methods
+- **Simplified maintenance**: Only one script to maintain
+- **Clear documentation**: Single approach documented
+- **Maintained flexibility**: All features preserved
+- **Identical performance**: No functionality loss
 
-### 🎯 Résultats
+### 🎯 Results
 
-- **-2 fichiers de configuration** obsolètes supprimés
-- **-1 dépendance** pnpm supprimée (`pa11y-ci`)
-- **100% fonctionnel** : Tous les tests passent
-- **Documentation à jour** : Plus de références obsolètes
+- **-2 obsolete configuration files** removed
+- **-1 pnpm dependency** removed (`pa11y-ci`)
+- **100% functional**: All tests pass
+- **Up-to-date documentation**: No more obsolete references
 
-## 🚦 État Final
+## 🚦 Final Status
 
-| Composant        | État           | Notes                            |
-| ---------------- | -------------- | -------------------------------- |
-| Script principal | ✅ Fonctionnel | Tests complets réussis           |
-| Authentification | ✅ Fonctionnel | Connexion automatique OK         |
-| Validation       | ✅ Fonctionnel | Toutes vérifications passent     |
-| Documentation    | ✅ À jour      | Références obsolètes supprimées  |
-| Captures d'écran | ✅ Fonctionnel | Génération automatique confirmée |
-| Scripts pnpm     | ✅ Fonctionnel | Tous les scripts opérationnels   |
+| Component      | Status        | Notes                          |
+| -------------- | ------------- | ------------------------------ |
+| Main script    | ✅ Functional | Complete tests successful      |
+| Authentication | ✅ Functional | Automatic login OK             |
+| Validation     | ✅ Functional | All checks pass                |
+| Documentation  | ✅ Updated    | Obsolete references removed    |
+| Screenshots    | ✅ Functional | Automatic generation confirmed |
+| pnpm scripts   | ✅ Functional | All scripts operational        |
 
-## 💡 Prochaines Étapes Recommandées
+## 💡 Recommended Next Steps
 
-1. **Corriger les problèmes d'accessibilité** détectés sur la page utilisateur
-2. **Intégration CI/CD** : Ajouter les tests Pa11y au pipeline
-3. **Surveillance continue** : Automatiser les tests d'accessibilité
+1. **Fix accessibility issues** detected on user page
+2. **CI/CD integration**: Add Pa11y tests to pipeline
+3. **Continuous monitoring**: Automate accessibility tests
 
 ---
 
-**✨ La simplification Pa11y est maintenant terminée et pleinement fonctionnelle !**
+**✨ Pa11y simplification is now complete and fully functional!**

@@ -7,10 +7,10 @@
 import { expect } from "vitest";
 import { toHaveNoViolations } from "jest-axe";
 
-// Extension des matchers Vitest avec jest-axe
+// Vitest matchers extension with jest-axe
 expect.extend(toHaveNoViolations);
 
-// Mock pour window.matchMedia requis pour jsdom
+// Mock for window.matchMedia required for jsdom
 if (typeof window !== "undefined") {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
@@ -26,7 +26,7 @@ if (typeof window !== "undefined") {
     }),
   });
 
-  // Mock pour IntersectionObserver requis pour certains composants
+  // Mock for IntersectionObserver required for certain components
   if (!globalThis.IntersectionObserver) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).IntersectionObserver = class MockIntersectionObserver {

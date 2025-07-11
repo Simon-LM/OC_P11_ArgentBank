@@ -1,102 +1,102 @@
 <!-- @format -->
 
-# Configuration Pa11y - Résumé complet
+# Pa11y Configuration - Complete Summary
 
-## ✅ Configuration terminée avec succès
+## ✅ Configuration completed successfully
 
-La configuration Pa11y pour ArgentBank est maintenant **complète et fonctionnelle** avec l'intégration Vercel dev pour les fonctions serverless.
+The Pa11y configuration for ArgentBank is now **complete and functional** with Vercel dev integration for serverless functions.
 
-## 📋 Ce qui a été mis en place
+## 📋 What has been implemented
 
-### 1. **Documentation complète**
+### 1. **Complete documentation**
 
-- ✅ `README.md` détaillé avec guide de démarrage rapide
-- ✅ Instructions spécifiques pour `vercel dev` (obligatoire)
-- ✅ Gestion des ports dynamiques documentée
-- ✅ Exemples d'utilisation complets
+- ✅ Detailed `README.md` with quick start guide
+- ✅ Specific instructions for `vercel dev` (mandatory)
+- ✅ Dynamic port management documented
+- ✅ Complete usage examples
 
-### 2. **Configuration Pa11y**
+### 2. **Pa11y configuration**
 
-- ✅ `pa11y-ci.json` configuré pour 2 URLs
-- ✅ Page d'accueil (`/`) - publique
-- ✅ Page utilisateur (`/user`) - avec authentification
-- ✅ Timeout 30s et arguments Chrome sécurisés
+- ✅ `pa11y-ci.json` configured for 2 URLs
+- ✅ Home page (`/`) - public
+- ✅ User page (`/user`) - with authentication
+- ✅ 30s timeout and secure Chrome arguments
 
-### 3. **Scripts d'automatisation**
+### 3. **Automation scripts**
 
-- ✅ `pa11y-auth.js` - Authentification automatique (`tony@stark.com`)
-- ✅ `run-pa11y-tests.js` - Tests personnalisés avec captures d'écran
-- ✅ `update-port.js` - Mise à jour automatique des ports
-- ✅ `validate-setup.js` - Validation complète de la configuration
+- ✅ `pa11y-auth.js` - Automatic authentication (`tony@stark.com`)
+- ✅ `run-pa11y-tests.js` - Custom tests with screenshots
+- ✅ `update-port.js` - Automatic port updates
+- ✅ `validate-setup.js` - Complete configuration validation
 
-### 4. **Structure organisée**
+### 4. **Organized structure**
 
-- ✅ Dossiers de captures : `screenshots/{debug,errors,success}`
-- ✅ Organisation claire des fichiers de configuration
-- ✅ Scripts npm intégrés dans `package.json`
+- ✅ Screenshot folders: `screenshots/{debug,errors,success}`
+- ✅ Clear organization of configuration files
+- ✅ npm scripts integrated in `package.json`
 
-## 🚀 Scripts npm disponibles
+## 🚀 Available npm scripts
 
 ```bash
-pnpm run test:a11y              # Tests Pa11y-CI
-pnpm run test:a11y-custom       # Tests avec script personnalisé
-pnpm run test:a11y-update-port  # Mise à jour automatique des ports
-pnpm run test:a11y-validate     # Validation de la configuration
+pnpm run test:a11y              # Pa11y-CI tests
+pnpm run test:a11y-custom       # Tests with custom script
+pnpm run test:a11y-update-port  # Automatic port updates
+pnpm run test:a11y-validate     # Configuration validation
 ```
 
-## 🔧 Spécificités techniques
+## 🔧 Technical specifications
 
-### **Vercel dev obligatoire**
+### **Vercel dev mandatory**
 
-- ❌ `pnpm run dev` ne fonctionne PAS (pas de serverless)
-- ✅ `vercel dev` seule méthode supportée
-- 🔄 Gestion automatique des ports dynamiques (3000, 3001, etc.)
+- ❌ `pnpm run dev` does NOT work (no serverless)
+- ✅ `vercel dev` only supported method
+- 🔄 Automatic dynamic port management (3000, 3001, etc.)
 
-### **Pages testées**
+### **Tested pages**
 
-1. **Page d'accueil** (`/`) - Aucune authentification requise
-2. **Page utilisateur** (`/user`) - Authentification automatique avec :
+1. **Home page** (`/`) - No authentication required
+2. **User page** (`/user`) - Automatic authentication with:
    - Email: `tony@stark.com`
    - Password: `password123`
 
-### **Standards WCAG**
+### **WCAG standards**
 
-- 📏 WCAG 2.1 AA par défaut
-- 🖼️ Captures d'écran automatiques
-- ⏱️ Timeout 30 secondes pour les pages lentes
+- 📏 WCAG 2.1 AA by default
+- 🖼️ Automatic screenshots
+- ⏱️ 30-second timeout for slow pages
 
-## 🎯 Flux d'utilisation recommandé
+## 🎯 Recommended usage flow
 
-1. **Validation** : `pnpm run test:a11y-validate`
-2. **Démarrage serveur** : `vercel dev`
-3. **Mise à jour ports** : `pnpm run test:a11y-update-port`
-4. **Tests accessibilité** : `pnpm run test:a11y`
+1. **Validation**: `pnpm run test:a11y-validate`
+2. **Start server**: `vercel dev`
+3. **Update ports**: `pnpm run test:a11y-update-port`
+4. **Accessibility tests**: `pnpm run test:a11y`
 
-## 📊 Tests de validation effectués
+## 📊 Validation tests performed
 
-- ✅ Configuration JSON valide
-- ✅ Dépendances installées (pa11y v8.0.0, pa11y-ci v3.1.0, puppeteer v23.11.1)
-- ✅ Scripts fonctionnels
-- ✅ Structure de dossiers créée
-- ✅ Authentification testée
-- ✅ Gestion des ports dynamiques validée
+- ✅ Valid JSON configuration
+- ✅ Dependencies installed (pa11y v8.0.0, pa11y-ci v3.1.0, puppeteer v23.11.1)
+- ✅ Functional scripts
+- ✅ Folder structure created
+- ✅ Authentication tested
+- ✅ Dynamic port management validated
 
-## 🔗 Intégration projet
+## 🔗 Project integration
 
-La configuration Pa11y s'intègre parfaitement avec :
+Pa11y configuration integrates perfectly with:
 
-- 🚀 **Vercel** - Déploiement et fonctions serverless
-- 📦 **pnpm** - Gestionnaire de paquets optimisé
-- 🔧 **Vite** - Build tool (frontend uniquement)
-- 🗄️ **API serverless** - Authentification et données
+- 🚀 **Vercel** - Deployment and serverless functions
+- 📦 **pnpm** - Optimized package manager
+- 🔧 **Vite** - Build tool (frontend only)
+- 🗄️ **Serverless API** - Authentication and data
 
-## ⚡ Prochaines étapes possibles
+## ⚡ Possible next steps
 
-1. **CI/CD** - Intégrer Pa11y dans les pipelines GitHub Actions
-2. **Rapports HTML** - Générer des rapports détaillés
-3. **Pages supplémentaires** - Ajouter `/signIn` aux tests
-4. **Monitoring** - Tests d'accessibilité automatiques réguliers
+1. **CI/CD** - Integrate Pa11y into GitHub Actions pipelines
+2. **HTML reports** - Generate detailed reports
+3. **Additional pages** - Add `/signIn` to tests
+4. **Monitoring** - Regular automatic accessibility tests
 
 ---
 
-**✨ Configuration Pa11y pour ArgentBank - Complète et fonctionnelle !**
+**✨ Pa11y configuration for ArgentBank - Complete and functional!**
