@@ -1,84 +1,84 @@
 #!/bin/bash
 
-# Script de test pour simuler les conditions CI/CD localement
+# Test script to simulate CI/CD conditions locally
 # Usage: ./test-cypress-ci-simulation.sh
 
 set -e
 
-echo "🔍 Test de simulation des conditions CI/CD pour Cypress"
+echo "🔍 CI/CD Conditions Simulation Test for Cypress"
 echo "=============================================="
 
-# Vérification des prérequis
-echo "📋 Vérifications des prérequis..."
+# Prerequisites check
+echo "📋 Prerequisites check..."
 
 if ! command -v curl &> /dev/null; then
-    echo "❌ curl n'est pas installé"
+    echo "❌ curl is not installed"
     exit 1
 fi
 
 if ! command -v pnpm &> /dev/null; then
-    echo "❌ pnpm n'est pas installé"
+    echo "❌ pnpm is not installed"
     exit 1
 fi
 
-# Variables de test
+# Test variables
 LOCAL_URL="http://localhost:3000"
 FAKE_PREVIEW_URL="https://fake-preview.vercel.app"
 
-echo "✅ Prérequis validés"
+echo "✅ Prerequisites validated"
 
-# Test 1: Vérifier que localhost:3000 fonctionne
+# Test 1: Check if localhost:3000 works
 echo ""
-echo "🧪 Test 1: Vérification de l'accessibilité locale"
+echo "🧪 Test 1: Local accessibility check"
 if curl -f "$LOCAL_URL" --max-time 5 --output /dev/null --silent; then
     echo "✅ $LOCAL_URL accessible"
 else
-    echo "❌ $LOCAL_URL non accessible - Vérifiez que 'vercel dev' est en cours d'exécution"
+    echo "❌ $LOCAL_URL not accessible - Check that 'vercel dev' is running"
     exit 1
 fi
 
-# Test 2: Vérifier que Cypress fonctionne en local
+# Test 2: Check if Cypress works locally
 echo ""
-echo "🧪 Test 2: Execution Cypress en local (condition normale)"
+echo "🧪 Test 2: Local Cypress execution (normal condition)"
 echo "Command: pnpm exec cypress run --config baseUrl=$LOCAL_URL --spec 'cypress/e2e/auth/login.cy.ts'"
 
 if pnpm exec cypress run --config baseUrl="$LOCAL_URL" --spec 'cypress/e2e/auth/login.cy.ts' --headless; then
-    echo "✅ Test Cypress local réussi"
+    echo "✅ Local Cypress test successful"
 else
-    echo "❌ Test Cypress local échoué"
-    echo "💡 Ceci indique un problème avec les tests eux-mêmes, pas avec la configuration CI/CD"
+    echo "❌ Local Cypress test failed"
+    echo "💡 This indicates a problem with the tests themselves, not with CI/CD configuration"
     exit 1
 fi
 
-# Test 3: Simuler l'échec CI/CD avec une URL inaccessible
+# Test 3: Simulate CI/CD failure with inaccessible URL
 echo ""
-echo "🧪 Test 3: Simulation de l'échec CI/CD (URL inaccessible)"
+echo "🧪 Test 3: CI/CD failure simulation (inaccessible URL)"
 echo "Command: pnpm exec cypress run --config baseUrl=$FAKE_PREVIEW_URL --spec 'cypress/e2e/auth/login.cy.ts'"
 
-echo "🔍 Ce test devrait échouer car l'URL n'est pas accessible (simulation CI/CD)"
+echo "🔍 This test should fail because the URL is not accessible (CI/CD simulation)"
 
-# Utiliser timeout pour éviter que le test traîne trop longtemps
+# Use timeout to prevent test from hanging too long
 if timeout 30s pnpm exec cypress run --config baseUrl="$FAKE_PREVIEW_URL" --spec 'cypress/e2e/auth/login.cy.ts' --headless 2>/dev/null; then
-    echo "⚠️  Test inattendu : Le test avec URL inaccessible a réussi"
+    echo "⚠️  Unexpected test: Test with inaccessible URL succeeded"
 else
-    echo "✅ Échec attendu : Le test avec URL inaccessible a échoué (simulation réussie)"
+    echo "✅ Expected failure: Test with inaccessible URL failed (simulation successful)"
 fi
 
-# Résumé
+# Summary
 echo ""
-echo "📊 RÉSUMÉ DU DIAGNOSTIC"
-echo "======================="
-echo "✅ Local (localhost:3000) : Tests Cypress fonctionnent"
-echo "❌ URL inaccessible : Tests Cypress échouent (simulation CI/CD)"
+echo "📊 DIAGNOSTIC SUMMARY"
+echo "===================="
+echo "✅ Local (localhost:3000): Cypress tests work"
+echo "❌ Inaccessible URL: Cypress tests fail (CI/CD simulation)"
 echo ""
 echo "💡 CONCLUSION:"
-echo "   Le problème en CI/CD est lié à l'accessibilité de l'URL Preview Vercel"
-echo "   qui nécessite des headers de bypass que Cypress n'utilise pas."
+echo "   The CI/CD problem is related to Vercel Preview URL accessibility"
+echo "   which requires bypass headers that Cypress doesn't use."
 echo ""
-echo "📋 Prochaines étapes suggérées:"
-echo "   1. Implémenter la configuration des headers Vercel dans Cypress"
-echo "   2. Tester avec les vrais headers de bypass"
-echo "   3. Valider en CI/CD"
+echo "📋 Suggested next steps:"
+echo "   1. Implement Vercel headers configuration in Cypress"
+echo "   2. Test with real bypass headers"
+echo "   3. Validate in CI/CD"
 
 echo ""
-echo "🏁 Test de simulation terminé"
+echo "🏁 Simulation test completed"

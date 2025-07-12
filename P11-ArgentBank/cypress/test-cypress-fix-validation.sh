@@ -1,35 +1,35 @@
 #!/bin/bash
-# Script de test local pour simuler les conditions CI/CD Cypress
+# Local test script to simulate Cypress CI/CD conditions
 
-echo "🧪 Test de simulation Cypress CI/CD"
-echo "=================================="
+echo "🧪 Cypress CI/CD Simulation Test"
+echo "================================"
 
-# Vérifier que le serveur local fonctionne
-echo "📍 Vérification du serveur local..."
+# Check if local server is running
+echo "📍 Checking local server..."
 curl -s -I "http://localhost:3000" >/dev/null 2>&1
 if [ $? -ne 0 ]; then
-    echo "❌ Serveur local non accessible sur http://localhost:3000"
-    echo "Veuillez démarrer 'vercel dev' dans un autre terminal"
+    echo "❌ Local server not accessible on http://localhost:3000"
+    echo "Please start 'vercel dev' in another terminal"
     exit 1
 fi
-echo "✅ Serveur local accessible"
+echo "✅ Local server accessible"
 
-# Simulation des variables d'environnement CI/CD
+# Simulate CI/CD environment variables
 export CI=true
 export VERCEL_AUTOMATION_BYPASS_SECRET="test-local-bypass-secret"
 export CYPRESS_BASE_URL="http://localhost:3000"
 
 echo ""
-echo "🔧 Variables d'environnement configurées :"
+echo "🔧 Environment variables configured:"
 echo "   CI: $CI"
 echo "   CYPRESS_BASE_URL: $CYPRESS_BASE_URL"
 echo "   VERCEL_AUTOMATION_BYPASS_SECRET: $(if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then echo '***SECRET_PRESENT***'; else echo 'NOT_FOUND'; fi)"
 
 echo ""
-echo "🚀 Exécution du test Cypress avec simulation CI/CD..."
-echo "   (Les headers de bypass seront configurés automatiquement)"
+echo "🚀 Running Cypress test with CI/CD simulation..."
+echo "   (Bypass headers will be configured automatically)"
 
-# Exécuter Cypress avec un test spécifique pour réduire le temps d'exécution
+# Run Cypress with a specific test to reduce execution time
 pnpm exec cypress run \
   --config baseUrl=$CYPRESS_BASE_URL \
   --spec "cypress/e2e/auth/login.cy.ts" \
@@ -37,8 +37,8 @@ pnpm exec cypress run \
   --headless
 
 echo ""
-echo "📋 Test terminé"
-echo "Vérifiez les logs ci-dessus pour confirmer que :"
-echo "   ✅ '🔐 [Cypress CI/CD] Configuring Vercel bypass headers...' apparaît"
-echo "   ✅ '✅ [Cypress CI/CD] Vercel bypass headers configured successfully' apparaît"
-echo "   ✅ Les tests passent ou au moins démarrent correctement"
+echo "📋 Test completed"
+echo "Check the logs above to confirm that:"
+echo "   ✅ '🔐 [Cypress CI/CD] Configuring Vercel bypass headers...' appears"
+echo "   ✅ '✅ [Cypress CI/CD] Vercel bypass headers configured successfully' appears"
+echo "   ✅ Tests pass or at least start correctly"

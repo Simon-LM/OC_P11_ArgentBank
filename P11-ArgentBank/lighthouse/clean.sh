@@ -1,25 +1,25 @@
 #!/bin/bash
 
-# Script de nettoyage du dossier Lighthouse
-# Ce script supprime les fichiers de test redondants tout en gardant les plus récents
+# Lighthouse folder cleanup script
+# This script removes redundant test files while keeping the most recent ones
 
-echo "🧹 Nettoyage du dossier Lighthouse..."
+echo "🧹 Cleaning Lighthouse folder..."
 
-# Aller dans le dossier lighthouse
+# Go to lighthouse directory
 cd "$(dirname "$0")"
 
-# 1. Nettoyer le dossier reports
-echo "📁 Nettoyage du dossier reports..."
+# 1. Clean reports directory
+echo "📁 Cleaning reports directory..."
 
-# Créer un dossier temporaire pour les fichiers à conserver
+# Create temporary folder for files to keep
 mkdir -p reports/temp
 
-# Identifier les derniers rapports de chaque type
+# Identify latest reports of each type
 latest_reports=($(ls -t reports/lighthouse-*.html 2>/dev/null | head -3))
 desktop_report=$(find reports -name "lighthouse-*" -type f -exec grep -l "Mode: Desktop" {} \; | head -1)
 mobile_report=$(find reports -name "lighthouse-*" -type f -exec grep -l "Mode: Mobile" {} \; | head -1)
 
-# Fichiers importants à conserver
+# Important files to keep
 important_files=(
   "reports/lighthouse-report.json"
   "reports/lighthouse-report.html"
@@ -28,49 +28,49 @@ important_files=(
   "reports/dev-report.html"
 )
 
-# Copier les derniers rapports
+# Copy latest reports
 for report in "${latest_reports[@]}"; do
   if [ -f "$report" ]; then
     cp "$report" reports/temp/
-    echo "✅ Conservé: $report"
+    echo "✅ Kept: $report"
   fi
 done
 
-# Copier les rapports desktop et mobile spécifiques s'ils ne sont pas déjà inclus
+# Copy specific desktop and mobile reports if not already included
 if [ -n "$desktop_report" ] && [ -f "$desktop_report" ]; then
   cp "$desktop_report" reports/temp/
-  echo "✅ Conservé: $desktop_report (Desktop)"
+  echo "✅ Kept: $desktop_report (Desktop)"
 fi
 
 if [ -n "$mobile_report" ] && [ -f "$mobile_report" ]; then
   cp "$mobile_report" reports/temp/
-  echo "✅ Conservé: $mobile_report (Mobile)"
+  echo "✅ Kept: $mobile_report (Mobile)"
 fi
 
-# Copier les fichiers importants
+# Copy important files
 for file in "${important_files[@]}"; do
   if [ -f "$file" ]; then
     cp "$file" reports/temp/
-    echo "✅ Conservé: $file"
+    echo "✅ Kept: $file"
   fi
 done
 
-# Assurer que le dossier archive existe (pour les futures archives)
+# Ensure archive directory exists (for future archives)
 if [ ! -d "reports/archive" ]; then
-  echo "📁 Création du dossier archive pour les futures archives"
+  echo "📁 Creating archive directory for future archives"
   mkdir -p reports/archive
 else
-  echo "✅ Dossier archive existant conservé"
+  echo "✅ Existing archive directory kept"
 fi
 
-# Compter les fichiers
+# Count files
 total_files=$(find reports -type f -not -path "reports/temp/*" -not -path "reports/archive/*" | wc -l)
 kept_files=$(find reports/temp -type f -not -path "reports/temp/archive/*" | wc -l)
 deleted_files=$((total_files - kept_files))
 
-# Archiver les anciens rapports (plus de 7 jours) si l'option --archive est spécifiée
+# Archive old reports (older than 7 days) if --archive option is specified
 if [[ "$1" == "--archive" ]]; then
-  echo "📦 Archivage des anciens rapports..."
+  echo "📦 Archiving old reports..."
   current_date=$(date +%s)
   find reports -maxdepth 1 -type f -name "lighthouse-*.html" -o -name "lighthouse-*.json" | while read file; do
     file_date=$(date -r "$file" +%s)
@@ -80,29 +80,29 @@ if [[ "$1" == "--archive" ]]; then
       archive_date=$(date -r "$file" +%Y-%m-%d)
       mkdir -p "reports/archive/$archive_date"
       cp "$file" "reports/archive/$archive_date/"
-      echo "📦 Archivé: $file → reports/archive/$archive_date/"
+      echo "📦 Archived: $file → reports/archive/$archive_date/"
     fi
   done
 fi
 
-# Supprimer tous les fichiers HTML et JSON dans le dossier reports sauf ceux dans archive
+# Delete all HTML and JSON files in reports directory except those in archive
 find reports -maxdepth 1 -type f \( -name "*.html" -o -name "*.json" \) -delete
 
-# Déplacer les fichiers conservés
+# Move kept files
 mv reports/temp/* reports/ 2>/dev/null
 if [ -d "reports/temp/archive" ]; then
-  # Copier les fichiers d'archive au lieu de remplacer le dossier
+  # Copy archive files instead of replacing the directory
   cp -r reports/temp/archive/* reports/archive/ 2>/dev/null
 fi
 rmdir reports/temp 2>/dev/null
 
-echo "🗑️ $deleted_files fichiers supprimés"
-echo "💾 $kept_files fichiers conservés"
+echo "🗑️ $deleted_files files deleted"
+echo "💾 $kept_files files kept"
 
-# 2. Nettoyer les scripts redondants
-echo "📜 Vérification des scripts redondants..."
+# 2. Clean redundant scripts
+echo "📜 Checking for redundant scripts..."
 
-# Liste des scripts potentiellement redondants
+# List of potentially redundant scripts
 redundant_scripts=(
   "lighthouse-bash.sh"
   "lighthouse-simple-test.sh"
@@ -111,9 +111,9 @@ redundant_scripts=(
 
 for script in "${redundant_scripts[@]}"; do
   if [ -f "scripts/$script" ]; then
-    echo "🗑️ Suppression du script redondant: scripts/$script"
+    echo "🗑️ Removing redundant script: scripts/$script"
     rm "scripts/$script"
   fi
 done
 
-echo "✨ Nettoyage terminé!"
+echo "✨ Cleanup completed!"

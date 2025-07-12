@@ -1,36 +1,36 @@
 #!/bin/bash
 
-# Script de nettoyage des sauvegardes Copilot avant commit
-echo "🧹 Nettoyage des sauvegardes VS Code/Copilot..."
+# Copilot backup cleanup script before commit
+echo "🧹 Cleaning VS Code/Copilot backups..."
 
-# Supprimer les fichiers de sauvegarde temporaires
+# Remove temporary backup files
 find . -name "*.backup" -type f -delete 2>/dev/null || true
 find . -name "*.bak" -type f -delete 2>/dev/null || true
 find . -name "*.autosave" -type f -delete 2>/dev/null || true
 find . -name "*~" -type f -delete 2>/dev/null || true
 find . -name "*.tmp" -type f -delete 2>/dev/null || true
 
-# Nettoyer les dossiers VS Code temporaires
+# Clean temporary VS Code directories
 rm -rf .vscode/workspaceStorage/ 2>/dev/null || true
 rm -rf .history/ 2>/dev/null || true
 rm -f .vscode/.BROWSERSLISTRC 2>/dev/null || true
 rm -f .vscode/argv.json 2>/dev/null || true
 
-# Nettoyer les fichiers système
+# Clean system files
 find . -name ".DS_Store" -type f -delete 2>/dev/null || true
 find . -name "Thumbs.db" -type f -delete 2>/dev/null || true
 find . -name "Desktop.ini" -type f -delete 2>/dev/null || true
 
-# Nettoyer le cache pnpm si nécessaire
+# Clean pnpm cache if necessary
 if [ -d "node_modules/.pnpm" ]; then
-    echo "🗑️  Nettoyage du cache pnpm..."
+    echo "🗑️  Cleaning pnpm cache..."
     pnpm store prune 2>/dev/null || true
 fi
 
-# Vérifier l'état Git
+# Check Git status
 if git status --porcelain | grep -q "^??"; then
-    echo "⚠️  Fichiers non suivis détectés après nettoyage:"
+    echo "⚠️  Untracked files detected after cleanup:"
     git status --porcelain | grep "^??"
 fi
 
-echo "✅ Nettoyage terminé!"
+echo "✅ Cleanup completed!"

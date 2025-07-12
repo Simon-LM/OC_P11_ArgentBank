@@ -1,28 +1,28 @@
 #!/bin/bash
 
-# Script d'installation du hook pre-commit pour pnpm
-echo "🔧 Installation du hook pre-commit pour pnpm..."
+# Pre-commit hook installation script for pnpm
+echo "🔧 Installing pre-commit hook for pnpm..."
 
 HOOK_SOURCE="./scripts/pre-commit-hook.sh"
 HOOK_DEST="../.git/hooks/pre-commit"
 
-# Vérifier que le script source existe
+# Check that source script exists
 if [ ! -f "$HOOK_SOURCE" ]; then
-    echo "❌ Erreur: Le script $HOOK_SOURCE n'existe pas"
+    echo "❌ Error: Script $HOOK_SOURCE does not exist"
     exit 1
 fi
 
-# Créer le dossier hooks s'il n'existe pas
+# Create hooks directory if it doesn't exist
 mkdir -p ../.git/hooks
 
-# Copier le hook
+# Copy the hook
 cp "$HOOK_SOURCE" "$HOOK_DEST"
 
-# Rendre exécutable
+# Make executable
 chmod +x "$HOOK_DEST"
 
-echo "✅ Hook pre-commit installé avec succès!"
-echo "🔍 Le hook s'exécutera automatiquement avant chaque commit"
+echo "✅ Pre-commit hook installed successfully!"
+echo "🔍 The hook will run automatically before each commit"
 echo ""
 echo "💡 Le hook va:"
 echo "   • Nettoyer les sauvegardes Copilot"

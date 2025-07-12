@@ -1,46 +1,46 @@
 #!/bin/bash
 
-# Script pour nettoyer les sauvegardes et préparer un commit propre
+# Script to clean backups and prepare a clean commit
 # Usage: ./scripts/clean-before-commit.sh
 
-echo "🧹 Nettoyage des fichiers temporaires et sauvegardes..."
+echo "🧹 Cleaning temporary files and backups..."
 
-# Forcer la sauvegarde de tous les fichiers ouverts
-echo "💾 Sauvegarde forcée des fichiers en cours..."
+# Force save all open files
+echo "💾 Force saving files in progress..."
 
-# Nettoyer les fichiers temporaires de VS Code
+# Clean VS Code temporary files
 if [ -d ".vscode" ]; then
     find .vscode -name "*.tmp" -delete 2>/dev/null || true
     find .vscode -name "*.backup" -delete 2>/dev/null || true
-    echo "✅ Fichiers temporaires VS Code nettoyés"
+    echo "✅ VS Code temporary files cleaned"
 fi
 
-# Nettoyer les fichiers de sauvegarde système
+# Clean system backup files
 find . -name "*~" -delete 2>/dev/null || true
 find . -name "*.swp" -delete 2>/dev/null || true
 find . -name "*.swo" -delete 2>/dev/null || true
 find . -name ".DS_Store" -delete 2>/dev/null || true
 
-# Nettoyer les logs et rapports
+# Clean logs and reports
 rm -rf coverage/ 2>/dev/null || true
 rm -rf cypress/reports/ 2>/dev/null || true
 rm -rf cypress/screenshots/ 2>/dev/null || true
 rm -rf cypress/videos/ 2>/dev/null || true
 rm -rf lighthouse/reports/ 2>/dev/null || true
 
-# Vérifier que tous les fichiers sont sauvegardés
-echo "🔍 Vérification des modifications non sauvegardées..."
+# Check that all files are saved
+echo "🔍 Checking for unsaved modifications..."
 if git diff --name-only | grep -q .; then
-    echo "📝 Fichiers modifiés détectés:"
+    echo "📝 Modified files detected:"
     git diff --name-only
     echo ""
-    echo "⚠️  Assurez-vous que tous vos fichiers sont sauvegardés dans VS Code avant de continuer."
-    read -p "Continuer? (y/N): " -n 1 -r
+    echo "⚠️  Make sure all your files are saved in VS Code before continuing."
+    read -p "Continue? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "❌ Opération annulée"
+        echo "❌ Operation cancelled"
         exit 1
     fi
 fi
 
-echo "✅ Nettoyage terminé! Prêt pour le commit."
+echo "✅ Cleanup completed! Ready for commit."

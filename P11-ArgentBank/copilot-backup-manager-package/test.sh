@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 🚀 Script de test pour vérifier l'installation
-echo "🔍 Test du Copilot Backup Manager..."
+# 🚀 Test script to verify installation
+echo "🔍 Testing Copilot Backup Manager..."
 
-# Vérifier que les fichiers existent
-echo "📋 Vérification des scripts..."
+# Check that files exist
+echo "📋 Checking scripts..."
 
 SCRIPTS_DIR="scripts"
 REQUIRED_SCRIPTS=(
@@ -19,41 +19,41 @@ for script in "${REQUIRED_SCRIPTS[@]}"; do
     if [ -f "$SCRIPTS_DIR/$script" ]; then
         echo "✅ $script"
     else
-        echo "❌ $script manquant"
+        echo "❌ $script missing"
     fi
 done
 
-# Vérifier la configuration VS Code
+# Check VS Code configuration
 echo ""
-echo "📋 Vérification VS Code..."
+echo "📋 Checking VS Code..."
 if [ -f ".vscode/settings.json" ]; then
-    echo "✅ .vscode/settings.json configuré"
+    echo "✅ .vscode/settings.json configured"
 else
-    echo "❌ .vscode/settings.json manquant"
+    echo "❌ .vscode/settings.json missing"
 fi
 
-# Vérifier le package.json
+# Check package.json
 echo ""
-echo "📋 Vérification package.json..."
+echo "📋 Checking package.json..."
 if grep -q "clean:copilot" package.json 2>/dev/null; then
-    echo "✅ Scripts npm ajoutés"
+    echo "✅ npm scripts added"
 else
-    echo "❌ Scripts npm manquants"
+    echo "❌ npm scripts missing"
 fi
 
-# Vérifier le hook Git
+# Check Git hook
 echo ""
-echo "📋 Vérification hook Git..."
+echo "📋 Checking Git hook..."
 GIT_DIR=$(git rev-parse --git-dir 2>/dev/null)
 if [ -f "$GIT_DIR/hooks/pre-commit" ]; then
-    echo "✅ Hook pre-commit installé"
+    echo "✅ Pre-commit hook installed"
 else
-    echo "❌ Hook pre-commit manquant"
+    echo "❌ Pre-commit hook missing"
 fi
 
-# Test fonctionnel
+# Functional test
 echo ""
-echo "🧪 Test fonctionnel..."
+echo "🧪 Functional test..."
 if [ -f "package.json" ]; then
     PACKAGE_MANAGER="npm"
     if [ -f "pnpm-lock.yaml" ]; then
@@ -62,17 +62,17 @@ if [ -f "package.json" ]; then
         PACKAGE_MANAGER="yarn"
     fi
     
-    echo "Exécution de: $PACKAGE_MANAGER run clean:copilot"
+    echo "Running: $PACKAGE_MANAGER run clean:copilot"
     $PACKAGE_MANAGER run clean:copilot
     
     if [ $? -eq 0 ]; then
-        echo "✅ Test fonctionnel réussi"
+        echo "✅ Functional test successful"
     else
-        echo "❌ Test fonctionnel échoué"
+        echo "❌ Functional test failed"
     fi
 else
-    echo "❌ package.json introuvable"
+    echo "❌ package.json not found"
 fi
 
 echo ""
-echo "🎉 Test terminé!"
+echo "🎉 Test completed!"

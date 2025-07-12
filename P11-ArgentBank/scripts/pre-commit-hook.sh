@@ -1,45 +1,45 @@
 #!/bin/bash
 
-# Hook pre-commit simplifié et fonctionnel
-echo "🔄 Exécution du hook pre-commit..."
+# Simplified and functional pre-commit hook
+echo "🔄 Running pre-commit hook..."
 
-# Se déplacer dans le répertoire du projet P11-ArgentBank
+# Move to P11-ArgentBank project directory
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 PROJECT_DIR="$PROJECT_ROOT/P11-ArgentBank"
 cd "$PROJECT_DIR"
 
-# Nettoyer les sauvegardes Copilot
-echo "🧹 Nettoyage des sauvegardes..."
+# Clean Copilot backups
+echo "🧹 Cleaning backups..."
 bash "$PROJECT_DIR/scripts/clean-copilot-backups.sh" || exit 1
 
-# Synchroniser avec pnpm
-echo "🔄 Synchronisation pnpm..."
+# Synchronize with pnpm
+echo "🔄 pnpm synchronization..."
 bash "$PROJECT_DIR/scripts/sync-pnpm.sh" || exit 1
 
-# Vérifier que pnpm est utilisé (pas npm)
+# Check that pnpm is used (not npm)
 if [ -f "package-lock.json" ]; then
-    echo "❌ Erreur: package-lock.json détecté! Ce projet utilise pnpm."
-    echo "💡 Supprimez package-lock.json et utilisez 'pnpm install'"
+    echo "❌ Error: package-lock.json detected! This project uses pnpm."
+    echo "💡 Remove package-lock.json and use 'pnpm install'"
     rm package-lock.json
     exit 1
 fi
 
-# Vérifier que les linters passent (optionnel pour éviter les erreurs)
-echo "🔍 Vérification du code..."
+# Check that linters pass (optional to avoid errors)
+echo "🔍 Code verification..."
 if command -v pnpm &> /dev/null; then
     pnpm run lint:check 2>/dev/null || {
-        echo "⚠️  Erreurs de linting détectées, mais le commit continue..."
+        echo "⚠️  Linting errors detected, but commit continues..."
     }
 fi
 
-# Formatter le code (optionnel)
-echo "🎨 Formatage du code..."
+# Format code (optional)
+echo "🎨 Code formatting..."
 if command -v pnpm &> /dev/null; then
     pnpm run format 2>/dev/null || true
 fi
 
-# Mettre à jour les fichiers formatés dans le staging
+# Update formatted files in staging
 git add -u 2>/dev/null || true
 
-echo "✅ Pre-commit hook terminé avec succès!"
+echo "✅ Pre-commit hook completed successfully!"
 exit 0

@@ -1,31 +1,31 @@
 #!/bin/bash
 
-# Script de nettoyage des rapports Cypress
+# Cypress reports cleanup script
 # Usage: ./cypress/clean-reports.sh
 
 REPORTS_DIR="cypress/reports"
 
-echo "🧹 Nettoyage des anciens rapports Cypress..."
+echo "🧹 Cleaning old Cypress reports..."
 
-# Créer le répertoire reports s'il n'existe pas
+# Create reports directory if it doesn't exist
 mkdir -p "$REPORTS_DIR"
 mkdir -p "$REPORTS_DIR/html"
 
-# Supprimer tous les anciens rapports individuels
-echo "📁 Suppression des rapports individuels..."
+# Remove all old individual reports
+echo "📁 Removing individual reports..."
 rm -f "$REPORTS_DIR"/mochawesome_*.json
 rm -f "$REPORTS_DIR"/mochawesome_*.html
 
-# Garder le rapport consolidé
-echo "✅ Conservation du rapport consolidé..."
+# Keep the consolidated report
+echo "✅ Keeping consolidated report..."
 echo "   - $REPORTS_DIR/merged-report.json"
 echo "   - $REPORTS_DIR/html/merged-report.html"
 
-# Supprimer les assets anciens s'ils existent
+# Remove old assets if they exist
 if [ -d "$REPORTS_DIR/assets" ]; then
-    echo "🗑️ Suppression des anciens assets..."
+    echo "🗑️ Removing old assets..."
     rm -rf "$REPORTS_DIR/assets"
 fi
 
-echo "✨ Nettoyage terminé !"
-echo "📊 Prochain rapport : pnpm run test:e2e:a11y:report"
+echo "✨ Cleanup completed!"
+echo "📊 Next report: pnpm run test:e2e:a11y:report"

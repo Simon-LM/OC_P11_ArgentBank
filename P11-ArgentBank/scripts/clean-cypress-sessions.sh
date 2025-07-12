@@ -1,38 +1,38 @@
 #!/bin/bash
 
-# Script pour nettoyer les sessions Cypress et redémarrer les tests
+# Script to clean Cypress sessions and restart tests
 # Usage: ./scripts/clean-cypress-sessions.sh
 
-echo "🧹 Nettoyage des sessions Cypress..."
+echo "🧹 Cleaning Cypress sessions..."
 
-# Supprimer le cache des sessions Cypress
+# Remove Cypress session cache
 if [ -d "cypress/.sessions" ]; then
     rm -rf cypress/.sessions
-    echo "✅ Cache des sessions supprimé"
+    echo "✅ Session cache removed"
 else
-    echo "ℹ️  Aucun cache de session trouvé"
+    echo "ℹ️  No session cache found"
 fi
 
-# Supprimer les screenshots et vidéos de test
+# Remove test screenshots and videos
 if [ -d "cypress/screenshots" ]; then
     rm -rf cypress/screenshots
-    echo "✅ Screenshots supprimés"
+    echo "✅ Screenshots removed"
 fi
 
 if [ -d "cypress/videos" ]; then
     rm -rf cypress/videos
-    echo "✅ Vidéos supprimées"
+    echo "✅ Videos removed"
 fi
 
-# Supprimer les rapports précédents
+# Remove previous reports
 if [ -d "cypress/reports" ]; then
     rm -rf cypress/reports
-    echo "✅ Rapports supprimés"
+    echo "✅ Reports removed"
 fi
 
-echo "🎯 Nettoyage terminé. Vous pouvez maintenant relancer les tests."
+echo "🎯 Cleanup completed. You can now restart the tests."
 echo ""
-echo "Commandes disponibles :"
-echo "  npm run cypress:open    # Interface graphique"
-echo "  npm run cypress:run     # Exécution en mode headless"
-echo "  npm run test:e2e        # Tests E2E complets"
+echo "Available commands:"
+echo "  npm run cypress:open    # Graphical interface"
+echo "  npm run cypress:run     # Headless execution"
+echo "  npm run test:e2e        # Complete E2E tests"

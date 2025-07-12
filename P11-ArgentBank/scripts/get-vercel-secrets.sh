@@ -1,40 +1,40 @@
 #!/bin/bash
 # @format
 
-# Script pour récupérer les informations Vercel nécessaires aux secrets GitHub
+# Script to retrieve Vercel information needed for GitHub secrets
 
-echo "🔍 Récupération des informations Vercel pour GitHub Actions..."
+echo "🔍 Retrieving Vercel information for GitHub Actions..."
 echo ""
 
-# Vérifier si on est dans le bon répertoire
+# Check if we're in the right directory
 if [ ! -f "package.json" ]; then
-    echo "❌ Erreur: Ce script doit être exécuté depuis P11-ArgentBank/"
+    echo "❌ Error: This script must be run from P11-ArgentBank/"
     exit 1
 fi
 
-# Vérifier si Vercel CLI est installé
+# Check if Vercel CLI is installed
 if ! command -v vercel &> /dev/null; then
-    echo "❌ Vercel CLI n'est pas installé. Installation..."
+    echo "❌ Vercel CLI is not installed. Installing..."
     npm i -g vercel
 fi
 
-echo "🔗 Liaison du projet Vercel..."
+echo "🔗 Linking Vercel project..."
 vercel link --yes
 
-# Vérifier si .vercel/project.json existe
+# Check if .vercel/project.json exists
 if [ ! -f ".vercel/project.json" ]; then
-    echo "❌ Erreur: .vercel/project.json non trouvé. Assurez-vous que 'vercel link' a réussi."
+    echo "❌ Error: .vercel/project.json not found. Make sure 'vercel link' succeeded."
     exit 1
 fi
 
 echo ""
-echo "✅ Informations récupérées !"
+echo "✅ Information retrieved!"
 echo ""
-echo "📋 Secrets à configurer sur GitHub :"
+echo "📋 Secrets to configure on GitHub:"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# Extraire les informations du fichier project.json
+# Extract information from project.json file
 ORG_ID=$(cat .vercel/project.json | grep -o '"orgId":"[^"]*"' | cut -d'"' -f4)
 PROJECT_ID=$(cat .vercel/project.json | grep -o '"projectId":"[^"]*"' | cut -d'"' -f4)
 
@@ -45,14 +45,14 @@ echo "🔑 VERCEL_PROJECT_ID:"
 echo "   $PROJECT_ID"
 echo ""
 echo "🔑 VERCEL_TOKEN:"
-echo "   À générer sur : https://vercel.com/account/tokens"
-echo "   (Créer un nouveau token avec permissions Deploy)"
+echo "   Generate at: https://vercel.com/account/tokens"
+echo "   (Create a new token with Deploy permissions)"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "📝 Étapes suivantes :"
-echo "1. Aller sur GitHub : Settings > Secrets and variables > Actions"
-echo "2. Ajouter les 3 secrets ci-dessus"
-echo "3. Créer une Pull Request pour tester le déploiement preview"
+echo "📝 Next steps:"
+echo "1. Go to GitHub: Settings > Secrets and variables > Actions"
+echo "2. Add the 3 secrets above"
+echo "3. Create a Pull Request to test preview deployment"
 echo ""
-echo "🎯 Fichier de configuration sauvegardé dans .vercel/"
+echo "🎯 Configuration file saved in .vercel/"

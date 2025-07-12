@@ -1,20 +1,20 @@
 #!/bin/bash
 
-# Script pour synchroniser VS Code avec pnpm
-echo "🔄 Synchronisation VS Code avec pnpm..."
+# Script to synchronize VS Code with pnpm
+echo "🔄 Synchronizing VS Code with pnpm..."
 
-# Forcer la sauvegarde de tous les fichiers ouverts
-echo "💾 Forçage de la sauvegarde..."
+# Force save all open files
+echo "💾 Force saving..."
 
-# Nettoyer le cache VS Code
+# Clean VS Code cache
 if [ -d ".vscode/workspaceStorage" ]; then
-    echo "🗑️  Suppression du cache workspace VS Code..."
+    echo "🗑️  Removing VS Code workspace cache..."
     rm -rf .vscode/workspaceStorage/
 fi
 
-# Nettoyer l'historique VS Code
+# Clean VS Code history
 if [ -d ".history" ]; then
-    echo "🗑️  Suppression de l'historique VS Code..."
+    echo "🗑️  Removing VS Code history..."
     rm -rf .history/
 fi
 
