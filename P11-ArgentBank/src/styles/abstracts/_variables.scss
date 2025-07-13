@@ -166,3 +166,33 @@ $transaction-search-scope-button-hover-bg: $secondary-color;
 $transaction-search-scope-button-hover-text: $color-white;
 $transaction-search-scope-button-active-bg: $secondary-color;
 $transaction-search-scope-button-active-color: $color-white;
+
+// Sitemap Component Variables
+$light_body-bg: $color-gray-50;
+$light_card-bg: $color-white;
+$light_border: $color-gray-200;
+$light_heading: $primary-color;
+$light_text: $color-gray-700;
+$light_text-muted: $color-gray-600;
+$light_nav-item-bg: $color-gray-50;
+$light_nav-item-text: $primary-color;
+$light_nav-item-hover-bg: $color-gray-100;
+$light_nav-item-hover-text: $secondary-color;
+$light_disabled-bg: $color-gray-100;
+$light_disabled-border: $color-gray-300;
+$light_feature-bg: $color-gray-50;
+$light_primary: $secondary-color;
+$light_primary-hover: darken($secondary-color, 10%);
+$light_kbd-bg: $color-gray-100;
+$light_kbd-border: $color-gray-300;
+$light_kbd-text: $primary-color;
+
+// Dark theme variables (for future use)
+$dark_body-bg: $color-gray-900;
+$dark_card-bg: $color-gray-800;
+$dark_border: $color-gray-700;
+$dark_heading: $color-white;
+$dark_nav-item-bg: $color-gray-800;
+$dark_nav-item-text: $color-gray-200;
+$dark_nav-item-hover-bg: $color-gray-700;
+$dark_nav-item-hover-text: $color-white;

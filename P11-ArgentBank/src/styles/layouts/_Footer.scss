@@ -37,6 +37,16 @@
     @include mix.text-wrap;
   }
 
+  &__sitemap {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.25rem 0 0.5rem 0;
+    text-align: center;
+    color: var.$light_footer_text;
+    box-sizing: border-box;
+    @include mix.text-wrap;
+  }
+
   &__link {
     color: var.$light_footer_link;
     text-decoration: none;

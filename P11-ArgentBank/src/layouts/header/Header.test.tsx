@@ -109,4 +109,23 @@ describe("Header", () => {
     expect(screen.getByText(/Sign Out/i)).toBeInTheDocument();
     expect(screen.queryByText(/Sign In/i)).not.toBeInTheDocument();
   });
+
+  test("displays skip links including Site Map", () => {
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Header />
+        </BrowserRouter>
+      </Provider>,
+    );
+
+    // Vérifier que le lien "Skip to main content" est présent
+    expect(screen.getByText("Skip to main content")).toBeInTheDocument();
+
+    // Vérifier que le lien "Site Map" est présent en tant que lien skip
+    const siteMapLink = screen.getByText("Site Map");
+    expect(siteMapLink).toBeInTheDocument();
+    expect(siteMapLink.closest("a")).toHaveAttribute("href", "/sitemap");
+    expect(siteMapLink.closest("a")).toHaveClass("skip-to-content");
+  });
 });

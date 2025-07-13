@@ -21,6 +21,7 @@ import { useMatomo, isMatomoLoaded } from "./hooks/useMatomo/useMatomo";
 
 const SignIn = lazy(() => import("./pages/signIn/SignIn"));
 const User = lazy(() => import("./pages/user/User"));
+const Sitemap = lazy(() => import("./pages/sitemap/Sitemap"));
 const Error404 = lazy(() => import("./pages/error404/Error404"));
 
 function AppContent() {
@@ -45,6 +46,8 @@ function AppContent() {
             pageTitle = "Argent Bank - Sign In";
           } else if (location.pathname === "/user") {
             pageTitle = "Argent Bank - User Dashboard";
+          } else if (location.pathname === "/sitemap") {
+            pageTitle = "Argent Bank - Site Map";
           } else if (location.pathname === "/error404") {
             pageTitle = "Argent Bank - Page Not Found";
           }
@@ -70,6 +73,7 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signin" element={<SignIn />} />
+            <Route path="/sitemap" element={<Sitemap />} />
             <Route
               path="/user"
               element={

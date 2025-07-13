@@ -30,6 +30,13 @@ const Header: React.FC = () => {
       <a href="#main-content" className="skip-to-content">
         Skip to main content
       </a>
+      <Link
+        to="/sitemap"
+        className="skip-to-content"
+        aria-label="View site map and navigation help"
+      >
+        Site Map
+      </Link>
 
       <h1 id="site-title" className="sr-only">
         Argent Bank - Your Trusted Online Banking Partner Since 2020
@@ -73,14 +80,6 @@ const Header: React.FC = () => {
                 </Link>
               </li>
               <li>
-                {/* <button
-									onClick={handleSignOut}
-									className="header__nav-item header__nav-button"
-									type="button"
-									aria-label="Sign out and return to home page">
-									<i className="fa fa-sign-out" aria-hidden="true"></i>
-									<span>Sign Out</span>
-								</button> */}
                 <button
                   onClick={handleSignOut}
                   className="header__nav-item header__nav-button"
@@ -94,22 +93,19 @@ const Header: React.FC = () => {
               </li>
             </>
           ) : (
-            <li>
-              {/* <Link to="/signin" className="header__nav-item">
-								<i className="fa fa-user-circle" aria-hidden="true"></i>
-								<span>Sign In</span>
-							</Link> */}
-
-              <Link
-                to="/signin"
-                className="header__nav-item"
-                aria-label="Sign In to your account"
-              >
-                {/* Replace Font Awesome icon with React Icon component */}
-                <FaUserCircle aria-hidden="true" className="nav-icon" />
-                <span>Sign In</span>
-              </Link>
-            </li>
+            <>
+              <li>
+                <Link
+                  to="/signin"
+                  className="header__nav-item"
+                  aria-label="Sign In to your account"
+                >
+                  {/* Replace Font Awesome icon with React Icon component */}
+                  <FaUserCircle aria-hidden="true" className="nav-icon" />
+                  <span>Sign In</span>
+                </Link>
+              </li>
+            </>
           )}
         </ul>
       </nav>

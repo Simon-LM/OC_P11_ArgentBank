@@ -2,6 +2,7 @@
 
 // import React from "react";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
@@ -33,6 +34,12 @@ const Footer: React.FC = () => {
         >
           Simon LM
         </a>
+      </p>
+
+      <p className="footer__sitemap">
+        <Link to="/sitemap" className="footer__link">
+          Site Map
+        </Link>
       </p>
 
       <div

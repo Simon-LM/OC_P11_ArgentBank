@@ -163,6 +163,29 @@
     }
   }
 
+  &__nav-secondary {
+    opacity: 0.8;
+    font-size: 0.85rem;
+  }
+
+  &__nav-sitemap {
+    font-size: 0.85rem !important;
+    opacity: 0.9;
+    padding: 0.125rem 0.375rem !important;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &:focus {
+      outline: 2px solid var.$light_primary;
+      outline-offset: 2px;
+    }
+  }
+
   #site-title {
     @include mix.text-wrap();
   }

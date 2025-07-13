@@ -10,14 +10,19 @@
  */
 
 import { render, screen, fireEvent } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import { axe } from "jest-axe";
 import Footer from "./Footer";
 import { describe, test, expect } from "vitest";
 import "../../../Axe/utils/axe-setup.js";
 
 describe("Footer - Integration Tests", () => {
+  const renderWithRouter = (component: React.ReactElement) => {
+    return render(<BrowserRouter>{component}</BrowserRouter>);
+  };
+
   test("should toggle privacy information when button is clicked", () => {
-    render(<Footer />);
+    renderWithRouter(<Footer />);
     const privacyButton = screen.getByRole("button", {
       name: /Show Privacy Information/,
     });
@@ -38,7 +43,7 @@ describe("Footer - Integration Tests", () => {
   });
 
   test("should display privacy information content when expanded", () => {
-    render(<Footer />);
+    renderWithRouter(<Footer />);
     const privacyButton = screen.getByRole("button", {
       name: /Show Privacy Information/,
     });
@@ -64,15 +69,22 @@ describe("Footer - Integration Tests", () => {
     );
   });
 
+  test("should render Site Map link", () => {
+    renderWithRouter(<Footer />);
+    const siteMapLink = screen.getByText("Site Map");
+    expect(siteMapLink).toBeInTheDocument();
+    expect(siteMapLink.closest("a")).toHaveAttribute("href", "/sitemap");
+  });
+
   // Accessibility tests
   test("has no accessibility violations", async () => {
-    const { container } = render(<Footer />);
+    const { container } = renderWithRouter(<Footer />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
 
   test("privacy information has proper accessibility when expanded", async () => {
-    const { container } = render(<Footer />);
+    const { container } = renderWithRouter(<Footer />);
     const privacyButton = screen.getByRole("button", {
       name: /Show Privacy Information/,
     });
