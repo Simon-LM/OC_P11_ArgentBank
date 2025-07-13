@@ -12,7 +12,10 @@
 
 .hero {
   position: relative;
-  height: clamp(15rem, 40vh, 25rem) !important;
+  // height: clamp(15rem, 40vh, 25rem) !important;
+  height: 25rem !important;
+
+  // min-height: clamp(15rem, 40vh, 25rem) !important;
 
   overflow: hidden !important;
   // aspect-ratio: 1440 / 400; // Temporarily disabled to fix overflow
