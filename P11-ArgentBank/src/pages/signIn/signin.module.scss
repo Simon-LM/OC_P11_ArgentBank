@@ -10,7 +10,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-height: calc(100vh - 20rem);
+    // min-height: calc(100vh - 20rem);
+    min-height: calc(100vh - 12rem);
     padding: 2rem 0;
     background: var.$light_signin_page-bg;
   }
