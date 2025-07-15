@@ -93,65 +93,65 @@ const Sitemap: React.FC = () => {
   ];
 
   return (
-    <div className={styles["sitemap-page"]}>
-      <div className={styles["sitemap-container"]}>
-        <header className={styles["sitemap-header"]}>
-          <h1 className={styles["sitemap-title"]}>Site Map</h1>
-          <p className={styles["sitemap-description"]}>
+    <div className={styles["sitemap"]}>
+      <div className={styles["sitemap__container"]}>
+        <header className={styles["sitemap__header"]}>
+          <h1 className={styles["sitemap__title"]}>Site Map</h1>
+          <p className={styles["sitemap__description"]}>
             Complete navigation structure of Argent Bank website. This page
             helps you find all available sections and pages quickly.
           </p>
         </header>
 
-        <nav className={styles["sitemap-navigation"]} aria-label="Site Map">
+        <nav className={styles["sitemap__navigation"]} aria-label="Site Map">
           {sitemapData.map((section, sectionIndex) => (
             <section
               key={sectionIndex}
-              className={styles["sitemap-section"]}
+              className={styles["section"]}
               aria-labelledby={`section-${sectionIndex}`}
             >
               <h2
                 id={`section-${sectionIndex}`}
-                className={styles["sitemap-section-title"]}
+                className={styles["section__title"]}
               >
                 {section.title}
               </h2>
-              <p className={styles["sitemap-section-description"]}>
+              <p className={styles["section__description"]}>
                 {section.description}
               </p>
 
-              <ul className={styles["sitemap-pages"]}>
+              <ul className={styles["pages"]}>
                 {section.pages.map((page, pageIndex) => (
-                  <li key={pageIndex} className={styles["sitemap-page-item"]}>
+                  <li key={pageIndex} className={styles["pages__item"]}>
                     {page.requiresAuth && !isAuthenticated ? (
-                      <div className={styles["sitemap-page-disabled"]}>
-                        <span className={styles["sitemap-page-label"]}>
+                      <div className={styles["page__disabled"]}>
+                        <span className={styles["page__label"]}>
                           {page.label}
                         </span>
-                        <span className={styles["sitemap-auth-required"]}>
+                        <span className={styles["page__auth-required"]}>
                           (Authentication required)
                         </span>
-                        <p className={styles["sitemap-page-description"]}>
+                        <p className={styles["page__description"]}>
                           {page.description}
                         </p>
                       </div>
                     ) : (
                       <Link
                         to={page.path}
-                        className={styles["sitemap-page-link"]}
+                        className={styles["page__link"]}
                         aria-describedby={`page-desc-${sectionIndex}-${pageIndex}`}
                       >
-                        <span className={styles["sitemap-page-label"]}>
+                        <span className={styles["page__label"]}>
                           {page.label}
                         </span>
-                        <span className={styles["sitemap-page-path"]}>
+                        <span className={styles["page__path"]}>
                           {page.path}
                         </span>
                       </Link>
                     )}
                     <p
                       id={`page-desc-${sectionIndex}-${pageIndex}`}
-                      className={styles["sitemap-page-description"]}
+                      className={styles["page__description"]}
                     >
                       {page.description}
                     </p>
@@ -162,15 +162,12 @@ const Sitemap: React.FC = () => {
           ))}
         </nav>
 
-        <section
-          className={styles["sitemap-help"]}
-          aria-labelledby="help-title"
-        >
-          <h2 id="help-title" className={styles["sitemap-help-title"]}>
-            Navigation Help
+        <section className={styles["help"]} aria-labelledby="help-title">
+          <h2 id="help-title" className={styles["help__title"]}>
+            Accessibility Guide
           </h2>
-          <div className={styles["sitemap-help-content"]}>
-            <div className={styles["sitemap-help-column"]}>
+          <div className={styles["help__content"]}>
+            <div className={styles["help__column"]}>
               <h3>Keyboard Navigation</h3>
               <ul>
                 <li>
@@ -184,7 +181,7 @@ const Sitemap: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className={styles["sitemap-help-column"]}>
+            <div className={styles["help__column"]}>
               <h3>Accessibility Features</h3>
               <ul>
                 <li>Screen reader compatible</li>
@@ -196,9 +193,9 @@ const Sitemap: React.FC = () => {
           </div>
         </section>
 
-        <footer className={styles["sitemap-footer"]}>
+        <footer className={styles["footer"]}>
           <p>
-            <Link to="/" className={styles["sitemap-back-link"]}>
+            <Link to="/" className={styles["footer__back-link"]}>
               ← Return to Home Page
             </Link>
           </p>

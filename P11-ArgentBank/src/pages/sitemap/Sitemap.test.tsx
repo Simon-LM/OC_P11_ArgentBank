@@ -79,7 +79,10 @@ describe("Sitemap Component", () => {
       </Provider>,
     );
 
-    expect(screen.getByText("Site Map")).toBeInTheDocument();
+    // Chercher spécifiquement le titre h1, pas n'importe quel texte "Site Map"
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Site Map" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByText(/Complete navigation structure of Argent Bank website/i),
     ).toBeInTheDocument();
@@ -94,12 +97,19 @@ describe("Sitemap Component", () => {
       </Provider>,
     );
 
-    expect(screen.getByText("Public Pages")).toBeInTheDocument();
-    expect(screen.getByText("User Dashboard")).toBeInTheDocument();
-    expect(screen.getByText("Navigation & Help")).toBeInTheDocument();
+    // Chercher spécifiquement les titres de section h2
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Public Pages" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "User Dashboard" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Navigation & Help" }),
+    ).toBeInTheDocument();
   });
 
-  test("displays navigation help section", () => {
+  test("displays accessibility guide section", () => {
     render(
       <Provider store={store}>
         <BrowserRouter>
@@ -108,7 +118,7 @@ describe("Sitemap Component", () => {
       </Provider>,
     );
 
-    expect(screen.getByText("Navigation Help")).toBeInTheDocument();
+    expect(screen.getByText("Accessibility Guide")).toBeInTheDocument();
     expect(screen.getByText("Keyboard Navigation")).toBeInTheDocument();
     expect(screen.getByText("Accessibility Features")).toBeInTheDocument();
   });
@@ -151,9 +161,20 @@ describe("Sitemap Component", () => {
       </Provider>,
     );
 
-    expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /site map/i })).toBeInTheDocument();
+    // Use specific selectors that target only the sitemap navigation
+    const sitemapNav = screen.getByRole("navigation", { name: "Site Map" });
+
+    // Test for links within the sitemap navigation only
+    // Les liens contiennent à la fois le label et le path
+    expect(sitemapNav).toContainElement(
+      screen.getByRole("link", { name: /Home\s*\/$/i }),
+    );
+    expect(sitemapNav).toContainElement(
+      screen.getByRole("link", { name: /Sign In\s*\/signin$/i }),
+    );
+    expect(sitemapNav).toContainElement(
+      screen.getByRole("link", { name: /Site Map\s*\/sitemap$/i }),
+    );
   });
 
   test("displays back to home link", () => {
@@ -165,8 +186,9 @@ describe("Sitemap Component", () => {
       </Provider>,
     );
 
+    // Test for the specific "Return to Home Page" link text
     expect(
-      screen.getByRole("link", { name: /return to home page/i }),
+      screen.getByRole("link", { name: "← Return to Home Page" }),
     ).toBeInTheDocument();
   });
 
@@ -193,14 +215,12 @@ describe("Sitemap Component", () => {
         </Provider>,
       );
 
-      expect(screen.getByRole("navigation")).toHaveAttribute(
-        "aria-label",
-        "Site Map",
-      );
-      expect(screen.getByText("Navigation Help")).toHaveAttribute(
-        "id",
-        "help-title",
-      );
+      expect(
+        screen.getByRole("navigation", { name: "Site Map" }),
+      ).toHaveAttribute("aria-label", "Site Map");
+      expect(
+        screen.getByRole("heading", { level: 2, name: "Accessibility Guide" }),
+      ).toHaveAttribute("id", "help-title");
     });
   });
 });
