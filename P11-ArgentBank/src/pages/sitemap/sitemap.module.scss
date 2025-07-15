@@ -39,6 +39,11 @@
     line-height: 1.2;
     @include mix.text-wrap;
 
+    // Remove default focus outline when programmatically focused
+    &:focus {
+      outline: none;
+    }
+
     &::after {
       content: "";
       display: block;

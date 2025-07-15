@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/Store";
@@ -23,9 +23,18 @@ interface SitemapPage {
 const Sitemap: React.FC = () => {
   const location = useLocation();
   const { trackPageView } = useMatomo();
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const isAuthenticated = useSelector(
     (state: RootState) => state.users.isAuthenticated,
   );
+
+  // Focus management for accessibility
+  useEffect(() => {
+    // Set focus on the main title when component mounts
+    if (titleRef.current) {
+      titleRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     const trackingDelay = setTimeout(() => {
@@ -96,7 +105,9 @@ const Sitemap: React.FC = () => {
     <div className={styles["sitemap"]}>
       <div className={styles["sitemap__container"]}>
         <header className={styles["sitemap__header"]}>
-          <h2 className={styles["sitemap__title"]}>Site Map</h2>
+          <h2 ref={titleRef} className={styles["sitemap__title"]} tabIndex={-1}>
+            Site Map
+          </h2>
           <p className={styles["sitemap__description"]}>
             Complete navigation structure of Argent Bank website. This page
             helps you find all available sections and pages quickly.
