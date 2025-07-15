@@ -84,6 +84,20 @@ export default defineConfig({
         "**/lighthouse-global-report.*",
         "**/lighthouse-runner.*",
         "**/lighthouse-test-suite.*",
+        // Exclusion des fichiers TypeScript auto-générés (.d.ts)
+        "**/*.module.scss.d.ts",
+        "**/*.module.css.d.ts",
+        "src/pages/sitemap/sitemap.module.scss.d.ts",
+        "src/pages/error404/Error404.module.css.d.ts",
+        // Exclusion complète des dossiers Cypress (tests e2e)
+        "**/cypress/**",
+        "cypress/**",
+        "cypress.config.ts",
+        // Exclusion des fichiers de support et configuration
+        "**/cypress/support/**",
+        "**/cypress/e2e/**",
+        "**/cypress/reports/**",
+        "**/cypress/fixtures/**",
       ],
     },
   },

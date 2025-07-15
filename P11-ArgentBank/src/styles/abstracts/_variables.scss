@@ -168,32 +168,22 @@ $transaction-search-scope-button-hover-text: $color-white;
 $transaction-search-scope-button-active-bg: $secondary-color;
 $transaction-search-scope-button-active-color: $color-white;
 
-// Sitemap Component Variables
-$light_body-bg: $color-gray-50;
+// Sitemap Component Variables - Optimized for WCAG 2.1 AA (4.5:1 contrast ratio)
+$light_body-bg: $color-white; // Changed from gray-50 to white for better contrast
 $light_card-bg: $color-white;
 $light_border: $color-gray-200;
-$light_heading: $primary-color;
-$light_text: $color-gray-700;
-$light_text-muted: $color-gray-600;
-$light_nav-item-bg: $color-gray-50;
+$light_heading: $primary-color; // #2d3748 - Already compliant
+$light_text: $color-gray-800; // Changed from gray-700 to gray-800 for better contrast
+$light_text-muted: $color-gray-700; // Changed from gray-600 to gray-700 for 4.5:1+ contrast
+$light_nav-item-bg: $color-white; // Changed from gray-50 to white
 $light_nav-item-text: $primary-color;
-$light_nav-item-hover-bg: $color-gray-100;
-$light_nav-item-hover-text: $secondary-color;
+$light_nav-item-hover-bg: $color-gray-200; // Changed from gray-100 to gray-200 for better contrast with secondary color
+$light_nav-item-hover-text: $secondary-color; // Hover uses secondary color for visual feedback
 $light_disabled-bg: $color-gray-100;
 $light_disabled-border: $color-gray-300;
-$light_feature-bg: $color-gray-50;
-$light_primary: $secondary-color;
-$light_primary-hover: darken($secondary-color, 10%);
+$light_feature-bg: $color-white; // Changed from gray-50 to white
+$light_primary: $primary-color; // Return to Home Page button uses primary color base
+$light_primary-hover: $secondary-color; // Hover uses secondary color for consistency
 $light_kbd-bg: $color-gray-100;
 $light_kbd-border: $color-gray-300;
 $light_kbd-text: $primary-color;
-
-// Dark theme variables (for future use)
-$dark_body-bg: $color-gray-900;
-$dark_card-bg: $color-gray-800;
-$dark_border: $color-gray-700;
-$dark_heading: $color-white;
-$dark_nav-item-bg: $color-gray-800;
-$dark_nav-item-text: $color-gray-200;
-$dark_nav-item-hover-bg: $color-gray-700;
-$dark_nav-item-hover-text: $color-white;

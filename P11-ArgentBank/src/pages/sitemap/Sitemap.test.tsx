@@ -79,9 +79,9 @@ describe("Sitemap Component", () => {
       </Provider>,
     );
 
-    // Chercher spécifiquement le titre h1, pas n'importe quel texte "Site Map"
+    // Chercher spécifiquement le titre h2, pas n'importe quel texte "Site Map"
     expect(
-      screen.getByRole("heading", { level: 1, name: "Site Map" }),
+      screen.getByRole("heading", { level: 2, name: "Site Map" }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/Complete navigation structure of Argent Bank website/i),
@@ -97,15 +97,15 @@ describe("Sitemap Component", () => {
       </Provider>,
     );
 
-    // Chercher spécifiquement les titres de section h2
+    // Chercher spécifiquement les titres de section h3
     expect(
-      screen.getByRole("heading", { level: 2, name: "Public Pages" }),
+      screen.getByRole("heading", { level: 3, name: "Public Pages" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 2, name: "User Dashboard" }),
+      screen.getByRole("heading", { level: 3, name: "User Dashboard" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 2, name: "Navigation & Help" }),
+      screen.getByRole("heading", { level: 3, name: "Navigation & Help" }),
     ).toBeInTheDocument();
   });
 
@@ -219,7 +219,7 @@ describe("Sitemap Component", () => {
         screen.getByRole("navigation", { name: "Site Map" }),
       ).toHaveAttribute("aria-label", "Site Map");
       expect(
-        screen.getByRole("heading", { level: 2, name: "Accessibility Guide" }),
+        screen.getByRole("heading", { level: 3, name: "Accessibility Guide" }),
       ).toHaveAttribute("id", "help-title");
     });
   });

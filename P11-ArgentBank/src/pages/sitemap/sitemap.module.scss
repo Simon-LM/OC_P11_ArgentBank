@@ -226,7 +226,8 @@
     text-align: center;
     width: 100%;
 
-    h3 {
+    h3,
+    h4 {
       color: var.$light_heading;
       font-size: clamp(func.rem(14), 2.5vw, func.rem(16));
       font-weight: 600;
@@ -298,7 +299,8 @@
 
     &:hover,
     &:focus {
-      background: var.$light_primary;
+      background: var.$light_primary-hover;
+      border-color: var.$light_primary-hover;
       color: var.$color-white;
       transform: translateY(func.rem(-1));
       outline: none;

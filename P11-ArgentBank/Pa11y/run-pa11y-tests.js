@@ -45,6 +45,18 @@ const urlsToTest = [
     },
   },
   {
+    url: "http://localhost:3000/sitemap",
+    name: "Sitemap Page",
+    needsAuth: false,
+    pa11yOptions: {
+      screenCapture: path.join(
+        __dirname,
+        "screenshots/success",
+        generateTimestampedFilename("sitemap-page"),
+      ),
+    },
+  },
+  {
     url: "http://localhost:3000/user",
     name: "User Dashboard Page (Authenticated)",
     needsAuth: true,

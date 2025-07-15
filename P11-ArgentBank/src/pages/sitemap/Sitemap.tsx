@@ -96,7 +96,7 @@ const Sitemap: React.FC = () => {
     <div className={styles["sitemap"]}>
       <div className={styles["sitemap__container"]}>
         <header className={styles["sitemap__header"]}>
-          <h1 className={styles["sitemap__title"]}>Site Map</h1>
+          <h2 className={styles["sitemap__title"]}>Site Map</h2>
           <p className={styles["sitemap__description"]}>
             Complete navigation structure of Argent Bank website. This page
             helps you find all available sections and pages quickly.
@@ -110,12 +110,12 @@ const Sitemap: React.FC = () => {
               className={styles["section"]}
               aria-labelledby={`section-${sectionIndex}`}
             >
-              <h2
+              <h3
                 id={`section-${sectionIndex}`}
                 className={styles["section__title"]}
               >
                 {section.title}
-              </h2>
+              </h3>
               <p className={styles["section__description"]}>
                 {section.description}
               </p>
@@ -163,12 +163,12 @@ const Sitemap: React.FC = () => {
         </nav>
 
         <section className={styles["help"]} aria-labelledby="help-title">
-          <h2 id="help-title" className={styles["help__title"]}>
+          <h3 id="help-title" className={styles["help__title"]}>
             Accessibility Guide
-          </h2>
+          </h3>
           <div className={styles["help__content"]}>
             <div className={styles["help__column"]}>
-              <h3>Keyboard Navigation</h3>
+              <h4>Keyboard Navigation</h4>
               <ul>
                 <li>
                   <kbd>Tab</kbd> - Navigate between links
@@ -182,7 +182,7 @@ const Sitemap: React.FC = () => {
               </ul>
             </div>
             <div className={styles["help__column"]}>
-              <h3>Accessibility Features</h3>
+              <h4>Accessibility Features</h4>
               <ul>
                 <li>Screen reader compatible</li>
                 <li>High contrast support</li>
