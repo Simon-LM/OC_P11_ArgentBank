@@ -129,6 +129,7 @@ const SignIn: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               aria-required="true"
+              autoComplete="username"
               aria-describedby={
                 error && error.includes("email") ? "error-message" : undefined
               }
@@ -146,6 +147,7 @@ const SignIn: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 aria-required="true"
+                autoComplete="current-password"
                 aria-describedby={
                   error && error.includes("password")
                     ? "error-message"

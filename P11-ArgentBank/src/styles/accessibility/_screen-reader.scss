@@ -13,3 +13,16 @@
   width: rem(1) !important;
   white-space: nowrap !important; /* 3 */
 }
+
+/* Version focusable pour les liens d'évitement */
+.sr-only-focusable:not(:focus, :focus-within) {
+  border: 0 !important;
+  clip-path: inset(50%) !important;
+  height: rem(1) !important;
+  margin: rem(-1) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: rem(1) !important;
+  white-space: nowrap !important;
+}

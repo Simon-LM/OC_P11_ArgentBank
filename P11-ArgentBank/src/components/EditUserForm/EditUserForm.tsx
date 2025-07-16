@@ -125,6 +125,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
             <input
               className={editUserForm["edit-user-form__input"]}
               id="userName"
+              autoComplete="username"
               {...register("userName")}
               aria-invalid={errors.userName ? "true" : "false"}
               aria-describedby={
@@ -159,6 +160,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               id="firstName"
               readOnly
               aria-readonly="true"
+              autoComplete="given-name"
+              tabIndex={-1}
               {...register("firstName")}
               // aria-describedby="firstName-label firstName-readonly-desc"
             />
@@ -187,6 +190,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               id="lastName"
               readOnly
               aria-readonly="true"
+              autoComplete="family-name"
+              tabIndex={-1}
               {...register("lastName")}
               // aria-describedby="lastName-readonly-desc"
             />
