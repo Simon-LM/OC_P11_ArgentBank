@@ -190,7 +190,8 @@
     @include mix.text-wrap();
   }
 }
-.fa-user-circle + span {
+.fa-user-circle + span,
+.nav-icon + span {
   @include mix.text-wrap("break-all");
   max-width: 15rem;
 }

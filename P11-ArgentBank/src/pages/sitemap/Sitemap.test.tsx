@@ -119,7 +119,10 @@ describe("Sitemap Component", () => {
     );
 
     expect(screen.getByText("Accessibility Guide")).toBeInTheDocument();
-    expect(screen.getByText("Keyboard Navigation")).toBeInTheDocument();
+    expect(screen.getByText("General Navigation")).toBeInTheDocument();
+    expect(
+      screen.getByText("Transaction Search (User Dashboard)"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Accessibility Features")).toBeInTheDocument();
   });
 

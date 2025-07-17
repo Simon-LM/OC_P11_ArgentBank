@@ -80,6 +80,53 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
     }
   };
 
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Améliorer la gestion d'Escape pour sortir du champ username
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Fermer les suggestions d'autocomplétion en enlevant le focus
+      const input = e.currentTarget;
+      input.blur();
+
+      // Déclencher la logique de cancel du formulaire
+      onCancel();
+      return;
+    }
+
+    // Améliorer la navigation avec les flèches
+    if (e.key === "ArrowDown") {
+      // Vérifier si on peut naviguer vers l'élément suivant
+      // Si pas de suggestions actives, permettre la navigation
+      const input = e.currentTarget;
+      const cursorAtEnd = input.selectionStart === input.value.length;
+
+      if (cursorAtEnd) {
+        // Tenter de naviguer vers le bouton Save
+        const saveButton = document.querySelector('button[type="submit"]');
+        if (saveButton instanceof HTMLElement) {
+          e.preventDefault();
+          saveButton.focus();
+        }
+      }
+    }
+
+    if (e.key === "ArrowUp") {
+      // Navigation vers le haut - retourner au titre du formulaire
+      const input = e.currentTarget;
+      const cursorAtStart = input.selectionStart === 0;
+
+      if (cursorAtStart) {
+        e.preventDefault();
+        const formTitle = document.getElementById("edit-user-form-title");
+        if (formTitle instanceof HTMLElement) {
+          formTitle.focus();
+        }
+      }
+    }
+  };
+
   return (
     <div
       className={editUserForm["edit-user-form__container"]}
@@ -89,7 +136,9 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
       role="region"
       aria-label="Edit user information form"
     >
-      <h2 id="edit-user-form-title">Edit user info</h2>
+      <h2 id="edit-user-form-title" tabIndex={-1}>
+        Edit user info
+      </h2>
 
       <div
         className={editUserForm["edit-user-form__disclaimer-box"]}
@@ -127,6 +176,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
               id="userName"
               autoComplete="username"
               {...register("userName")}
+              onKeyDown={handleInputKeyDown}
               aria-invalid={errors.userName ? "true" : "false"}
               aria-describedby={
                 errors.userName ? undefined : "username-requirements"

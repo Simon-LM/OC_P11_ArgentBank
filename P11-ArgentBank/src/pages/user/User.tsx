@@ -467,16 +467,6 @@ const User: React.FC = () => {
                   </p>
                 )}
 
-                {searchStatus === "succeeded" && searchResults.length > 0 && (
-                  <p className="sr-only" aria-live="polite">
-                    {searchResults.length} transaction
-                    {searchResults.length !== 1 ? "s" : ""} found
-                    {selectedAccount
-                      ? ` for ${selectedAccount.type} account`
-                      : ""}
-                  </p>
-                )}
-
                 {searchStatus === "succeeded" && (
                   <>
                     {/* Afficher les transactions de la page actuelle */}
@@ -494,8 +484,8 @@ const User: React.FC = () => {
                       >
                         <caption className="sr-only">
                           {selectedAccount
-                            ? `Transaction history for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}. ${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} listed.`
-                            : `All transactions from all accounts. ${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} listed.`}
+                            ? `Transaction history for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}.`
+                            : `Transaction history for all accounts.`}
                         </caption>
                         <thead className="sr-only">
                           <tr>

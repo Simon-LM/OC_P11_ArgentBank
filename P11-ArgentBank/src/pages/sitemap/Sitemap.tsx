@@ -147,25 +147,27 @@ const Sitemap: React.FC = () => {
                         </p>
                       </div>
                     ) : (
-                      <Link
-                        to={page.path}
-                        className={styles["page__link"]}
-                        aria-describedby={`page-desc-${sectionIndex}-${pageIndex}`}
-                      >
-                        <span className={styles["page__label"]}>
-                          {page.label}
-                        </span>
-                        <span className={styles["page__path"]}>
-                          {page.path}
-                        </span>
-                      </Link>
+                      <>
+                        <Link
+                          to={page.path}
+                          className={styles["page__link"]}
+                          aria-describedby={`page-desc-${sectionIndex}-${pageIndex}`}
+                        >
+                          <span className={styles["page__label"]}>
+                            {page.label}
+                          </span>
+                          <span className={styles["page__path"]}>
+                            {page.path}
+                          </span>
+                        </Link>
+                        <p
+                          id={`page-desc-${sectionIndex}-${pageIndex}`}
+                          className={styles["page__description"]}
+                        >
+                          {page.description}
+                        </p>
+                      </>
                     )}
-                    <p
-                      id={`page-desc-${sectionIndex}-${pageIndex}`}
-                      className={styles["page__description"]}
-                    >
-                      {page.description}
-                    </p>
                   </li>
                 ))}
               </ul>
@@ -179,7 +181,7 @@ const Sitemap: React.FC = () => {
           </h3>
           <div className={styles["help__content"]}>
             <div className={styles["help__column"]}>
-              <h4>Keyboard Navigation</h4>
+              <h4>General Navigation</h4>
               <ul>
                 <li>
                   <kbd>Tab</kbd> - Navigate between links
@@ -189,6 +191,26 @@ const Sitemap: React.FC = () => {
                 </li>
                 <li>
                   <kbd>Shift + Tab</kbd> - Navigate backwards
+                </li>
+              </ul>
+            </div>
+            <div className={styles["help__column"]}>
+              <h4>Transaction Search (User Dashboard)</h4>
+              <ul>
+                <li>
+                  <kbd>Ctrl + Alt + F</kbd> - Focus search field
+                </li>
+                <li>
+                  <kbd>Ctrl + Alt + R</kbd> - Navigate to results
+                </li>
+                <li>
+                  <kbd>Enter</kbd> - Execute search
+                </li>
+                <li>
+                  <kbd>Escape</kbd> - Exit search field
+                </li>
+                <li>
+                  <kbd>Arrow Down</kbd> - Navigate to results
                 </li>
               </ul>
             </div>

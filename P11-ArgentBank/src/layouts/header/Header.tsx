@@ -30,11 +30,7 @@ const Header: React.FC = () => {
       <a href="#main-content" className="skip-to-content">
         Skip to main content
       </a>
-      <Link
-        to="/sitemap"
-        className="skip-to-content"
-        aria-label="View site map and navigation help"
-      >
+      <Link to="/sitemap" className="skip-to-content">
         Site Map
       </Link>
 
@@ -66,7 +62,7 @@ const Header: React.FC = () => {
       </div>
 
       <nav className="header__navigation" aria-label="Main Navigation">
-        <ul className="header__nav">
+        <ul className="header__nav" role="list">
           {isAuthenticated && currentUser ? (
             <>
               <li>
@@ -75,7 +71,7 @@ const Header: React.FC = () => {
                   className="header__nav-item"
                   aria-label="Access your profile and banking dashboard"
                 >
-                  <i className="fa fa-user-circle" aria-hidden="true"></i>
+                  <FaUserCircle aria-hidden="true" className="nav-icon" />
                   <span>{currentUser.userName}</span>
                 </Link>
               </li>

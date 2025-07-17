@@ -280,8 +280,7 @@
 // Footer Section
 .footer {
   text-align: center;
-  padding-top: clamp(3px, calc(0.15rem + 0.5vw), calc(0.6rem + 0.5vw));
-  border-top: 1px solid var.$light_border;
+  padding-top: clamp(1px, calc(0.1rem + 0.3vw), calc(0.3rem + 0.3vw));
 
   p {
     margin: 0;
