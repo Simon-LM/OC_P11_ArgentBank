@@ -73,8 +73,8 @@ jobs:
       - name: 🔍 Run TypeScript check
         run: pnpm run typecheck
 
-      - name: 🧪 Run tests
-        run: pnpm run test
+      - name: 🧪 Run tests with coverage
+        run: pnpm run test:coverage
 
       - name: 🏗️ Build project
         id: build

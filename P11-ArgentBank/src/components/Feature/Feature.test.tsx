@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import Feature from "./Feature";
 
 describe("Feature Component", () => {
@@ -51,10 +51,69 @@ describe("Feature Component", () => {
     expect(screen.getByText(mockProps.iconLabel)).toBeInTheDocument();
   });
 
-  test("renders expected HTML structure", () => {
-    const { container } = render(<Feature {...mockProps} />);
-    expect(container.querySelector(".feature-item")).toBeInTheDocument();
-    expect(container.querySelector(".feature-item__icon")).toBeInTheDocument();
-    expect(container.querySelector(".feature-item__title")).toBeInTheDocument();
+  test("handles image load event", () => {
+    render(<Feature {...mockProps} />);
+    const img = document.querySelector(
+      ".feature-icon__img",
+    ) as HTMLImageElement;
+    expect(img).toBeInTheDocument();
+
+    // Initially, image is not loaded, so description should be visible
+    const iconDescription = document.querySelector(
+      ".feature-icon__description",
+    );
+    expect(iconDescription).toHaveStyle({ opacity: "1", zIndex: "1" });
+
+    // Simulate image load
+    fireEvent.load(img);
+
+    // After load, description should be hidden
+    expect(iconDescription).toHaveStyle({ opacity: "0", zIndex: "-1" });
+  });
+
+  test("handles image error", () => {
+    render(<Feature {...mockProps} />);
+    const img = document.querySelector(
+      ".feature-icon__img",
+    ) as HTMLImageElement;
+    expect(img).toBeInTheDocument();
+
+    // Initially, image is not loaded, so description should be visible
+    const iconDescription = document.querySelector(
+      ".feature-icon__description",
+    );
+    expect(iconDescription).toHaveStyle({ opacity: "1", zIndex: "1" });
+
+    // Simulate image error
+    fireEvent.error(img);
+
+    // After error, description should remain visible
+    expect(iconDescription).toHaveStyle({ opacity: "1", zIndex: "1" });
+  });
+
+  test("handles invalid iconClass", () => {
+    const invalidProps = {
+      iconClass: "",
+      iconLabel: "Default icon",
+      title: "Test title",
+      description: "Test description",
+    };
+
+    render(<Feature {...invalidProps} />);
+    const img = document.querySelector(".feature-icon__img");
+    expect(img).toHaveAttribute("src", "/img/icon-default_light-mode.png");
+  });
+
+  test("handles non-string iconClass", () => {
+    const invalidProps = {
+      iconClass: null as unknown as string,
+      iconLabel: "Default icon",
+      title: "Test title",
+      description: "Test description",
+    };
+
+    render(<Feature {...invalidProps} />);
+    const img = document.querySelector(".feature-icon__img");
+    expect(img).toHaveAttribute("src", "/img/icon-default_light-mode.png");
   });
 });

@@ -5,6 +5,8 @@ import {
   fetchUserProfile,
   updateUserProfile,
   initializeAuth,
+  generateCSRFToken,
+  validateUsername,
 } from "./authService";
 // Removing unused imports
 
@@ -287,6 +289,207 @@ describe("initializeAuth Function", () => {
     expect(mockDispatch).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "users/logoutUser",
+      }),
+    );
+  });
+});
+
+describe("generateCSRFToken Function", () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
+  test("generates a CSRF token and stores it in sessionStorage", () => {
+    const token = generateCSRFToken();
+
+    // Verify token is a string
+    expect(typeof token).toBe("string");
+    expect(token.length).toBeGreaterThan(0);
+
+    // Verify token is stored in sessionStorage
+    expect(sessionStorage.getItem("csrfToken")).toBe(token);
+  });
+
+  test("generates different tokens on multiple calls", () => {
+    const token1 = generateCSRFToken();
+    const token2 = generateCSRFToken();
+
+    // Verify tokens are different
+    expect(token1).not.toBe(token2);
+  });
+});
+
+describe("validateUsername Function", () => {
+  test("returns true for valid usernames", () => {
+    expect(validateUsername("validuser")).toBe(true);
+    expect(validateUsername("User123")).toBe(true);
+    expect(validateUsername("test_user")).toBe(true);
+    expect(validateUsername("normalname")).toBe(true);
+  });
+
+  test("returns false for usernames with inappropriate words", () => {
+    // Test with some common inappropriate words that should be in the blacklist
+    expect(validateUsername("admin")).toBe(false);
+    expect(validateUsername("ADMIN")).toBe(false);
+    expect(validateUsername("root")).toBe(false);
+    expect(validateUsername("Root")).toBe(false);
+  });
+
+  test("returns false for usernames containing blacklisted terms", () => {
+    // Test case insensitive matching
+    expect(validateUsername("AdminUser")).toBe(false);
+    expect(validateUsername("useradmin")).toBe(false);
+    expect(validateUsername("rootuser")).toBe(false);
+  });
+
+  test("returns true for empty string", () => {
+    // Edge case - empty string should pass validation
+    expect(validateUsername("")).toBe(true);
+  });
+});
+
+describe("Error Handling in updateUserProfile", () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
+  test("throws error if username is invalid", async () => {
+    await expect(updateUserProfile("admin", "valid-token")).rejects.toThrow(
+      "Username contains inappropriate words or terms",
+    );
+  });
+
+  test("throws error if userId is not found in session", async () => {
+    // Don't set userId in sessionStorage
+    sessionStorage.setItem("csrfToken", "test-csrf-token");
+
+    await expect(updateUserProfile("validuser", "valid-token")).rejects.toThrow(
+      "User ID not found in session",
+    );
+  });
+
+  test("generates CSRF token if not present in session", async () => {
+    sessionStorage.setItem("userId", "66e6fc6d339057ebf4c9701b");
+    // Don't set csrfToken - it should be generated
+
+    // Mock CSRF store request
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+    });
+
+    // Mock profile update request
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        status: 200,
+        message: "Profile updated",
+        body: {
+          id: "66e6fc6d339057ebf4c9701b",
+          email: "steve@rogers.com",
+          userName: "validuser",
+          firstName: "Steve",
+          lastName: "Rogers",
+          createdAt: "2024-09-15T15:25:33.375Z",
+          updatedAt: "2024-12-24T16:49:18.315Z",
+        },
+      }),
+    });
+
+    // Mock fetchUserProfile call
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        status: 200,
+        message: "Successfully got user profile data",
+        body: {
+          id: "66e6fc6d339057ebf4c9701b",
+          email: "steve@rogers.com",
+          userName: "validuser",
+          firstName: "Steve",
+          lastName: "Rogers",
+          createdAt: "2024-09-15T15:25:33.375Z",
+          updatedAt: "2024-12-24T16:49:18.315Z",
+          accounts: [],
+        },
+      }),
+    });
+
+    const result = await updateUserProfile("validuser", "valid-token");
+    expect(result.userName).toBe("validuser");
+
+    // Verify CSRF token was generated and stored
+    expect(sessionStorage.getItem("csrfToken")).toBeTruthy();
+  });
+});
+
+describe("Error Handling in initializeAuth", () => {
+  const mockDispatch = vi.fn();
+
+  beforeEach(() => {
+    mockDispatch.mockClear();
+    sessionStorage.clear();
+  });
+
+  test("logs out user if fetchUserProfile fails", async () => {
+    sessionStorage.setItem("authToken", "test-token");
+    sessionStorage.setItem("expiresAt", (Date.now() + 100000).toString());
+
+    // Mock API response failure
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      json: async () => ({
+        status: 401,
+        message: "Unauthorized",
+      }),
+    });
+
+    const initAuthThunk = initializeAuth();
+    await initAuthThunk(mockDispatch);
+
+    // Verify logoutUser was called due to failed profile fetch
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "users/logoutUser",
+      }),
+    );
+  });
+
+  test("uses stored username if available", async () => {
+    sessionStorage.setItem("authToken", "test-token");
+    sessionStorage.setItem("expiresAt", (Date.now() + 100000).toString());
+    sessionStorage.setItem("currentUserName", "StoredUsername");
+
+    // Mock API response
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        status: 200,
+        message: "Successfully got user profile data",
+        body: {
+          id: "66e6fc6d339057ebf4c9701b",
+          email: "steve@rogers.com",
+          userName: "OriginalUsername",
+          firstName: "Steve",
+          lastName: "Rogers",
+          createdAt: "2024-09-15T15:25:33.375Z",
+          updatedAt: "2024-12-24T16:49:18.315Z",
+        },
+      }),
+    });
+
+    const initAuthThunk = initializeAuth();
+    await initAuthThunk(mockDispatch);
+
+    // Check that setAuthState was called with the stored username
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "users/setAuthState",
+        payload: expect.objectContaining({
+          userName: "StoredUsername",
+        }),
       }),
     );
   });

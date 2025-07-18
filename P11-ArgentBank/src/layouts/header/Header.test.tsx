@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { BrowserRouter } from "react-router-dom";
@@ -14,6 +14,7 @@ interface RootState {
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
+const mockLocation = { pathname: "/" };
 
 vi.mock("react-router-dom", async () => {
   const actual =
@@ -23,6 +24,7 @@ vi.mock("react-router-dom", async () => {
   return {
     ...actual,
     useNavigate: () => mockNavigate,
+    useLocation: () => mockLocation,
   };
 });
 
@@ -127,5 +129,37 @@ describe("Header", () => {
     expect(siteMapLink).toBeInTheDocument();
     expect(siteMapLink.closest("a")).toHaveAttribute("href", "/sitemap");
     expect(siteMapLink.closest("a")).toHaveClass("skip-to-content");
+  });
+
+  test("handles sign out when button is clicked", () => {
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Header />
+        </BrowserRouter>
+      </Provider>,
+    );
+
+    const signOutButton = screen.getByRole("button", { name: /sign out/i });
+    fireEvent.click(signOutButton);
+
+    // Vérifier que la navigation a été appelée
+    expect(mockNavigate).toHaveBeenCalledWith("/");
+  });
+
+  test("logo has correct attributes on home page", () => {
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Header />
+        </BrowserRouter>
+      </Provider>,
+    );
+
+    const logoLink = screen.getByRole("link", { name: /go to home page/i });
+
+    // Sur la page d'accueil (mockLocation.pathname = "/"), le lien devrait avoir href="/"
+    expect(logoLink).toHaveAttribute("href", "/");
+    expect(logoLink).toHaveAttribute("aria-current", "page");
   });
 });

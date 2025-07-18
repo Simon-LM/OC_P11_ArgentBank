@@ -10,6 +10,9 @@ import reducer, {
   User,
   clearTransactionsError,
   selectAccount,
+  clearSearchResults,
+  setSearchSortOrder,
+  setSearchFilters,
 } from "./usersSlice";
 
 describe("usersSlice", () => {
@@ -199,5 +202,133 @@ describe("usersSlice", () => {
     const nextState = reducer(initialState, setAuthState(partialUser));
     expect(nextState.isAuthenticated).toBe(true);
     expect(nextState.currentUser).toEqual(partialUser);
+  });
+
+  test("devrait gérer clearSearchResults", () => {
+    const stateWithSearchResults: UsersState = {
+      ...initialState,
+      searchResults: [
+        {
+          id: "t1",
+          amount: 100,
+          description: "Test Transaction",
+          date: "2024-01-01",
+          category: "Food",
+          notes: "Test note",
+          type: "DEBIT",
+          createdAt: "2024-01-01",
+          updatedAt: "2024-01-01",
+          accountId: "123",
+        },
+      ],
+      searchStatus: "succeeded",
+      searchError: "Test error",
+      pagination: {
+        total: 1,
+        page: 1,
+        limit: 10,
+        pages: 1,
+      },
+    };
+
+    const nextState = reducer(stateWithSearchResults, clearSearchResults());
+    expect(nextState.searchResults).toEqual([]);
+    expect(nextState.searchStatus).toBe("idle");
+    expect(nextState.searchError).toBeNull();
+    expect(nextState.pagination).toBeNull();
+  });
+
+  test("devrait gérer setSearchSortOrder", () => {
+    const sortParams = {
+      sortBy: "amount",
+      sortOrder: "asc" as const,
+    };
+
+    const nextState = reducer(initialState, setSearchSortOrder(sortParams));
+    expect(nextState.currentSortBy).toBe("amount");
+    expect(nextState.currentSortOrder).toBe("asc");
+    expect(nextState.pagination).toEqual({
+      total: 0,
+      page: 1,
+      limit: 10,
+      pages: 0,
+    });
+  });
+
+  test("devrait gérer setSearchSortOrder avec pagination existante", () => {
+    const stateWithPagination: UsersState = {
+      ...initialState,
+      pagination: {
+        total: 50,
+        page: 3,
+        limit: 10,
+        pages: 5,
+      },
+    };
+
+    const sortParams = {
+      sortBy: "date",
+      sortOrder: "desc" as const,
+    };
+
+    const nextState = reducer(
+      stateWithPagination,
+      setSearchSortOrder(sortParams),
+    );
+    expect(nextState.currentSortBy).toBe("date");
+    expect(nextState.currentSortOrder).toBe("desc");
+    expect(nextState.pagination?.page).toBe(1); // Should reset to page 1
+    expect(nextState.pagination?.total).toBe(50); // Should keep other pagination values
+  });
+
+  test("devrait gérer setSearchFilters", () => {
+    const filters = {
+      category: "Food",
+      fromDate: "2024-01-01",
+      toDate: "2024-01-31",
+      minAmount: 10,
+      maxAmount: 1000,
+    };
+
+    const nextState = reducer(initialState, setSearchFilters(filters));
+    expect(nextState.pagination).toEqual({
+      total: 0,
+      page: 1,
+      limit: 10,
+      pages: 0,
+    });
+  });
+
+  test("devrait gérer setSearchFilters avec pagination existante", () => {
+    const stateWithPagination: UsersState = {
+      ...initialState,
+      pagination: {
+        total: 30,
+        page: 2,
+        limit: 10,
+        pages: 3,
+      },
+    };
+
+    const filters = {
+      category: "Entertainment",
+      type: "DEBIT" as const,
+    };
+
+    const nextState = reducer(stateWithPagination, setSearchFilters(filters));
+    expect(nextState.pagination?.page).toBe(1); // Should reset to page 1
+    expect(nextState.pagination?.total).toBe(30); // Should keep other pagination values
+  });
+
+  test("devrait gérer setSearchFilters avec filtres vides", () => {
+    const emptyFilters = {};
+
+    const nextState = reducer(initialState, setSearchFilters(emptyFilters));
+    expect(nextState.pagination).toEqual({
+      total: 0,
+      page: 1,
+      limit: 10,
+      pages: 0,
+    });
   });
 });

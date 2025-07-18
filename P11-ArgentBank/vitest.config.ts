@@ -24,6 +24,14 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json", "html", "clover", "json-summary"],
       reportsDirectory: "./coverage",
+      // Coverage thresholds - Quality gates for deployment
+      // Banking app = Critical project → High coverage required
+      thresholds: {
+        statements: 95, // Critical: 95%+ recommended for banking
+        branches: 90, // High: All decision paths tested
+        functions: 90, // High: All functions tested (increased from 85%)
+        lines: 95, // Critical: 95%+ recommended for banking
+      },
       exclude: [
         "api/lib/blacklist.js",
         "src/mockData/users.ts",
