@@ -174,7 +174,9 @@ describe("EditUserForm - Accessibility Tests (RGAA 4.1 Compliance)", () => {
 
     // Container should receive focus on mount (after timeout)
     await waitFor(() => {
-      const container = screen.getByRole("region");
+      const container = screen.getByRole("region", {
+        name: "Edit user information form",
+      });
       expect(container).toHaveAttribute("tabIndex", "0");
     });
 
@@ -214,7 +216,9 @@ describe("EditUserForm - Accessibility Tests (RGAA 4.1 Compliance)", () => {
     );
 
     // Focus the container
-    const container = screen.getByRole("region");
+    const container = screen.getByRole("region", {
+      name: "Edit user information form",
+    });
     container.focus();
 
     // Press Escape key
@@ -330,13 +334,26 @@ describe("EditUserForm - Accessibility Tests (RGAA 4.1 Compliance)", () => {
       />,
     );
 
-    // Disclaimer should have role="note"
-    const disclaimer = screen.getByRole("note");
+    // Il y a deux éléments avec role="note" - c'est conforme RGAA
+    const notes = screen.getAllByRole("note");
+    expect(notes).toHaveLength(2);
+
+    // Premier note : le disclaimer
+    const disclaimer = notes.find((note) =>
+      note.textContent?.includes("This is a demonstration site"),
+    );
     expect(disclaimer).toBeInTheDocument();
     expect(disclaimer).toHaveTextContent("This is a demonstration site");
 
+    // Deuxième note : le texte d'aide
+    const helpText = notes.find((note) =>
+      note.textContent?.includes("Max 10 chars"),
+    );
+    expect(helpText).toBeInTheDocument();
+    expect(helpText).toHaveTextContent("Max 10 chars: a-z, 0-9, _ and -");
+
     // Icon should be hidden from screen readers
-    const icon = disclaimer.querySelector('[aria-hidden="true"]');
+    const icon = disclaimer?.querySelector('[aria-hidden="true"]');
     expect(icon).toBeInTheDocument();
   });
 });

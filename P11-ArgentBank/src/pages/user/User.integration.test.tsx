@@ -474,4 +474,69 @@ describe("User Component - Tests d'intégration", () => {
     // Verify that updateUserProfile was not called
     expect(authService.updateUserProfile).not.toHaveBeenCalled();
   });
+
+  test("handles global search toggle with focus management", async () => {
+    // Test case 1: With search results - should focus on table
+    const mockTransactionsWithResults = Array.from({ length: 5 }, (_, index) =>
+      createMockTransaction(index),
+    );
+
+    renderUser({
+      searchResults: mockTransactionsWithResults,
+      searchStatus: "succeeded",
+      selectedAccountId: "123",
+    });
+
+    // Find and click the global search button
+    const globalSearchButton = screen.getByRole("button", {
+      name: /global search/i,
+    });
+    expect(globalSearchButton).toBeInTheDocument();
+
+    fireEvent.click(globalSearchButton);
+
+    // Wait for table to be rendered when results exist
+    await waitFor(
+      () => {
+        const table = screen.getByRole("table");
+        expect(table).toBeInTheDocument();
+      },
+      { timeout: 10000 },
+    );
+
+    // Verify feedback message
+    expect(screen.getByText(/global search activated/i)).toBeInTheDocument();
+  });
+
+  test("handles global search toggle with no results - keeps focus on search input", async () => {
+    // Test case 2: No search results - should keep focus on search input
+    renderUser({
+      searchResults: [],
+      searchStatus: "succeeded",
+      selectedAccountId: "123",
+    });
+
+    // Find and click the global search button
+    const globalSearchButton = screen.getByRole("button", {
+      name: /global search/i,
+    });
+    expect(globalSearchButton).toBeInTheDocument();
+
+    fireEvent.click(globalSearchButton);
+
+    // Wait for the "No transactions found" message to appear
+    await waitFor(
+      () => {
+        expect(screen.getByText(/no transactions found/i)).toBeInTheDocument();
+      },
+      { timeout: 10000 },
+    );
+
+    // Verify feedback message
+    expect(screen.getByText(/global search activated/i)).toBeInTheDocument();
+
+    // Verify table is NOT rendered (since no results)
+    const table = screen.queryByRole("table");
+    expect(table).not.toBeInTheDocument();
+  });
 });

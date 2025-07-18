@@ -185,6 +185,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
             <span
               id="username-requirements"
               className={editUserForm["edit-user-form__help-text"]}
+              role="note"
+              aria-atomic="true"
             >
               Max 10 chars: a-z, 0-9, _ and -
             </span>

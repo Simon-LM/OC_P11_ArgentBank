@@ -456,6 +456,13 @@ const User: React.FC = () => {
                       "Global search activated. Showing transactions from all accounts.",
                     );
                     setTimeout(() => setActionFeedback(""), 5000);
+
+                    // Navigate to results if transactions exist, otherwise stay on search input
+                    setTimeout(() => {
+                      if (searchResults.length > 0) {
+                        navigateToSearchResults();
+                      }
+                    }, 200);
                   }}
                   onNavigateToResults={navigateToSearchResults}
                 />
@@ -558,10 +565,6 @@ const User: React.FC = () => {
                         </tbody>
                       </table>
                     )}
-
-                    <div className="sr-only" role="status" aria-live="polite">
-                      {actionFeedback}
-                    </div>
 
                     {/* --- Pagination Controls --- */}
                     {pagination.pages > 1 && (
