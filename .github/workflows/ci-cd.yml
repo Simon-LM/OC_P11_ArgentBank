@@ -229,8 +229,11 @@ jobs:
             exit 1
           }
 
-          # Install Pa11y and dependencies globally - use full puppeteer with bundled Chrome
-          npm install -g pa11y@8.0.0 puppeteer@24.10.1
+          # Clear npm cache to avoid corrupted dependencies
+          npm cache clean --force
+
+          # Install Pa11y and dependencies globally with specific working versions
+          npm install -g pa11y@8.0.0 puppeteer@24.10.1 --no-optional
 
           # Configure Puppeteer environment for CI
           export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
