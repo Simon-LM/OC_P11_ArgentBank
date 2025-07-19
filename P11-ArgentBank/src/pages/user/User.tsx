@@ -17,7 +17,9 @@ import {
 import { updateUserProfile } from "../../utils/authService";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { TransactionType } from "../../types/transaction";
-import TransactionSearch from "../../components/TransactionSearch/TransactionSearch";
+import TransactionSearch, {
+  TransactionSearchRef,
+} from "../../components/TransactionSearch/TransactionSearch";
 import { useMatomo, isMatomoLoaded } from "../../hooks/useMatomo/useMatomo";
 
 const User: React.FC = () => {
@@ -27,6 +29,7 @@ const User: React.FC = () => {
   const [actionFeedback, setActionFeedback] = useState("");
   const { trackEvent, trackPageView } = useMatomo();
   const tableHeadingRef = useRef<HTMLTableElement | null>(null);
+  const transactionSearchRef = useRef<TransactionSearchRef>(null);
 
   const { searchResults, pagination, searchStatus, searchError } = useSelector(
     (state: RootState) => ({
@@ -261,10 +264,16 @@ const User: React.FC = () => {
 
   const navigateToSearchResults = () => {
     if (tableHeadingRef.current) {
-      tableHeadingRef.current.focus();
+      // First announce the number of transactions
       setActionFeedback(
         `${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} found. Use arrow keys to navigate.`,
       );
+
+      // Then move focus after a delay to allow the announcement
+      setTimeout(() => {
+        tableHeadingRef.current?.focus();
+      }, 300);
+
       setTimeout(() => setActionFeedback(""), 5000);
     }
   };
@@ -305,7 +314,7 @@ const User: React.FC = () => {
               )}
             </h2>
 
-            {/* Element de test pour Pa11y - mauvais contraste intentionnel */}
+            {/* Test element for Pa11y - intentional poor contrast */}
             {/* <div
 							style={{
 								color: "#ccc",
@@ -333,7 +342,7 @@ const User: React.FC = () => {
               )}
             </div>
 
-            {/* --- Section Comptes --- */}
+            {/* --- Accounts Section --- */}
 
             <section aria-labelledby="accounts-heading">
               <h2 id="accounts-heading" className={user["section__heading"]}>
@@ -417,7 +426,7 @@ const User: React.FC = () => {
               )}
             </section>
 
-            {/* --- Section Transactions --- */}
+            {/* --- Transactions Section --- */}
             <>
               <section aria-labelledby="transactions-heading">
                 <h2
@@ -425,7 +434,6 @@ const User: React.FC = () => {
                   className={user["section__heading"]}
                   ref={transactionHeadingRef}
                   tabIndex={-1}
-                  aria-live="polite"
                 >
                   {selectedAccount ? "Transaction History" : "All Transactions"}
                   {selectedAccount && (
@@ -436,6 +444,7 @@ const User: React.FC = () => {
                 </h2>
 
                 <TransactionSearch
+                  ref={transactionSearchRef}
                   searchParams={searchParams}
                   onSearchChange={(newParams) => {
                     setSearchParams((prev) => ({
@@ -457,10 +466,13 @@ const User: React.FC = () => {
                     );
                     setTimeout(() => setActionFeedback(""), 5000);
 
-                    // Navigate to results if transactions exist, otherwise stay on search input
+                    // Navigate to results if transactions exist, otherwise focus search input
                     setTimeout(() => {
                       if (searchResults.length > 0) {
                         navigateToSearchResults();
+                      } else {
+                        // Focus back to search input if no results found
+                        transactionSearchRef.current?.focusSearchInput();
                       }
                     }, 200);
                   }}
@@ -476,7 +488,7 @@ const User: React.FC = () => {
 
                 {searchStatus === "succeeded" && (
                   <>
-                    {/* Afficher les transactions de la page actuelle */}
+                    {/* Display transactions for the current page */}
                     {searchResults.length === 0 ? (
                       <p role="status" aria-live="polite">
                         {selectedAccountId
@@ -491,8 +503,8 @@ const User: React.FC = () => {
                       >
                         <caption className="sr-only">
                           {selectedAccount
-                            ? `Transaction history for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}.`
-                            : `Transaction history for all accounts.`}
+                            ? `${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} found for ${selectedAccount.type} account ending in ${selectedAccount.accountNumber}.`
+                            : `${searchResults.length} transaction${searchResults.length !== 1 ? "s" : ""} found across all accounts.`}
                         </caption>
                         <thead className="sr-only">
                           <tr>
