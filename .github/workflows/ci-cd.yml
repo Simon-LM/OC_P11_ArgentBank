@@ -232,8 +232,11 @@ jobs:
           # Clear npm cache to avoid corrupted dependencies
           npm cache clean --force
 
+          # Fix for 'is' package cross-platform issue - install specific working version
+          npm install -g is@3.3.0 --force
+
           # Install Pa11y and dependencies globally with specific working versions
-          npm install -g pa11y@8.0.0 puppeteer@24.10.1 --no-optional
+          npm install -g pa11y@8.0.0 puppeteer@24.10.1 --no-optional --force
 
           # Configure Puppeteer environment for CI
           export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
