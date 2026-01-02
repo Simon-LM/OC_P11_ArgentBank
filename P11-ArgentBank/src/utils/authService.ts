@@ -170,10 +170,7 @@ export const fetchUserProfile = async (token: string) => {
 
     return user;
   } catch (error) {
-    // Log only in development to avoid false positives in Lighthouse audits
-    if (import.meta.env.DEV) {
-      console.error("Error fetching user profile:", error);
-    }
+    console.error("Error fetching user profile:", error);
     throw error;
   }
 };
@@ -236,10 +233,7 @@ export const updateUserProfile = async (userName: string, token: string) => {
     const updatedProfile = await fetchUserProfile(token);
     return updatedProfile;
   } catch (error) {
-    // Log only in development to avoid false positives in Lighthouse audits
-    if (import.meta.env.DEV) {
-      console.error("Error updating user profile:", error);
-    }
+    console.error("Error updating user profile:", error);
     throw error;
   }
 };
@@ -262,9 +256,8 @@ export const initializeAuth = () => {
             userProfile.userName = storedUserName;
           }
           dispatch(setAuthState(userProfile));
-        } catch (_error) {
-          // Silent logout for expired/invalid tokens (expected behavior for non-authenticated users)
-          // No console.error to avoid false positives in Lighthouse audits
+        } catch (error) {
+          console.error("Failed to initialize authentication:", error);
           dispatch(logoutUser());
         }
       }

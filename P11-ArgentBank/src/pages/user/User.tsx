@@ -191,7 +191,7 @@ const User: React.FC = () => {
   const handleSave = async (data: { userName: string }) => {
     const token = sessionStorage.getItem("authToken");
     if (!token) {
-      // User should be redirected by ProtectedRoute, but handle gracefully
+      console.error("No auth token found.");
       return;
     }
     try {
@@ -205,11 +205,7 @@ const User: React.FC = () => {
         name: "Username updated",
       });
     } catch (error) {
-      // Update failed, but error is already handled by updateUserProfile
-      // Log only for development debugging
-      if (import.meta.env.DEV) {
-        console.error("Failed to update user profile:", error);
-      }
+      console.error("Failed to update user profile:", error);
     }
   };
 
