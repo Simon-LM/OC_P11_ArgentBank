@@ -100,7 +100,7 @@ const SignIn: React.FC = () => {
           <FaInfoCircle aria-hidden="true" />
           <span>
             <strong>Demo credentials:</strong>
-            tony@stark.com / password123
+            steve@rogers.com / Louvre123
           </span>
         </p>
 
