@@ -59,7 +59,7 @@ describe("SignIn Component", () => {
 
     expect(screen.getByText(/Demo credentials/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/tony@stark.com \/ password123/i),
+      screen.getByText(/steve@rogers.com \/ Louvre123/i),
     ).toBeInTheDocument();
   });
 });
