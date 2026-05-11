@@ -1,6 +1,7 @@
 /** @format */
 
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { buildApiUrl } from "../../utils/api";
 
 export interface Account {
   id: string;
@@ -144,8 +145,7 @@ export const fetchAccounts = createAsyncThunk<
     return rejectWithValue("No authentication token found");
   }
   try {
-    const response = await fetch("/api/accounts", {
-      // Call the new route
+    const response = await fetch(buildApiUrl("/accounts"), {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -185,7 +185,7 @@ export const fetchTransactions = createAsyncThunk<
     return rejectWithValue("No authentication token found");
   }
   try {
-    const response = await fetch("/api/transactions", {
+    const response = await fetch(buildApiUrl("/transactions"), {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -245,12 +245,15 @@ export const searchTransactions = createAsyncThunk<
     queryParams.set("sortBy", params.sortBy || "date");
     queryParams.set("sortOrder", params.sortOrder || "desc");
 
-    const response = await fetch(`/api/transactions/search?${queryParams}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    const response = await fetch(
+      buildApiUrl(`/transactions/search?${queryParams.toString()}`),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json();

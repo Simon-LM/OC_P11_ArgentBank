@@ -4,6 +4,10 @@
   "rewrites": [
     { "source": "/robots.txt", "destination": "/robots.txt" },
     { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
+    {
+      "source": "/api/(.*)",
+      "destination": "https://db.lostintab.com/api/$1"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

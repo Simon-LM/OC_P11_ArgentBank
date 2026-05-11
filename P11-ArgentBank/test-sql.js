@@ -1,21 +1,25 @@
 /** @format */
 
+import "dotenv/config";
 import pg from "pg";
 const { Client } = pg;
 
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is missing");
+}
+
+const requiresSsl = process.env.DATABASE_URL.includes("sslmode=require");
+
 const client = new Client({
-  host: "51.38.236.82",
-  port: 5432,
-  user: "argentbank_user",
-  password: "azRyPtf0A&w^RZkfJy", // adapte si besoin
-  database: "argentbank",
+  connectionString: process.env.DATABASE_URL,
+  ...(requiresSsl ? { ssl: { rejectUnauthorized: false } } : {}),
 });
 
 client
   .connect()
-  .then(() => client.query('SELECT * FROM "User"'))
+  .then(() => client.query("SELECT 1 AS ok"))
   .then((res) => {
-    console.log(res.rows);
+    console.log(res.rows[0]);
     return client.end();
   })
   .catch((err) => {

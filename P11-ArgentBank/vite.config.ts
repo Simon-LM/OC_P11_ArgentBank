@@ -27,6 +27,13 @@ export default defineConfig({
     }),
   ],
   server: {
+    proxy: {
+      "/api": {
+        target: "https://db.lostintab.com",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
     watch: {
       // Ignore certains dossiers pour éviter trop de surveillance de fichiers
       ignored: [

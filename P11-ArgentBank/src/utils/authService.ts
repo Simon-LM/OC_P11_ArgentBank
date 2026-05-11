@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { setAuthState, logoutUser } from "../store/slices/usersSlice";
 import { AppDispatch } from "../store/Store";
+import { buildApiUrl } from "./api";
 import { usernameBlacklist } from "./blacklist";
 
 // Schema for login API response
@@ -69,10 +70,7 @@ export const loginUser = async (credentials: LoginCredentials) => {
   };
 
   try {
-    const response = await fetch(
-      "/api/user/login", // Modification uniquement de la route
-      requestOptions,
-    );
+    const response = await fetch(buildApiUrl("/user/login"), requestOptions);
 
     if (!response.ok) {
       // Attempt to read the error message, prioritizing JSON but falling back to text
@@ -132,8 +130,7 @@ export const loginUser = async (credentials: LoginCredentials) => {
 // Function to fetch user profile after login
 export const fetchUserProfile = async (token: string) => {
   try {
-    const response = await fetch("/api/user/profile", {
-      // Route modification
+    const response = await fetch(buildApiUrl("/user/profile"), {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -201,7 +198,7 @@ export const updateUserProfile = async (userName: string, token: string) => {
       throw new Error("User ID not found in session");
     }
 
-    await fetch("/api/csrf/store", {
+    await fetch(buildApiUrl("/csrf/store"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -213,7 +210,7 @@ export const updateUserProfile = async (userName: string, token: string) => {
       }),
     });
 
-    const response = await fetch("/api/user/profile", {
+    const response = await fetch(buildApiUrl("/user/profile"), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

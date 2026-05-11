@@ -22,10 +22,10 @@ describe("User Profile Management", () => {
   });
 
   beforeEach(function () {
-    cy.intercept("POST", "/api/user/login").as("loginRequest");
-    cy.intercept("GET", "/api/user/profile").as("profileRequest");
-    cy.intercept("GET", "/api/accounts").as("accountsRequest");
-    cy.intercept("GET", "/api/transactions/search*").as(
+    cy.intercept("POST", "**/api/user/login").as("loginRequest");
+    cy.intercept("GET", "**/api/user/profile").as("profileRequest");
+    cy.intercept("GET", "**/api/accounts").as("accountsRequest");
+    cy.intercept("GET", "**/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
     cy.wait(2000);

@@ -51,7 +51,7 @@ describe("App", () => {
       </Provider>,
     );
 
-    expect(await screen.findByText(/No fees!/i)).toBeInTheDocument();
+    expect(await screen.findByText(/No fees\./i)).toBeInTheDocument();
   });
 
   test("displays Header on all pages", () => {

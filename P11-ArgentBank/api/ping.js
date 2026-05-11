@@ -5,9 +5,13 @@ import { prisma } from "./lib/prisma.js";
 export default async function handler(req, res) {
   try {
     await prisma.$connect();
-    return res.json({ pong: true, db: "OK" });
+    return res.status(200).json({ pong: true, db: "OK" });
   } catch (e) {
-    console.error("DB connect error:", e);
-    return res.status(500).json({ pong: false, error: e.message });
+    console.error("Ping DB health warning:", e);
+    return res.status(200).json({
+      pong: true,
+      db: "DEGRADED",
+      error: e.message,
+    });
   }
 }

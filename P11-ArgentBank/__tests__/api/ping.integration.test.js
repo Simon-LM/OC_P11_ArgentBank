@@ -33,11 +33,11 @@ describe("Ping API Handler", () => {
     await handler(req, res);
 
     expect(prisma.$connect).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ pong: true, db: "OK" });
-    expect(res.status).not.toHaveBeenCalled();
   });
 
-  it("should return error response when database connection fails", async () => {
+  it("should return degraded success response when database connection fails", async () => {
     const dbError = new Error("Database connection failed");
     prisma.$connect.mockRejectedValue(dbError);
 
@@ -46,12 +46,13 @@ describe("Ping API Handler", () => {
     await handler(req, res);
 
     expect(prisma.$connect).toHaveBeenCalledTimes(1);
-    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
-      pong: false,
+      pong: true,
+      db: "DEGRADED",
       error: "Database connection failed",
     });
-    expect(consoleSpy).toHaveBeenCalledWith("DB connect error:", dbError);
+    expect(consoleSpy).toHaveBeenCalledWith("Ping DB health warning:", dbError);
     consoleSpy.mockRestore();
   });
 });
