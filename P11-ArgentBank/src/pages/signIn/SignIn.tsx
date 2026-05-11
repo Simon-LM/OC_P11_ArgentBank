@@ -129,7 +129,7 @@ const SignIn: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               aria-required="true"
-              autoComplete="username"
+              autoComplete="email"
               aria-describedby={
                 error && error.includes("email") ? "error-message" : undefined
               }

@@ -176,7 +176,7 @@ describe("SignIn Component - RGAA Accessibility Tests (Test 3a)", () => {
       });
 
       // Verify autocomplete attributes according to RGAA 11.13
-      expect(emailField).toHaveAttribute("autoComplete", "username");
+      expect(emailField).toHaveAttribute("autoComplete", "email");
       expect(passwordField).toHaveAttribute("autoComplete", "current-password");
     });
 

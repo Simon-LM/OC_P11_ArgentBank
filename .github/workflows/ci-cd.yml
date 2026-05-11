@@ -275,7 +275,7 @@ jobs:
               
               // Wait for form to be visible
               console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for form to be visible >>>>>');
-              await page.waitForSelector('form', { visible: true, timeout: 10000 });
+              await page.waitForSelector('form[aria-labelledby="signin-title"]', { visible: true, timeout: 15000 });
               console.log('<<<<< PA11Y AUTH SCRIPT: Form is visible >>>>>');
               
               // Wait for email field and type credentials
@@ -291,21 +291,30 @@ jobs:
               // Wait for submit button and click
               console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for submit button >>>>>');
               await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
+              await page.waitForFunction(() => {
+                const button = document.querySelector('button[type="submit"]');
+                return button && !button.disabled;
+              }, { timeout: 10000 });
               console.log('<<<<< PA11Y AUTH SCRIPT: Submit button found >>>>>');
               
-              // Click submit and wait for navigation
-              console.log('<<<<< PA11Y AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
-              await Promise.all([
-                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
-                page.click('button[type="submit"]')
-              ]);
+              // React routing may update the URL without a full network navigation.
+              console.log('<<<<< PA11Y AUTH SCRIPT: Clicking submit button and waiting for SPA redirect >>>>>');
+              await page.click('button[type="submit"]');
+              await page.waitForFunction(
+                () => window.location.pathname === '/user',
+                { timeout: 30000 }
+              );
               
               const currentUrl = page.url();
               console.log(`<<<<< PA11Y AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+
+              if (!currentUrl.includes('/user')) {
+                throw new Error(`Authentication failed. Expected /user URL, got ${currentUrl}`);
+              }
               
               // Wait for user page content to confirm successful login
               console.log('<<<<< PA11Y AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
-              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 10000 });
+              await page.waitForSelector('h2[class*="user__title"]', { visible: true, timeout: 15000 });
               console.log('<<<<< PA11Y AUTH SCRIPT: User page content found. Authentication successful. >>>>>');
               
               // Capture page title for verification
