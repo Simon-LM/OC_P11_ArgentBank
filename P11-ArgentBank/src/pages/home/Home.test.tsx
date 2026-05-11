@@ -23,7 +23,7 @@ describe("Home Component", () => {
         /A young tree sprout growing in a glass jar filled with coins/,
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText("No fees.")).toBeInTheDocument();
+    expect(screen.getByText("No fees!")).toBeInTheDocument();
     expect(screen.getByText("No minimum deposit.")).toBeInTheDocument();
     expect(screen.getByText("High interest rates.")).toBeInTheDocument();
     expect(

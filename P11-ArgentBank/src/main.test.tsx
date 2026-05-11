@@ -33,7 +33,7 @@ describe("Root rendering", () => {
     );
 
     // Check if specific App elements are rendered
-    expect(getByText(/No fees./i)).toBeInTheDocument();
+    expect(getByText(/No fees!/i)).toBeInTheDocument();
   });
 });
 
