@@ -111,7 +111,7 @@ const Home: React.FC = () => {
         </div>
         <section className="hero__content">
           <h2 className="sr-only">Banking Benefits</h2>
-          <p className="hero__subtitle">No fees.</p>
+          <p className="hero__subtitle">No fees!</p>
           <p className="hero__subtitle">No minimum deposit.</p>
           <p className="hero__subtitle">High interest rates.</p>
           <p className="hero__text">
