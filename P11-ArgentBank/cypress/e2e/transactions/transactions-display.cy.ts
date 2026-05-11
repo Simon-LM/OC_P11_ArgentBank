@@ -45,93 +45,49 @@ describe("Transaction Display", () => {
     cy.intercept("GET", "/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
-    // Wait a bit before each login to avoid Vercel free rate limiting
-    cy.wait(2000);
-    cy.session("validUserSession", () => {
-      cy.fixture<User[]>("users.json").as("usersData");
-      cy.get<User[]>("@usersData").then((usersData) => {
-        const validUser = usersData.find((user) => user.type === "valid");
-        if (!validUser || !validUser.email || !validUser.password) {
-          throw new Error(
-            "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de transactions-display.",
-          );
-        }
-        cy.visitWithBypass("/signin");
-        cy.url().should("include", "/signin");
-        cy.screenshot("debug-signin-page");
-        cy.get("input#email").should("be.visible");
-        cy.get("input#email").type(validUser.email);
-        cy.get("input#password").type(validUser.password);
-        cy.get("form").contains("button", "Connect").click();
-        cy.wait("@loginRequest").then((interception) => {
-          cy.log(
-            "[DEBUG] login response:",
-            JSON.stringify(interception.response?.body),
-          );
-          const status = interception.response?.statusCode;
-          if (status !== 200) {
-            throw new Error(
-              `[LOGIN ERROR] Login API returned status ${status}. Body: ${JSON.stringify(interception.response?.body)}`,
-            );
-          }
-          const token =
-            interception.response?.body?.body?.token ||
-            interception.response?.body?.token;
-          if (
-            !token ||
-            typeof token !== "string" ||
-            !/^([\w-]+\.){2}[\w-]+$/.test(token)
-          ) {
-            throw new Error(
-              `[LOGIN ERROR] Token JWT manquant ou malformé: ${token}`,
-            );
-          }
-        });
-        cy.url({ timeout: 20000 })
-          .should("include", "/user")
-          .then((url) => {
-            if (!url.includes("/user")) {
-              cy.log(
-                `[DEBUG] Redirection après login échouée, URL actuelle: ${url}`,
-              );
-            }
+    cy.fixture<User[]>("users.json").then((usersData) => {
+      const validUser = usersData.find((user) => user.type === "valid");
+      if (
+        !validUser ||
+        !validUser.email ||
+        !validUser.password ||
+        !validUser.userName
+      ) {
+        throw new Error(
+          "Utilisateur valide non trouvé ou informations manquantes (email, password) dans les fixtures pour le beforeEach de transactions-display.",
+        );
+      }
+
+      cy.session(
+        "validUserSession",
+        () => {
+          cy.visitWithBypass("/signin");
+          cy.smartLogin(validUser.email, validUser.password, {
+            timeout: 20000,
           });
-        if (!validUser.userName) {
+          cy.get(".header__nav-item")
+            .contains(validUser.userName)
+            .should("be.visible");
           cy.window().then((win) => {
-            cy.log(
-              "[DEBUG] sessionStorage:",
-              JSON.stringify(win.sessionStorage),
-            );
-            cy.log("[DEBUG] localStorage:", JSON.stringify(win.localStorage));
+            const token = win.sessionStorage.getItem("authToken");
+            const expiresAt = win.sessionStorage.getItem("expiresAt");
+            cy.wrap(token).should("be.a", "string").and("not.be.empty");
+            cy.wrap(expiresAt).should("be.a", "string").and("not.be.empty");
           });
-          cy.get("body").then(($body) => {
-            cy.log("[DEBUG] page HTML:", $body.html().slice(0, 1000));
-          });
-          throw new Error(
-            "Le nom d'utilisateur (userName) est manquant dans les données de fixture de l'utilisateur valide. Vérifiez la fixture users.json et la réponse de l'API login.",
-          );
-        }
-        cy.get(".header__nav-item")
-          .contains(validUser.userName)
-          .should("be.visible");
-        cy.window().then((win) => {
-          const authToken = win.sessionStorage.getItem("authToken");
-          cy.log("authToken after login:", authToken);
-          cy.wrap(authToken, { log: false })
-            .should("be.a", "string")
-            .and("not.be.empty");
-          const isJwt = /^([\w-]+\.){2}[\w-]+$/.test(authToken || "");
-          assert.isTrue(
-            isJwt,
-            `[LOGIN ERROR] authToken in sessionStorage is not a valid JWT: ${authToken}`,
-          );
-        });
-      });
+        },
+        { cacheAcrossSpecs: Cypress.env("CI") === "true" },
+      );
+
+      cy.visitWithBypass("/user");
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
     });
   });
 
   it("devrait afficher la liste des transactions de tous les comptes par défaut, triées par date décroissante", () => {
-    cy.visit("/user");
+    cy.location("pathname").should("eq", "/user");
+    cy.wait("@searchTransactionsRequest");
     // Injecter axe-core pour les tests d'accessibilité
     cy.injectAxe();
     // Test d'accessibilité de la page des transactions (ignorer les violations de contraste connues)
@@ -202,7 +158,7 @@ describe("Transaction Display", () => {
   });
 
   it("devrait afficher les transactions du compte sélectionné et mettre à jour l'URL", () => {
-    cy.visit("/user");
+    cy.location("pathname").should("eq", "/user");
     const targetAccountNumber = "8949";
     const accountSelector = `${selectors.accountButton}[aria-label*="${targetAccountNumber}"]`;
 
@@ -288,7 +244,8 @@ describe("Transaction Display", () => {
   });
 
   it("devrait être accessible sur la page des transactions", () => {
-    cy.visit("/user");
+    cy.location("pathname").should("eq", "/user");
+    cy.wait("@searchTransactionsRequest");
     // Injecter axe-core pour les tests d'accessibilité
     cy.injectAxe();
 

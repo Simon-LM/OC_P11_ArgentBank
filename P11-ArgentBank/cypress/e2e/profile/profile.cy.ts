@@ -28,50 +28,34 @@ describe("User Profile Management", () => {
     cy.intercept("GET", "**/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
-    cy.wait(2000);
-    cy.session("validUserSession", () => {
-      cy.visitWithBypass("/signin");
-      cy.url().should("include", "/signin");
-      cy.get("input#email")
-        .should("be.visible")
-        .type(validUser!.email as string);
-      cy.get("input#password").type(validUser!.password as string);
-      cy.get("form").contains("button", "Connect").click();
-      cy.wait("@loginRequest").then((interception) => {
-        const status = interception.response?.statusCode;
-        if (status !== 200) {
-          throw new Error(`[LOGIN ERROR] Login API returned status ${status}`);
-        }
-        const token =
-          interception.response?.body?.body?.token ||
-          interception.response?.body?.token;
-        if (
-          !token ||
-          typeof token !== "string" ||
-          !/^([\w-]+\.){2}[\w-]+$/.test(token)
-        ) {
-          throw new Error(
-            `[LOGIN ERROR] Token JWT manquant ou malformé: ${token}`,
-          );
-        }
-      });
-      cy.url({ timeout: 20000 }).should("include", "/user");
-      cy.get(".header__nav-item")
-        .contains(validUser!.userName as string)
-        .should("be.visible");
-      cy.window().then((win) => {
-        const authToken = win.sessionStorage.getItem("authToken");
-        // Correction : expression attendue
-        void expect(authToken, "authToken in sessionStorage").to.be.a("string")
-          .and.not.be.empty;
-        const isJwt = /^([\w-]+\.){2}[\w-]+$/.test(authToken || "");
-        assert.isTrue(
-          isJwt,
-          `[LOGIN ERROR] authToken in sessionStorage is not un JWT: ${authToken}`,
+    cy.session(
+      "validUserSession",
+      () => {
+        cy.visitWithBypass("/signin");
+        cy.smartLogin(
+          validUser!.email as string,
+          validUser!.password as string,
+          {
+            timeout: 20000,
+          },
         );
-      });
-    });
-    cy.visit("/user");
+        cy.get(".header__nav-item")
+          .contains(validUser!.userName as string)
+          .should("be.visible");
+        cy.window().then((win) => {
+          const token = win.sessionStorage.getItem("authToken");
+          const expiresAt = win.sessionStorage.getItem("expiresAt");
+          void expect(token, "authToken in sessionStorage").to.be.a("string")
+            .and.not.be.empty;
+          void expect(expiresAt, "expiresAt in sessionStorage").to.be.a(
+            "string",
+          ).and.not.be.empty;
+        });
+      },
+      { cacheAcrossSpecs: Cypress.env("CI") === "true" },
+    );
+
+    cy.visitWithBypass("/user");
     cy.url().should("include", "/user");
     cy.get(".header__nav-item")
       .contains(validUser!.userName as string)

@@ -6,53 +6,35 @@
 import type { User } from "../../support/types";
 
 describe("Authentication", () => {
-  beforeEach(() => {
-    cy.session("login-valid-user-session", () => {
-      cy.fixture<User[]>("users.json").then((usersData) => {
-        const validUser = usersData.find((user) => user.type === "valid");
-        if (
-          !validUser ||
-          !validUser.email ||
-          !validUser.password ||
-          !validUser.userName
-        ) {
-          throw new Error(
-            "Valid user not found or missing information in fixtures.",
-          );
-        }
-        cy.visit("/signin");
-        cy.get('[data-cy="email-input"], input#email').type(validUser.email);
-        cy.get('[data-cy="password-input"], input#password').type(
-          validUser.password,
-        );
-        cy.get('[data-cy="login-button"], form')
-          .contains("button", "Connect")
-          .click();
-        cy.url().should("include", "/user");
-        cy.get(".header__nav-item")
-          .contains(validUser.userName)
-          .should("be.visible");
-        cy.window().then((win) => {
-          const token =
-            win.sessionStorage.getItem("authToken") ||
-            win.localStorage.getItem("token");
-          cy.wrap(token).should("be.a", "string").and("not.be.empty");
-        });
-      });
-    });
-    cy.visit("/user");
-  });
-
   it("should allow a user to sign in with valid credentials", () => {
-    // Inject axe-core for accessibility tests
-    cy.injectAxe();
-    cy.checkA11y();
-    // Cypress session has already logged in the user, just need to test the UI
-    cy.get('[data-cy="login-button"], form').should("not.exist");
-    cy.url().should("include", "/user");
-    cy.checkA11y();
-    // Optional: check header if needed
-    // cy.get('.header__nav-item').should('be.visible');
+    cy.fixture<User[]>("users.json").then((usersData) => {
+      const validUser = usersData.find((user) => user.type === "valid");
+      if (
+        !validUser ||
+        !validUser.email ||
+        !validUser.password ||
+        !validUser.userName
+      ) {
+        throw new Error(
+          "Valid user not found or missing information in fixtures.",
+        );
+      }
+
+      cy.visitWithBypass("/signin");
+      cy.injectAxe();
+      cy.checkA11y();
+      cy.smartLogin(validUser.email, validUser.password, { timeout: 20000 });
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
+      cy.window().then((win) => {
+        const token =
+          win.sessionStorage.getItem("authToken") ||
+          win.localStorage.getItem("token");
+        cy.wrap(token).should("be.a", "string").and("not.be.empty");
+      });
+      cy.checkA11y();
+    });
   });
 
   it("should display an error message with invalid credentials", () => {
@@ -63,7 +45,7 @@ describe("Authentication", () => {
           "Invalid user not found or missing information (email, password) in fixtures for invalid credentials test.",
         );
       }
-      cy.visit("/signin");
+      cy.visitWithBypass("/signin");
       cy.injectAxe();
       cy.checkA11y();
       cy.get('[data-cy="email-input"], input#email').type(invalidUser.email);
@@ -82,7 +64,7 @@ describe("Authentication", () => {
     });
   });
   it("should be accessible on the login page", () => {
-    cy.visit("/signin");
+    cy.visitWithBypass("/signin");
     // Inject axe-core for accessibility tests
     cy.injectAxe();
     cy.checkA11y();

@@ -47,10 +47,12 @@ Cypress.Commands.add(
       });
     }).as("loginRequest");
 
+    const loginTimeout = options.timeout || 15000;
+
     // Navigate to signin if not already there
     cy.url().then((url) => {
       if (!url.includes("/signin")) {
-        cy.visit("/signin");
+        cy.visitWithBypass("/signin");
       }
     });
 
@@ -71,19 +73,31 @@ Cypress.Commands.add(
       .should("be.visible")
       .click();
 
+    const waitForSuccessfulLogin = (attempt = 0): void => {
+      cy.wait("@loginRequest", { timeout: loginTimeout }).then(
+        (interception) => {
+          if (interception.response?.statusCode === 429) {
+            if (attempt >= 2) {
+              throw new Error(
+                `[LOGIN ERROR] Login API returned status 429 after ${attempt + 1} attempts`,
+              );
+            }
+
+            cy.wait(5000);
+            cy.get(
+              '[data-cy="login-button"], form button:contains("Connect")',
+            ).click();
+            waitForSuccessfulLogin(attempt + 1);
+            return;
+          }
+
+          expect(interception.response?.statusCode).to.eq(200);
+        },
+      );
+    };
+
     // Wait for login request and handle potential rate limiting
-    cy.wait("@loginRequest", { timeout: options.timeout || 15000 }).then(
-      (interception) => {
-        if (interception.response?.statusCode === 429) {
-          // If rate limited, wait and retry once
-          cy.wait(3000);
-          cy.get(
-            '[data-cy="login-button"], form button:contains("Connect")',
-          ).click();
-          cy.wait("@loginRequest", { timeout: 15000 });
-        }
-      },
-    );
+    waitForSuccessfulLogin();
 
     // Verify successful login
     cy.url({ timeout: 15000 }).should("include", "/user");
@@ -104,7 +118,8 @@ Cypress.Commands.add(
     const sessionKey = options.sessionId
       ? `${baseSessionKey}-${options.sessionId}`
       : baseSessionKey;
-    const cacheAcrossSpecs = options.cacheAcrossSpecs ?? false; // Default to false for safety
+    const cacheAcrossSpecs =
+      options.cacheAcrossSpecs ?? Cypress.env("CI") === "true";
 
     cy.session(
       sessionKey,
@@ -113,12 +128,18 @@ Cypress.Commands.add(
           cy.smartLogin(user.email, user.password);
           // Verify we're logged in
           cy.url().should("include", "/user");
-          // Store session info
+
+          // Ensure the app has fully persisted auth state before Cypress snapshots the session.
           cy.window().then((win) => {
-            const token = win.localStorage.getItem("token");
-            if (token) {
-              cy.wrap(token).as("authToken");
-            }
+            const token = win.sessionStorage.getItem("authToken");
+            const expiresAt = win.sessionStorage.getItem("expiresAt");
+
+            expect(token, "authToken in sessionStorage").to.be.a("string").and
+              .not.be.empty;
+            expect(expiresAt, "expiresAt in sessionStorage").to.be.a("string")
+              .and.not.be.empty;
+
+            cy.wrap(token, { log: false }).as("authToken");
           });
         }
       },
@@ -143,7 +164,7 @@ Cypress.Commands.add(
           });
 
           // Visit user page and wait for authentication to be processed
-          cy.visit("/user");
+          cy.visitWithBypass("/user");
 
           // Wait for either successful authentication (staying on /user) or redirect
           cy.url({ timeout: 10000 }).then((url) => {

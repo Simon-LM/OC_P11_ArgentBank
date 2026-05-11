@@ -5,38 +5,46 @@ import type { User } from "../../support/types";
 
 describe("Bank Account Management", () => {
   beforeEach(() => {
-    // Potential intercepts here if needed (ex: cy.intercept(...))
-    cy.session("accounts-valid-user-session", () => {
-      cy.fixture<User[]>("users.json").then((usersData) => {
-        const validUser = usersData.find((user) => user.type === "valid");
-        if (
-          !validUser ||
-          !validUser.email ||
-          !validUser.password ||
-          !validUser.userName
-        ) {
-          throw new Error(
-            "Valid user not found or missing information in fixtures.",
-          );
-        }
-        cy.visit("/signin");
-        cy.get("input#email").type(validUser.email);
-        cy.get("input#password").type(validUser.password);
-        cy.get("form").contains("button", "Connect").click();
-        cy.url().should("include", "/user");
-        cy.get(".header__nav-item")
-          .contains(validUser.userName)
-          .should("be.visible");
-        // Token verification (adapt key if needed)
-        cy.window().then((win) => {
-          const token =
-            win.sessionStorage.getItem("authToken") ||
-            win.localStorage.getItem("token");
-          cy.wrap(token).should("be.a", "string").and("not.be.empty");
-        });
-      });
+    cy.fixture<User[]>("users.json").then((usersData) => {
+      const validUser = usersData.find((user) => user.type === "valid");
+      if (
+        !validUser ||
+        !validUser.email ||
+        !validUser.password ||
+        !validUser.userName
+      ) {
+        throw new Error(
+          "Valid user not found or missing information in fixtures.",
+        );
+      }
+
+      cy.session(
+        "validUserSession",
+        () => {
+          cy.visitWithBypass("/signin");
+          cy.smartLogin(validUser.email, validUser.password, {
+            timeout: 20000,
+          });
+          cy.get(".header__nav-item")
+            .contains(validUser.userName)
+            .should("be.visible");
+          cy.window().then((win) => {
+            const token =
+              win.sessionStorage.getItem("authToken") ||
+              win.localStorage.getItem("token");
+            const expiresAt = win.sessionStorage.getItem("expiresAt");
+            cy.wrap(token).should("be.a", "string").and("not.be.empty");
+            cy.wrap(expiresAt).should("be.a", "string").and("not.be.empty");
+          });
+        },
+        { cacheAcrossSpecs: Cypress.env("CI") === "true" },
+      );
+
+      cy.visitWithBypass("/user");
+      cy.get(".header__nav-item")
+        .contains(validUser.userName)
+        .should("be.visible");
     });
-    cy.visit("/user");
   });
 
   it("should correctly display the user's account list on the profile page", () => {
