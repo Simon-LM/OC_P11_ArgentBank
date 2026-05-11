@@ -153,16 +153,18 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          VITE_API_URL: /api
         run: |
           echo "=== Deploying Preview ==="
           echo "Current directory: $(pwd)"
           echo "Root Directory configured: P11-ArgentBank"
           echo "🔧 DATABASE_URL configured: $(if [ -n "$DATABASE_URL" ]; then echo 'YES (pointing to real VPS)'; else echo 'NO'; fi)"
+          echo "🔧 VITE_API_URL configured: $VITE_API_URL"
 
           # Deploy to preview (without --prod) from repo root with environment variables
           cd ..
           echo "Changed to repo root: $(pwd)"
-          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN --env DATABASE_URL="$DATABASE_URL")
+          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN --env DATABASE_URL="$DATABASE_URL" --env VITE_API_URL="$VITE_API_URL")
           echo "Preview deployed: $PREVIEW_URL"
           echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
           echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
@@ -480,7 +482,7 @@ jobs:
           }
 
           async function main() {
-            console.log('� Starting Pa11y tests in CI/CD...');
+            console.log('Starting Pa11y tests in CI/CD...');
             console.log(`🔗 Base URL: ${baseUrl}`);
             console.log(`🔐 Auth script path: ${authScript}`);
             
@@ -501,11 +503,10 @@ jobs:
             const userIssuesWithAuth = Array.isArray(userResultsWithAuth) ? userResultsWithAuth.length : 0;
             const notFoundIssues = Array.isArray(notFoundResults) ? notFoundResults.length : 0;
             
-            console.log('\n� Pa11y Results Summary:');
+            console.log('\nPa11y Results Summary:');
             console.log(`- Home page: ${homeIssues} issues`);
             console.log(`- Sign-in page: ${signinIssues} issues`);
             console.log(`- Site Map page: ${sitemapIssues} issues`);
-            console.log(`- User page (no auth): ${userIssuesNoAuth} issues`);
             console.log(`- User page (with auth): ${userIssuesWithAuth} issues`);
             console.log(`- 404 page: ${notFoundIssues} issues`);
             
