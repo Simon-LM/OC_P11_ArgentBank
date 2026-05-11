@@ -134,10 +134,12 @@ Cypress.Commands.add(
             const token = win.sessionStorage.getItem("authToken");
             const expiresAt = win.sessionStorage.getItem("expiresAt");
 
-            expect(token, "authToken in sessionStorage").to.be.a("string").and
-              .not.be.empty;
-            expect(expiresAt, "expiresAt in sessionStorage").to.be.a("string")
-              .and.not.be.empty;
+            cy.wrap(token, { log: false })
+              .should("be.a", "string")
+              .and("not.be.empty");
+            cy.wrap(expiresAt, { log: false })
+              .should("be.a", "string")
+              .and("not.be.empty");
 
             cy.wrap(token, { log: false }).as("authToken");
           });

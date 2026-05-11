@@ -44,14 +44,15 @@ jobs:
           version: 8
 
       - name: 📦 Get pnpm store directory
+        id: pnpm-store-dir
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "store_path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - name: 📦 Setup pnpm cache
         uses: actions/cache@v3
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.pnpm-store-dir.outputs.store_path }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -110,14 +111,15 @@ jobs:
           version: 8
 
       - name: 📦 Get pnpm store directory
+        id: pnpm-store-dir
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "store_path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - name: 📦 Setup pnpm cache
         uses: actions/cache@v3
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.pnpm-store-dir.outputs.store_path }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-

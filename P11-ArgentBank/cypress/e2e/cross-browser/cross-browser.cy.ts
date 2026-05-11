@@ -22,12 +22,6 @@ import type { User } from "../../support/types";
 
 const isCI = Cypress.env("CI");
 
-// Utilitaire pour créer un intercepteur d'API avec alias
-const createApiIntercept = (pattern: string, alias: string) => {
-  cy.intercept("GET", pattern).as(alias);
-  return `@${alias}`;
-};
-
 // --- PATCH ROBUSTESSE CYPRESS ---
 
 if (Cypress.env("CI")) {

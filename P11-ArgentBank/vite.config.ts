@@ -1,6 +1,6 @@
 /** @format */
 
-import { defineConfig } from "vite";
+import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import autoAlias from "vite-plugin-auto-alias";
 // import viteSassDts from "vite-plugin-sass-dts"; // Désactivé pour éviter la génération CSS automatique
@@ -24,7 +24,7 @@ export default defineConfig({
       brotliSize: true, // Affiche la taille compressée avec brotli
       filename: "stats.html", // Emplacement du rapport (dans dist/)
       emitFile: true, // Force la génération même en mode développement
-    }),
+    }) as unknown as PluginOption,
   ],
   server: {
     proxy: {
