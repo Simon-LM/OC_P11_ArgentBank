@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import handler from "../../../api/csrf/store.js";
+import handler from "../../../api-legacy/csrf/store.js";
 
 // Mock des dépendances
 vi.mock("jsonwebtoken", () => ({
@@ -10,13 +10,13 @@ vi.mock("jsonwebtoken", () => ({
   },
 }));
 
-vi.mock("../../../api/lib/csrf.js", () => ({
+vi.mock("../../../api-legacy/lib/csrf.js", () => ({
   storeUserCSRFToken: vi.fn(),
 }));
 
 // Import des mocks
 import jwt from "jsonwebtoken";
-import { storeUserCSRFToken } from "../../../api/lib/csrf.js";
+import { storeUserCSRFToken } from "../../../api-legacy/lib/csrf.js";
 
 describe("CSRF Token Storage Endpoint", () => {
   let req;

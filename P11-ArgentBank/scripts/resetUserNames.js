@@ -1,7 +1,7 @@
 /** @format */
 
-import { prisma } from "../api/lib/prisma.js";
-import { createToken } from "../api/lib/auth.js";
+import { prisma } from "../api-legacy/lib/prisma.js";
+import { createToken } from "../api-legacy/lib/auth.js";
 import fs from "fs";
 
 async function resetInappropriateUserNames() {

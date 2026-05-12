@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import handler from "../../../api/user/signup.js"; // SUT
+import handler from "../../../api-legacy/user/signup.js"; // SUT
 
 // Mock externals
 vi.mock("bcrypt", () => ({
@@ -10,8 +10,8 @@ vi.mock("bcrypt", () => ({
   },
 }));
 
-vi.mock("../../../api/lib/prisma.js", () => ({
-  // MODIFIÉ: chemin vers api/lib/
+vi.mock("../../../api-legacy/lib/prisma.js", () => ({
+  // MODIFIÉ: chemin vers api-legacy/lib/
   prisma: {
     user: {
       findUnique: vi.fn(),
@@ -22,7 +22,7 @@ vi.mock("../../../api/lib/prisma.js", () => ({
 
 // Import mocked dependencies
 import bcrypt from "bcrypt";
-import { prisma } from "../../../api/lib/prisma.js"; // MODIFIÉ: chemin vers api/lib/
+import { prisma } from "../../../api-legacy/lib/prisma.js"; // MODIFIÉ: chemin vers api-legacy/lib/
 
 describe("Signup API Handler", () => {
   let req;

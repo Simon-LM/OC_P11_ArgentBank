@@ -27,8 +27,8 @@ vi.mock("jsonwebtoken", () => {
   };
 });
 
-vi.mock("../../../api/lib/prisma.js", () => ({
-  // MODIFIÉ: chemin vers api/lib/
+vi.mock("../../../api-legacy/lib/prisma.js", () => ({
+  // MODIFIÉ: chemin vers api-legacy/lib/
   prisma: {
     account: {
       findMany: vi.fn(),
@@ -38,7 +38,7 @@ vi.mock("../../../api/lib/prisma.js", () => ({
 
 // Import SUT (System Under Test) and mocked dependencies
 import jwt from "jsonwebtoken"; // jwt sera la version mockée
-import { prisma } from "../../../api/lib/prisma.js"; // MODIFIÉ: chemin vers api/lib/
+import { prisma } from "../../../api-legacy/lib/prisma.js"; // MODIFIÉ: chemin vers api-legacy/lib/
 
 describe("Accounts API Handler", () => {
   let req;
@@ -50,7 +50,7 @@ describe("Accounts API Handler", () => {
 
   beforeAll(async () => {
     vi.stubEnv("JWT_SECRET", TEST_JWT_SECRET);
-    const module = await import("../../../api/accounts/index.js"); // Chemin vers le handler
+    const module = await import("../../../api-legacy/accounts/index.js"); // Chemin vers le handler
     handlerInstance = module.default;
   });
 

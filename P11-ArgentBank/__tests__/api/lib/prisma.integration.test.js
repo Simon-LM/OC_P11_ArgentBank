@@ -40,7 +40,7 @@ describe("Prisma Client Singleton", () => {
     process.env.NODE_ENV = "production";
 
     // Importer le module après avoir configuré l'environnement
-    const { prisma } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
+    const { prisma } = await import("../../../api-legacy/lib/prisma.js"); // MODIFIÉ
 
     // Vérifier que PrismaClient a été appelé
     expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
@@ -52,7 +52,9 @@ describe("Prisma Client Singleton", () => {
     process.env.NODE_ENV = "development";
 
     // Premier import
-    const { prisma: prismaFirst } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
+    const { prisma: prismaFirst } = await import(
+      "../../../api-legacy/lib/prisma.js"
+    ); // MODIFIÉ
     expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
 
     // Nettoyer le cache mais garder l'objet global
@@ -60,7 +62,7 @@ describe("Prisma Client Singleton", () => {
 
     // Deuxième import - ne devrait pas créer une nouvelle instance
     const { prisma: prismaSecond } = await import(
-      "../../../api/lib/prisma.js" // MODIFIÉ
+      "../../../api-legacy/lib/prisma.js" // MODIFIÉ
     );
     expect(mockPrismaConstructor).toHaveBeenCalledTimes(1); // Toujours 1 appel
 
@@ -76,7 +78,7 @@ describe("Prisma Client Singleton", () => {
     global._prisma = undefined;
 
     // Import du module
-    const { prisma } = await import("../../../api/lib/prisma.js");
+    const { prisma } = await import("../../../api-legacy/lib/prisma.js");
 
     // Vérifier que PrismaClient a été appelé
     expect(mockPrismaConstructor).toHaveBeenCalledTimes(1);
@@ -87,7 +89,7 @@ describe("Prisma Client Singleton", () => {
 
   it("should export an object with Prisma client methods", async () => {
     // Import du module
-    const { prisma } = await import("../../../api/lib/prisma.js"); // MODIFIÉ
+    const { prisma } = await import("../../../api-legacy/lib/prisma.js"); // MODIFIÉ
 
     // Vérifier que l'objet exporté a les méthodes attendues
     expect(prisma.$connect).toBeDefined();

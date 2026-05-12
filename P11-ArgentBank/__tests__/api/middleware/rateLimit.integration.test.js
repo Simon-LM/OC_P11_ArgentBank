@@ -61,7 +61,9 @@ describe("Rate Limit Middleware", () => {
       vi.resetModules();
 
       // 3. Dynamically import SUT; it will use the stubbed env
-      const module = await import("../../../api/middleware/rateLimit.js"); // MODIFIÉ
+      const module = await import(
+        "../../../api-legacy/middleware/rateLimit.js"
+      ); // MODIFIÉ
       rateLimitMiddlewareInstance = module.rateLimitMiddleware;
 
       // 4. Reset all mocks (including those potentially used by SUT if it imported them)
@@ -144,7 +146,9 @@ describe("Rate Limit Middleware", () => {
       vi.resetModules();
 
       // 4. Dynamically import SUT
-      const module = await import("../../../api/middleware/rateLimit.js"); // MODIFIÉ
+      const module = await import(
+        "../../../api-legacy/middleware/rateLimit.js"
+      ); // MODIFIÉ
       rateLimitMiddlewareInstance = module.rateLimitMiddleware;
 
       // Espionner les fonctions internes (après import)
@@ -237,7 +241,7 @@ describe("Rate Limit Middleware", () => {
     // 2. Reset module cache
     vi.resetModules();
     // 3. Import SUT
-    const module = await import("../../../api/middleware/rateLimit.js"); // MODIFIÉ
+    const module = await import("../../../api-legacy/middleware/rateLimit.js"); // MODIFIÉ
     rateLimitMiddlewareInstance = module.rateLimitMiddleware;
     // 4. Reset mocks
     vi.resetAllMocks();
@@ -272,7 +276,7 @@ describe("Rate Limit Middleware", () => {
     // 2. Reset module cache
     vi.resetModules();
     // 3. Import SUT
-    const module = await import("../../../api/middleware/rateLimit.js"); // MODIFIÉ
+    const module = await import("../../../api-legacy/middleware/rateLimit.js"); // MODIFIÉ
     rateLimitMiddlewareInstance = module.rateLimitMiddleware;
     // 4. Reset mocks
     vi.resetAllMocks();

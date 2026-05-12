@@ -9,7 +9,7 @@ vi.mock("jsonwebtoken", () => ({
   },
 }));
 
-vi.mock("../../../api/lib/prisma.js", () => ({
+vi.mock("../../../api-legacy/lib/prisma.js", () => ({
   prisma: {
     user: {
       findUnique: vi.fn(),
@@ -18,24 +18,24 @@ vi.mock("../../../api/lib/prisma.js", () => ({
   },
 }));
 
-vi.mock("../../../api/middleware/rateLimit.js", () => ({
+vi.mock("../../../api-legacy/middleware/rateLimit.js", () => ({
   rateLimitMiddleware: vi.fn(),
 }));
 
-vi.mock("../../../api/lib/csrf.js", () => ({
+vi.mock("../../../api-legacy/lib/csrf.js", () => ({
   getUserCSRFToken: vi.fn(),
 }));
 
-vi.mock("../../../api/lib/blacklist.js", () => ({
+vi.mock("../../../api-legacy/lib/blacklist.js", () => ({
   usernameBlacklist: ["badword", "anotherbadword"],
 }));
 
 // Import the handler and mocked modules AFTER vi.mock calls
-import handler from "../../../api/user/profile.js";
+import handler from "../../../api-legacy/user/profile.js";
 import jwt from "jsonwebtoken";
-import { prisma } from "../../../api/lib/prisma.js";
-import { rateLimitMiddleware } from "../../../api/middleware/rateLimit.js";
-import { getUserCSRFToken } from "../../../api/lib/csrf.js";
+import { prisma } from "../../../api-legacy/lib/prisma.js";
+import { rateLimitMiddleware } from "../../../api-legacy/middleware/rateLimit.js";
+import { getUserCSRFToken } from "../../../api-legacy/lib/csrf.js";
 
 describe("Profile API Handler", () => {
   let req;
