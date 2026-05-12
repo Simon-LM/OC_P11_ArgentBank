@@ -59,7 +59,7 @@ describe("Transaction Display", () => {
       }
 
       cy.session(
-        "validUserSession",
+        "validUserSession-transactions-display",
         () => {
           cy.visitWithBypass("/signin");
           cy.smartLogin(validUser.email, validUser.password, {

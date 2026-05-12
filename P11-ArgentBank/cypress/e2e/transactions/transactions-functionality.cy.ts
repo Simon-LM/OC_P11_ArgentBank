@@ -48,7 +48,7 @@ describe("Fonctionnalités des Transactions", () => {
       }
 
       cy.session(
-        "validUserSession",
+        "validUserSession-transactions-functionality",
         () => {
           cy.visitWithBypass("/signin");
           cy.smartLogin(

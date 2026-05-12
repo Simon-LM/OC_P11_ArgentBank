@@ -29,7 +29,7 @@ describe("User Profile Management", () => {
       "searchTransactionsRequest",
     );
     cy.session(
-      "validUserSession",
+      "validUserSession-profile",
       () => {
         cy.visitWithBypass("/signin");
         cy.smartLogin(
