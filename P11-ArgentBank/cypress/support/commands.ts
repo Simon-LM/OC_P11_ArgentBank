@@ -33,14 +33,12 @@ Cypress.Commands.add(
     const isCI = Cypress.env("CI");
     const vercelSecret = Cypress.env("VERCEL_AUTOMATION_BYPASS_SECRET");
 
-    if (isCI && vercelSecret) {
-      cy.intercept("POST", "**/api/user/login", (req) => {
-        req.headers["x-vercel-protection-bypass"] = vercelSecret;
-      }).as("loginWithBypass");
-    }
-
-    // Intercept login requests to handle rate limiting
+    // Intercept login requests to add Vercel bypass in CI and handle rate limiting
     cy.intercept("POST", "**/api/user/login", (req) => {
+      if (isCI && vercelSecret) {
+        req.headers["x-vercel-protection-bypass"] = vercelSecret;
+      }
+
       // Add delay to prevent rapid requests
       return new Promise((resolve) => {
         setTimeout(() => resolve(req.continue()), 500);
