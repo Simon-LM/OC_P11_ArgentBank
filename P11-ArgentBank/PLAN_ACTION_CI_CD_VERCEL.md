@@ -1,100 +1,100 @@
 <!-- @format -->
 
-# Plan d'action - CI/CD et Vercel
+# Action Plan - CI/CD and Vercel
 
-## Objectif
+## Objective
 
-Stabiliser ArgentBank comme projet vitrine portfolio, avec une méthode de travail professionnelle : branches, Pull Requests, CI/CD bloquant, publication Vercel maîtrisée, documentation vraie et tests fiables.
+Stabilize ArgentBank as a portfolio showcase project with a professional workflow: branches, Pull Requests, blocking CI/CD, controlled Vercel deployment, accurate documentation, and reliable tests.
 
-## Principe cible
-
-```text
-branche de travail -> Pull Request -> CI/CD obligatoire -> merge vers main -> publication Vercel
-```
-
-Le but est d'éviter le schéma dangereux suivant :
+## Target Workflow
 
 ```text
-push direct sur main -> publication Vercel -> CI/CD rouge après coup
+working branch -> Pull Request -> required CI/CD -> merge into main -> Vercel production deployment
 ```
 
-## Phase 1 - Bloquer main et sécuriser la publication
+The goal is to avoid the unsafe workflow below:
 
-- [ ] Ne plus pousser directement sur `main` pour les corrections.
-- [ ] Créer une branche dédiée pour chaque sujet de correction.
-- [ ] Ouvrir une Pull Request vers `main`.
-- [ ] Activer une protection de branche ou un ruleset GitHub sur `main`.
-- [ ] Rendre obligatoires les checks CI/CD principaux avant merge.
-- [ ] Vérifier que Vercel ne publie la production qu'après un merge valide sur `main`.
-- [ ] Décider si Vercel Git Integration reste active ou si la production doit être contrôlée uniquement par GitHub Actions.
+```text
+direct push to main -> Vercel production deployment -> CI/CD failure after publication
+```
 
-### Checks à rendre obligatoires
+## Phase 1 - Protect main and secure publication
+
+- [ ] Stop pushing fixes directly to `main`.
+- [ ] Create a dedicated branch for each correction topic.
+- [ ] Open a Pull Request targeting `main`.
+- [ ] Enable a GitHub branch protection rule or ruleset for `main`.
+- [ ] Require the main CI/CD checks before merge.
+- [ ] Verify that Vercel only publishes production after a valid merge into `main`.
+- [ ] Decide whether Vercel Git Integration remains active or whether production should be controlled only by GitHub Actions.
+
+### Required checks
 
 - [ ] Lint.
 - [ ] TypeScript.
-- [ ] Tests unitaires / coverage.
+- [ ] Unit tests / coverage.
 - [ ] Build.
 - [ ] Pa11y.
 - [ ] Cypress.
-- [ ] Lighthouse, au moins en mode contrôle explicite : bloquant ou warning documenté.
+- [ ] Lighthouse, at least as an explicit gate: blocking or documented warning.
 
-## Phase 2 - Vérifier le flux CI/CD vers Vercel
+## Phase 2 - Validate the CI/CD flow to Vercel
 
-- [ ] Créer une branche de test.
-- [ ] Ouvrir une Pull Request.
-- [ ] Vérifier que la preview Vercel est créée.
-- [ ] Vérifier que les tests s'exécutent sur la preview.
-- [ ] Vérifier qu'un échec de test bloque le merge.
-- [ ] Merger uniquement quand tous les checks requis sont verts.
-- [ ] Confirmer que la production Vercel se met à jour seulement après ce merge.
+- [ ] Create a test branch.
+- [ ] Open a Pull Request.
+- [ ] Verify that the Vercel Preview deployment is created.
+- [ ] Verify that tests run against the Preview deployment.
+- [ ] Verify that a test failure blocks the merge.
+- [ ] Merge only when all required checks are green.
+- [ ] Confirm that Vercel production updates only after this merge.
 
-## Phase 3 - Corriger Lighthouse
+## Phase 3 - Fix Lighthouse
 
-- [ ] Diagnostiquer l'échec Lighthouse sur `/user`.
-- [ ] Aligner l'authentification Lighthouse sur l'attente SPA déjà utilisée par Pa11y.
-- [ ] Décider les seuils professionnels : bloquants ou warnings.
-- [ ] Relancer le workflow complet.
-- [ ] Documenter le comportement attendu.
+- [ ] Diagnose the Lighthouse failure on `/user`.
+- [ ] Align Lighthouse authentication with the SPA wait strategy already used by Pa11y.
+- [ ] Decide professional thresholds: blocking checks or warnings.
+- [ ] Rerun the full workflow.
+- [ ] Document the expected behavior.
 
-## Phase 4 - Corriger username et Upstash
+## Phase 4 - Fix username update and Upstash
 
-- [ ] Diagnostiquer l'appel `POST /csrf/store`.
-- [ ] Diagnostiquer l'appel `PUT /user/profile`.
-- [ ] Vérifier si la nouvelle API Flask implémente ces routes.
-- [ ] Corriger la modification du username.
-- [ ] Clarifier le rôle actuel d'Upstash : encore utilisé, remplacé, ou à supprimer.
-- [ ] Mettre à jour les tests Cypress associés.
+- [ ] Diagnose the `POST /csrf/store` request.
+- [ ] Diagnose the `PUT /user/profile` request.
+- [ ] Verify whether the new Flask API implements these routes.
+- [ ] Fix username updates.
+- [ ] Clarify the current role of Upstash: still used, replaced, or removable.
+- [ ] Update the related Cypress tests.
 
-## Phase 5 - Nettoyer la documentation
+## Phase 5 - Clean up documentation
 
-- [ ] Mettre à jour le README racine.
-- [ ] Mettre à jour le README de `P11-ArgentBank`.
-- [ ] Supprimer ou archiver les docs obsolètes sur l'ancienne API Vercel serverless si elles ne représentent plus l'architecture actuelle.
-- [ ] Documenter clairement l'API Flask VPS.
-- [ ] Documenter clairement la stratégie Vercel.
-- [ ] Documenter clairement la stratégie CI/CD réelle.
+- [ ] Update the root README.
+- [ ] Update the `P11-ArgentBank` README.
+- [ ] Remove or archive obsolete documentation about the former Vercel serverless API when it no longer represents the current architecture.
+- [ ] Clearly document the Flask VPS API.
+- [ ] Clearly document the Vercel strategy.
+- [ ] Clearly document the actual CI/CD strategy.
 
-## Phase 6 - Clarifier l'architecture du dépôt
+## Phase 6 - Clarify repository architecture
 
-- [ ] Décider si l'application reste dans `P11-ArgentBank/`.
-- [ ] Si oui, documenter ce choix dans le README racine et dans Vercel.
-- [ ] Si non, préparer une PR dédiée pour remonter l'application à la racine.
-- [ ] Vérifier les chemins GitHub Actions, Vercel, Cypress, Pa11y et Lighthouse après décision.
+- [ ] Decide whether the application remains in `P11-ArgentBank/`.
+- [ ] If it does, document this choice in the root README and in Vercel.
+- [ ] If it does not, prepare a dedicated PR to move the application to the repository root.
+- [ ] Verify GitHub Actions, Vercel, Cypress, Pa11y, and Lighthouse paths after the decision.
 
-## Règles de travail à partir de maintenant
+## Working rules from now on
 
-- [ ] Une branche par sujet.
-- [ ] Une Pull Request par correction logique.
-- [ ] Pas de push direct sur `main` sauf urgence explicite.
-- [ ] Pas de publication production sans CI/CD vert ou décision assumée et documentée.
-- [ ] Pas de modification de config Vercel sans vérifier l'impact sur CI/CD.
-- [ ] Toujours distinguer commit, push, merge, preview et production.
+- [ ] One branch per topic.
+- [ ] One Pull Request per logical correction.
+- [ ] No direct push to `main` except for an explicit emergency.
+- [ ] No production deployment without green CI/CD or an explicit, documented decision.
+- [ ] No Vercel configuration change without checking the CI/CD impact.
+- [ ] Always distinguish commit, push, merge, preview, and production.
 
-## Ordre de priorité actuel
+## Current priority order
 
-1. Bloquer `main` et sécuriser la publication Vercel.
-2. Vérifier que le flux PR -> CI/CD -> Vercel fonctionne.
-3. Corriger Lighthouse.
-4. Corriger la modification du username et le sujet Upstash.
-5. Nettoyer les documentations.
-6. Revoir l'architecture du dépôt.
+1. Protect `main` and secure Vercel publication.
+2. Verify that the PR -> CI/CD -> Vercel flow works.
+3. Fix Lighthouse.
+4. Fix username updates and the Upstash topic.
+5. Clean up documentation.
+6. Review repository architecture.

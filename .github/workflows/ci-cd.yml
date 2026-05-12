@@ -966,17 +966,26 @@ jobs:
               // Wait for submit button and click
               console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for submit button >>>>>');
               await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
+              await page.waitForFunction(() => {
+                const button = document.querySelector('button[type="submit"]');
+                return button && !button.disabled;
+              }, { timeout: 10000 });
               console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Submit button found >>>>>');
               
-              // Click submit and wait for navigation
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Clicking submit button and waiting for navigation >>>>>');
-              await Promise.all([
-                page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 15000 }),
-                page.click('button[type="submit"]')
-              ]);
+              // React Router updates the URL without a full document navigation.
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Clicking submit button and waiting for SPA redirect >>>>>');
+              await page.click('button[type="submit"]');
+              await page.waitForFunction(
+                () => window.location.pathname === '/user',
+                { timeout: 30000 }
+              );
               
               const currentUrl = page.url();
               console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+
+              if (!currentUrl.includes('/user')) {
+                throw new Error(`Authentication failed. Expected /user URL, got ${currentUrl}`);
+              }
               
               // Wait for user page content to confirm successful login
               console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for user page content to confirm successful login... >>>>>');
