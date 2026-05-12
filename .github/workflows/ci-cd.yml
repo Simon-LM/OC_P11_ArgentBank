@@ -153,7 +153,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          VITE_API_URL: /api
+          VITE_API_URL: https://db.lostintab.com/api
         run: |
           echo "=== Deploying Preview ==="
           echo "Current directory: $(pwd)"

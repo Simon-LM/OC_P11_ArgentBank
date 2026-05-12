@@ -15,7 +15,7 @@ if (Cypress.env("CI")) {
     context("Erreurs de connexion API", () => {
       it("devrait afficher un message d'erreur quand l'API de connexion est indisponible", function () {
         // Intercepter la requête de connexion et simuler une erreur réseau
-        cy.intercept("POST", "/api/user/login", {
+        cy.intercept("POST", "**/api/user/login", {
           forceNetworkError: true,
         }).as("loginNetworkError");
 
@@ -72,7 +72,7 @@ if (Cypress.env("CI")) {
         }
 
         // Connexion réussie
-        cy.intercept("POST", "/api/user/login", {
+        cy.intercept("POST", "**/api/user/login", {
           statusCode: 200,
           body: {
             status: 200,
@@ -82,7 +82,7 @@ if (Cypress.env("CI")) {
         }).as("loginSuccess");
 
         // Erreur API profil
-        cy.intercept("GET", "/api/user/profile", {
+        cy.intercept("GET", "**/api/user/profile", {
           statusCode: 500,
           body: { error: "Internal server error" },
         }).as("profileError");
@@ -120,7 +120,7 @@ if (Cypress.env("CI")) {
         }
 
         // Connexion réussie
-        cy.intercept("POST", "/api/user/login", {
+        cy.intercept("POST", "**/api/user/login", {
           statusCode: 200,
           body: {
             status: 200,
@@ -130,7 +130,7 @@ if (Cypress.env("CI")) {
         }).as("loginSuccess");
 
         // Profil réussi
-        cy.intercept("GET", "/api/user/profile", {
+        cy.intercept("GET", "**/api/user/profile", {
           statusCode: 200,
           body: {
             status: 200,
@@ -149,7 +149,7 @@ if (Cypress.env("CI")) {
         }).as("profileSuccess");
 
         // Erreur API comptes
-        cy.intercept("GET", "/api/accounts", {
+        cy.intercept("GET", "**/api/accounts", {
           statusCode: 503,
           body: { error: "Service unavailable" },
         }).as("accountsError");
@@ -187,7 +187,7 @@ if (Cypress.env("CI")) {
         }
 
         // Simuler une erreur réseau (qui cause un timeout côté client)
-        cy.intercept("POST", "/api/user/login", {
+        cy.intercept("POST", "**/api/user/login", {
           forceNetworkError: true,
         }).as("loginTimeout");
 
@@ -226,7 +226,7 @@ if (Cypress.env("CI")) {
         }
 
         // Simuler une réponse lente mais qui fonctionne
-        cy.intercept("POST", "/api/user/login", {
+        cy.intercept("POST", "**/api/user/login", {
           statusCode: 200,
           delay: 2000, // 2 secondes de délai
           body: {
@@ -276,7 +276,7 @@ if (Cypress.env("CI")) {
         }
 
         // Configuration des interceptions pour une connexion réussie
-        cy.intercept("POST", "/api/user/login", {
+        cy.intercept("POST", "**/api/user/login", {
           statusCode: 200,
           body: {
             status: 200,
@@ -285,7 +285,7 @@ if (Cypress.env("CI")) {
           },
         }).as("loginSuccess");
 
-        cy.intercept("GET", "/api/user/profile", {
+        cy.intercept("GET", "**/api/user/profile", {
           statusCode: 200,
           body: {
             status: 200,
@@ -303,7 +303,7 @@ if (Cypress.env("CI")) {
           },
         }).as("profileSuccess");
 
-        cy.intercept("GET", "/api/accounts", {
+        cy.intercept("GET", "**/api/accounts", {
           statusCode: 200,
           body: {
             status: 200,
@@ -320,7 +320,7 @@ if (Cypress.env("CI")) {
         }).as("accountsSuccess");
 
         // Intercepter les transactions normales pour éviter les conflits
-        cy.intercept("GET", "/api/transactions", {
+        cy.intercept("GET", "**/api/transactions", {
           statusCode: 200,
           body: {
             status: 200,
@@ -330,7 +330,7 @@ if (Cypress.env("CI")) {
         }).as("transactionsSuccess");
 
         // Erreur pour la recherche de transactions
-        cy.intercept("GET", "/api/transactions/search*", {
+        cy.intercept("GET", "**/api/transactions/search*", {
           statusCode: 500,
           body: { error: "Database connection failed" },
         }).as("transactionsSearchError");
@@ -374,7 +374,7 @@ if (Cypress.env("CI")) {
         }
 
         // Première tentative échoue
-        cy.intercept("POST", "/api/user/login", {
+        cy.intercept("POST", "**/api/user/login", {
           forceNetworkError: true,
         }).as("loginNetworkError");
 
@@ -395,7 +395,7 @@ if (Cypress.env("CI")) {
         ).should("be.visible");
 
         // Reconfigurer l'interception pour réussir
-        cy.intercept("POST", "/api/user/login", {
+        cy.intercept("POST", "**/api/user/login", {
           statusCode: 200,
           body: {
             status: 200,
@@ -405,7 +405,7 @@ if (Cypress.env("CI")) {
         }).as("loginSuccess");
 
         // Intercepter les autres requêtes nécessaires
-        cy.intercept("GET", "/api/user/profile", {
+        cy.intercept("GET", "**/api/user/profile", {
           statusCode: 200,
           body: {
             status: 200,
@@ -424,7 +424,7 @@ if (Cypress.env("CI")) {
         }).as("profileSuccess");
 
         // Ajouter l'interception pour accounts car elle sera appelée automatiquement
-        cy.intercept("GET", "/api/accounts", {
+        cy.intercept("GET", "**/api/accounts", {
           statusCode: 200,
           body: {
             status: 200,

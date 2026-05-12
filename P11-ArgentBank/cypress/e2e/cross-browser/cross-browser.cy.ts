@@ -37,10 +37,10 @@ if (Cypress.env("CI")) {
     });
 
     beforeEach(() => {
-      cy.intercept("POST", "/api/user/login").as("loginRequest");
-      cy.intercept("GET", "/api/user/profile").as("profileRequest");
-      cy.intercept("GET", "/api/accounts").as("accountsRequest");
-      cy.intercept("GET", "/api/transactions/search*").as(
+      cy.intercept("POST", "**/api/user/login").as("loginRequest");
+      cy.intercept("GET", "**/api/user/profile").as("profileRequest");
+      cy.intercept("GET", "**/api/accounts").as("accountsRequest");
+      cy.intercept("GET", "**/api/transactions/search*").as(
         "searchTransactionsRequest",
       );
       cy.wait(2000); // Limiter le risque de rate limiting Vercel
@@ -242,7 +242,7 @@ if (Cypress.env("CI")) {
           const searchTerm = "Salary";
           cy.intercept(
             "GET",
-            `/api/transactions/search*searchTerm=${searchTerm}*`,
+            `**/api/transactions/search*searchTerm=${searchTerm}*`,
           ).as("searchWithTerm");
 
           cy.get(
@@ -296,7 +296,7 @@ if (Cypress.env("CI")) {
 
     it("devrait gérer les erreurs réseau correctement sur tous les navigateurs", () => {
       // Simuler une erreur réseau pour l'API de connexion
-      cy.intercept("POST", "/api/user/login", { forceNetworkError: true }).as(
+      cy.intercept("POST", "**/api/user/login", { forceNetworkError: true }).as(
         "loginNetworkError",
       );
 
@@ -369,10 +369,10 @@ if (Cypress.env("CI")) {
         cy.get<User[]>("@usersData").then((usersData) => {
           const validUser = usersData.find((user) => user.type === "valid");
           if (validUser && validUser.email && validUser.password) {
-            cy.intercept("POST", "/api/user/login").as("loginRequest");
-            cy.intercept("GET", "/api/user/profile").as("profileRequest");
-            cy.intercept("GET", "/api/accounts").as("accountsRequest");
-            cy.intercept("GET", "/api/transactions/search*").as(
+            cy.intercept("POST", "**/api/user/login").as("loginRequest");
+            cy.intercept("GET", "**/api/user/profile").as("profileRequest");
+            cy.intercept("GET", "**/api/accounts").as("accountsRequest");
+            cy.intercept("GET", "**/api/transactions/search*").as(
               "searchTransactionsRequest",
             );
             cy.wait(2000);

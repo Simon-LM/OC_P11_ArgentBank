@@ -8,6 +8,14 @@ const baseUrl = process.env.CYPRESS_BASE_URL || "http://localhost:3000";
 
 // Configuration API adaptative
 const getApiUrl = () => {
+  if (process.env.CYPRESS_API_URL) {
+    return process.env.CYPRESS_API_URL;
+  }
+
+  if (process.env.VITE_API_URL) {
+    return process.env.VITE_API_URL;
+  }
+
   if (isCI && process.env.CYPRESS_BASE_URL) {
     return `${process.env.CYPRESS_BASE_URL}/api`;
   }

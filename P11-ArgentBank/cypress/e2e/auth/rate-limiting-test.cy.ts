@@ -23,10 +23,10 @@ const isCI = Cypress.env("CI");
 
   beforeEach(() => {
     // Intercepts doivent être définis avant cy.session pour être utilisables dans la session
-    cy.intercept("POST", "/api/user/login").as("loginRequest");
-    cy.intercept("GET", "/api/user/profile").as("profileRequest");
-    cy.intercept("GET", "/api/accounts").as("accountsRequest");
-    cy.intercept("GET", "/api/transactions/search*").as(
+    cy.intercept("POST", "**/api/user/login").as("loginRequest");
+    cy.intercept("GET", "**/api/user/profile").as("profileRequest");
+    cy.intercept("GET", "**/api/accounts").as("accountsRequest");
+    cy.intercept("GET", "**/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
     // Attendre un peu avant chaque login pour éviter le rate limiting Vercel gratuit
@@ -191,7 +191,7 @@ const isCI = Cypress.env("CI");
     }
 
     // Mock a 429 response to test retry logic
-    cy.intercept("POST", "/api/user/login", {
+    cy.intercept("POST", "**/api/user/login", {
       statusCode: 429,
       body: { error: "Too Many Requests" },
       delay: 100,
@@ -224,7 +224,7 @@ const isCI = Cypress.env("CI");
       cy.log("Running in CI environment with Vercel bypass configured");
 
       // Intercept to verify header is added
-      cy.intercept("POST", "/api/user/login", (req) => {
+      cy.intercept("POST", "**/api/user/login", (req) => {
         expect(req.headers).to.have.property("x-vercel-protection-bypass");
         req.continue();
       }).as("loginWithHeader");
@@ -311,10 +311,10 @@ describe("Tests de Robustesse API", () => {
 
   beforeEach(() => {
     // Intercepts pour login
-    cy.intercept("POST", "/api/user/login").as("loginRequest");
-    cy.intercept("GET", "/api/user/profile").as("profileRequest");
-    cy.intercept("GET", "/api/accounts").as("accountsRequest");
-    cy.intercept("GET", "/api/transactions/search*").as(
+    cy.intercept("POST", "**/api/user/login").as("loginRequest");
+    cy.intercept("GET", "**/api/user/profile").as("profileRequest");
+    cy.intercept("GET", "**/api/accounts").as("accountsRequest");
+    cy.intercept("GET", "**/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
     cy.wait(2000);
@@ -385,7 +385,7 @@ describe("Tests de Robustesse API", () => {
     }
 
     // Mock a malformed JWT response
-    cy.intercept("POST", "/api/user/login", {
+    cy.intercept("POST", "**/api/user/login", {
       statusCode: 200,
       body: {
         token: "invalid.jwt.token",
@@ -424,7 +424,7 @@ describe("Tests de Robustesse API", () => {
     }
 
     // Mock a slow API response
-    cy.intercept("POST", "/api/user/login", (_req) => {
+    cy.intercept("POST", "**/api/user/login", (_req) => {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
           resolve();

@@ -39,10 +39,10 @@ const verifyDateSortingDescending = (dates: string[]): void => {
 describe("Transaction Display", () => {
   beforeEach(() => {
     // Intercepts must be defined before cy.session to be usable within the session
-    cy.intercept("POST", "/api/user/login").as("loginRequest");
-    cy.intercept("GET", "/api/user/profile").as("profileRequest");
-    cy.intercept("GET", "/api/accounts").as("accountsRequest");
-    cy.intercept("GET", "/api/transactions/search*").as(
+    cy.intercept("POST", "**/api/user/login").as("loginRequest");
+    cy.intercept("GET", "**/api/user/profile").as("profileRequest");
+    cy.intercept("GET", "**/api/accounts").as("accountsRequest");
+    cy.intercept("GET", "**/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
     cy.fixture<User[]>("users.json").then((usersData) => {
@@ -163,7 +163,7 @@ describe("Transaction Display", () => {
     const accountSelector = `${selectors.accountButton}[aria-label*="${targetAccountNumber}"]`;
 
     // Ajout de l'intercept pour la recherche par compte (plus tolérant)
-    cy.intercept("GET", "/api/transactions/search*").as("searchByAccountApi");
+    cy.intercept("GET", "**/api/transactions/search*").as("searchByAccountApi");
 
     // Attendre la réponse de l'API comptes et logguer le body
     cy.wait("@accountsRequest").then((interception) => {

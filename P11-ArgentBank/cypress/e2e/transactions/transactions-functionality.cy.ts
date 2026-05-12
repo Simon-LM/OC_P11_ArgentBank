@@ -33,10 +33,10 @@ const createApiIntercept = (pattern: string, alias: string) => {
 describe("Fonctionnalités des Transactions", () => {
   beforeEach(() => {
     // Intercepts doivent être définis avant cy.session pour être utilisables dans la session
-    cy.intercept("POST", "/api/user/login").as("loginRequest");
-    cy.intercept("GET", "/api/user/profile").as("profileRequest");
-    cy.intercept("GET", "/api/accounts").as("accountsRequest");
-    cy.intercept("GET", "/api/transactions/search*").as(
+    cy.intercept("POST", "**/api/user/login").as("loginRequest");
+    cy.intercept("GET", "**/api/user/profile").as("profileRequest");
+    cy.intercept("GET", "**/api/accounts").as("accountsRequest");
+    cy.intercept("GET", "**/api/transactions/search*").as(
       "searchTransactionsRequest",
     );
     cy.fixture<User[]>("users.json").then((usersData) => {
@@ -180,7 +180,7 @@ describe("Fonctionnalités des Transactions", () => {
       });
 
     // Aller à la page 2
-    cy.intercept("GET", "/api/transactions/search*").as("searchPageChange");
+    cy.intercept("GET", "**/api/transactions/search*").as("searchPageChange");
     cy.get(nextPageButton).click();
 
     cy.wait("@searchPageChange").then((interception) => {
