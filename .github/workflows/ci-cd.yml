@@ -941,47 +941,68 @@ jobs:
                 console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: WARNING - No Vercel bypass secret found >>>>>');
               }
               
-              const signInUrl = options.page.replace('/user', '/signin');
-              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Navigating to ${signInUrl} >>>>>`);
-              
-              // Navigate to sign-in page
-              await page.goto(signInUrl, { waitUntil: 'networkidle0', timeout: 30000 });
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Navigation to /signin complete >>>>>');
-              
-              // Wait for form to be visible
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for form to be visible >>>>>');
-              await page.waitForSelector('form', { visible: true, timeout: 10000 });
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Form is visible >>>>>');
-              
-              // Wait for email field and type credentials
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for email field to be visible >>>>>');
-              await page.waitForSelector('#email', { visible: true, timeout: 10000 });
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Email field is visible >>>>>');
-              
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Typing credentials >>>>>');
-              await page.type('#email', 'tony@stark.com');
-              await page.type('#password', 'password123');
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Credentials typed >>>>>');
-              
-              // Wait for submit button and click
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Waiting for submit button >>>>>');
-              await page.waitForSelector('button[type="submit"]', { visible: true, timeout: 10000 });
-              await page.waitForFunction(() => {
-                const button = document.querySelector('button[type="submit"]');
-                return button && !button.disabled;
-              }, { timeout: 10000 });
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Submit button found >>>>>');
-              
-              // React Router updates the URL without a full document navigation.
-              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Clicking submit button and waiting for SPA redirect >>>>>');
-              await page.click('button[type="submit"]');
+              const originUrl = new URL(options.page).origin;
+              const apiBaseUrl = 'https://db.lostintab.com/api';
+              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Preparing session on ${originUrl} >>>>>`);
+              await page.goto(originUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Authenticating through API >>>>>');
+              await page.evaluate(async (apiBaseUrl) => {
+                const loginResponse = await fetch(`${apiBaseUrl}/user/login`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email: 'tony@stark.com',
+                    password: 'password123'
+                  })
+                });
+
+                if (!loginResponse.ok) {
+                  const errorText = await loginResponse.text();
+                  throw new Error(`Login API failed: ${loginResponse.status} ${errorText}`);
+                }
+
+                const loginData = await loginResponse.json();
+                const token = loginData?.body?.token;
+
+                if (!token) {
+                  throw new Error('Login API did not return a token');
+                }
+
+                const profileResponse = await fetch(`${apiBaseUrl}/user/profile`, {
+                  method: 'GET',
+                  headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!profileResponse.ok) {
+                  const errorText = await profileResponse.text();
+                  throw new Error(`Profile API failed: ${profileResponse.status} ${errorText}`);
+                }
+
+                const profileData = await profileResponse.json();
+                const user = profileData?.body;
+
+                if (!user?.id || !user?.userName) {
+                  throw new Error('Profile API did not return the expected user payload');
+                }
+
+                const expiresAt = Date.now() + 5 * 60 * 1000;
+                sessionStorage.setItem('authToken', token);
+                sessionStorage.setItem('expiresAt', expiresAt.toString());
+                sessionStorage.setItem('userId', user.id);
+                sessionStorage.setItem('currentUserName', user.userName);
+              }, apiBaseUrl);
+
+              console.log('<<<<< LIGHTHOUSE AUTH SCRIPT: Session initialized. Navigating to /user >>>>>');
+              await page.goto(options.page, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
               await page.waitForFunction(
                 () => window.location.pathname === '/user',
                 { timeout: 30000 }
               );
               
               const currentUrl = page.url();
-              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Form submitted. Current URL: ${currentUrl} >>>>>`);
+              console.log(`<<<<< LIGHTHOUSE AUTH SCRIPT: Current URL after session setup: ${currentUrl} >>>>>`);
 
               if (!currentUrl.includes('/user')) {
                 throw new Error(`Authentication failed. Expected /user URL, got ${currentUrl}`);
