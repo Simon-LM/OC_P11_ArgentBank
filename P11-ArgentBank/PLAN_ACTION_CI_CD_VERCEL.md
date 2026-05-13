@@ -65,8 +65,8 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 - [x] Verify whether the new Flask API implements these routes.
 - [x] Fix username updates.
 - [x] Update the Flask VPS API CORS configuration to allow Vercel preview browser requests, including `X-CSRF-Token`.
-- [ ] Clarify the current role of Upstash: still used, replaced, or removable.
-- [ ] Update the related Cypress tests.
+- [x] Clarify the current role of Upstash: replaced by PostgreSQL advisory locks on the Flask VPS — no longer used in the frontend.
+- [x] Update the related Cypress tests. (profile.cy.ts covers username update, cancel, and empty submission — CI green)
 
 ## Phase 5 - Clean up documentation
 
@@ -95,11 +95,8 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 
 ## Current priority order
 
-1. Merge the protected PR after confirming all required checks are green.
-2. Clarify whether Upstash is still used, replaced, or removable.
-3. Update the related Cypress coverage if needed.
-4. Clean up documentation.
-5. Review repository architecture.
+1. Clean up documentation (Phase 5).
+2. Review repository architecture (Phase 6).
 
 ## Current validated status
 
@@ -108,3 +105,6 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 - Lighthouse desktop and mobile are blocking checks and now pass on the authenticated `/user` page.
 - The Flask VPS API at `https://db.lostintab.com/api` accepts browser requests from Vercel preview origins.
 - Username updates now work with the Flask API, including the CSRF flow.
+- Legacy Node/Vercel backend removed (`api/`, `prisma/`, `__tests__/api/`, `src/generated/prisma/`). Prisma and Upstash are no longer referenced anywhere in the frontend.
+- CI/CD workflows trigger on all branch pushes and are green on `main` after merge of PR #8.
+- Vitest coverage thresholds maintained: statements 95 / branches 90 / functions 90 / lines 95.
