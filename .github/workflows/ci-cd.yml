@@ -41,7 +41,7 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.0
 
       - name: 📦 Get pnpm store directory
         id: pnpm-store-dir
@@ -62,11 +62,6 @@ jobs:
 
       - name: 🔧 Setup Vercel config for CI
         run: pnpm run vercel:clean
-
-      - name: 🗃️ Generate Prisma client
-        run: |
-          export DATABASE_URL="postgresql://user:password@localhost:5432/dummy?schema=public"
-          pnpm exec prisma generate
 
       - name: 🔍 Run ESLint
         run: pnpm run lint
@@ -108,7 +103,7 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.0
 
       - name: 📦 Get pnpm store directory
         id: pnpm-store-dir
@@ -133,13 +128,6 @@ jobs:
           name: build-files
           path: P11-ArgentBank/dist/
 
-      - name: 🗃️ Generate Prisma client
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🔧 Using real DATABASE_URL for Prisma generation (VPS connection)"
-          pnpm exec prisma generate
-
       - name: 📦 Install Vercel CLI
         run: npm install -g vercel@latest
 
@@ -152,19 +140,17 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           VITE_API_URL: https://db.lostintab.com/api
         run: |
           echo "=== Deploying Preview ==="
           echo "Current directory: $(pwd)"
           echo "Root Directory configured: P11-ArgentBank"
-          echo "🔧 DATABASE_URL configured: $(if [ -n "$DATABASE_URL" ]; then echo 'YES (pointing to real VPS)'; else echo 'NO'; fi)"
           echo "🔧 VITE_API_URL configured: $VITE_API_URL"
 
           # Deploy to preview (without --prod) from repo root with environment variables
           cd ..
           echo "Changed to repo root: $(pwd)"
-          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN --env DATABASE_URL="$DATABASE_URL" --env VITE_API_URL="$VITE_API_URL")
+          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN --env VITE_API_URL="$VITE_API_URL")
           echo "Preview deployed: $PREVIEW_URL"
           echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
           echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
@@ -194,7 +180,7 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.0
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
@@ -205,13 +191,6 @@ jobs:
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
-
-      - name: 🗃️ Generate Prisma Client
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🔧 Using real DATABASE_URL for Cypress tests (VPS connection)"
-          pnpm exec prisma generate
 
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -773,7 +752,7 @@ jobs:
       - name: 📦 Setup pnpm # ← MISSING !
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.0
 
       - name: 🟢 Setup Node.js # ← MISSING !
         uses: actions/setup-node@v4
@@ -796,34 +775,24 @@ jobs:
       - name: 🔧 Install Cypress binary # ← MISSING !
         run: pnpm exec cypress install
 
-      - name: 🗃️ Generate Prisma Client # ← MISSING !
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🔧 Using real DATABASE_URL for Cypress tests (VPS connection)"
-          pnpm exec prisma generate
-
-      - name: 🔍 Test Preview API availability
+      - name: 🔍 Test Preview app availability
         env:
           PREVIEW_URL: ${{ needs.pa11y-tests.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
-          echo "Testing API on Preview: $PREVIEW_URL"
+          echo "Testing app on Preview: $PREVIEW_URL"
 
           # Wait for Preview to be fully ready
           echo "Waiting for Preview deployment to be fully ready..."
           sleep 15
 
-          # Test ping endpoint
-          echo "Testing ping endpoint..."
-          curl -f "$PREVIEW_URL/api/ping" -H "Accept: application/json" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
-            echo "❌ API ping failed on Preview URL: $PREVIEW_URL/api/ping"
-            echo "Let's check if the base URL responds..."
-            curl -I "$PREVIEW_URL" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 10 || echo "Base URL also failed"
+          # Vercel now serves only the SPA; API checks are covered through the Flask-backed app flows.
+          curl -f "$PREVIEW_URL" -H "Accept: text/html" -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET" --max-time 30 --retry 3 --retry-delay 5 || {
+            echo "❌ Preview app failed on URL: $PREVIEW_URL"
             exit 1
           }
 
-          echo "✅ API ping successful on Preview: $PREVIEW_URL/api/ping"
+          echo "✅ Preview app is reachable: $PREVIEW_URL"
 
       - name: set-preview-url
         id: set-preview-url
@@ -874,7 +843,7 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.0
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
@@ -885,13 +854,6 @@ jobs:
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
-
-      - name: 🗃️ Generate Prisma Client
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          echo "🔧 Using real DATABASE_URL for Lighthouse tests (VPS connection)"
-          pnpm exec prisma generate
 
       - name: ⚡ Run Lighthouse tests (${{ matrix.device }})
 

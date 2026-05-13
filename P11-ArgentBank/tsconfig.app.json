@@ -5,9 +5,6 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "paths": {
-      "@generated/*": ["./src/generated/*"]
-    },
     "allowJs": true,
     "checkJs": false,
 
@@ -25,5 +22,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "setupTests.ts", "src/generated/prisma/**/*.js"]
+  "include": ["src", "setupTests.ts"]
 }

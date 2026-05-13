@@ -6,7 +6,7 @@
 
 ## 🏦 Project Overview
 
-ArgentBank is a modern banking application with secure authentication and comprehensive user profile management. Originally developed during an OpenClassrooms training, it has been significantly enhanced with TypeScript, Vercel serverless functions, PostgreSQL database integration, and robust security features.
+ArgentBank is a modern banking application with secure authentication, account dashboards, transaction browsing, and user profile management. Originally developed during an OpenClassrooms training, it has been significantly enhanced with TypeScript, a Vite/React frontend, a dedicated Flask API, and robust security features.
 
 ## 🌐 Live Demo
 
@@ -14,9 +14,10 @@ ArgentBank is a modern banking application with secure authentication and compre
 
 ## ✨ Features
 
-- Secure Authentication System with JWT and CSRF protection
+- Secure Authentication System with token-based sessions and CSRF protection
 - User Profile Management with real-time validation
 - Rate Limiting to protect against brute force attacks
+- Account and transaction views backed by the external API
 - Session Management with automatic timeout
 - Responsive Design following WCAG/RGAA accessibility guidelines
 - Green IT Practices for optimized performance and reduced carbon footprint
@@ -31,18 +32,18 @@ ArgentBank is a modern banking application with secure authentication and compre
 - SCSS & BEM for structured styling
 - Vitest for unit testing
 
-### Backend
+### API
 
-- Vercel Serverless Functions
-- PostgreSQL database hosted on VPS
-- Prisma ORM for database interactions
-- bcrypt for password hashing
-- JWT for secure authentication
+- Flask API hosted separately from the frontend
+- PostgreSQL database managed by the API service
+- Server-side CSRF storage and validation
+- Server-side rate limiting for login, profile updates, and default API traffic
+- Username validation and sanitization on the server
 
 ## 🔒 Security Features
 
 - CSRF Protection with unique tokens per user
-- Rate Limiting for sensitive operations
+- Server-side Rate Limiting for sensitive operations
 - Input Sanitization to prevent XSS attacks
 - Username Blacklisting to prevent inappropriate content
 - Multi-level Validation on both client and server
@@ -51,7 +52,7 @@ ArgentBank is a modern banking application with secure authentication and compre
 
 ### Prerequisites
 
-- Node.js 18+ and npm/yarn
+- Node.js 24.x and pnpm
 - Git
 
 ### Installation
@@ -62,10 +63,10 @@ git clone https://github.com/Simon-LM/OC_P11_ArgentBank
 cd argentbank
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start the development server
-npm run dev
+pnpm run dev
 ```
 
 ### Environment Variables
@@ -73,20 +74,11 @@ npm run dev
 Create a `.env` file in the root directory with:
 
 ```env
-# Database connection
-DATABASE_URL="postgresql://username:password@hostname:port/database?schema=public"
-
-# Authentication
-JWT_SECRET="your_secret_key"
-
-# Rate limiting (for production with Upstash)
-KV_REST_API_URL="your_upstash_url"
-KV_REST_API_TOKEN="your_upstash_token"
-KV_REST_API_READ_ONLY_TOKEN="your_readonly_token"
-
-# API configuration
-VITE_API_URL="/api"
+# External API configuration
+VITE_API_URL="https://db.lostintab.com/api"
 ```
+
+For local development against another API instance, set `VITE_API_URL` to that API base URL. The frontend does not require database, JWT, Prisma, or Redis secrets.
 
 ## 🧪 Test Account
 
@@ -100,7 +92,7 @@ You can use the following credentials to test the application:
 This project is configured for easy deployment on Vercel:
 
 ```bash
-npm run build
+pnpm run build
 vercel --prod
 ```
 

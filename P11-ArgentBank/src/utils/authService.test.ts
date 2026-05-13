@@ -68,6 +68,28 @@ describe("loginUser Function", () => {
     ).rejects.toThrow("Login failed: 401 - invalid signature");
   });
 
+  test("throws a clear error for login rate limiting", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      headers: new Headers({ "Content-Type": "application/json" }),
+      json: async () => ({
+        status: 429,
+        message: "Too many requests",
+        retryAfter: 42,
+      }),
+    });
+
+    await expect(
+      loginUser({
+        email: "steve@rogers.com",
+        password: "password123",
+      }),
+    ).rejects.toThrow(
+      "Login failed: 429 - Too many requests. Please try again in 42 seconds.",
+    );
+  });
+
   test("throws an error for non-JSON error response", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
@@ -221,6 +243,34 @@ describe("updateUserProfile Function", () => {
     await expect(
       updateUserProfile("CaptainUpdated", "invalid-token"),
     ).rejects.toThrow();
+  });
+
+  test("should throw a clear error for profile update rate limiting", async () => {
+    sessionStorage.setItem("userId", "66e6fc6d339057ebf4c9701b");
+    sessionStorage.setItem("csrfToken", "test-csrf-token");
+
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+    });
+
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      headers: new Headers({ "Content-Type": "application/json" }),
+      json: async () => ({
+        status: 429,
+        message: "Too many requests",
+        retryAfter: 30,
+      }),
+    });
+
+    await expect(
+      updateUserProfile("CaptainUpdated", "valid-token"),
+    ).rejects.toThrow(
+      "Failed to update profile: 429 - Too many requests. Please try again in 30 seconds.",
+    );
   });
 });
 

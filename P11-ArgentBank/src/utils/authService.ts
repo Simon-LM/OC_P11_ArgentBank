@@ -49,6 +49,26 @@ export { loginSchema };
 
 type LoginCredentials = z.infer<typeof loginSchema>;
 
+const formatApiError = async (
+  response: Response,
+  fallbackPrefix: string,
+): Promise<string> => {
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    const errorData = await response.json();
+    const message = errorData.message || JSON.stringify(errorData);
+
+    if (response.status === 429 && errorData.retryAfter) {
+      return `${fallbackPrefix}: ${response.status} - ${message}. Please try again in ${errorData.retryAfter} seconds.`;
+    }
+
+    return `${fallbackPrefix}: ${response.status} - ${message}`;
+  }
+
+  const textError = await response.text();
+  return `${fallbackPrefix}: ${response.status} - ${textError}`;
+};
+
 export const loginUser = async (credentials: LoginCredentials) => {
   // Data validation with Zod
   const parsedCredentials = loginSchema.safeParse(credentials);
@@ -73,24 +93,7 @@ export const loginUser = async (credentials: LoginCredentials) => {
     const response = await fetch(buildApiUrl("/user/login"), requestOptions);
 
     if (!response.ok) {
-      // Attempt to read the error message, prioritizing JSON but falling back to text
-      let errorMessage = `Login failed: ${response.status}`;
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        try {
-          const errorData = await response.json();
-          errorMessage += ` - ${errorData.message || JSON.stringify(errorData)}`;
-        } catch (_jsonError) {
-          // If JSON parsing fails, try to get text
-          const textError = await response.text();
-          errorMessage += ` - ${textError}`;
-        }
-      } else {
-        // If not JSON, read as text
-        const textError = await response.text();
-        errorMessage += ` - ${textError}`;
-      }
-      throw new Error(errorMessage);
+      throw new Error(await formatApiError(response, "Login failed"));
     }
 
     // Verify that the response is in JSON format
@@ -198,7 +201,7 @@ export const updateUserProfile = async (userName: string, token: string) => {
       throw new Error("User ID not found in session");
     }
 
-    await fetch(buildApiUrl("/csrf/store"), {
+    const csrfResponse = await fetch(buildApiUrl("/csrf/store"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -209,6 +212,12 @@ export const updateUserProfile = async (userName: string, token: string) => {
         csrfToken,
       }),
     });
+
+    if (!csrfResponse.ok) {
+      throw new Error(
+        await formatApiError(csrfResponse, "Failed to store CSRF token"),
+      );
+    }
 
     const response = await fetch(buildApiUrl("/user/profile"), {
       method: "PUT",
@@ -221,8 +230,9 @@ export const updateUserProfile = async (userName: string, token: string) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Failed to update profile: ${errorData.message}`);
+      throw new Error(
+        await formatApiError(response, "Failed to update profile"),
+      );
     }
 
     sessionStorage.setItem("currentUserName", userName);
