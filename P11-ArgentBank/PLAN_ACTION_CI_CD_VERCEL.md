@@ -66,7 +66,7 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 - [x] Fix username updates.
 - [x] Update the Flask VPS API CORS configuration to allow Vercel preview browser requests, including `X-CSRF-Token`.
 - [x] Clarify the current role of Upstash: replaced by PostgreSQL advisory locks on the Flask VPS — no longer used in the frontend.
-- [ ] Update the related Cypress tests.
+- [x] Update the related Cypress tests. (profile.cy.ts covers username update, cancel, and empty submission — CI green)
 
 ## Phase 5 - Clean up documentation
 
@@ -95,9 +95,8 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 
 ## Current priority order
 
-1. Update the Cypress tests related to username update.
-2. Clean up documentation (Phase 5).
-3. Review repository architecture (Phase 6).
+1. Clean up documentation (Phase 5).
+2. Review repository architecture (Phase 6).
 
 ## Current validated status
 
