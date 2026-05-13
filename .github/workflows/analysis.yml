@@ -9,7 +9,7 @@ permissions:
 
 on:
   push:
-    branches: [main, develop, test/unified-ci-cd]
+    branches: ["**"]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -30,22 +30,17 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.0
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "24"
           cache: "pnpm"
           cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
-
-      - name: 🗃️ Generate Prisma Client
-        run: |
-          export DATABASE_URL="postgresql://user:password@localhost:5432/test"
-          pnpm exec prisma generate
 
       - name: 📊 Run tests with coverage
         run: pnpm run test:coverage
@@ -107,22 +102,17 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.0
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "24"
           cache: "pnpm"
           cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
-
-      - name: 🗃️ Generate Prisma Client
-        run: |
-          export DATABASE_URL="postgresql://user:password@localhost:5432/test"
-          pnpm exec prisma generate
 
       - name: 🏗️ Build project
         run: pnpm run build
@@ -197,12 +187,12 @@ jobs:
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 10.4.0
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "24"
           cache: "pnpm"
           cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
 

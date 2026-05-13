@@ -67,6 +67,50 @@ describe("usersSlice async thunks", () => {
     expect(state.accountsError).toMatch(/Erreur API/);
   });
 
+  it("fetchAccounts - erreur API sans message", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({}),
+      status: 503,
+    });
+
+    await store.dispatch(fetchAccounts());
+
+    const state = store.getState().users;
+    expect(state.accountsStatus).toBe("failed");
+    expect(state.accountsError).toBe("Failed to fetch accounts: 503");
+  });
+
+  it("fetchAccounts - format de réponse invalide", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ body: { id: "not-an-array" } }),
+    });
+
+    await store.dispatch(fetchAccounts());
+
+    const state = store.getState().users;
+    expect(state.accountsStatus).toBe("failed");
+    expect(state.accountsError).toBe(
+      "Invalid response format from server for accounts",
+    );
+  });
+
+  it("fetchAccounts - erreur inconnue", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockRejectedValueOnce("network down");
+
+    await store.dispatch(fetchAccounts());
+
+    const state = store.getState().users;
+    expect(state.accountsStatus).toBe("failed");
+    expect(state.accountsError).toBe(
+      "An unknown error occurred while fetching accounts",
+    );
+  });
+
   it("fetchTransactions - succès", async () => {
     sessionStorage.setItem("authToken", "token");
     fetchMock.mockResolvedValueOnce({
@@ -105,6 +149,56 @@ describe("usersSlice async thunks", () => {
     const state = store.getState().users;
     expect(state.transactionsStatus).toBe("failed");
     expect(state.transactionsError).toMatch(/Erreur API/);
+  });
+
+  it("fetchTransactions - erreur token", async () => {
+    await store.dispatch(fetchTransactions());
+
+    const state = store.getState().users;
+    expect(state.transactionsStatus).toBe("failed");
+    expect(state.transactionsError).toMatch(/token/i);
+  });
+
+  it("fetchTransactions - erreur API sans message", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({}),
+      status: 502,
+    });
+
+    await store.dispatch(fetchTransactions());
+
+    const state = store.getState().users;
+    expect(state.transactionsStatus).toBe("failed");
+    expect(state.transactionsError).toBe("Failed to fetch transactions: 502");
+  });
+
+  it("fetchTransactions - format de réponse invalide", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ body: null }),
+    });
+
+    await store.dispatch(fetchTransactions());
+
+    const state = store.getState().users;
+    expect(state.transactionsStatus).toBe("failed");
+    expect(state.transactionsError).toBe("Invalid response format from server");
+  });
+
+  it("fetchTransactions - erreur inconnue", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockRejectedValueOnce("network down");
+
+    await store.dispatch(fetchTransactions());
+
+    const state = store.getState().users;
+    expect(state.transactionsStatus).toBe("failed");
+    expect(state.transactionsError).toBe(
+      "An unknown error occurred while fetching transactions",
+    );
   });
 
   it("searchTransactions - succès", async () => {
@@ -149,5 +243,100 @@ describe("usersSlice async thunks", () => {
     const state = store.getState().users;
     expect(state.searchStatus).toBe("failed");
     expect(state.searchError).toMatch(/Erreur API/);
+  });
+
+  it("searchTransactions - erreur token", async () => {
+    await store.dispatch(searchTransactions({}));
+
+    const state = store.getState().users;
+    expect(state.searchStatus).toBe("failed");
+    expect(state.searchError).toMatch(/token/i);
+  });
+
+  it("searchTransactions - envoie tous les paramètres supportés", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        body: {
+          transactions: [],
+          pagination: { total: 0, page: 2, limit: 25, pages: 0 },
+        },
+      }),
+    });
+
+    await store.dispatch(
+      searchTransactions({
+        accountId: "acc1",
+        searchTerm: "rent",
+        category: "Housing",
+        fromDate: "2024-01-01",
+        toDate: "2024-01-31",
+        minAmount: 10,
+        maxAmount: 250,
+        type: "DEBIT",
+        page: 2,
+        limit: 25,
+        sortBy: "amount",
+        sortOrder: "asc",
+      }),
+    );
+
+    const calledUrl = fetchMock.mock.calls[0][0] as string;
+    expect(calledUrl).toContain("/transactions/search?");
+    expect(calledUrl).toContain("accountId=acc1");
+    expect(calledUrl).toContain("searchTerm=rent");
+    expect(calledUrl).toContain("category=Housing");
+    expect(calledUrl).toContain("fromDate=2024-01-01");
+    expect(calledUrl).toContain("toDate=2024-01-31");
+    expect(calledUrl).toContain("minAmount=10");
+    expect(calledUrl).toContain("maxAmount=250");
+    expect(calledUrl).toContain("type=DEBIT");
+    expect(calledUrl).toContain("page=2");
+    expect(calledUrl).toContain("limit=25");
+    expect(calledUrl).toContain("sortBy=amount");
+    expect(calledUrl).toContain("sortOrder=asc");
+  });
+
+  it("searchTransactions - erreur API sans message", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({}),
+      status: 500,
+    });
+
+    await store.dispatch(searchTransactions({}));
+
+    const state = store.getState().users;
+    expect(state.searchStatus).toBe("failed");
+    expect(state.searchError).toBe("Failed to search transactions: 500");
+  });
+
+  it("searchTransactions - format de réponse invalide", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ body: { transactions: null } }),
+    });
+
+    await store.dispatch(searchTransactions({}));
+
+    const state = store.getState().users;
+    expect(state.searchStatus).toBe("failed");
+    expect(state.searchError).toBe("Invalid response format from server");
+  });
+
+  it("searchTransactions - erreur inconnue", async () => {
+    sessionStorage.setItem("authToken", "token");
+    fetchMock.mockRejectedValueOnce("network down");
+
+    await store.dispatch(searchTransactions({}));
+
+    const state = store.getState().users;
+    expect(state.searchStatus).toBe("failed");
+    expect(state.searchError).toBe(
+      "An unknown error occurred while searching transactions",
+    );
   });
 });

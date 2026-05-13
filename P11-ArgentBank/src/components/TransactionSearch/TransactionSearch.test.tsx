@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import TransactionSearch from "./TransactionSearch";
 
 const defaultProps = {
@@ -16,6 +16,7 @@ const defaultProps = {
 describe("TransactionSearch - Unit Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
   });
 
   it("displays search field and label", () => {
@@ -144,5 +145,131 @@ describe("TransactionSearch - Unit Tests", () => {
       /Shortcuts: ctrl\+alt\+f for search, ctrl\+alt\+r for results/i,
     );
     expect(shortcuts.tagName).toBe("SMALL");
+  });
+
+  it("debounces search changes and resets pagination", () => {
+    vi.useFakeTimers();
+    render(<TransactionSearch {...defaultProps} />);
+
+    fireEvent.change(screen.getByLabelText(/filter transactions/i), {
+      target: { value: "salary" },
+    });
+
+    expect(defaultProps.onSearchChange).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(500);
+
+    expect(defaultProps.onSearchChange).toHaveBeenCalledWith({
+      searchTerm: "salary",
+      page: 1,
+    });
+  });
+
+  it("clears a search term from the clear button", () => {
+    vi.useFakeTimers();
+    render(
+      <TransactionSearch
+        {...defaultProps}
+        searchParams={{ ...defaultProps.searchParams, searchTerm: "rent" }}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /clear search/i }));
+    vi.advanceTimersByTime(500);
+
+    expect(defaultProps.onSearchChange).toHaveBeenCalledWith({
+      searchTerm: "",
+      page: 1,
+    });
+  });
+
+  it("uses the optional global toggle when switching from account mode", () => {
+    render(<TransactionSearch {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /switch to global/i }));
+
+    expect(defaultProps.onGlobalSearchToggle).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onSearchChange).not.toHaveBeenCalled();
+  });
+
+  it("falls back to search params when no optional global toggle is provided", () => {
+    render(
+      <TransactionSearch {...defaultProps} onGlobalSearchToggle={undefined} />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /switch to global/i }));
+
+    expect(defaultProps.onSearchChange).toHaveBeenCalledWith({
+      accountId: undefined,
+      page: 1,
+    });
+  });
+
+  it("restores the selected account when leaving global mode", () => {
+    render(
+      <TransactionSearch
+        {...defaultProps}
+        searchParams={{ ...defaultProps.searchParams, accountId: undefined }}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /global search is active/i }),
+    );
+
+    expect(defaultProps.onSearchChange).toHaveBeenCalledWith({
+      accountId: "acc1",
+      page: 1,
+    });
+  });
+
+  it("supports keyboard navigation from the input", () => {
+    render(<TransactionSearch {...defaultProps} />);
+
+    const input = screen.getByLabelText(/filter transactions/i);
+    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+
+    expect(defaultProps.onNavigateToResults).toHaveBeenCalledTimes(2);
+  });
+
+  it("ignores alt-modified input shortcuts", () => {
+    render(<TransactionSearch {...defaultProps} />);
+
+    fireEvent.keyDown(screen.getByLabelText(/filter transactions/i), {
+      key: "Enter",
+      altKey: true,
+    });
+
+    expect(defaultProps.onNavigateToResults).not.toHaveBeenCalled();
+  });
+
+  it("blurs the input with Escape", () => {
+    render(<TransactionSearch {...defaultProps} />);
+
+    const input = screen.getByLabelText(/filter transactions/i);
+    input.focus();
+    fireEvent.keyDown(input, { key: "Escape" });
+
+    expect(input).not.toHaveFocus();
+  });
+
+  it("handles global keyboard shortcuts", () => {
+    render(<TransactionSearch {...defaultProps} />);
+
+    const input = screen.getByLabelText(/filter transactions/i);
+    fireEvent.keyDown(document, { key: "f", ctrlKey: true, altKey: true });
+    fireEvent.keyDown(document, { key: "r", ctrlKey: true, altKey: true });
+
+    expect(input).toHaveFocus();
+    expect(defaultProps.onNavigateToResults).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not navigate to results from the global shortcut while loading", () => {
+    render(<TransactionSearch {...defaultProps} isLoading={true} />);
+
+    fireEvent.keyDown(document, { key: "r", ctrlKey: true, altKey: true });
+
+    expect(defaultProps.onNavigateToResults).not.toHaveBeenCalled();
   });
 });

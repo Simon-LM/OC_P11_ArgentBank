@@ -20,48 +20,51 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 
 ## Phase 1 - Protect main and secure publication
 
-- [ ] Stop pushing fixes directly to `main`.
-- [ ] Create a dedicated branch for each correction topic.
-- [ ] Open a Pull Request targeting `main`.
-- [ ] Enable a GitHub branch protection rule or ruleset for `main`.
-- [ ] Require the main CI/CD checks before merge.
-- [ ] Verify that Vercel only publishes production after a valid merge into `main`.
-- [ ] Decide whether Vercel Git Integration remains active or whether production should be controlled only by GitHub Actions.
+- [x] Stop pushing fixes directly to `main`.
+- [x] Create a dedicated branch for each correction topic.
+- [x] Open a Pull Request targeting `main`.
+- [x] Enable a GitHub branch protection rule or ruleset for `main`.
+- [x] Require the main CI/CD checks before merge.
+- [x] Verify that Vercel only publishes production after a valid merge into `main`.
+- [x] Keep Vercel Git Integration active, with production controlled by protected merges into `main`.
 
 ### Required checks
 
-- [ ] Lint.
-- [ ] TypeScript.
-- [ ] Unit tests / coverage.
-- [ ] Build.
-- [ ] Pa11y.
-- [ ] Cypress.
-- [ ] Lighthouse, at least as an explicit gate: blocking or documented warning.
+- [x] Lint.
+- [x] TypeScript.
+- [x] Unit tests / coverage.
+- [x] Build.
+- [x] Pa11y.
+- [x] Cypress.
+- [x] Lighthouse as a blocking required check for desktop and mobile.
 
 ## Phase 2 - Validate the CI/CD flow to Vercel
 
-- [ ] Create a test branch.
-- [ ] Open a Pull Request.
-- [ ] Verify that the Vercel Preview deployment is created.
-- [ ] Verify that tests run against the Preview deployment.
-- [ ] Verify that a test failure blocks the merge.
-- [ ] Merge only when all required checks are green.
-- [ ] Confirm that Vercel production updates only after this merge.
+- [x] Create a test branch.
+- [x] Open a Pull Request.
+- [x] Verify that the Vercel Preview deployment is created.
+- [x] Verify that tests run against the Preview deployment.
+- [x] Verify that a test failure blocks the merge.
+- [x] Merge only when all required checks are green.
+- [x] Confirm that Vercel production updates only after this merge.
 
 ## Phase 3 - Fix Lighthouse
 
-- [ ] Diagnose the Lighthouse failure on `/user`.
-- [ ] Align Lighthouse authentication with the SPA wait strategy already used by Pa11y.
-- [ ] Decide professional thresholds: blocking checks or warnings.
-- [ ] Rerun the full workflow.
-- [ ] Document the expected behavior.
+- [x] Diagnose the Lighthouse failure on `/user`.
+- [x] Replace fragile UI login in Lighthouse with direct API authentication and `sessionStorage` setup.
+- [x] Fix Vercel bypass handling so preview-only headers do not break API CORS preflights.
+- [x] Replace the fragile CSS-module selector wait with a stable authenticated-page content check.
+- [x] Keep professional thresholds as blocking checks for both desktop and mobile.
+- [x] Rerun the full workflow successfully.
+- [x] Document the expected behavior.
 
 ## Phase 4 - Fix username update and Upstash
 
-- [ ] Diagnose the `POST /csrf/store` request.
-- [ ] Diagnose the `PUT /user/profile` request.
-- [ ] Verify whether the new Flask API implements these routes.
-- [ ] Fix username updates.
+- [x] Diagnose the `POST /csrf/store` request.
+- [x] Diagnose the `PUT /user/profile` request.
+- [x] Verify whether the new Flask API implements these routes.
+- [x] Fix username updates.
+- [x] Update the Flask VPS API CORS configuration to allow Vercel preview browser requests, including `X-CSRF-Token`.
 - [ ] Clarify the current role of Upstash: still used, replaced, or removable.
 - [ ] Update the related Cypress tests.
 
@@ -83,18 +86,25 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 
 ## Working rules from now on
 
-- [ ] One branch per topic.
-- [ ] One Pull Request per logical correction.
-- [ ] No direct push to `main` except for an explicit emergency.
-- [ ] No production deployment without green CI/CD or an explicit, documented decision.
-- [ ] No Vercel configuration change without checking the CI/CD impact.
-- [ ] Always distinguish commit, push, merge, preview, and production.
+- [x] One branch per topic.
+- [x] One Pull Request per logical correction.
+- [x] No direct push to `main` except for an explicit emergency.
+- [x] No production deployment without green CI/CD or an explicit, documented decision.
+- [x] No Vercel configuration change without checking the CI/CD impact.
+- [x] Always distinguish commit, push, merge, preview, and production.
 
 ## Current priority order
 
-1. Protect `main` and secure Vercel publication.
-2. Verify that the PR -> CI/CD -> Vercel flow works.
-3. Fix Lighthouse.
-4. Fix username updates and the Upstash topic.
-5. Clean up documentation.
-6. Review repository architecture.
+1. Merge the protected PR after confirming all required checks are green.
+2. Clarify whether Upstash is still used, replaced, or removable.
+3. Update the related Cypress coverage if needed.
+4. Clean up documentation.
+5. Review repository architecture.
+
+## Current validated status
+
+- GitHub ruleset protects `main` with required PRs and required status checks.
+- PR validation runs against the Vercel Preview deployment.
+- Lighthouse desktop and mobile are blocking checks and now pass on the authenticated `/user` page.
+- The Flask VPS API at `https://db.lostintab.com/api` accepts browser requests from Vercel preview origins.
+- Username updates now work with the Flask API, including the CSRF flow.
