@@ -162,9 +162,6 @@ describe("Transaction Display", () => {
     const targetAccountNumber = "8949";
     const accountSelector = `${selectors.accountButton}[aria-label*="${targetAccountNumber}"]`;
 
-    // Ajout de l'intercept pour la recherche par compte (plus tolérant)
-    cy.intercept("GET", "**/api/transactions/search*").as("searchByAccountApi");
-
     // Attendre la réponse de l'API comptes et logguer le body
     cy.wait("@accountsRequest").then((interception) => {
       cy.log(
@@ -218,7 +215,7 @@ describe("Transaction Display", () => {
       .should("include", accountSelectedClassName);
 
     // Attendre que l'appel API spécifique pour les transactions du compte soit fait
-    cy.wait(`@searchByAccountApi`).then((interception) => {
+    cy.wait(`@searchTransactionsRequest`).then((interception) => {
       // Log de debug sur l'URL de l'API (plus d'assertion stricte sur accountId)
       cy.log(`[DEBUG] URL API appelée: ${interception.request.url}`);
       // cy.log(`[DEBUG] Params API:`, interception.request.query);
