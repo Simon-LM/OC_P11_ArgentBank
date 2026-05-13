@@ -12,20 +12,6 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "jsx": "react-jsx",
     "module": "esnext",
-    "target": "esnext",
-    "paths": {
-      "@/*": ["src/*"],
-      "@assets/*": ["src/assets/*"],
-      "@components/*": ["src/components/*"],
-      "@generated/*": ["src/generated/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@layouts/*": ["src/layouts/*"],
-      "@mockData/*": ["src/mockData/*"],
-      "@pages/*": ["src/pages/*"],
-      "@store/*": ["src/store/*"],
-      "@styles/*": ["src/styles/*"],
-      "@types/*": ["src/types/*"],
-      "@utils/*": ["src/utils/*"]
-    }
+    "target": "esnext"
   }
 }

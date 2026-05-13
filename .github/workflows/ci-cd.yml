@@ -13,7 +13,7 @@ permissions:
 
 on:
   push:
-    branches: [main, develop, test/unified-ci-cd]
+    branches: ["**"]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
