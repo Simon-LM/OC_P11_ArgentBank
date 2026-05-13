@@ -148,6 +148,8 @@ describe("Header", () => {
   });
 
   test("logo has correct attributes on home page", () => {
+    mockLocation.pathname = "/";
+
     render(
       <Provider store={store}>
         <BrowserRouter>
@@ -161,5 +163,44 @@ describe("Header", () => {
     // Sur la page d'accueil (mockLocation.pathname = "/"), le lien devrait avoir href="/"
     expect(logoLink).toHaveAttribute("href", "/");
     expect(logoLink).toHaveAttribute("aria-current", "page");
+  });
+
+  test("prevents logo navigation when already on home page", () => {
+    mockLocation.pathname = "/";
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Header />
+        </BrowserRouter>
+      </Provider>,
+    );
+
+    const logoLink = screen.getByRole("link", { name: /go to home page/i });
+    const clickEvent = new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+    });
+
+    logoLink.dispatchEvent(clickEvent);
+
+    expect(clickEvent.defaultPrevented).toBe(true);
+  });
+
+  test("logo points to the relative home link away from home page", () => {
+    mockLocation.pathname = "/user";
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Header />
+        </BrowserRouter>
+      </Provider>,
+    );
+
+    const logoLink = screen.getByRole("link", { name: /go to home page/i });
+
+    expect(logoLink).toHaveAttribute("href", "./");
+    expect(logoLink).not.toHaveAttribute("aria-current");
   });
 });

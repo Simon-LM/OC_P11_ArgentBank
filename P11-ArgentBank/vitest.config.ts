@@ -33,6 +33,10 @@ export default defineConfig({
         lines: 95, // Critical: 95%+ recommended for banking
       },
       exclude: [
+        "**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+        "**/*.accessibility.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+        "**/*.integration.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+        "src/setupTests.ts",
         "src/mockData/users.ts",
         "src/pages/user/user.module.scss.d.ts",
         "src/components/TransactionSearch/TransactionSearch.module.scss.d.ts",
