@@ -8,7 +8,7 @@ echo ""
 
 # Check if we're in the right directory
 if [ ! -f "package.json" ]; then
-    echo "❌ Error: This script must be run from P11-ArgentBank/"
+    echo "❌ Error: This script must be run from app/"
     exit 1
 fi
 

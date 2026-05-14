@@ -16,7 +16,7 @@ on:
 
 defaults:
   run:
-    working-directory: P11-ArgentBank
+    working-directory: app
 
 jobs:
   coverage:
@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+          cache-dependency-path: app/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -48,7 +48,7 @@ jobs:
       - name: 📤 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          directory: P11-ArgentBank/coverage
+          directory: app/coverage
           files: ./coverage/clover.xml
           fail_ci_if_error: false
           verbose: true
@@ -63,7 +63,7 @@ jobs:
             const path = require('path');
 
             try {
-              const coveragePath = path.join('P11-ArgentBank', 'coverage', 'coverage-summary.json');
+              const coveragePath = path.join('app', 'coverage', 'coverage-summary.json');
               const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
               
               const total = coverage.total;
@@ -109,7 +109,7 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+          cache-dependency-path: app/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -130,7 +130,7 @@ jobs:
             const path = require('path');
 
             try {
-              const distPath = path.join('P11-ArgentBank', 'dist');
+              const distPath = path.join('app', 'dist');
               const statsPath = path.join(distPath, 'stats.json');
               
               // Calculate total bundle size
@@ -194,7 +194,7 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+          cache-dependency-path: app/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -233,7 +233,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: security-report
-          path: P11-ArgentBank/security-report.md
+          path: app/security-report.md
 
       - name: 💬 Comment PR with security summary
         if: github.event_name == 'pull_request'
@@ -244,7 +244,7 @@ jobs:
             const fs = require('fs');
 
             try {
-              const report = fs.readFileSync('P11-ArgentBank/security-report.md', 'utf8');
+              const report = fs.readFileSync('app/security-report.md', 'utf8');
               
               github.rest.issues.createComment({
                 issue_number: context.issue.number,

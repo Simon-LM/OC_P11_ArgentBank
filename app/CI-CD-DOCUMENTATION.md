@@ -55,7 +55,7 @@ A separate `analysis.yml` workflow runs in parallel (non-blocking): coverage rep
 
 ## Workflow file
 
-`.github/workflows/ci-cd.yml` — working directory: `P11-ArgentBank/`
+`.github/workflows/ci-cd.yml` — working directory: `app/`
 
 ## Key configuration
 
@@ -64,7 +64,7 @@ A separate `analysis.yml` workflow runs in parallel (non-blocking): coverage rep
 | Node.js               | 24.x                           |
 | pnpm                  | 10.4.0                         |
 | Cypress               | 14.x (Electron, headless)      |
-| Vercel Root Directory | `P11-ArgentBank/`              |
+| Vercel Root Directory | `app/`                         |
 | API URL               | `https://db.lostintab.com/api` |
 
 ## Required GitHub secrets
@@ -86,7 +86,7 @@ A separate `analysis.yml` workflow runs in parallel (non-blocking): coverage rep
 
 - **Preview**: every branch push creates a Vercel preview URL used by CI tests
 - **Production**: automatic on merge into `main`, only if all required checks pass
-- Vercel Git Integration is active; `vercel.json` is committed in `P11-ArgentBank/`
+- Vercel Git Integration is active; `vercel.json` is committed in `app/`
 
 ## Flask VPS API
 

@@ -2,7 +2,7 @@
 
 # ArgentBank - Modern Banking Application Demonstration Project
 
-> **Important Note:** The main project files are located in the [P11-ArgentBank](./P11-ArgentBank/) directory. This README provides an overview of the project.
+> **Important Note:** The main project files are located in the [app](./app/) directory. This README provides an overview of the project.
 
 ![ArgentBank Logo](https://slm-argentbank.vercel.app/assets/argentBankLogo-DLOlZX8G.avif)
 
@@ -61,7 +61,7 @@ ArgentBank is a modern banking application with secure authentication, account d
 ```bash
 # Clone the repository
 git clone https://github.com/Simon-LM/OC_P11_ArgentBank
-cd OC_P11_ArgentBank/P11-ArgentBank
+cd OC_P11_ArgentBank/app
 
 # Install dependencies
 pnpm install
@@ -72,7 +72,7 @@ pnpm run dev
 
 ### Environment Variables
 
-Create a `.env` file inside `P11-ArgentBank/` with:
+Create a `.env` file inside `app/` with:
 
 ```env
 # External API configuration
