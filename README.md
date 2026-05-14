@@ -8,7 +8,7 @@
 
 ## 🏦 Project Overview
 
-ArgentBank is a modern banking application with secure authentication, account dashboards, transaction browsing, and user profile management. Originally developed during an OpenClassrooms training, it has been significantly enhanced with TypeScript, a Vite/React frontend, a dedicated Flask API on VPS, and robust security features.
+ArgentBank is a modern banking application with secure authentication, account dashboards, transaction browsing, and user profile management. Started as an OpenClassrooms project, it has grown into a personal showcase where I actively experiment with new features — featuring a custom Flask/PostgreSQL API on VPS, JWT/CSRF security, full CI/CD automation on Vercel, and WCAG/RGAA accessibility compliance.
 
 ## 🌐 Live Demo
 
@@ -110,7 +110,7 @@ ArgentBank is fully responsive and tested on various devices:
 ArgentBank prioritizes digital accessibility:
 
 - WCAG 2.1 AA compliant
-- Conforme aux normes RGAA (Référentiel Général d'Amélioration de l'Accessibilité)
+- RGAA compliant (Référentiel Général d'Amélioration de l'Accessibilité — French national accessibility standard)
 - Proper semantic HTML structure
 - Keyboard navigation support
 - ARIA attributes for complex components
