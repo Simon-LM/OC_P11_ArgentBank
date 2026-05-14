@@ -70,12 +70,12 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 
 ## Phase 5 - Clean up documentation
 
-- [ ] Update the root README.
-- [ ] Update the `P11-ArgentBank` README.
-- [ ] Remove or archive obsolete documentation about the former Vercel serverless API when it no longer represents the current architecture.
-- [ ] Clearly document the Flask VPS API.
-- [ ] Clearly document the Vercel strategy.
-- [ ] Clearly document the actual CI/CD strategy.
+- [x] Update the root README.
+- [x] Update the `P11-ArgentBank` README.
+- [x] Remove or archive obsolete documentation about the former Vercel serverless API when it no longer represents the current architecture.
+- [x] Clearly document the Flask VPS API.
+- [x] Clearly document the Vercel strategy.
+- [x] Clearly document the actual CI/CD strategy.
 
 ## Phase 6 - Clarify repository architecture
 
@@ -95,8 +95,7 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 
 ## Current priority order
 
-1. Clean up documentation (Phase 5).
-2. Review repository architecture (Phase 6).
+1. Review repository architecture (Phase 6).
 
 ## Current validated status
 

@@ -8,7 +8,7 @@
 
 ## 🏦 Project Overview
 
-ArgentBank is a modern banking application with secure authentication and comprehensive user profile management. Originally developed during an OpenClassrooms training, it has been significantly enhanced with TypeScript, Vercel serverless functions, PostgreSQL database integration, and robust security features.
+ArgentBank is a modern banking application with secure authentication, account dashboards, transaction browsing, and user profile management. Originally developed during an OpenClassrooms training, it has been significantly enhanced with TypeScript, a Vite/React frontend, a dedicated Flask API on VPS, and robust security features.
 
 ## 🌐 Live Demo
 
@@ -33,18 +33,18 @@ ArgentBank is a modern banking application with secure authentication and compre
 - SCSS & BEM for structured styling
 - Vitest for unit testing
 
-### Backend
+### API
 
-- Vercel Serverless Functions
-- PostgreSQL database hosted on VPS
-- Prisma ORM for database interactions
-- bcrypt for password hashing
-- JWT for secure authentication
+- Flask API hosted on VPS (`https://db.lostintab.com/api`)
+- PostgreSQL database managed by the API service
+- Server-side CSRF storage and validation
+- Server-side rate limiting via PostgreSQL advisory locks
+- Username validation and sanitization on the server
 
 ## 🔒 Security Features
 
 - CSRF Protection with unique tokens per user
-- Rate Limiting for sensitive operations
+- Server-side Rate Limiting via PostgreSQL advisory locks
 - Input Sanitization to prevent XSS attacks
 - Username Blacklisting to prevent inappropriate content
 - Multi-level Validation on both client and server
@@ -53,7 +53,7 @@ ArgentBank is a modern banking application with secure authentication and compre
 
 ### Prerequisites
 
-- Node.js 18+ and npm/yarn
+- Node.js 24.x and pnpm
 - Git
 
 ### Installation
@@ -61,34 +61,25 @@ ArgentBank is a modern banking application with secure authentication and compre
 ```bash
 # Clone the repository
 git clone https://github.com/Simon-LM/OC_P11_ArgentBank
-cd argentbank
+cd OC_P11_ArgentBank/P11-ArgentBank
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start the development server
-npm run dev
+pnpm run dev
 ```
 
 ### Environment Variables
 
-Create a `.env` file in the root directory with:
+Create a `.env` file inside `P11-ArgentBank/` with:
 
 ```env
-# Database connection
-DATABASE_URL="postgresql://username:password@hostname:port/database?schema=public"
-
-# Authentication
-JWT_SECRET="your_secret_key"
-
-# Rate limiting (for production with Upstash)
-KV_REST_API_URL="your_upstash_url"
-KV_REST_API_TOKEN="your_upstash_token"
-KV_REST_API_READ_ONLY_TOKEN="your_readonly_token"
-
-# API configuration
-VITE_API_URL="/api"
+# External API configuration
+VITE_API_URL="https://db.lostintab.com/api"
 ```
+
+The frontend does not require database, JWT, Prisma, or Redis secrets — all backend logic is handled by the Flask VPS API.
 
 ## 🧪 Test Account
 
@@ -99,11 +90,11 @@ You can use the following credentials to test the application:
 
 ## 🚀 Deployment
 
-This project is configured for easy deployment on Vercel:
+This project is deployed on Vercel via Git integration. Every merge into `main` triggers an automatic production deployment after all CI/CD checks pass.
 
 ```bash
-npm run build
-vercel --prod
+# Manual build
+pnpm run build
 ```
 
 ## 📱 Responsive Design
