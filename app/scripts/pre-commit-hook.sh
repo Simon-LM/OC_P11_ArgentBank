@@ -3,9 +3,9 @@
 # Simplified and functional pre-commit hook
 echo "🔄 Running pre-commit hook..."
 
-# Move to P11-ArgentBank project directory
+# Move to app project directory
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
-PROJECT_DIR="$PROJECT_ROOT/P11-ArgentBank"
+PROJECT_DIR="$PROJECT_ROOT/app"
 cd "$PROJECT_DIR"
 
 # Clean Copilot backups

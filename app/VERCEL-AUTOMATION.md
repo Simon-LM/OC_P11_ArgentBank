@@ -183,7 +183,7 @@ pnpm run vercel:clean
 ## 📁 Structure des fichiers
 
 ```
-P11-ArgentBank/
+app/
 ├── vercel.json            ← Dans Git (pour Vercel automatique)
 ├── vercel.only-prod.json  ← Sauvegarde (identique à vercel.json)
 └── scripts/

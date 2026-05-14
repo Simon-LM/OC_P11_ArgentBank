@@ -71,7 +71,7 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 ## Phase 5 - Clean up documentation
 
 - [x] Update the root README.
-- [x] Update the `P11-ArgentBank` README.
+- [x] Update the `app` README.
 - [x] Remove or archive obsolete documentation about the former Vercel serverless API when it no longer represents the current architecture.
 - [x] Clearly document the Flask VPS API.
 - [x] Clearly document the Vercel strategy.
@@ -79,10 +79,10 @@ direct push to main -> Vercel production deployment -> CI/CD failure after publi
 
 ## Phase 6 - Clarify repository architecture
 
-- [ ] Decide whether the application remains in `P11-ArgentBank/`.
-- [ ] If it does, document this choice in the root README and in Vercel.
-- [ ] If it does not, prepare a dedicated PR to move the application to the repository root.
-- [ ] Verify GitHub Actions, Vercel, Cypress, Pa11y, and Lighthouse paths after the decision.
+- [x] Rename `P11-ArgentBank/` to `app/`.
+- [x] Update Vercel Root Directory to `app/` in the Vercel Dashboard.
+- [x] Update GitHub Actions workflows, scripts, README, and documentation to reflect the rename.
+- [x] Verify GitHub Actions, Vercel, Cypress, Pa11y, and Lighthouse paths after the rename.
 
 ## Working rules from now on
 

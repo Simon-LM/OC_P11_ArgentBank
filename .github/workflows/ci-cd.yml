@@ -20,7 +20,7 @@ on:
 
 defaults:
   run:
-    working-directory: P11-ArgentBank
+    working-directory: app
 
 jobs:
   ci-tests:
@@ -53,7 +53,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.pnpm-store-dir.outputs.store_path }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('app/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-files
-          path: P11-ArgentBank/dist/
+          path: app/dist/
           retention-days: 1
 
   deploy-preview:
@@ -115,7 +115,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.pnpm-store-dir.outputs.store_path }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('app/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
@@ -126,7 +126,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-files
-          path: P11-ArgentBank/dist/
+          path: app/dist/
 
       - name: 📦 Install Vercel CLI
         run: npm install -g vercel@latest
@@ -144,7 +144,7 @@ jobs:
         run: |
           echo "=== Deploying Preview ==="
           echo "Current directory: $(pwd)"
-          echo "Root Directory configured: P11-ArgentBank"
+          echo "Root Directory configured: app"
           echo "🔧 VITE_API_URL configured: $VITE_API_URL"
 
           # Deploy to preview (without --prod) from repo root with environment variables
@@ -187,7 +187,7 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+          cache-dependency-path: app/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -731,7 +731,7 @@ jobs:
         if: always()
         with:
           name: pa11y-reports
-          path: P11-ArgentBank/pa11y-reports
+          path: app/pa11y-reports
 
   # # #  # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -759,13 +759,13 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+          cache-dependency-path: app/pnpm-lock.yaml
 
       - name: 📦 Cache Cypress binary # ← MISSING !
         uses: actions/cache@v3
         with:
           path: ~/.cache/Cypress
-          key: ${{ runner.os }}-cypress-${{ hashFiles('P11-ArgentBank/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-cypress-${{ hashFiles('app/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-cypress-
 
@@ -821,8 +821,8 @@ jobs:
         with:
           name: cypress-reports
           path: |
-            P11-ArgentBank/cypress/screenshots
-            P11-ArgentBank/cypress/videos
+            app/cypress/screenshots
+            app/cypress/videos
 
   lighthouse-tests:
     name: ⚡ Lighthouse Performance Tests
@@ -850,7 +850,7 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: P11-ArgentBank/pnpm-lock.yaml
+          cache-dependency-path: app/pnpm-lock.yaml
 
       - name: 📦 Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -1335,4 +1335,4 @@ jobs:
         if: always()
         with:
           name: lighthouse-${{ matrix.device }}-reports
-          path: P11-ArgentBank/lighthouse-reports
+          path: app/lighthouse-reports
