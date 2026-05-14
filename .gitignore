@@ -1,4 +1,10 @@
 .vercel
 
+# Dependencies
+node_modules/
+
+# Editor directories and files
+.vscode/
+
 # Accessibility resources with private training data
 A11y_Ressources/

@@ -27,6 +27,13 @@ dist-ssr
 *.sln
 *.sw?
 
+# Copilot Backup Manager tool files (utility, not part of the app)
+COPILOT*.md
+README-COPILOT*.md
+copilot-backup-manager-installer.sh
+copilot-backup-manager-package/
+copilot-backup-manager.tar.gz
+
 # Fichiers de sauvegarde et temporaires
 *~
 *.tmp
