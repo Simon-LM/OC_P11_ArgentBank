@@ -87,14 +87,32 @@ You can use the following credentials to test the application:
 - **Email:** [tony@stark.com](mailto:tony@stark.com)
 - **Password:** password123
 
-## 🚀 Deployment
-
-This project is configured for easy deployment on Vercel:
+## 🧪 Tests
 
 ```bash
-pnpm run build
-vercel --prod
+# Unit tests with coverage (Vitest)
+pnpm run test:coverage
+
+# E2E tests (Cypress, headless)
+pnpm run cypress:run
+
+# Accessibility tests (Pa11y)
+pnpm run pa11y
+
+# Performance audit (Lighthouse)
+pnpm run lighthouse
 ```
+
+## 🚀 CI/CD & Deployment
+
+Every push triggers the unified GitHub Actions workflow:
+
+1. **CI tests** — ESLint, TypeScript, Vitest coverage, build
+2. **Preview deployment** — Vercel preview URL created
+3. **Accessibility & performance** — Pa11y, Cypress E2E, Lighthouse (blocking)
+4. **Production deployment** — automatic on merge into `main` if all checks pass
+
+The frontend is deployed on Vercel. The Flask VPS API runs independently at `https://db.lostintab.com/api`.
 
 ## 📱 Responsive Design
 
