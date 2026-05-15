@@ -2,7 +2,7 @@
 
 # ArgentBank - Modern Banking Application Demonstration Project
 
-![ArgentBank Logo](https://slm-argentbank.vercel.app/assets/argentBankLogo-DLOlZX8G.avif)
+![ArgentBank Logo](https://slm-argentbank.vercel.app/img/argentBankLogo.png)
 
 ## 🏦 Project Overview
 
