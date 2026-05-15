@@ -4,7 +4,7 @@
 
 > **Important Note:** The main project files are located in the [app](./app/) directory. This README provides an overview of the project.
 
-![ArgentBank Logo](https://slm-argentbank.vercel.app/assets/argentBankLogo-DLOlZX8G.avif)
+![ArgentBank Logo](https://slm-argentbank.vercel.app/img/argentBankLogo.png)
 
 ## 🏦 Project Overview
 

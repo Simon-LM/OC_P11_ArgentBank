@@ -24,10 +24,10 @@ Manual accessibility audit checklist based on Access42 RGAA training, focusing o
 
 #### 1. **Skip Links - RGAA 12.7 [A]**
 
-- [ ] **Skip link present and functional**
+- ✅ **Skip link present and functional**
   - Must be **first in DOM order**
   - Visible on focus (or always visible)
-  - Points to `<main id="main" tabindex="-1">`
+  - Points to `<main id="main-content">` (modern browsers handle focus natively on landmark elements)
   - Explicit text: "Skip to main content" or "Content"
 
 ```html
@@ -38,10 +38,10 @@ Manual accessibility audit checklist based on Access42 RGAA training, focusing o
 
 #### 2. **Unique ARIA Landmarks - RGAA 12.1-12.2 [A]**
 
-- [ ] **One unique `role="banner"` for main header**
-- [ ] **One unique `role="main"` for main content**
-- [ ] **One unique `role="contentinfo"` for footer**
-- [ ] **Each `role="navigation"` with distinct `aria-label` if multiple**
+- ✅ **One unique `role="banner"` for main header**
+- ✅ **One unique `role="main"` for main content**
+- ✅ **One unique `role="contentinfo"` for footer**
+- ✅ **Each `role="navigation"` with distinct `aria-label` if multiple**
 
 #### 3. **Dynamic Page Titles - RGAA 8.5-8.6 [A]**
 
@@ -80,17 +80,17 @@ Manual accessibility audit checklist based on Access42 RGAA training, focusing o
 
 #### 5. **Form Autocomplete Attributes - RGAA 11.13 [AA]**
 
-- [ ] **Username fields**: `autocomplete="username"`
-- [ ] **Password fields**: `autocomplete="current-password"` or `autocomplete="new-password"`
-- [ ] **First name**: `autocomplete="given-name"`
-- [ ] **Last name**: `autocomplete="family-name"`
-- [ ] **Email**: `autocomplete="email"`
+- ✅ **Username fields**: `autocomplete="username"`
+- ✅ **Password fields**: `autocomplete="current-password"` or `autocomplete="new-password"`
+- ✅ **First name**: `autocomplete="given-name"`
+- ✅ **Last name**: `autocomplete="family-name"`
+- ✅ **Email**: `autocomplete="email"`
 
 #### 6. **Mobile Menu Accessibility**
 
-- [ ] **Menu button INSIDE `<nav>` element**
-- [ ] **Menu state communicated**: `aria-expanded="false/true"`
-- [ ] **Explicit text**: "Main menu" (not just "Menu")
+- ✅ **Menu button INSIDE `<nav>` element** (CSS-only responsive nav — no JS toggle button needed)
+- ✅ **Menu state communicated**: N/A — no burger menu, navigation always visible
+- ✅ **Explicit text**: N/A — no burger menu
 
 ```html
 <nav role="navigation" aria-label="Main navigation">
@@ -103,23 +103,23 @@ Manual accessibility audit checklist based on Access42 RGAA training, focusing o
 
 #### 7. **Two Navigation Methods - RGAA 12.1 [AA]**
 
-- [ ] **Choose ANY TWO among**:
-  - **Primary navigation menu**
-  - **Sitemap** (complete site structure)
+- ✅ **Choose ANY TWO among**:
+  - [x] **Primary navigation menu**
+  - [x] **Sitemap** (complete site structure — dedicated `/sitemap` page with skip link)
   - **Search engine** (must index ALL content)
   - **Breadcrumb** (hierarchical path: Home > Section > Current Page)
 
 #### 8. **Document Language - RGAA 8.3-8.4 [A]**
 
-- [ ] **Main language declared on `<html lang="fr">` or `<html lang="en">`**
-- [ ] **Language changes marked**: `<span lang="en">English text</span>`
-- [ ] **Valid ISO 639 language codes**
+- ✅ **Main language declared on `<html lang="fr">` or `<html lang="en">`** (`lang="en"` in index.html)
+- ✅ **Language changes marked**: N/A — app is entirely in English, no language switches
+- ✅ **Valid ISO 639 language codes**
 
 #### 9. **Complex Interactive Elements**
 
-- [ ] **All iframe with descriptive `title`**
-- [ ] **Data tables with `<caption>` or `aria-label`**
-- [ ] **Table headers with `<th>` and `scope="col/row"`**
+- ✅ **All iframe with descriptive `title`**: N/A — no iframes in the app
+- ✅ **Data tables with `<caption>` or `aria-label`** (`<caption className="sr-only">` in User.tsx)
+- ✅ **Table headers with `<th>` and `scope="col/row"`** (`scope="col"` on all 4 columns)
 
 ### 🧪 Manual Testing Protocol
 
@@ -198,10 +198,10 @@ Liste de contrôle d'audit d'accessibilité manuel basée sur la formation Acces
 
 #### 1. **Liens d'Évitement - RGAA 12.7 [A]**
 
-- [ ] **Lien d'évitement présent et fonctionnel**
+- ✅ **Lien d'évitement présent et fonctionnel**
   - Doit être **en premier dans l'ordre DOM**
   - Visible à la prise de focus (ou toujours visible)
-  - Pointe vers `<main id="main" tabindex="-1">`
+  - Pointe vers `<main id="main-content">` (les navigateurs modernes gèrent nativement le focus sur les landmarks)
   - Texte explicite : "Aller au contenu principal" ou "Contenu"
 
 ```html
@@ -212,10 +212,10 @@ Liste de contrôle d'audit d'accessibilité manuel basée sur la formation Acces
 
 #### 2. **Landmarks ARIA Uniques - RGAA 12.1-12.2 [A]**
 
-- [ ] **Un seul `role="banner"` unique pour l'en-tête principal**
-- [ ] **Un seul `role="main"` unique pour le contenu principal**
-- [ ] **Un seul `role="contentinfo"` unique pour le pied de page**
-- [ ] **Chaque `role="navigation"` avec `aria-label` distinct si multiples**
+- ✅ **Un seul `role="banner"` unique pour l'en-tête principal**
+- ✅ **Un seul `role="main"` unique pour le contenu principal**
+- ✅ **Un seul `role="contentinfo"` unique pour le pied de page**
+- ✅ **Chaque `role="navigation"` avec `aria-label` distinct si multiples**
 
 #### 3. **Titres de Pages Dynamiques - RGAA 8.5-8.6 [A]**
 
@@ -254,17 +254,17 @@ Liste de contrôle d'audit d'accessibilité manuel basée sur la formation Acces
 
 #### 5. **Attributs Autocomplete des Formulaires - RGAA 11.13 [AA]**
 
-- [ ] **Champs nom d'utilisateur** : `autocomplete="username"`
-- [ ] **Champs mot de passe** : `autocomplete="current-password"` ou `autocomplete="new-password"`
-- [ ] **Prénom** : `autocomplete="given-name"`
-- [ ] **Nom de famille** : `autocomplete="family-name"`
-- [ ] **Email** : `autocomplete="email"`
+- ✅ **Champs nom d'utilisateur** : `autocomplete="username"`
+- ✅ **Champs mot de passe** : `autocomplete="current-password"` ou `autocomplete="new-password"`
+- ✅ **Prénom** : `autocomplete="given-name"`
+- ✅ **Nom de famille** : `autocomplete="family-name"`
+- ✅ **Email** : `autocomplete="email"`
 
 #### 6. **Accessibilité du Menu Mobile**
 
-- [ ] **Bouton de menu À L'INTÉRIEUR de l'élément `<nav>`**
-- [ ] **État du menu communiqué** : `aria-expanded="false/true"`
-- [ ] **Texte explicite** : "Menu principal" (pas seulement "Menu")
+- ✅ **Bouton de menu À L'INTÉRIEUR de l'élément `<nav>`** (nav CSS-only responsive — aucun bouton toggle JS nécessaire)
+- ✅ **État du menu communiqué** : N/A — pas de burger menu, navigation toujours visible
+- ✅ **Texte explicite** : N/A — pas de burger menu
 
 ```html
 <nav role="navigation" aria-label="Navigation principale">
@@ -279,23 +279,23 @@ Liste de contrôle d'audit d'accessibilité manuel basée sur la formation Acces
 
 #### 7. **Deux Moyens de Navigation - RGAA 12.1 [AA]**
 
-- [ ] **Choisir DEUX parmi** :
-  - **Menu de navigation principal**
-  - **Plan du site** (structure complète du site)
+- ✅ **Choisir DEUX parmi** :
+  - [x] **Menu de navigation principal**
+  - [x] **Plan du site** (structure complète — page `/sitemap` dédiée avec lien skip)
   - **Moteur de recherche** (doit indexer TOUT le contenu)
   - **Fil d'Ariane** (chemin hiérarchique : Accueil > Section > Page Courante)
 
 #### 8. **Langue du Document - RGAA 8.3-8.4 [A]**
 
-- [ ] **Langue principale déclarée sur `<html lang="fr">` ou `<html lang="en">`**
-- [ ] **Changements de langue marqués** : `<span lang="en">Texte anglais</span>`
-- [ ] **Codes de langue ISO 639 valides**
+- ✅ **Langue principale déclarée sur `<html lang="fr">` ou `<html lang="en">`** (`lang="en"` dans index.html)
+- ✅ **Changements de langue marqués** : N/A — application entièrement en anglais, pas de changements de langue
+- ✅ **Codes de langue ISO 639 valides**
 
 #### 9. **Éléments Interactifs Complexes**
 
-- [ ] **Tous les iframe avec `title` descriptif**
-- [ ] **Tableaux de données avec `<caption>` ou `aria-label`**
-- [ ] **En-têtes de tableau avec `<th>` et `scope="col/row"`**
+- ✅ **Tous les iframe avec `title` descriptif** : N/A — aucun iframe dans l'application
+- ✅ **Tableaux de données avec `<caption>` ou `aria-label`** (`<caption className="sr-only">` dans User.tsx)
+- ✅ **En-têtes de tableau avec `<th>` et `scope="col/row"`** (`scope="col"` sur les 4 colonnes)
 
 ### 🧪 Protocole de Test Manuel
 
@@ -380,4 +380,4 @@ Liste de contrôle d'audit d'accessibilité manuel basée sur la formation Acces
 
 ---
 
-**Last Updated | Dernière Mise à Jour** : 16 juillet 2025
+**Last Updated | Dernière Mise à Jour** : 15 mai 2026
