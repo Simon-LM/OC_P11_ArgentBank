@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
@@ -86,6 +86,24 @@ describe("Sitemap Component", () => {
     expect(
       screen.getByText(/Complete navigation structure of Argent Bank website/i),
     ).toBeInTheDocument();
+  });
+
+  test("tracks the sitemap page view after the tracking delay", () => {
+    vi.useFakeTimers();
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Sitemap />
+        </BrowserRouter>
+      </Provider>,
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    expect(document.title).toBe("Argent Bank - Site Map");
+    vi.useRealTimers();
   });
 
   test("displays all navigation sections", () => {

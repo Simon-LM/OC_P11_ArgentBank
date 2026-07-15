@@ -54,9 +54,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom"],
-          features: ["./src/components/Features"],
+        // Rolldown (Vite 8) n'accepte plus la forme objet, uniquement la fonction
+        manualChunks(id) {
+          if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) {
+            return "vendor";
+          }
+          if (id.includes("/src/components/Features")) {
+            return "features";
+          }
         },
       },
     },

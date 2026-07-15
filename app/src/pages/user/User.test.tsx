@@ -1,18 +1,25 @@
 /** @format */
 
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import User from "./User";
-import usersReducer, { UsersState } from "../../store/slices/usersSlice";
+import usersReducer, {
+  UsersState,
+  fetchAccounts,
+  fetchTransactions,
+  searchTransactions,
+} from "../../store/slices/usersSlice";
 import { describe, test, expect, vi, beforeEach } from "vitest";
+
+const matomoState = vi.hoisted(() => ({ loaded: false }));
 
 vi.mock("../../hooks/useMatomo/useMatomo", () => ({
   useMatomo: () => ({
     trackEvent: vi.fn(),
     trackPageView: vi.fn(),
   }),
-  isMatomoLoaded: () => false,
+  isMatomoLoaded: () => matomoState.loaded,
 }));
 
 // Mock the async thunk actions to prevent them from modifying state during tests
@@ -55,6 +62,7 @@ describe("User Component - Comprehensive Test Suite", () => {
   beforeEach(() => {
     sessionStorage.clear();
     vi.clearAllMocks();
+    matomoState.loaded = false;
   });
 
   const renderUser = (customState: Partial<UsersState> = {}) => {
@@ -1051,6 +1059,30 @@ describe("User Component - Comprehensive Test Suite", () => {
     // Verify the page renders with selected account
     expect(screen.getByText("Transaction History")).toBeInTheDocument();
     expect(screen.getByText("Account #8349")).toBeInTheDocument();
+
+    // Switch to global search and follow the full feedback sequence
+    vi.useFakeTimers();
+    fireEvent.click(
+      screen.getByRole("button", { name: /switch to global search/i }),
+    );
+    expect(screen.getByText(/global search activated/i)).toBeInTheDocument();
+
+    // After 200ms, focus moves to the results and the count is announced
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+    expect(
+      screen.getByText(/1 transaction found\. use arrow keys to navigate\./i),
+    ).toBeInTheDocument();
+
+    // Feedback clears after 5s
+    act(() => {
+      vi.advanceTimersByTime(5300);
+    });
+    expect(
+      screen.queryByText(/use arrow keys to navigate/i),
+    ).not.toBeInTheDocument();
+    vi.useRealTimers();
   });
 
   // Test pagination with many pages (ellipsis functionality)
@@ -1083,6 +1115,63 @@ describe("User Component - Comprehensive Test Suite", () => {
     expect(screen.getAllByText("...")).toHaveLength(2);
     expect(screen.getByLabelText("Go to page 1")).toBeInTheDocument();
     expect(screen.getByLabelText("Go to page 15")).toBeInTheDocument();
+
+    // Exercise the smart pagination buttons (first, sibling, last)
+    fireEvent.click(screen.getByLabelText("Go to page 1"));
+    fireEvent.click(screen.getByLabelText("Go to page 6"));
+    fireEvent.click(screen.getByLabelText("Go to page 15"));
+    expect(vi.mocked(searchTransactions)).toHaveBeenCalled();
+  });
+
+  test("tracks the user page in Matomo once the tracking delay elapses", () => {
+    vi.useFakeTimers();
+    matomoState.loaded = true;
+    const paq: unknown[][] = [];
+    Object.assign(window, { _paq: paq });
+
+    renderUser();
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    expect(document.title).toBe("Argent Bank - User Dashboard");
+    expect(paq.length).toBeGreaterThanOrEqual(6);
+    vi.useRealTimers();
+  });
+
+  test("fetches accounts and transactions when their statuses are idle", () => {
+    renderUser({ accountsStatus: "idle", transactionsStatus: "idle" });
+
+    expect(vi.mocked(fetchAccounts)).toHaveBeenCalled();
+    expect(vi.mocked(fetchTransactions)).toHaveBeenCalled();
+  });
+
+  test("announces account selection and clears the feedback after 5s", () => {
+    vi.useFakeTimers();
+    renderUser();
+
+    fireEvent.click(screen.getByRole("button", { name: /account 1 of 1/i }));
+    expect(
+      screen.getByText(/account checking selected\. transactions filtered\./i),
+    ).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    expect(
+      screen.queryByText(/selected\. transactions filtered\./i),
+    ).not.toBeInTheDocument();
+    vi.useRealTimers();
+  });
+
+  test("closes the edit form when cancel is clicked", () => {
+    renderUser();
+
+    fireEvent.click(screen.getByText("Edit User"));
+    fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+    expect(screen.getByText("Edit User")).toBeInTheDocument();
   });
 
   // Test transaction amount formatting for credit and debit
