@@ -51,6 +51,17 @@ describe("loginUser Function", () => {
     );
   });
 
+  test("throws a validation error when the login payload is malformed", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ status: 200, body: {} }),
+    });
+
+    await expect(
+      loginUser({ email: "steve@rogers.com", password: "password123" }),
+    ).rejects.toThrow();
+  });
+
   test("throws an error for invalid credentials", async () => {
     // Mock fetch response to simulate a connection error
     (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -159,6 +170,34 @@ describe("fetchUserProfile Function", () => {
 
     const profile = await fetchUserProfile("valid-token");
     expect(profile).toEqual(mockValidProfileResponse.body);
+  });
+
+  test("throws a validation error when the profile payload is malformed", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ status: 200, body: { firstName: "NoIdUser" } }),
+    });
+
+    await expect(fetchUserProfile("valid-token")).rejects.toThrow();
+  });
+
+  test("fills in defaults when optional profile fields are empty", async () => {
+    const minimalProfile = {
+      ...mockValidProfileResponse,
+      body: {
+        ...mockValidProfileResponse.body,
+        createdAt: "",
+        updatedAt: "",
+      },
+    };
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => minimalProfile,
+    });
+
+    const profile = await fetchUserProfile("valid-token");
+    expect(profile.createdAt).toBeTruthy();
+    expect(profile.updatedAt).toBeTruthy();
   });
 });
 
