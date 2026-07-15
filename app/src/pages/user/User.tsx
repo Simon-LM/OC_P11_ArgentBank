@@ -136,27 +136,6 @@ const User: React.FC = () => {
   }, [searchParams, handleSearch]);
 
   useEffect(() => {
-    if (selectedAccountId !== searchParams.accountId) {
-      setSearchParams((prev) => ({
-        ...prev,
-        accountId: selectedAccountId || undefined,
-        page: 1,
-      }));
-
-      // Update browser URL
-      const newUrl = new URL(window.location.href);
-      if (selectedAccountId) {
-        newUrl.searchParams.set("accountId", selectedAccountId);
-      } else {
-        // If selectedAccountId is null/undefined (e.g., "All transactions"), remove it from URL
-        newUrl.searchParams.delete("accountId");
-      }
-      // Use replaceState to avoid adding to browser history for simple filter changes
-      window.history.replaceState({ path: newUrl.href }, "", newUrl.href);
-    }
-  }, [selectedAccountId, searchParams.accountId]);
-
-  useEffect(() => {
     // Update browser URL when search term changes
     const newUrl = new URL(window.location.href);
     if (searchParams.searchTerm) {
@@ -211,6 +190,16 @@ const User: React.FC = () => {
 
   const handleAccountSelect = (accountId: string) => {
     dispatch(selectAccount(accountId));
+    setSearchParams((prev) => ({
+      ...prev,
+      accountId: accountId || undefined,
+      page: 1,
+    }));
+
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set("accountId", accountId);
+    window.history.replaceState({ path: newUrl.href }, "", newUrl.href);
+
     const selectedAcc = accounts.find((acc) => acc.id === accountId);
 
     if (selectedAcc) {
@@ -461,6 +450,15 @@ const User: React.FC = () => {
                       accountId: undefined,
                       page: 1,
                     }));
+
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.delete("accountId");
+                    window.history.replaceState(
+                      { path: newUrl.href },
+                      "",
+                      newUrl.href,
+                    );
+
                     setActionFeedback(
                       "Global search activated. Showing transactions from all accounts.",
                     );

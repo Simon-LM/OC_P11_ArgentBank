@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, lazy, Suspense, useRef, useEffect } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { useInView } from "react-intersection-observer";
 import useMediaQuery from "../../hooks/useMediaQuery/useMediaQuery";
 
@@ -14,13 +14,6 @@ const Features = lazy(() => import("../../components/Features/Features"));
 const Home: React.FC = () => {
   const [heroImageError, setHeroImageError] = useState(false);
   const [heroImageLoaded, setHeroImageLoaded] = useState(false);
-
-  const isFirstRenderRef = useRef(true);
-  const isFirstRender = isFirstRenderRef.current;
-
-  useEffect(() => {
-    isFirstRenderRef.current = false;
-  }, []);
 
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
@@ -38,21 +31,15 @@ const Home: React.FC = () => {
         <div className="hero__image-container">
           {!heroImageError && (
             <picture className="hero__picture">
-              {isFirstRender && (
-                <>
-                  <link
-                    rel="preload"
-                    href={
-                      isDesktop
-                        ? "/img/bank-tree.avif"
-                        : "/img/bank-tree-640w.avif"
-                    }
-                    as="image"
-                    type="image/avif"
-                    fetchPriority="high"
-                  />
-                </>
-              )}
+              <link
+                rel="preload"
+                href={
+                  isDesktop ? "/img/bank-tree.avif" : "/img/bank-tree-640w.avif"
+                }
+                as="image"
+                type="image/avif"
+                fetchPriority="high"
+              />
 
               <source
                 media="(max-width: 640px)"
