@@ -46,8 +46,9 @@ export default defineConfig({
         "**/.vercel/**",
         "**/.next/**",
       ],
-      // Utilise le polling pour éviter les problèmes de limites de fichiers
-      usePolling: false,
+      // Utilise le polling pour éviter les problèmes de limites de fichiers (EMFILE sur disques externes)
+      usePolling: true,
+      interval: 1000,
     },
   },
   build: {
