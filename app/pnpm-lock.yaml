@@ -44,8 +44,8 @@ importers:
         specifier: ^9.1.2
         version: 9.2.0(@types/react@18.3.22)(react@18.3.1)(redux@5.0.1)
       react-router-dom:
-        specifier: ^6.26.2
-        version: 6.30.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^6.30.4
+        version: 6.30.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       redux-thunk:
         specifier: ^3.1.0
         version: 3.1.0(redux@5.0.1)
@@ -1205,10 +1205,10 @@ packages:
       react-redux:
         optional: true
 
-  "@remix-run/router@1.23.0":
+  "@remix-run/router@1.23.3":
     resolution:
       {
-        integrity: sha512-O3rHJzAQKamUz1fvE0Qaw0xSFqsA/yafi2iqeE0pvdFtCO1viYx8QL6f3Ln/aCCTLxs68SLf0KPM9eSeM8yBnA==,
+        integrity: sha512-4An71tdz9X8+3sI4Qqqd2LWd9vS39J7sqd9EU4Scw7TJE/qB10Flv/UuqbPVgfQV9XoK8Np6jNquZitnZq5i+Q==,
       }
     engines: { node: ">=14.0.0" }
 
@@ -2662,6 +2662,12 @@ packages:
     resolution:
       {
         integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==,
+      }
+
+  brace-expansion@2.1.2:
+    resolution:
+      {
+        integrity: sha512-w5JZcKgdhDOgOwm8H+KgbosopHMuGcl6qbulwjtz3SM7I7P3yW1eAjzMPLrIE+NQ9vjgANKHWeMHnrT0OXW1oA==,
       }
 
   braces@3.0.3:
@@ -4941,10 +4947,10 @@ packages:
       }
     hasBin: true
 
-  js-yaml@4.1.1:
+  js-yaml@4.3.0:
     resolution:
       {
-        integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==,
+        integrity: sha512-1td788aAnnZ5qs7V2QIRl1owjtYpbKt749Y3xauqQgwIIGF/xXWz1wMTEBx5O3LK3lXLVuqXPdPxj2BoFHaW9Q==,
       }
     hasBin: true
 
@@ -5603,6 +5609,13 @@ packages:
       }
     engines: { node: ">=16 || 14 >=14.17" }
 
+  minimatch@9.0.9:
+    resolution:
+      {
+        integrity: sha512-OBwBN9AL4dqmETlpS2zasx+vTeWclWzkblfZk7KTA5j3jeOONz/tRCnZomUyvNg83wL5Zv9Ss6HMJXAgL8R2Yg==,
+      }
+    engines: { node: ">=16 || 14 >=14.17" }
+
   minimist@1.2.8:
     resolution:
       {
@@ -5774,6 +5787,14 @@ packages:
     resolution:
       {
         integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==,
+      }
+    engines: { node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1 }
+    hasBin: true
+
+  nanoid@3.3.16:
+    resolution:
+      {
+        integrity: sha512-bzlKTyNJ7+LdGIIwy8ijFpIqEQIvafahV7eYykJ8Cvh42EdJeODoJ6gUJXpQJvej1BddH8OqTXZNE/KfbWAu8Q==,
       }
     engines: { node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1 }
     hasBin: true
@@ -6477,20 +6498,20 @@ packages:
       redux:
         optional: true
 
-  react-router-dom@6.30.1:
+  react-router-dom@6.30.4:
     resolution:
       {
-        integrity: sha512-llKsgOkZdbPU1Eg3zK8lCn+sjD9wMRZZPuzmdWWX5SUs8OFkN5HnFVC0u5KMeMaC9aoancFI/KoLuKPqN+hxHw==,
+        integrity: sha512-q4HvNl+mmDdkS0g+MqiBZNteQJCuimWoOyHMy4T/RQLAn9Z29+E91QXRaxOujeMl2HTzRSS0KFPd7lxX3PjV0Q==,
       }
     engines: { node: ">=14.0.0" }
     peerDependencies:
       react: ">=16.8"
       react-dom: ">=16.8"
 
-  react-router@6.30.1:
+  react-router@6.30.4:
     resolution:
       {
-        integrity: sha512-X1m21aEmxGXqENEPG3T6u0Th7g0aS4ZmoNynhbs+Cn+q+QGTLt+d5IQ2bHAXKzKcxGJjxACpVbnYQSCRcfxHlQ==,
+        integrity: sha512-SVUsDe+DybHM/WmYKIVYhZh1o5Dcuf16yM6WjG02Q9XVFMZIJyHYhwrr6bFBXZkVP6z69kNkMyBCujt8FaFLJA==,
       }
     engines: { node: ">=14.0.0" }
     peerDependencies:
@@ -8137,6 +8158,13 @@ packages:
       }
     engines: { node: ">=12" }
 
+  yargs@17.7.3:
+    resolution:
+      {
+        integrity: sha512-GZtjxm/J/4TSxuL3FNYjCmLktBTnIw/rVmKSIyKeYAZpmJB2ig9VauCC5xsa82GNKVKDAqpOn3KVzNt0zmrU0g==,
+      }
+    engines: { node: ">=12" }
+
   yauzl-clone@1.0.4:
     resolution:
       {
@@ -8758,7 +8786,7 @@ snapshots:
       react: 18.3.1
       react-redux: 9.2.0(@types/react@18.3.22)(react@18.3.1)(redux@5.0.1)
 
-  "@remix-run/router@1.23.0": {}
+  "@remix-run/router@1.23.3": {}
 
   "@rollup/pluginutils@5.1.4(rollup@4.54.0)":
     dependencies:
@@ -9623,6 +9651,10 @@ snapshots:
       concat-map: 0.0.1
 
   brace-expansion@2.0.1:
+    dependencies:
+      balanced-match: 1.0.2
+
+  brace-expansion@2.1.2:
     dependencies:
       balanced-match: 1.0.2
 
@@ -10894,7 +10926,7 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  js-yaml@4.1.1:
+  js-yaml@4.3.0:
     dependencies:
       argparse: 2.0.1
 
@@ -11415,6 +11447,10 @@ snapshots:
     dependencies:
       brace-expansion: 2.0.1
 
+  minimatch@9.0.9:
+    dependencies:
+      brace-expansion: 2.1.2
+
   minimist@1.2.8: {}
 
   minipass@3.3.6:
@@ -11450,16 +11486,16 @@ snapshots:
       find-up: 5.0.0
       glob: 10.5.0
       he: 1.2.0
-      js-yaml: 4.1.1
+      js-yaml: 4.3.0
       log-symbols: 4.1.0
-      minimatch: 9.0.5
+      minimatch: 9.0.9
       ms: 2.1.3
       picocolors: 1.1.1
       serialize-javascript: 6.0.2
       strip-json-comments: 3.1.1
       supports-color: 8.1.1
       workerpool: 6.5.1
-      yargs: 17.7.2
+      yargs: 17.7.3
       yargs-parser: 21.1.1
       yargs-unparser: 2.0.0
 
@@ -11546,6 +11582,8 @@ snapshots:
   mute-stream@2.0.0: {}
 
   nanoid@3.3.11: {}
+
+  nanoid@3.3.16: {}
 
   natural-compare@1.4.0: {}
 
@@ -11791,7 +11829,7 @@ snapshots:
 
   postcss@8.5.6:
     dependencies:
-      nanoid: 3.3.11
+      nanoid: 3.3.16
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -11959,16 +11997,16 @@ snapshots:
       "@types/react": 18.3.22
       redux: 5.0.1
 
-  react-router-dom@6.30.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-router-dom@6.30.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      "@remix-run/router": 1.23.0
+      "@remix-run/router": 1.23.3
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      react-router: 6.30.1(react@18.3.1)
+      react-router: 6.30.4(react@18.3.1)
 
-  react-router@6.30.1(react@18.3.1):
+  react-router@6.30.4(react@18.3.1):
     dependencies:
-      "@remix-run/router": 1.23.0
+      "@remix-run/router": 1.23.3
       react: 18.3.1
 
   react@18.3.1:
@@ -12919,6 +12957,16 @@ snapshots:
       yargs-parser: 18.1.3
 
   yargs@17.7.2:
+    dependencies:
+      cliui: 8.0.1
+      escalade: 3.2.0
+      get-caller-file: 2.0.5
+      require-directory: 2.1.1
+      string-width: 4.2.3
+      y18n: 5.0.8
+      yargs-parser: 21.1.1
+
+  yargs@17.7.3:
     dependencies:
       cliui: 8.0.1
       escalade: 3.2.0
