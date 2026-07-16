@@ -1,6 +1,7 @@
 /** @format */
 
 import React from "react";
+import { flushSync } from "react-dom";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
@@ -19,12 +20,16 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
-    // Navigate away from the protected /user route before clearing auth
-    // state: react-router-dom v7 defaults to wrapping navigation in
-    // React.startTransition, so if the Redux dispatch ran first, its
-    // synchronous re-render could still see /user mounted and race
-    // ProtectedRoute's own redirect to /signin against this navigation.
-    navigate("/");
+    // react-router-dom v7 defaults to wrapping navigation in
+    // React.startTransition, so navigate("/") alone doesn't unmount
+    // /user synchronously. Without flushSync, the Redux dispatch below
+    // still commits against the still-mounted ProtectedRoute, whose own
+    // redirect-to-/signin effect fires after the deferred navigation and
+    // wins the race. flushSync forces the route change to commit (and
+    // ProtectedRoute to unmount) before we clear the auth state.
+    flushSync(() => {
+      navigate("/");
+    });
     dispatch(logoutUser());
   };
 
