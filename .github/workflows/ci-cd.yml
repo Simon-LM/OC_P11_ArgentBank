@@ -879,7 +879,10 @@ jobs:
           }
 
           echo "✅ Preview URL responds correctly with bypass headers"
-          npm install -g lighthouse@12.6.1 puppeteer@24.10.1
+          # No global lighthouse/puppeteer install: the runner script below imports
+          # both via bare specifiers, which Node resolves from app/node_modules
+          # (installed by pnpm) — the versions are pinned by app/package.json.
+          # A previous `npm install -g lighthouse@12.6.1` here was dead code.
           export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
           export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
           npx puppeteer browsers install chrome
@@ -1042,6 +1045,15 @@ jobs:
             }
           };
 
+          // Vercel force `X-Robots-Tag: noindex` sur toute réponse d'un déploiement
+          // Preview protégé : l'audit is-crawlable est donc structurellement
+          // insatisfiable en CI (jamais un problème du site — la prod, non protégée,
+          // le passe à 100%). Depuis Lighthouse 12, son poids SEO est passé de 1 à
+          // 93/23 (~4), ce qui plafonnerait le score à ~69% quel que soit le reste.
+          // On l'exclut ici pour garder le seuil de 90% significatif sur tous les
+          // autres audits SEO, plutôt que d'abaisser le seuil lui-même.
+          const CI_SKIPPED_AUDITS = ['is-crawlable'];
+
           // Device configuration - Mobile moins strict pour portfolio
           const getDeviceConfig = (device) => {
             if (device === 'mobile') {
@@ -1049,9 +1061,10 @@ jobs:
                 extends: 'lighthouse:default',
                 settings: {
                   formFactor: 'mobile',
+                  skipAudits: CI_SKIPPED_AUDITS,
                   throttling: {
                     rttMs: 70,                    // 150 → 70 (plus réaliste)
-                    throughputKbps: 3000,         // 1638 → 3000 (4G standard) 
+                    throughputKbps: 3000,         // 1638 → 3000 (4G standard)
                     cpuSlowdownMultiplier: 2      // 4 → 2 (moins sévère)
                   },
                   screenEmulation: {
@@ -1069,6 +1082,7 @@ jobs:
                 extends: 'lighthouse:default',
                 settings: {
                   formFactor: 'desktop',
+                  skipAudits: CI_SKIPPED_AUDITS,
                   throttling: {
                     rttMs: 40,
                     throughputKbps: 10240,
