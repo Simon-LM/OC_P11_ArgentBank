@@ -1,0 +1,21 @@
+# ArgentBank
+
+> ArgentBank is a demonstration banking web application — a fictional bank built as a technical portfolio piece, not a real financial institution. It showcases a React 19 + TypeScript frontend with Redux Toolkit, a Flask/PostgreSQL API, JWT/CSRF security, full CI/CD automation, and a strong focus on WCAG 2.1 AA / RGAA accessibility compliance.
+
+This is not a real bank: no real money, accounts, or personal financial data are involved. A public test account is available for exploring the authenticated dashboard.
+
+## Pages
+
+- [Home](https://slm-argentbank.vercel.app/): Landing page with product highlights
+- [Sign in](https://slm-argentbank.vercel.app/signin): Authentication page — test account tony@stark.com / password123
+- [User dashboard](https://slm-argentbank.vercel.app/user): Authenticated account and transaction view (requires sign-in)
+- [Site map](https://slm-argentbank.vercel.app/sitemap): Human-readable page listing all site sections
+
+## Docs
+
+- [README](https://github.com/Simon-LM/OC_P11_ArgentBank/blob/main/README.md): Project overview, tech stack, and setup instructions
+- [GitHub repository](https://github.com/Simon-LM/OC_P11_ArgentBank): Full source code
+
+## Optional
+
+- [Author site](https://www.simon-lm.dev): Developer portfolio
