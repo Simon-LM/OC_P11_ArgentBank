@@ -879,7 +879,10 @@ jobs:
           }
 
           echo "✅ Preview URL responds correctly with bypass headers"
-          npm install -g lighthouse@12.6.1 puppeteer@24.10.1
+          # No global lighthouse/puppeteer install: the runner script below imports
+          # both via bare specifiers, which Node resolves from app/node_modules
+          # (installed by pnpm) — the versions are pinned by app/package.json.
+          # A previous `npm install -g lighthouse@12.6.1` here was dead code.
           export PUPPETEER_CACHE_DIR=/home/runner/.cache/puppeteer
           export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
           npx puppeteer browsers install chrome
@@ -1026,21 +1029,34 @@ jobs:
             { url: `${baseUrl}/404`, name: '404', needsAuth: false }
           ];
 
-          // Thresholds - Seuils durcis basés sur les excellents résultats obtenus
+          // Thresholds - Seuils durcis (2026-07-16, Lighthouse 13.4 + skip is-crawlable)
+          // Scores CI observés sur les 5 pages, desktop+mobile : seo/a11y/BP 100%,
+          // performance 99-100%. Les catégories déterministes (seo, a11y, BP) sont
+          // exigées à 100% ; la performance garde une marge car elle fluctue avec
+          // la charge des runners GitHub.
           const thresholds = {
-            desktop: { 
-              performance: 0.95,  // 75% → 95% (scores actuels: 100%)
-              accessibility: 1.0,  // 85% → 100% (scores actuels: 100%)
-              'best-practices': 0.96, // 100% → 96% (temporaire - investigation console.error en cours)
-              seo: 0.90           // 85% → 90% (scores actuels: 91-92%)
+            desktop: {
+              performance: 0.97,  // 95% → 97% (scores actuels: 99-100%)
+              accessibility: 1.0,  // 100% (scores actuels: 100%)
+              'best-practices': 1.0, // 96% → 100% (le 96% "temporaire" n'a plus lieu d'être)
+              seo: 1.0           // 90% → 100% (scores actuels: 100%, audits déterministes)
             },
-            mobile: { 
-              performance: 0.90,  // 60% → 90% (scores actuels: 96-100%)
-              accessibility: 1.0,  // 85% → 100% (scores actuels: 100%)
-              'best-practices': 0.96, // 100% → 96% (temporaire - investigation console.error en cours)
-              seo: 0.90           // 85% → 90% (scores actuels: 92%)
+            mobile: {
+              performance: 0.95,  // 90% → 95% (scores actuels: 99-100%)
+              accessibility: 1.0,  // 100% (scores actuels: 100%)
+              'best-practices': 1.0, // 96% → 100% (le 96% "temporaire" n'a plus lieu d'être)
+              seo: 1.0           // 90% → 100% (scores actuels: 100%, audits déterministes)
             }
           };
+
+          // Vercel force `X-Robots-Tag: noindex` sur toute réponse d'un déploiement
+          // Preview protégé : l'audit is-crawlable est donc structurellement
+          // insatisfiable en CI (jamais un problème du site — la prod, non protégée,
+          // le passe à 100%). Depuis Lighthouse 12, son poids SEO est passé de 1 à
+          // 93/23 (~4), ce qui plafonnerait le score à ~69% quel que soit le reste.
+          // On l'exclut ici pour garder le seuil de 90% significatif sur tous les
+          // autres audits SEO, plutôt que d'abaisser le seuil lui-même.
+          const CI_SKIPPED_AUDITS = ['is-crawlable'];
 
           // Device configuration - Mobile moins strict pour portfolio
           const getDeviceConfig = (device) => {
@@ -1049,9 +1065,10 @@ jobs:
                 extends: 'lighthouse:default',
                 settings: {
                   formFactor: 'mobile',
+                  skipAudits: CI_SKIPPED_AUDITS,
                   throttling: {
                     rttMs: 70,                    // 150 → 70 (plus réaliste)
-                    throughputKbps: 3000,         // 1638 → 3000 (4G standard) 
+                    throughputKbps: 3000,         // 1638 → 3000 (4G standard)
                     cpuSlowdownMultiplier: 2      // 4 → 2 (moins sévère)
                   },
                   screenEmulation: {
@@ -1069,6 +1086,7 @@ jobs:
                 extends: 'lighthouse:default',
                 settings: {
                   formFactor: 'desktop',
+                  skipAudits: CI_SKIPPED_AUDITS,
                   throttling: {
                     rttMs: 40,
                     throughputKbps: 10240,
@@ -1281,12 +1299,23 @@ jobs:
                   const passed = score >= threshold;
                   
                   console.log(`   ${category}: ${percentage}% (threshold: ${thresholdPercentage}%) ${passed ? '✅' : '❌'}`);
-                  
+
                   if (!passed) {
                     failedTests.push(`${pageInfo.name} (${device}) - ${category}: ${percentage}% < ${thresholdPercentage}%`);
                   }
                 }
-                
+
+                // Catégorie agentic-browsing (llms-txt, WebMCP, arbre d'accessibilité
+                // agent) : nouvelle en Lighthouse 13, explicitement expérimentale et
+                // sujette à changement — loggée en informatif, sans seuil bloquant.
+                const agentic = scores['agentic-browsing'];
+                if (agentic) {
+                  const agenticDisplay = agentic.score === null
+                    ? 'n/a'
+                    : `${Math.round(agentic.score * 100)}%`;
+                  console.log(`   agentic-browsing (informational, no threshold): ${agenticDisplay}`);
+                }
+
                 results.push({
                   page: pageInfo.name,
                   device: device,
@@ -1315,8 +1344,8 @@ jobs:
               const hasPerformanceFailure = failedTests.some(f => f.includes('performance'));
               if (hasPerformanceFailure) {
                 console.log(`\n🎯 PERFORMANCE FAILURE: One or more pages failed the hardened thresholds`);
-                console.log(`   Desktop: 95% performance threshold (was 75%)`);
-                console.log(`   Mobile: 90% performance threshold (was 60%)`);
+                console.log(`   Desktop: 97% performance threshold (was 95%)`);
+                console.log(`   Mobile: 95% performance threshold (was 90%)`);
                 console.log(`   This validates our CI/CD blocking mechanism works correctly!`);
               }
               
