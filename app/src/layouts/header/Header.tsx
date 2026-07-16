@@ -1,7 +1,6 @@
 /** @format */
 
-import React from "react";
-import { flushSync } from "react-dom";
+import React, { useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
@@ -18,19 +17,24 @@ const Header: React.FC = () => {
   );
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const pendingLogoutRef = useRef(false);
+
+  // react-router-dom v7 wraps navigate() in its own internal transition,
+  // which flushSync cannot force synchronous. Rather than fight that
+  // scheduling, wait for the effect confirming we've actually landed on
+  // "/" before clearing auth state — by then /user (and ProtectedRoute)
+  // is guaranteed unmounted, so there's nothing left to race a redirect
+  // to /signin against.
+  useEffect(() => {
+    if (pendingLogoutRef.current && location.pathname === "/") {
+      pendingLogoutRef.current = false;
+      dispatch(logoutUser());
+    }
+  }, [location, dispatch]);
 
   const handleSignOut = () => {
-    // react-router-dom v7 defaults to wrapping navigation in
-    // React.startTransition, so navigate("/") alone doesn't unmount
-    // /user synchronously. Without flushSync, the Redux dispatch below
-    // still commits against the still-mounted ProtectedRoute, whose own
-    // redirect-to-/signin effect fires after the deferred navigation and
-    // wins the race. flushSync forces the route change to commit (and
-    // ProtectedRoute to unmount) before we clear the auth state.
-    flushSync(() => {
-      navigate("/");
-    });
-    dispatch(logoutUser());
+    pendingLogoutRef.current = true;
+    navigate("/");
   };
 
   const isHomePage = location.pathname === "/";
