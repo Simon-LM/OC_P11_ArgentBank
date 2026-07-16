@@ -1029,19 +1029,23 @@ jobs:
             { url: `${baseUrl}/404`, name: '404', needsAuth: false }
           ];
 
-          // Thresholds - Seuils durcis basés sur les excellents résultats obtenus
+          // Thresholds - Seuils durcis (2026-07-16, Lighthouse 13.4 + skip is-crawlable)
+          // Scores CI observés sur les 5 pages, desktop+mobile : seo/a11y/BP 100%,
+          // performance 99-100%. Les catégories déterministes (seo, a11y, BP) sont
+          // exigées à 100% ; la performance garde une marge car elle fluctue avec
+          // la charge des runners GitHub.
           const thresholds = {
-            desktop: { 
-              performance: 0.95,  // 75% → 95% (scores actuels: 100%)
-              accessibility: 1.0,  // 85% → 100% (scores actuels: 100%)
-              'best-practices': 0.96, // 100% → 96% (temporaire - investigation console.error en cours)
-              seo: 0.90           // 85% → 90% (scores actuels: 91-92%)
+            desktop: {
+              performance: 0.97,  // 95% → 97% (scores actuels: 99-100%)
+              accessibility: 1.0,  // 100% (scores actuels: 100%)
+              'best-practices': 1.0, // 96% → 100% (le 96% "temporaire" n'a plus lieu d'être)
+              seo: 1.0           // 90% → 100% (scores actuels: 100%, audits déterministes)
             },
-            mobile: { 
-              performance: 0.90,  // 60% → 90% (scores actuels: 96-100%)
-              accessibility: 1.0,  // 85% → 100% (scores actuels: 100%)
-              'best-practices': 0.96, // 100% → 96% (temporaire - investigation console.error en cours)
-              seo: 0.90           // 85% → 90% (scores actuels: 92%)
+            mobile: {
+              performance: 0.95,  // 90% → 95% (scores actuels: 99-100%)
+              accessibility: 1.0,  // 100% (scores actuels: 100%)
+              'best-practices': 1.0, // 96% → 100% (le 96% "temporaire" n'a plus lieu d'être)
+              seo: 1.0           // 90% → 100% (scores actuels: 100%, audits déterministes)
             }
           };
 
@@ -1295,12 +1299,23 @@ jobs:
                   const passed = score >= threshold;
                   
                   console.log(`   ${category}: ${percentage}% (threshold: ${thresholdPercentage}%) ${passed ? '✅' : '❌'}`);
-                  
+
                   if (!passed) {
                     failedTests.push(`${pageInfo.name} (${device}) - ${category}: ${percentage}% < ${thresholdPercentage}%`);
                   }
                 }
-                
+
+                // Catégorie agentic-browsing (llms-txt, WebMCP, arbre d'accessibilité
+                // agent) : nouvelle en Lighthouse 13, explicitement expérimentale et
+                // sujette à changement — loggée en informatif, sans seuil bloquant.
+                const agentic = scores['agentic-browsing'];
+                if (agentic) {
+                  const agenticDisplay = agentic.score === null
+                    ? 'n/a'
+                    : `${Math.round(agentic.score * 100)}%`;
+                  console.log(`   agentic-browsing (informational, no threshold): ${agenticDisplay}`);
+                }
+
                 results.push({
                   page: pageInfo.name,
                   device: device,
@@ -1329,8 +1344,8 @@ jobs:
               const hasPerformanceFailure = failedTests.some(f => f.includes('performance'));
               if (hasPerformanceFailure) {
                 console.log(`\n🎯 PERFORMANCE FAILURE: One or more pages failed the hardened thresholds`);
-                console.log(`   Desktop: 95% performance threshold (was 75%)`);
-                console.log(`   Mobile: 90% performance threshold (was 60%)`);
+                console.log(`   Desktop: 97% performance threshold (was 95%)`);
+                console.log(`   Mobile: 95% performance threshold (was 90%)`);
                 console.log(`   This validates our CI/CD blocking mechanism works correctly!`);
               }
               
