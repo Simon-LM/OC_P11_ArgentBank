@@ -31,6 +31,34 @@ const User: React.FC = () => {
   const tableHeadingRef = useRef<HTMLTableElement | null>(null);
   const transactionSearchRef = useRef<TransactionSearchRef>(null);
 
+  // Several handlers below schedule "clear feedback after N seconds" or
+  // "move focus after a short delay" timers with setTimeout. None of them
+  // were ever cleared on unmount, so a stray one could fire later against
+  // an already-unmounted component — harmless in a real browser (React
+  // ignores setState on unmounted components) but a source of intermittent
+  // "window is not defined" test failures once the test file's jsdom
+  // environment had already been torn down. Route all of them through this
+  // ref so a single effect can clear whatever's still pending on unmount.
+  const pendingTimeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(
+    new Set(),
+  );
+
+  useEffect(() => {
+    const pendingTimeouts = pendingTimeoutsRef.current;
+    return () => {
+      pendingTimeouts.forEach((id) => clearTimeout(id));
+      pendingTimeouts.clear();
+    };
+  }, []);
+
+  const scheduleTimeout = useCallback((callback: () => void, delay: number) => {
+    const id = setTimeout(() => {
+      pendingTimeoutsRef.current.delete(id);
+      callback();
+    }, delay);
+    pendingTimeoutsRef.current.add(id);
+  }, []);
+
   const { searchResults, pagination, searchStatus, searchError } = useSelector(
     (state: RootState) => ({
       searchResults: state.users.searchResults || [],
@@ -207,7 +235,7 @@ const User: React.FC = () => {
         `Account ${selectedAcc.type} selected. Transactions filtered.`,
       );
 
-      setTimeout(() => setActionFeedback(""), 5000);
+      scheduleTimeout(() => setActionFeedback(""), 5000);
     }
 
     trackEvent({
@@ -259,11 +287,11 @@ const User: React.FC = () => {
       );
 
       // Then move focus after a delay to allow the announcement
-      setTimeout(() => {
+      scheduleTimeout(() => {
         tableHeadingRef.current?.focus();
       }, 300);
 
-      setTimeout(() => setActionFeedback(""), 5000);
+      scheduleTimeout(() => setActionFeedback(""), 5000);
     }
   };
 
@@ -462,10 +490,10 @@ const User: React.FC = () => {
                     setActionFeedback(
                       "Global search activated. Showing transactions from all accounts.",
                     );
-                    setTimeout(() => setActionFeedback(""), 5000);
+                    scheduleTimeout(() => setActionFeedback(""), 5000);
 
                     // Navigate to results if transactions exist, otherwise focus search input
-                    setTimeout(() => {
+                    scheduleTimeout(() => {
                       if (searchResults.length > 0) {
                         navigateToSearchResults();
                       } else {

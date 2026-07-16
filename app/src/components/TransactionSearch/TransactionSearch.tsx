@@ -43,27 +43,32 @@ const TransactionSearch = forwardRef<
     ref,
   ) => {
     const [inputValue, setInputValue] = useState(searchParams.searchTerm || "");
-    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
-      null,
-    );
+    const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
       setInputValue(searchParams.searchTerm || "");
     }, [searchParams.searchTerm]);
 
+    // Clear any pending debounce timeout on unmount so it can't fire
+    // onSearchChange (or, in tests, touch a torn-down environment) after
+    // the component is gone.
+    useEffect(() => {
+      return () => {
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+      };
+    }, []);
+
     const handleSearchChange = (value: string) => {
       setInputValue(value);
 
-      if (searchTimeout) clearTimeout(searchTimeout);
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
 
-      const timeout = setTimeout(() => {
+      searchTimeoutRef.current = setTimeout(() => {
         onSearchChange({
           searchTerm: value,
           page: 1,
         });
       }, 500);
-
-      setSearchTimeout(timeout);
     };
 
     const handleGlobalSearchToggle = () => {
@@ -76,12 +81,6 @@ const TransactionSearch = forwardRef<
         });
       }
     };
-
-    useEffect(() => {
-      return () => {
-        if (searchTimeout) clearTimeout(searchTimeout);
-      };
-    }, [searchTimeout]);
 
     const searchLabel = "Filter transactions";
 
