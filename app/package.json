@@ -112,7 +112,7 @@
     "sass": "^1.101.0",
     "sass-embedded": "^1.100.0",
     "terser": "^5.49.0",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.64.0",
     "vercel": "^56.2.1",
     "vite": "^8.1.4",

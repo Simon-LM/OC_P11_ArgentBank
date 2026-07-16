@@ -1,18 +1,27 @@
 /** @format */
 
 // import React from "react";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   const [isExpanding, setIsExpanding] = useState(false);
+  const expandTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (expandTimeoutRef.current) {
+        clearTimeout(expandTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleToggle = () => {
     if (!isPrivacyOpen) {
       setIsExpanding(true);
-      setTimeout(() => setIsExpanding(false), 400);
+      expandTimeoutRef.current = setTimeout(() => setIsExpanding(false), 400);
     }
     setIsPrivacyOpen(!isPrivacyOpen);
   };
