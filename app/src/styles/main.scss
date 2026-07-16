@@ -1,19 +1,19 @@
 /** @format */
 
-@import "normalize.css"; /* Add */
-@import "abstracts/variables.scss";
-@import "abstracts/placeholders.scss";
-@import "abstracts/functions.scss";
-@import "abstracts/mixins.scss";
-@import "base/globale.scss";
-@import "base/typography.scss";
+@use "normalize.css";
+@use "abstracts/variables.scss" as *;
+@use "abstracts/placeholders.scss" as *;
+@use "abstracts/functions.scss" as *;
+@use "abstracts/mixins.scss" as *;
+@use "base/globale.scss" as *;
+@use "base/typography.scss" as *;
 
-@import "accessibility/pointer.scss";
-@import "accessibility/screen-reader.scss";
-@import "accessibility/accessibility.scss";
+@use "accessibility/pointer.scss" as *;
+@use "accessibility/screen-reader.scss" as *;
+@use "accessibility/accessibility.scss" as *;
 
-@import "layouts/Header.scss";
-@import "layouts/Footer.scss";
-@import "layouts/Home.scss";
+@use "layouts/Header.scss" as *;
+@use "layouts/Footer.scss" as *;
+@use "layouts/Home.scss" as *;
 
 // // // // // // // // // // // // // // //
