@@ -8,11 +8,11 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { axe } from "jest-axe";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import Header from "./Header";
 import userReducer, {
   logoutUser,
@@ -23,20 +23,6 @@ import "../../../Axe/utils/axe-setup.js";
 interface RootState {
   users: UsersState;
 }
-
-// Mock useNavigate
-const mockNavigate = vi.fn();
-
-vi.mock("react-router-dom", async () => {
-  const actual =
-    await vi.importActual<typeof import("react-router-dom")>(
-      "react-router-dom",
-    );
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 // Create mock store
 const createTestStore = (isAuthenticated = false) => {
@@ -94,39 +80,41 @@ describe("Header - Tests d'intégration", () => {
     spyDispatch = vi.spyOn(store, "dispatch");
   });
 
-  test("dispatches logoutUser and navigates to home page when 'Sign Out' is clicked", () => {
+  test("navigates to home page then dispatches logoutUser once there", async () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
+        <MemoryRouter initialEntries={["/user"]}>
           <Header />
-        </BrowserRouter>
+        </MemoryRouter>
       </Provider>,
     );
 
     const signOutLink = screen.getByText(/Sign Out/i);
     fireEvent.click(signOutLink);
 
-    // Verify that logoutUser has been dispatched
-    expect(spyDispatch).toHaveBeenCalledWith(logoutUser());
-
-    // Verify that navigate has been called with '/'
-    expect(mockNavigate).toHaveBeenCalledWith("/");
+    // logoutUser is deferred until the navigation to "/" has actually
+    // landed (see Header.tsx) — asserting it synchronously would be a
+    // false negative even when the component behaves correctly.
+    await waitFor(() => {
+      expect(spyDispatch).toHaveBeenCalledWith(logoutUser());
+    });
   });
 
-  test("redirects to home page after logout", () => {
+  test("redirects to home page after logout", async () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
+        <MemoryRouter initialEntries={["/user"]}>
           <Header />
-        </BrowserRouter>
+        </MemoryRouter>
       </Provider>,
     );
 
     const signOutLink = screen.getByText(/Sign Out/i);
     fireEvent.click(signOutLink);
 
-    // Verify that navigate has been called with '/'
-    expect(mockNavigate).toHaveBeenCalledWith("/");
+    await waitFor(() => {
+      expect(screen.getByText(/Sign In/i)).toBeInTheDocument();
+    });
   });
 
   // Accessibility tests
@@ -134,9 +122,9 @@ describe("Header - Tests d'intégration", () => {
     test("has no accessibility violations when logged out", async () => {
       const { container } = render(
         <Provider store={createTestStore(false)}>
-          <BrowserRouter>
+          <MemoryRouter initialEntries={["/user"]}>
             <Header />
-          </BrowserRouter>
+          </MemoryRouter>
         </Provider>,
       );
       const results = await axe(container);
@@ -146,9 +134,9 @@ describe("Header - Tests d'intégration", () => {
     test("has no accessibility violations when logged in", async () => {
       const { container } = render(
         <Provider store={createTestStore(true)}>
-          <BrowserRouter>
+          <MemoryRouter initialEntries={["/user"]}>
             <Header />
-          </BrowserRouter>
+          </MemoryRouter>
         </Provider>,
       );
       const results = await axe(container);

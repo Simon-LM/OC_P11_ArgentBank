@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
@@ -17,9 +17,23 @@ const Header: React.FC = () => {
   );
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const pendingLogoutRef = useRef(false);
+
+  // react-router-dom v7 wraps navigate() in its own internal transition,
+  // which flushSync cannot force synchronous. Rather than fight that
+  // scheduling, wait for the effect confirming we've actually landed on
+  // "/" before clearing auth state — by then /user (and ProtectedRoute)
+  // is guaranteed unmounted, so there's nothing left to race a redirect
+  // to /signin against.
+  useEffect(() => {
+    if (pendingLogoutRef.current && location.pathname === "/") {
+      pendingLogoutRef.current = false;
+      dispatch(logoutUser());
+    }
+  }, [location, dispatch]);
 
   const handleSignOut = () => {
-    dispatch(logoutUser());
+    pendingLogoutRef.current = true;
     navigate("/");
   };
 
