@@ -19,8 +19,13 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
-    dispatch(logoutUser());
+    // Navigate away from the protected /user route before clearing auth
+    // state: react-router-dom v7 defaults to wrapping navigation in
+    // React.startTransition, so if the Redux dispatch ran first, its
+    // synchronous re-render could still see /user mounted and race
+    // ProtectedRoute's own redirect to /signin against this navigation.
     navigate("/");
+    dispatch(logoutUser());
   };
 
   const isHomePage = location.pathname === "/";
