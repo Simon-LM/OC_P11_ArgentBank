@@ -3,7 +3,6 @@
 @use "@styles/abstracts/functions" as func;
 @use "@styles/abstracts/placeholders" as *;
 @use "@styles/abstracts/mixins" as mix;
-@use "@styles/abstracts/variables" as var;
 
 .hero,
 .hero * {
@@ -92,8 +91,8 @@
     left: 2vw;
     font-size: clamp(0.75rem, calc(0.6rem + 0.8vw), 1.5rem);
     padding: clamp(1px, calc(0.4rem + 0.6vw), 1rem);
-    outline: func.rem(2) dashed var.$color-balanced;
-    color: var.$color-balanced;
+    outline: func.rem(2) dashed var(--fg-muted);
+    color: var(--fg-muted);
     box-sizing: border-box;
     @include mix.text-wrap;
     transition: opacity 0.3s ease;
@@ -125,7 +124,7 @@
     padding: clamp(0.25rem, 2vw, 2rem);
     text-align: left;
     margin: 0 auto;
-    background-color: var.$light_bg_hero-content;
+    background-color: var(--bg-base);
     box-sizing: border-box;
     // background: blueviolet;
 
@@ -207,7 +206,7 @@
   height: min(func.rem(100), 80vw);
   min-width: auto;
   min-height: auto;
-  border: clamp(0.25rem, 3vw, func.rem(10)) solid var.$light_icon-border;
+  border: clamp(0.25rem, 3vw, func.rem(10)) solid var(--accent);
   border-radius: 50%;
   padding: clamp(0.5rem, 2vw, 1rem);
 
@@ -233,7 +232,7 @@
     border-radius: 50%;
     font-size: clamp(0.5rem, 3vw, 0.75rem);
     padding: clamp(0.15rem, 5%, 0.75rem);
-    color: var.$color-balanced;
+    color: var(--fg-muted);
     background: none;
     pointer-events: none;
     margin: 0;

@@ -1,0 +1,54 @@
+/** @format */
+
+// Theme configuration — LAYER 3 of the accessibility UI (scaffolded
+// template, you own it). Wires the CSS variables the card + trigger
+// consume, derived from the ROLES (layer 2) the package's engine has
+// transformed for each theme.
+//
+// ⚠️ GOLDEN RULE (see the AGENTS.md guide): every token is defined FROM A
+// LAYER-2 ROLE (`$accent`, `$bg-base`, `$link`…), never a raw value.
+// This is what guarantees high contrast and color-blind themes apply
+// correctly. AGENTS.md § "Verifying your wiring" shows how to check this
+// mechanically in YOUR project (contrast suite on darkmode-plus-a11y/testing/*).
+//
+// ⚠️ Imports use the published package name; `init --pkg <name>` rewrites
+// them if you installed the package under a different name.
+
+@use "darkmode-plus-a11y/scss/base-palette" as *;
+@use "darkmode-plus-a11y/scss/state" as *;
+
+// Emits the CSS variables consumed by the accessibility UI, derived from
+// the current roles. To be included INSIDE each [data-theme] block, AFTER
+// the engine's transform + apply-roles (see theme-setup.scss).
+@mixin a11y-ui-theme-vars {
+  // --- Roles / rail used directly by the UI (pass-throughs) ---
+  --accent: #{$accent};
+  --link: #{$link};
+  --link-hover: #{$link-hover};
+  --near-black: #{$near-black};
+  --off-white: #{$off-white};
+  --gray-300: #{$gray-300};
+  --gray-400: #{$gray-400};
+  --gray-700: #{$gray-700};
+
+  // --- Athematic constants (same values in every theme; their
+  //     --constant-* name declares it) ---
+  --constant-near-black: #0c0a09;
+  --constant-error-color: #dc2626;
+
+  // --- UI tokens, derived from the roles ---
+  --color-main-bg: #{$bg-base};
+  --color-main-text: #{$fg-base};
+  --color-panel-bg: #{$bg-base};
+  --color-panel-border: #{$border-base};
+  --color-scrollbar-track: #{$bg-base};
+  --color-scrollbar-thumb: #{$border-subtle};
+  --color-button-border: #{$border-subtle};
+  --color-button-hover-bg: #{$link-hover};
+  --color-button-hover-text: #{$fg-on-emphasis};
+  --color-button-active-text: #{$fg-base};
+  --color-border: #{$border-subtle};
+  --color-accent: #{$accent};
+  --color-accent-hover: #{$accent-strong};
+  --color-focus-outline: #{$focus-ring};
+}

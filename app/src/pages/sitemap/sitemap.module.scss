@@ -1,7 +1,6 @@
 /** @format */
 
 @use "@styles/abstracts/functions" as func;
-@use "@styles/abstracts/variables" as var;
 @use "@styles/abstracts/mixins" as mix;
 @use "@styles/abstracts/placeholders" as *;
 @use "@styles/accessibility/accessibility" as acc;
@@ -12,8 +11,8 @@
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  background: var.$light_body-bg;
-  color: var.$light_text;
+  background: var(--bg-base);
+  color: var(--fg-base);
 
   &__container {
     max-width: func.rem(1200);
@@ -32,7 +31,7 @@
   }
 
   &__title {
-    color: var.$light_heading;
+    color: var(--fg-base);
     font-size: clamp(func.rem(28), 5vw, func.rem(36));
     font-weight: 700;
     margin-bottom: func.rem(16);
@@ -49,13 +48,13 @@
       display: block;
       width: func.rem(60);
       height: func.rem(3);
-      background-color: var.$light_primary;
+      background-color: var(--bg-emphasis-strong);
       margin: func.rem(12) auto 0;
     }
   }
 
   &__description {
-    color: var.$light_text-muted;
+    color: var(--fg-muted);
     font-size: clamp(func.rem(16), 3vw, func.rem(18));
     line-height: 1.6;
     max-width: func.rem(600);
@@ -72,8 +71,8 @@
 }
 
 .section {
-  background: var.$light_card-bg;
-  border: 1px solid var.$light_border;
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
   border-radius: func.rem(8);
   padding: clamp(2px, calc(0.2rem + 0.75vw), calc(0.4rem + 0.75vw));
   margin-bottom: clamp(6px, 0.4rem, 0.5rem);
@@ -86,7 +85,7 @@
   }
 
   &__title {
-    color: var.$light_heading;
+    color: var(--fg-base);
     font-size: clamp(func.rem(20), 4vw, func.rem(24));
     font-weight: 600;
     margin-bottom: clamp(1px, min(0.2vh, 0.2rem), 0.2rem);
@@ -95,7 +94,7 @@
   }
 
   &__description {
-    color: var.$light_text-muted;
+    color: var(--fg-muted);
     font-size: clamp(func.rem(14), 2.5vw, func.rem(16));
     margin-bottom: clamp(3px, calc(0.15rem + 0.5vw), calc(0.5rem + 0.5vw));
     line-height: 1.5;
@@ -125,25 +124,25 @@
     flex-direction: column;
     gap: clamp(1px, min(0.1vh, 0.1rem), 0.1rem);
     padding: clamp(2px, calc(0.15rem + 0.4vw), calc(0.3rem + 0.4vw));
-    background: var.$light_nav-item-bg;
-    border: 1px solid var.$light_border;
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
     border-radius: func.rem(6);
     text-decoration: none;
-    color: var.$light_nav-item-text;
+    color: var(--fg-base);
     transition: all 0.2s ease;
 
     &:hover,
     &:focus {
-      background: var.$light_nav-item-hover-bg;
-      color: var.$light_nav-item-hover-text;
-      border-color: var.$light_primary;
+      background: var(--bg-subtle);
+      color: var(--link-hover);
+      border-color: var(--focus-ring);
       transform: translateY(func.rem(-1));
       outline: none;
       box-shadow: 0 func.rem(4) func.rem(8) rgba(0, 0, 0, 0.1);
     }
 
     &:focus-visible {
-      outline: 2px solid var.$light_primary;
+      outline: 2px solid var(--focus-ring);
       outline-offset: 2px;
     }
 
@@ -165,13 +164,13 @@
   &__path {
     font-family: monospace;
     font-size: clamp(func.rem(12), 2vw, func.rem(14));
-    color: var.$light_text-muted;
+    color: var(--fg-muted);
     font-weight: 400;
     @include mix.text-wrap("break-word");
   }
 
   &__description {
-    color: var.$light_text-muted;
+    color: var(--fg-muted);
     font-size: clamp(func.rem(13), 2vw, func.rem(14));
     line-height: 1.5;
     margin: 0;
@@ -181,10 +180,10 @@
   // Disabled Page (Authentication Required)
   &__disabled {
     padding: clamp(2px, calc(0.15rem + 0.4vw), calc(0.3rem + 0.4vw));
-    background: var.$light_disabled-bg;
-    border: 1px solid var.$light_disabled-border;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
     border-radius: func.rem(6);
-    color: var.$light_text-muted;
+    color: var(--fg-muted);
     display: flex;
     flex-direction: column;
     gap: clamp(1px, min(0.1vh, 0.1rem), 0.1rem);
@@ -193,7 +192,7 @@
   &__auth-required {
     font-size: clamp(func.rem(12), 2vw, func.rem(13));
     font-style: italic;
-    color: var.$light_text-muted;
+    color: var(--fg-muted);
     font-weight: 400;
     @include mix.text-wrap("break-word");
   }
@@ -201,8 +200,8 @@
 
 // Help Section
 .help {
-  background: var.$light_feature-bg;
-  border: 1px solid var.$light_border;
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
   border-radius: func.rem(8);
   padding: clamp(2px, calc(0.2rem + 0.75vw), calc(0.4rem + 0.75vw));
   margin-bottom: clamp(6px, calc(0.5rem + 1.5vw), calc(1rem + 1.5vw));
@@ -211,7 +210,7 @@
   margin-right: auto;
 
   &__title {
-    color: var.$light_heading;
+    color: var(--fg-base);
     font-size: clamp(func.rem(18), 3.5vw, func.rem(22));
     font-weight: 600;
     margin-bottom: clamp(3px, calc(0.15rem + 0.3vw), calc(0.4rem + 0.3vw));
@@ -233,7 +232,7 @@
 
     h3,
     h4 {
-      color: var.$light_heading;
+      color: var(--fg-base);
       font-size: clamp(func.rem(14), 2.5vw, func.rem(16));
       font-weight: 600;
       margin-bottom: clamp(2px, calc(0.1rem + 0.2vw), calc(0.3rem + 0.2vw));
@@ -249,7 +248,7 @@
       text-align: center;
 
       li {
-        color: var.$light_text;
+        color: var(--fg-base);
         font-size: clamp(func.rem(13), 2vw, func.rem(14));
         line-height: 1.5;
         margin-bottom: clamp(1px, min(0.2vh, 0.2rem), 0.2rem);
@@ -263,10 +262,10 @@
     }
 
     kbd {
-      background: var.$light_kbd-bg;
-      border: 1px solid var.$light_kbd-border;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
       border-radius: func.rem(3);
-      color: var.$light_kbd-text;
+      color: var(--fg-base);
       font-family: monospace;
       font-size: clamp(func.rem(11), 1.8vw, func.rem(12));
       font-weight: 600;
@@ -290,29 +289,29 @@
     display: inline-flex;
     align-items: center;
     gap: clamp(1px, min(0.2vw, 0.2rem), 0.2rem);
-    color: var.$light_primary;
+    color: var(--fg-base);
     text-decoration: none;
     font-size: clamp(func.rem(14), 2.5vw, func.rem(16));
     font-weight: 500;
     padding: clamp(2px, min(0.2vh, 0.2rem), 0.3rem)
       clamp(3px, calc(0.15rem + 0.4vw), calc(0.5rem + 0.4vw));
-    border: 1px solid var.$light_primary;
+    border: 1px solid var(--fg-base);
     border-radius: func.rem(6);
     margin-bottom: clamp(6px, calc(0.25rem + 0.75vw), calc(1rem + 0.75vw));
     transition: all 0.2s ease;
 
     &:hover,
     &:focus {
-      background: var.$light_primary-hover;
-      border-color: var.$light_primary-hover;
-      color: var.$color-white;
+      background: var(--link);
+      border-color: var(--link);
+      color: var(--fg-on-emphasis);
       transform: translateY(func.rem(-1));
       outline: none;
       box-shadow: 0 func.rem(4) func.rem(8) rgba(0, 0, 0, 0.1);
     }
 
     &:focus-visible {
-      outline: 2px solid var.$light_primary;
+      outline: 2px solid var(--focus-ring);
       outline-offset: 2px;
     }
 
@@ -370,22 +369,23 @@
   }
 }
 
-// Print Styles
+// Print Styles: intentionally fixed black-on-white, regardless of the
+// active on-screen theme — standard print convention, not a themeable role.
 @media print {
   .sitemap {
-    background: var.$color-white;
-    color: var.$color-black;
+    background: white;
+    color: black;
   }
 
   .page {
     &__link {
-      background: var.$color-white;
-      border-color: var.$color-black;
+      background: white;
+      border-color: black;
 
       &:after {
         content: " (" attr(href) ")";
         font-size: func.rem(12);
-        color: var.$color-gray-600;
+        color: #718096;
       }
     }
   }

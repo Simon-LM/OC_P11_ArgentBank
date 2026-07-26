@@ -6,6 +6,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/Store";
 import { logoutUser } from "../../store/slices/usersSlice";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import AccessibilityControl from "../../a11y/react/AccessibilityControl";
+
+// Site has no i18n yet — single seam to update once it does, instead of a
+// literal repeated at every AccessibilityControl call site.
+const SITE_LANGUAGE: "fr" | "en" = "en";
 
 const Header: React.FC = () => {
   const location = useLocation();
@@ -118,6 +123,8 @@ const Header: React.FC = () => {
             </>
           )}
         </ul>
+
+        <AccessibilityControl language={SITE_LANGUAGE} />
       </nav>
     </header>
   );

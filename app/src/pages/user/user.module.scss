@@ -1,7 +1,6 @@
 /** @format */
 
 @use "@styles/abstracts/functions" as func;
-@use "@styles/abstracts/variables" as var;
 @use "@styles/abstracts/mixins" as mix;
 @use "@styles/abstracts/placeholders" as *;
 @use "@styles/accessibility/accessibility" as acc;
@@ -16,13 +15,13 @@
     margin: 0 auto;
     padding: 0.25rem 1vw;
     padding: clamp(1px, min(0.25vw, 0.25rem), 0.25rem) clamp(2px, 1vw, 1rem);
-    background: var.$light_user_bg;
-    color: var.$light_user_text;
+    background: var(--bg-base);
+    color: var(--fg-base);
     box-sizing: border-box;
   }
 
   &__title {
-    color: var.$light_user_title;
+    color: var(--fg-base);
     font-size: func.rem(32) !important;
     margin-bottom: 1rem;
     font-weight: bold;
@@ -34,7 +33,7 @@
       display: block;
       width: func.rem(80);
       height: func.rem(3);
-      background-color: var.$primary-color;
+      background-color: var(--bg-emphasis-strong);
       margin: 0.75rem auto 0;
     }
 
@@ -44,10 +43,10 @@
   }
 
   &__edit-button {
-    background-color: var.$light_button-bg;
-    border-color: var.$light_button-border;
+    background-color: var(--accent-strong);
+    border-color: var(--accent-strong);
     border-radius: 0.125rem;
-    color: var.$light_button-text;
+    color: var(--fg-on-accent-strong);
     font-weight: bold;
     width: 92.5%;
     max-width: 15rem;
@@ -58,16 +57,19 @@
       clamp(2px, min(1.25vw, 1.25rem), 1.25rem);
     // border-radius: func.rem(4);
     margin: 1.5rem 0;
-    transition: all 0.2s ease;
+    transition:
+      all 0.2s ease,
+      color 0.2s ease;
 
     &:hover {
-      background-color: var.$light_button_bg-hover;
-      border-color: var.$light_button_border-hover;
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: var(--fg-on-accent-hover);
     }
   }
 
   &__error {
-    color: var.$color-error;
+    color: var(--danger);
     font-weight: bold;
     margin: 1rem 0;
   }
@@ -76,13 +78,13 @@
 .section {
   &__heading {
     text-align: center;
-    color: var.$light_user_section-heading;
+    color: var(--fg-base);
     font-size: func.rem(22);
     margin: 2rem 0 1rem;
     // padding-bottom: 0.5rem;
     padding-bottom: clamp(1px, min(0.5vh, 0.5rem), 0.5rem);
 
-    border-bottom: 0.125rem solid var.$light_section-border;
+    border-bottom: 0.125rem solid var(--border-subtle);
     width: 92.5%;
     max-width: 30rem;
     margin-left: auto;
@@ -91,7 +93,7 @@
     // background: red;
 
     &:focus {
-      outline: 0.125rem solid var.$secondary-color;
+      outline: 0.125rem solid var(--focus-ring);
       // padding: 0.25rem;
       padding: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
     }
@@ -104,7 +106,7 @@
     font-weight: normal;
     // margin-left: 0.5rem;
     margin-left: clamp(1px, min(0.5vw, 0.5rem), 0.5rem);
-    color: var.$color-gray-700;
+    color: var(--fg-muted);
   }
 }
 .accounts-list {
@@ -150,9 +152,9 @@
   // // // //
 
   align-items: center;
-  border: func.rem(1) solid var.$light_account_border;
-  background-color: var.$light_account_bg;
-  color: var.$light_account_text;
+  border: func.rem(1) solid var(--border-subtle);
+  background-color: var(--bg-base);
+  color: var(--fg-base);
   text-align: left;
   margin-bottom: 2rem;
   appearance: none;
@@ -168,11 +170,11 @@
   border-radius: 0.5rem;
 
   &:hover {
-    background-color: var.$light_account_bg-hover;
-    color: var.$light_account_text-hover;
+    background-color: var(--bg-emphasis-strong);
+    color: var(--fg-on-emphasis);
 
     .account__amount {
-      color: var.$light_account_text-hover;
+      color: var(--fg-on-emphasis);
     }
   }
 
@@ -184,13 +186,13 @@
     padding: 0.25rem 0.5rem;
     margin-top: -0.25rem;
     margin-right: -0.25rem;
-    background-color: var.$light_account_border-selected;
-    color: white;
+    background-color: var(--link);
+    color: var(--fg-on-emphasis);
     border-radius: 0.125rem;
   }
 
   &--selected {
-    border-left: 0.5rem solid var.$light_account_border-selected;
+    border-left: 0.5rem solid var(--link);
   }
 
   &__content {
@@ -210,7 +212,7 @@
     margin: 0;
     font-size: clamp(1.5rem, 5vw, 2.5rem);
     font-weight: bold;
-    color: var.$light_account-amount_text;
+    color: var(--fg-base);
     margin: 0.5rem 0;
     @extend %text-wrap;
     @extend %preserve-numbers;
@@ -235,9 +237,9 @@
     font-size: 1.1rem;
     font-weight: bold;
     margin-top: 1rem;
-    border-color: var.$light_button_border;
-    background-color: var.$light_button_bg;
-    color: var.$light_button_text;
+    border-color: var(--accent-strong);
+    background-color: var(--accent-strong);
+    color: var(--fg-on-accent-strong);
   }
 }
 
@@ -267,14 +269,14 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-bottom: 1px solid var.$light-transaction-border;
+  border-bottom: 1px solid var(--border-subtle);
   margin: 0 0 0.75rem 0;
   // padding: calc(0.4rem + 0.75vw);
 
   padding: clamp(6px, calc(0.4rem + 0.75vw), calc(0.6rem + 0.75vw));
   box-sizing: border-box;
   text-align: left;
-  background-color: var.$light_transaction_bg;
+  background-color: var(--bg-base);
   // background: palevioletred;
   &__cell {
     // padding: 0.25rem 0;
@@ -289,7 +291,7 @@
         .transaction-row__amount {
           // font-size: 2.05rem;
           font-size: clamp(1.25rem, calc(1rem + 1.5vw), 2.05rem);
-          border-right: 0.25rem solid var.$color-accent-dark;
+          border-right: 0.25rem solid var(--accent-strong);
           // padding-right: 0.25rem;
           padding-right: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
         }
@@ -300,7 +302,7 @@
 
         .transaction-row__amount {
           // border-left: 0.25rem solid var.$color-error;
-          border-left: 0.25rem solid var.$secondary-color;
+          border-left: 0.25rem solid var(--link);
           // padding-left: 0.25rem;
           padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
         }
@@ -323,7 +325,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     font-size: clamp(0.75rem, calc(0.7rem + 0.25vw), 0.9rem);
-    color: var.$light_transaction-meta;
+    color: var(--fg-muted);
     border-left: 0.125rem solid transparent;
     // padding-left: 0.25rem;
     padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
@@ -337,8 +339,8 @@
     display: inline-block;
     vertical-align: middle;
     font-weight: 600;
-    color: var.$primary-color;
-    border: 0.125rem solid var.$primary-color;
+    color: var(--fg-base);
+    border: 0.125rem solid var(--fg-base);
     // padding: 0.1rem 0.5rem;
     padding: clamp(3px, calc(0.15rem + 0.2vh), 0.2rem)
       clamp(5px, calc(0.25rem + 0.4vw), 0.6rem);
@@ -350,7 +352,7 @@
   }
 
   &__amount {
-    color: var.$primary-color;
+    color: var(--fg-base);
     font-weight: bold;
     font-size: clamp(1.25rem, calc(1rem + 1.5vw), 2rem);
     margin: 0;
@@ -363,13 +365,13 @@
   &__note {
     font-style: italic;
     font-size: 0.85rem;
-    color: var.$light_transaction-note;
+    color: var(--fg-base);
     // margin: 0.25rem 0;
     margin: clamp(6px, 0.35rem, 0.5rem) 0;
     // padding-left: 0.25rem;
     padding-left: clamp(1px, min(0.25vw, 0.25rem), 0.25rem);
 
-    border-left: 0.125rem solid var.$light_transaction-note-border;
+    border-left: 0.125rem solid var(--border-subtle);
     @include mix.text-wrap;
     // background: lightsteelblue;
   }
@@ -424,9 +426,9 @@
     height: func.rem(36);
     // padding: 0 func.rem(8);
     padding: 0 clamp(1px, min(0.5vw, 0.5rem), func.rem(8));
-    background-color: var.$light_pagination-button_bg;
-    border: func.rem(1) solid var.$light_pagination-button_border;
-    color: var.$light_pagination-button_text;
+    background-color: var(--bg-base);
+    border: func.rem(1) solid var(--accent-strong);
+    color: var(--accent-strong);
     border-radius: 0.125rem;
     font-weight: bold;
     @extend %text-wrap;
@@ -440,9 +442,9 @@
     }
 
     &:hover:not(:disabled) {
-      background-color: var.$light_pagination-button_bg-hover;
-      border-color: var.$light_pagination-button_border-hover;
-      color: var.$light_pagination-button_text-hover;
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: var(--fg-on-accent-hover);
     }
 
     &:disabled {
@@ -451,9 +453,9 @@
     }
 
     &--current {
-      background-color: var.$light_pagination-button_bg-selected;
-      border-color: var.$light_pagination-button_border-selected;
-      color: var.$light_pagination-button_text-selected;
+      background-color: var(--accent-strong);
+      border-color: var(--accent-strong);
+      color: var(--fg-on-accent-strong);
       &:hover {
         cursor: not-allowed;
       }
