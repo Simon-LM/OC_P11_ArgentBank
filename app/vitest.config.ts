@@ -29,7 +29,7 @@ export default defineConfig({
       thresholds: {
         statements: 95, // Critical: 95%+ recommended for banking
         branches: 90, // High: All decision paths tested
-        functions: 90, // High: All functions tested (increased from 85%)
+        functions: 95, // Critical: 95%+ (increased from 90%, 85% originally)
         lines: 95, // Critical: 95%+ recommended for banking
       },
       exclude: [
@@ -38,6 +38,8 @@ export default defineConfig({
         "**/*.integration.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
         "src/setupTests.ts",
         "src/mockData/users.ts",
+        "src/a11y/contrast/setup.ts",
+        "src/a11y/contrast/pairs.ts",
         "src/pages/user/user.module.scss.d.ts",
         "src/components/TransactionSearch/TransactionSearch.module.scss.d.ts",
         "src/pages/signIn/signin.module.scss.d.ts",

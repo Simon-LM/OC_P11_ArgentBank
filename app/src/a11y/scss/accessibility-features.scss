@@ -1,0 +1,43 @@
+/** @format */
+
+// Accessibility features — SCSS (scaffolded template, you own it). Emits:
+// @font-face rules for the bundled fonts, the font selector classes, the
+// optimized dyslexia mode (3 levels), and the motion-reduction class.
+// Everything comes from the package's opt-in modules.
+//
+// ⚠️ Font path: `$a11y-fonts-path` (default "/fonts"). Copy the package's
+// font files (fonts/files/) into this public folder, or change the path
+// below.
+//
+// ⚠️ Imports use the published package name; `init --pkg <name>` rewrites
+// them if you installed the package under a different name.
+
+@use "darkmode-plus-a11y/scss/modules/a11y-fonts" as * with (
+  $a11y-fonts-path: "/fonts"
+);
+@use "darkmode-plus-a11y/scss/modules/dyslexia" as *;
+@use "darkmode-plus-a11y/scss/modules/motion" as *;
+
+// @font-face rules for the bundled fonts (OpenDyslexic, Andika, Atkinson).
+@include a11y-font-faces();
+
+// Font selector classes: Atkinson + Andika (emitted by the package).
+@include a11y-font-classes;
+
+// OpenDyslexic: the selector maps "opendyslexic" → .dyslexic-font. No
+// font-size-adjust (OpenDyslexic is naturally large).
+@include a11y-font-class(
+  "dyslexic-font",
+  "OpenDyslexic",
+  $font-size-adjust: null
+);
+
+// Optimized dyslexia mode (3 levels: title / subtitle / body). Defaults
+// = Lexend Giga / Lexend Deca / Andika. Override the body font if needed,
+// e.g. @include dyslexia-typography($body-font: "My Font").
+html.dyslexia-optimized {
+  @include dyslexia-typography();
+}
+
+// Opt-in motion-reduction class (html.reduce-motion).
+@include reduce-motion-class;

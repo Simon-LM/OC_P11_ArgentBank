@@ -3,7 +3,6 @@
 @use "@styles/abstracts/functions" as func;
 @use "@styles/abstracts/placeholders" as *;
 @use "@styles/abstracts/mixins" as mix;
-@use "@styles/abstracts/variables" as var;
 
 .skip-to-content {
   position: absolute;
@@ -12,8 +11,8 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
-  background-color: var.$skip-link-bg;
-  color: var.$skip-link-text;
+  background-color: var(--link);
+  color: var(--fg-on-emphasis);
   padding: 0.5rem 0.5rem;
   z-index: 100;
   text-decoration: none;
@@ -25,7 +24,7 @@
     transform: translateX(-50%);
     width: auto;
     height: auto;
-    box-shadow: var.$skip-link-focus-shadow;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--link) 60%, transparent);
   }
 }
 
@@ -45,7 +44,7 @@
   // height: 100%;
   gap: 0.25rem;
   padding: 0 1.5vw;
-  background-color: var.$light_bg_header;
+  background-color: var(--bg-base);
   box-sizing: border-box;
 
   // background: red;
@@ -82,7 +81,9 @@
     flex-grow: 1;
     min-width: 0;
     display: flex;
+    align-items: center;
     justify-content: flex-end;
+    gap: 0.5rem;
     // background-color: azure;
   }
 
@@ -113,7 +114,7 @@
       align-items: center;
       text-decoration: none;
       font-weight: bold;
-      color: var.$light_text-link_header;
+      color: var(--fg-base);
       gap: 0.25rem;
       white-space: nowrap;
 
@@ -124,7 +125,7 @@
       flex-shrink: 0;
 
       &:hover {
-        color: var.$light_text-link-hover_header;
+        color: var(--link-hover);
       }
 
       // .nav-icon {
@@ -137,7 +138,7 @@
       appearance: none;
       height: 100%;
       min-width: fit-content;
-      background: var.$light_nav-button-bg;
+      background: transparent;
       border: none;
       padding: 0;
       display: flex;
@@ -147,7 +148,7 @@
       vertical-align: middle;
       text-decoration: none;
       font-weight: bold;
-      color: var.$light_nav-button-text;
+      color: var(--fg-base);
       gap: 0.25rem;
       @include mix.text-wrap();
       // background: palegreen;
@@ -181,7 +182,7 @@
     }
 
     &:focus {
-      outline: 2px solid var.$light_primary;
+      outline: 2px solid var(--focus-ring);
       outline-offset: 2px;
     }
   }
