@@ -36,12 +36,16 @@ const distinguishabilityPairs = withWaivers(defaultDistinguishabilityPairs, {
 describe("CVD distinguishability — accent (emerald) / link (indigo) / success / danger", () => {
   for (const pair of distinguishabilityPairs) {
     for (const theme of pair.themes) {
+      // 20s timeout: the first assertion to run pays for compiling the
+      // theme-setup.scss pipeline for all 15 themes (configureThemeExtraction
+      // in ./setup, lazily triggered here) — fast locally, but slow enough on
+      // a loaded CI runner to exceed vitest's 5s default on that one test.
       it(`${pair.id} stays distinguishable in "${theme}"`, () => {
         if (pair.waiver?.measured?.[theme] !== undefined) return;
         expect(measureDeltaE(pair, theme)).toBeGreaterThanOrEqual(
           pair.minDeltaE,
         );
-      });
+      }, 20000);
     }
   }
 });
