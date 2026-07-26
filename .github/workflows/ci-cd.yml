@@ -1029,33 +1029,33 @@ jobs:
             { url: `${baseUrl}/404`, name: '404', needsAuth: false }
           ];
 
-          // Thresholds - Seuils durcis (2026-07-16, Lighthouse 13.4 + skip is-crawlable)
-          // Scores CI observés sur les 5 pages, desktop+mobile : seo/a11y/BP 100%,
-          // performance 99-100%. Les catégories déterministes (seo, a11y, BP) sont
-          // exigées à 100% ; la performance garde une marge car elle fluctue avec
-          // la charge des runners GitHub.
+          // Thresholds — raised 2026-07-16, Lighthouse 13.4 + skip is-crawlable.
+          // CI scores observed across the 5 pages, desktop+mobile: seo/a11y/BP 100%,
+          // performance 99-100%. The deterministic categories (seo, a11y, BP) are
+          // required at 100%; performance keeps a margin since it fluctuates with
+          // GitHub runner load.
           const thresholds = {
             desktop: {
-              performance: 0.97,  // 95% → 97% (scores actuels: 99-100%)
-              accessibility: 1.0,  // 100% (scores actuels: 100%)
-              'best-practices': 1.0, // 96% → 100% (le 96% "temporaire" n'a plus lieu d'être)
-              seo: 1.0           // 90% → 100% (scores actuels: 100%, audits déterministes)
+              performance: 0.97,  // 95% → 97% (current scores: 99-100%)
+              accessibility: 1.0,  // 100% (current scores: 100%)
+              'best-practices': 1.0, // 96% → 100% (the "temporary" 96% no longer applies)
+              seo: 1.0           // 90% → 100% (current scores: 100%, deterministic audits)
             },
             mobile: {
-              performance: 0.95,  // 90% → 95% (scores actuels: 99-100%)
-              accessibility: 1.0,  // 100% (scores actuels: 100%)
-              'best-practices': 1.0, // 96% → 100% (le 96% "temporaire" n'a plus lieu d'être)
-              seo: 1.0           // 90% → 100% (scores actuels: 100%, audits déterministes)
+              performance: 0.95,  // 90% → 95% (current scores: 99-100%)
+              accessibility: 1.0,  // 100% (current scores: 100%)
+              'best-practices': 1.0, // 96% → 100% (the "temporary" 96% no longer applies)
+              seo: 1.0           // 90% → 100% (current scores: 100%, deterministic audits)
             }
           };
 
-          // Vercel force `X-Robots-Tag: noindex` sur toute réponse d'un déploiement
-          // Preview protégé : l'audit is-crawlable est donc structurellement
-          // insatisfiable en CI (jamais un problème du site — la prod, non protégée,
-          // le passe à 100%). Depuis Lighthouse 12, son poids SEO est passé de 1 à
-          // 93/23 (~4), ce qui plafonnerait le score à ~69% quel que soit le reste.
-          // On l'exclut ici pour garder le seuil de 90% significatif sur tous les
-          // autres audits SEO, plutôt que d'abaisser le seuil lui-même.
+          // Vercel forces `X-Robots-Tag: noindex` on every response from a protected
+          // preview deployment, so the is-crawlable audit is structurally unsatisfiable
+          // in CI (never an actual site issue — unprotected production passes it at
+          // 100%). Since Lighthouse 12, its SEO weight went from 1 to 93/23 (~4), which
+          // would cap the score at ~69% regardless of everything else. We skip it here
+          // to keep the 90% threshold meaningful across all other SEO audits, rather
+          // than lowering the threshold itself.
           const CI_SKIPPED_AUDITS = ['is-crawlable'];
 
           // Device configuration - Mobile moins strict pour portfolio
@@ -1305,9 +1305,9 @@ jobs:
                   }
                 }
 
-                // Catégorie agentic-browsing (llms-txt, WebMCP, arbre d'accessibilité
-                // agent) : nouvelle en Lighthouse 13, explicitement expérimentale et
-                // sujette à changement — loggée en informatif, sans seuil bloquant.
+                // agentic-browsing category (llms-txt, WebMCP, agent accessibility
+                // tree): new in Lighthouse 13, explicitly experimental and subject
+                // to change — logged informationally, no blocking threshold.
                 const agentic = scores['agentic-browsing'];
                 if (agentic) {
                   const agenticDisplay = agentic.score === null
