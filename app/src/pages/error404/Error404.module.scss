@@ -1,5 +1,4 @@
 /** @format */
-@use "@styles/abstracts/variables" as var;
 
 .error404 {
   display: flex;
@@ -9,13 +8,15 @@
   min-height: calc(100vh - 10rem);
   padding: 2rem;
   gap: 2rem;
-  background-color: var.$light_404_bg;
-  color: var.$light_404_text;
+  background-color: var(--bg-base);
+  color: var(--fg-base);
 
   &__title {
     font-weight: 700;
     font-size: clamp(5rem, 25vmin, 18rem);
-    color: var.$color-accent;
+    // --accent itself fails 4.5:1 as text on --bg-base (3.59:1 light,
+    // 4.07:1 dark) — --accent-strong holds 7.34:1 / 13.40:1 instead.
+    color: var(--accent-strong);
     margin: 0;
     overflow-wrap: break-word;
     word-break: break-all;
@@ -25,24 +26,26 @@
 
   &__text {
     font-size: clamp(1.2rem, 4vmin, 2rem);
-    color: var.$light_404_text;
+    color: var(--fg-base);
     margin: 2rem 0;
     font-weight: bold;
   }
 
   &__link {
     font-weight: bold;
-    background-color: var.$light_404_button-bg;
-    border: 2px solid var.$light_404_button-border;
+    background-color: var(--bg-base);
+    border: 2px solid var(--accent-strong);
     border-radius: 4px;
-    color: var.$light_404_button-text;
+    color: var(--accent-strong);
     text-decoration: none;
     padding: 8px 16px;
 
+    // See signin.module.scss's __button for why hover text is
+    // --fg-on-accent-hover rather than white against --accent.
     &:hover {
-      background-color: var.$light_404_button-bg-hover;
-      border-color: var.$light_404_button-border-hover;
-      color: var.$light_404_button-text-hover;
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: var(--fg-on-accent-hover);
     }
   }
 }

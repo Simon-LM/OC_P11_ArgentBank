@@ -1,5 +1,10 @@
 /** @format */
 
+@use "../a11y/scss/theme-setup";
+@use "../a11y/scss/accessibility-features";
+@use "../a11y/scss/accessibility-trigger";
+@use "../a11y/scss/accessibility-menu";
+
 @use "normalize.css";
 @use "abstracts/variables.scss" as *;
 @use "abstracts/placeholders.scss" as *;

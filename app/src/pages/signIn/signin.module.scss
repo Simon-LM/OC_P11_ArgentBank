@@ -1,7 +1,6 @@
 /** @format */
 
 @use "@styles/abstracts/functions" as func;
-@use "@styles/abstracts/variables" as var;
 @use "@styles/abstracts/mixins" as mix;
 @use "@styles/abstracts/placeholders" as *;
 
@@ -13,24 +12,26 @@
     // min-height: calc(100vh - 20rem);
     min-height: calc(100vh - 12rem);
     padding: 2rem 0;
-    background: var.$light_signin_page-bg;
+    background: var(--bg-base);
   }
 
   &-form {
     box-sizing: border-box;
-    background: var.$light_signin_card-bg;
-    color: var.$light_signin_card-text;
+    background: var(--bg-base);
+    color: var(--fg-base);
     width: min(func.rem(350), 90%);
     margin: min(2rem, 5vh) auto;
     padding: min(5vw, 2rem);
-    box-shadow: var.$light_signin_card-shadow;
+    box-shadow:
+      0 2px 10px rgba(0, 0, 0, 0.1),
+      0 4px 20px rgba(0, 0, 0, 0.05);
 
     &__icon {
       display: flex;
       justify-content: center;
       margin: 0 auto;
       font-size: clamp(4rem, 10vw, 5rem);
-      color: var.$signin-icon-color;
+      color: var(--fg-base);
     }
     &__title {
       display: flex;
@@ -50,7 +51,7 @@
       align-items: center;
       text-align: left;
       font-size: 0.9rem;
-      color: var.$color-gray-800;
+      color: var(--fg-base);
 
       svg {
         margin-right: 1vw;
@@ -79,7 +80,7 @@
 
       label {
         font-weight: bold;
-        color: var.$light_signin_label-text;
+        color: var(--fg-base);
         @extend %text-wrap;
       }
 
@@ -87,9 +88,9 @@
         min-height: min(44px, 3rem);
         padding: func.rem(5);
         font-size: 1.2rem;
-        background-color: var.$light_signin_input-bg;
-        border: 1px solid var.$light_signin_input-border;
-        color: var.$light_signin_input-text;
+        background-color: var(--bg-base);
+        border: 1px solid var(--border-subtle);
+        color: var(--fg-base);
         width: 100%;
         box-sizing: border-box;
       }
@@ -111,16 +112,16 @@
       border: none;
       padding: clamp(1px, 0.25vw, 0.25rem);
       font-size: clamp(0.8rem, calc(0.75rem + 0.5vw), 1rem);
-      color: var.$signin-icon-color;
+      color: var(--fg-base);
 
       &:hover,
       &:focus {
-        color: var.$secondary-color;
+        color: var(--link-hover);
       }
     }
 
     &__error {
-      color: var.$color-error;
+      color: var(--danger);
       font-size: 0.9rem;
       margin-top: 0.5rem;
       @include mix.text-wrap;
@@ -140,18 +141,25 @@
 
       font-weight: bold;
       margin-top: 2rem;
-      background-color: var.$light_button_bg;
-      border-color: var.$light_button_border;
-      color: var.$light_button_text;
+      background-color: var(--accent-strong);
+      border-color: var(--accent-strong);
+      color: var(--fg-on-accent-strong);
 
       transition:
         background-color 0.2s,
         border-color 0.2s,
+        color 0.2s,
         padding 0.3s;
 
+      // --accent doesn't shift between light/dark (stays a stable medium
+      // green), and black holds 5.62:1 against it in both themes — simpler
+      // and more reliable here than the engine's --fg-on-accent, which is
+      // paired for a shifting accent and fails at 2.96:1 in dark. See
+      // DARKMODE_PLUS_A11Y_INTEGRATION_PLAN.md "Verification results".
       &:hover {
-        background-color: var.$light_button_bg-hover;
-        border-color: var.$light_button_border-hover;
+        background-color: var(--accent);
+        border-color: var(--accent);
+        color: var(--fg-on-accent-hover);
       }
     }
   }

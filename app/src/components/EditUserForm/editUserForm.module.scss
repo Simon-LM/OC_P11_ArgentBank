@@ -1,7 +1,6 @@
 /** @format */
 
 @use "@styles/abstracts/functions" as func;
-@use "@styles/abstracts/variables" as var;
 @use "@styles/abstracts/mixins" as mix;
 @use "@styles/abstracts/placeholders" as *;
 
@@ -15,9 +14,11 @@
     margin-bottom: 2rem;
     max-width: min(30rem, 95vw);
     width: 100%;
-    background: var.$light_editUser-bg;
-    color: var.$light_editUser-text;
-    box-shadow: var.$light_editUser_card-shadow;
+    background: var(--bg-base);
+    color: var(--fg-base);
+    box-shadow:
+      0 2px 10px rgba(0, 0, 0, 0.1),
+      0 4px 20px rgba(0, 0, 0, 0.05);
   }
 
   &__form {
@@ -42,7 +43,7 @@
   &__disclaimer {
     margin: 0;
     font-size: 0.9rem;
-    color: var.$color-gray-800;
+    color: var(--fg-base);
     display: flex;
     align-items: center;
 
@@ -81,7 +82,7 @@
   &__help-text {
     display: block;
     font-size: 0.85rem;
-    color: var.$color-balanced;
+    color: var(--fg-muted);
     margin-top: 0.25rem;
   }
 
@@ -92,29 +93,29 @@
 
   &__input {
     padding: 0.5rem;
-    background-color: var.$light_editUser_input-bg;
-    border: 1px solid var.$light_editUser_input-border;
-    color: var.$light_editUser_input-text;
+    background-color: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    color: var(--fg-base);
     width: 100%;
     box-sizing: border-box;
 
     &--readonly {
-      background-color: var.$light_editUser_input-readonly-bg;
+      background-color: var(--bg-subtle);
 
       &:active,
       &:focus-visible {
-        color: var.$color-error !important;
+        color: var(--danger) !important;
       }
 
       &::selection {
         background: none;
-        color: var.$color-error;
+        color: var(--danger);
       }
     }
   }
 
   &__error {
-    color: var.$color-error;
+    color: var(--danger);
     font-size: 0.875rem;
     margin-top: 0.25rem;
     @include mix.text-wrap();
@@ -132,9 +133,9 @@
   &__button {
     flex: 1 1 6rem;
     max-width: 10rem;
-    border-color: var.$light-button-border;
-    background-color: var.$light-button-bg;
-    color: var.$light-button-text;
+    border-color: var(--accent-strong);
+    background-color: var(--accent-strong);
+    color: var(--fg-on-accent-strong);
     font-weight: bold;
     padding: func.rem(10);
     margin: 1rem 0;
@@ -144,20 +145,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: color 0.2s;
 
     &--submit {
       &:hover,
       &:focus-visible {
-        background-color: var.$light_button_bg-hover;
-        border-color: var.$light_button_border-hover;
+        background-color: var(--accent);
+        border-color: var(--accent);
+        color: var(--fg-on-accent-hover);
       }
     }
 
     &--cancel {
       &:hover,
       &:focus-visible {
-        background-color: var.$light_cancel-button_bg-hover;
-        border-color: var.$light_cancel-button_border-hover;
+        background-color: var(--danger);
+        border-color: var(--danger);
+        color: var(--fg-on-danger);
       }
     }
   }

@@ -1,7 +1,6 @@
 /** @format */
 
 @use "@styles/abstracts/placeholders" as *;
-@use "@styles/abstracts/variables" as var;
 @use "@styles/abstracts/mixins" as mix;
 
 .footer {
@@ -18,7 +17,7 @@
   contain-intrinsic-size: 0 clamp(5rem, 12vh, 7rem);
   contain: style;
 
-  background-color: var.$light_bg_footer;
+  background-color: var(--bg-base);
   box-shadow:
     0 -4px 10px -1px rgba(0, 0, 0, 0.2),
     0 -2px 6px -1px rgba(0, 0, 0, 0.15),
@@ -32,7 +31,7 @@
     margin: 0 auto;
     padding: 0.5rem 0;
     text-align: center;
-    color: var.$light_footer_text;
+    color: var(--fg-base);
     box-sizing: border-box;
     @include mix.text-wrap;
   }
@@ -42,20 +41,20 @@
     margin: 0 auto;
     padding: 0.25rem 0 0.5rem 0;
     text-align: center;
-    color: var.$light_footer_text;
+    color: var(--fg-base);
     box-sizing: border-box;
     @include mix.text-wrap;
   }
 
   &__link {
-    color: var.$light_footer_link;
+    color: var(--fg-base);
     text-decoration: none;
     transition: color 0.3s ease;
     font-weight: 600;
 
     &:hover,
     &:focus {
-      color: var.$light_footer_link-hover;
+      color: var(--link-hover);
     }
     &:focus-visible {
       outline-offset: -0.125rem;
@@ -73,7 +72,7 @@
 
       min-height: clamp(2.5rem, 6vh, 3.5rem);
 
-      border-top: 1px solid var.$light_footer_privacy_border;
+      border-top: 1px solid var(--border-subtle);
       // background-color: purple;
 
       transition: min-height 0.3s ease;
@@ -86,7 +85,7 @@
     &-toggle {
       background: none;
       border: none;
-      color: var.$light_footer_link;
+      color: var(--fg-base);
       font-size: 0.9rem;
       font-weight: 600;
 
@@ -100,7 +99,7 @@
 
       &:hover,
       &:focus {
-        color: var.$light_footer_link-hover;
+        color: var(--link-hover);
       }
 
       &:focus-visible {
@@ -151,7 +150,7 @@
       font-size: clamp(0.75rem, 2.5vw, 0.9rem);
 
       line-height: 1.5;
-      color: var.$light_footer_privacy_text;
+      color: var(--fg-base);
       margin: 0.5rem 0;
       font-weight: 600;
       margin-bottom: 0.75rem;
@@ -171,7 +170,7 @@
       font-size: clamp(0.75rem, 2.5vw, 0.85rem);
 
       line-height: 1.5;
-      color: var.$light_footer_privacy_text;
+      color: var(--fg-base);
       margin: 0.25rem 0;
       @include mix.text-wrap;
     }
@@ -190,7 +189,7 @@
 
       &-link {
         display: inline-block;
-        color: var.$light_footer_link;
+        color: var(--fg-base);
         text-decoration: none;
         transition: color 0.3s ease;
 
@@ -206,7 +205,7 @@
 
         &:hover,
         &:focus {
-          color: var.$light_footer_link-hover;
+          color: var(--link-hover);
         }
 
         &:focus-visible {

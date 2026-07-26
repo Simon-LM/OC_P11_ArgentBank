@@ -12,20 +12,24 @@ vi.mock("react-intersection-observer", () => ({
   }),
 }));
 
-// Global mock for window.matchMedia
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  value: (query: string) => ({
-    matches: false, // Default mock value
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // Mock addListener
-    removeListener: vi.fn(), // Mock removeListener
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  }),
-});
+// Global mock for window.matchMedia — guarded because some suites (e.g. the
+// darkmode-plus-a11y contrast tests, which compile Sass at test time) run
+// under the "node" environment, where window doesn't exist.
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: (query: string) => ({
+      matches: false, // Default mock value
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // Mock addListener
+      removeListener: vi.fn(), // Mock removeListener
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }),
+  });
+}
 
 // // eslint-disable-next-line no-var
 // declare global {

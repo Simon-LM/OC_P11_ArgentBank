@@ -1,15 +1,32 @@
 /** @format */
 
-import { defineConfig, type PluginOption } from "vite";
+import { defineConfig, type Plugin, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import autoAlias from "vite-plugin-auto-alias";
 // import viteSassDts from "vite-plugin-sass-dts"; // Désactivé pour éviter la génération CSS automatique
 import { visualizer } from "rollup-plugin-visualizer";
+import { themeInitScript, THEMES } from "darkmode-plus-a11y/react";
+
+// Anti-FOUC: sets [data-theme] on <html> before first paint. Reads the
+// script straight from the installed package version (not hand-copied into
+// index.html) so it never goes stale on a future THEMES change.
+function darkmodeAntiFouc(): Plugin {
+  return {
+    name: "darkmode-plus-a11y-anti-fouc",
+    transformIndexHtml(html) {
+      return html.replace(
+        "<head>",
+        `<head>\n    <script>${themeInitScript(THEMES)}</script>`,
+      );
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    darkmodeAntiFouc(),
     autoAlias({
       // "@": "src", // Alias pour le dossier src
       // "@components": "src/components", // Alias pour le dossier components
