@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Billet arrière 2 -->
+  <path d="M 24 24 H 84 V 56 H 79 V 29 H 24 Z" fill="#000000"/>
+  
+  <!-- Billet arrière 1 -->
+  <path d="M 20 33 H 78 V 65 H 73 V 38 H 20 Z" fill="#000000"/>
+  
+  <!-- Billet principal avant -->
+  <rect x="16" y="42" width="56" height="32" fill="#000000"/>
+  <rect x="20" y="46" width="48" height="24" fill="#ffffff"/>
+  <rect x="22" y="48" width="44" height="20" fill="#000000"/>
+  
+  <!-- Cercle central et symbole $ -->
+  <circle cx="44" cy="58" r="11" fill="#ffffff"/>
+  <text x="44" y="65" font-family="Arial, sans-serif" font-weight="bold" font-size="19" fill="#000000" text-anchor="middle">$</text>
+</svg>

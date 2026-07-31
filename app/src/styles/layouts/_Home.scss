@@ -210,32 +210,21 @@
   border-radius: 50%;
   padding: clamp(0.5rem, 2vw, 1rem);
 
-  &__img {
+  // Inline SVG (see components/Feature/FeatureIcon.tsx). Every shape in it
+  // paints with currentColor, so this single declaration themes the whole
+  // icon and follows --fg-base through dark, high-contrast, CVD and
+  // anti-glare alike — the ring above already followed --accent. The
+  // former white areas are masked out rather than filled, so the theme's
+  // own background shows through them.
+  //
+  // --fg-base is the site's body text color, which the theme generator
+  // guarantees against --bg-base: the icons keep the near-black-on-light
+  // reading of the PNGs they replace, and flip with the theme instead of
+  // staying an opaque black-on-white disc.
+  &__svg {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    border-radius: 50%;
     display: block;
-    position: absolute;
-    inset: 0;
-    padding: clamp(0.5rem, 2vw, 1rem);
-    box-sizing: border-box;
-  }
-
-  &__description {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    font-size: clamp(0.5rem, 3vw, 0.75rem);
-    padding: clamp(0.15rem, 5%, 0.75rem);
-    color: var(--fg-muted);
-    background: none;
-    pointer-events: none;
-    margin: 0;
-    @include mix.text-wrap;
+    color: var(--fg-base);
   }
 }

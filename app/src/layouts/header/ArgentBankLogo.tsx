@@ -17,13 +17,15 @@ import React from "react";
 // inside the same 200x40 header slot. Verified against a real screenshot
 // diff (headless Chrome, both builds, same viewport): the untightened
 // version measured 171x17px vs. the old raster's 186x21px.
+//
+// RGAA 1.2 [A] — decorative image. For an <svg> the criterion asks for
+// aria-hidden="true" and for *none* of aria-label / aria-labelledby /
+// aria-describedby / role="img" / title to be present, so role="img" is
+// deliberately absent here (it would contradict aria-hidden). The link
+// wrapping this logo carries its own aria-label ("Go to home page"), so
+// nothing is lost by hiding the wordmark from assistive technologies.
 const ArgentBankLogo: React.FC = () => (
-  <svg
-    className="header__logo-image"
-    viewBox="0 5 450 90"
-    role="img"
-    aria-hidden="true"
-  >
+  <svg className="header__logo-image" viewBox="0 5 450 90" aria-hidden="true">
     <text x="10" y="72" className="header__logo-wordmark">
       <tspan fill="var(--accent)">ARGENT</tspan>
       <tspan fill="var(--accent-ink)">BANK</tspan>
