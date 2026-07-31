@@ -7,12 +7,23 @@ permissions:
   pull-requests: write
   issues: write
 
+# Same deduplication as ci-cd.yml: push on "**" plus pull_request meant every
+# push to a branch with an open PR fired this workflow twice. Branch work
+# reaches CI through its PR; pushes straight to main and develop still run on
+# their own.
 on:
   push:
-    branches: ["**"]
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
+
+# Supersede a still-running analysis when new commits land on the same PR.
+# Runs on main/develop are left to finish: they are the record of what the
+# branch actually measured.
+concurrency:
+  group: analysis-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 defaults:
   run:
