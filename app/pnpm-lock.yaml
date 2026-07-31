@@ -23,8 +23,8 @@ importers:
         specifier: ^2.5.1
         version: 2.5.1
       darkmode-plus-a11y:
-        specifier: ^0.6.1
-        version: 0.6.1(react@19.2.7)
+        specifier: ^0.7.0
+        version: 0.7.0(react@19.2.7)
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -4441,10 +4441,10 @@ packages:
     engines: { node: ^20.1.0 || ^22.0.0 || >=24.0.0 }
     hasBin: true
 
-  darkmode-plus-a11y@0.6.1:
+  darkmode-plus-a11y@0.7.0:
     resolution:
       {
-        integrity: sha512-VSXxVG4VerQYvExEyHkzRPqD5evA7OvkxKDdrfz9HmLfJqugPXEZDzJswoe9lKopmdRoRneqJmxkTcCSlaA4Pw==,
+        integrity: sha512-X0Otc/t4nSRVSmcW+nEacoiwBJaQWz7E/j+C4oMO6pTrVhHrrmCBHvt7fCvUgHQowIUneiEEGPU+GlUSyk9GkQ==,
       }
     hasBin: true
     peerDependencies:
@@ -12235,7 +12235,7 @@ snapshots:
       untildify: 4.0.0
       yauzl: 3.4.0
 
-  darkmode-plus-a11y@0.6.1(react@19.2.7):
+  darkmode-plus-a11y@0.7.0(react@19.2.7):
     dependencies:
       culori: 4.0.2
       postcss: 8.5.19

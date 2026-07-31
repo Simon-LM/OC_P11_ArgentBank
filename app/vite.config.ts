@@ -6,17 +6,24 @@ import autoAlias from "vite-plugin-auto-alias";
 // import viteSassDts from "vite-plugin-sass-dts"; // Désactivé pour éviter la génération CSS automatique
 import { visualizer } from "rollup-plugin-visualizer";
 import { themeInitScript, THEMES } from "darkmode-plus-a11y/react";
+import { A11Y_INIT_OPTIONS } from "./src/a11y/react/accessibilityPreferences";
 
 // Anti-FOUC: sets [data-theme] on <html> before first paint. Reads the
 // script straight from the installed package version (not hand-copied into
 // index.html) so it never goes stale on a future THEMES change.
+//
+// The second argument restores the *typography* preferences before that
+// same first paint — dyslexia mode, text size, chosen font. Restored after
+// hydration instead, they flash: someone reading at 200% gets a frame of
+// text they cannot read, on every single page load. The theme alone can
+// afford to arrive late; type cannot.
 function darkmodeAntiFouc(): Plugin {
   return {
     name: "darkmode-plus-a11y-anti-fouc",
     transformIndexHtml(html) {
       return html.replace(
         "<head>",
-        `<head>\n    <script>${themeInitScript(THEMES)}</script>`,
+        `<head>\n    <script>${themeInitScript(THEMES, A11Y_INIT_OPTIONS)}</script>`,
       );
     },
   };
