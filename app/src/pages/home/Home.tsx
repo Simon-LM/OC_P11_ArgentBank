@@ -29,18 +29,16 @@ const Home: React.FC = () => {
     <div tabIndex={-1}>
       <div className="hero" data-testid="hero">
         <div className="hero__image-container">
+          {/* No <link rel="preload"> in the <picture> below any more. It sat
+              where only <source> and <img> are allowed, and it could not do
+              its job anyway: React only renders it once the bundle has
+              booted, long after the preload scanner has moved on, so the
+              <picture> always won the race. It also cost a wasted download
+              on desktop — useMediaQuery starts at false, so the first render
+              preloaded bank-tree-640w.avif before the effect flipped it to
+              the 1440w file the page actually uses. */}
           {!heroImageError && (
             <picture className="hero__picture">
-              <link
-                rel="preload"
-                href={
-                  isDesktop ? "/img/bank-tree.avif" : "/img/bank-tree-640w.avif"
-                }
-                as="image"
-                type="image/avif"
-                fetchPriority="high"
-              />
-
               <source
                 media="(max-width: 640px)"
                 srcSet="/img/bank-tree-640w.avif"
@@ -69,8 +67,12 @@ const Home: React.FC = () => {
                 srcSet="/img/bank-tree-640w.jpg 640w, /img/bank-tree-1024w.jpg 1024w, /img/bank-tree.jpg 1440w"
                 sizes="(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1440px"
                 alt=""
-                // className="hero__image"
-                className={`hero__image ${heroImageLoaded ? "loaded" : ""}`}
+                // Class is static: gating this image's own opacity on the
+                // load event is what used to delay Home's LCP. See the
+                // .hero__image comment in _Home.scss. heroImageLoaded still
+                // drives the description overlay below, which is what it was
+                // for.
+                className="hero__image"
                 aria-hidden="true"
                 width="1440"
                 height="400"

@@ -1,13 +1,12 @@
 /** @format */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import Feature from "./Feature";
 
 describe("Feature Component", () => {
   const mockProps = {
     iconClass: "feature-icon--chat",
-    iconLabel: "Chat icon representing 24/7 customer service",
     title: "You are our #1 priority",
     description:
       "Need to talk to a representative? You can get in touch through our 24/7 chat or through a phone call in less than 5 minutes.",
@@ -21,7 +20,6 @@ describe("Feature Component", () => {
     render(<Feature {...mockProps} />);
     expect(screen.getByText(mockProps.title)).toBeInTheDocument();
     expect(screen.getByText(mockProps.description)).toBeInTheDocument();
-    expect(screen.getByText(mockProps.iconLabel)).toBeInTheDocument();
   });
 
   test("applies correct CSS classes", () => {
@@ -30,90 +28,90 @@ describe("Feature Component", () => {
     expect(iconDiv).toHaveClass("feature-icon", mockProps.iconClass);
   });
 
-  test("renders <picture> with AVIF, WebP, and PNG sources in correct order", () => {
-    render(<Feature {...mockProps} />);
-    const picture = document.querySelector("picture");
-    expect(picture).not.toBeNull();
-    if (picture) {
-      const sources = picture.querySelectorAll("source");
-      expect(sources[0]).toHaveAttribute("type", "image/avif");
-      expect(sources[1]).toHaveAttribute("type", "image/webp");
-      const img = picture.querySelector("img");
-      expect(img).toHaveAttribute("src", "/img/icon-chat_light-mode.png");
+  test("renders the icon as an inline SVG, not an <img>", () => {
+    const { container } = render(<Feature {...mockProps} />);
+    expect(container.querySelector("svg.feature-icon__svg")).not.toBeNull();
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("picture")).toBeNull();
+  });
+
+  // RGAA 1.2 [A] — a decorative <svg> must be hidden from assistive
+  // technologies with aria-hidden="true" and must carry none of the
+  // naming attributes, nor a <title>/<desc>. Anything here would give the
+  // icon an accessible name and duplicate the adjacent heading.
+  test.each(["chat", "money", "security"])(
+    "%s icon is decorative per RGAA 1.2",
+    (name) => {
+      const { container } = render(
+        <Feature {...mockProps} iconClass={`feature-icon--${name}`} />,
+      );
+      const svg = container.querySelector("svg.feature-icon__svg");
+
+      expect(svg).not.toBeNull();
+      expect(svg).toHaveAttribute("aria-hidden", "true");
+      for (const attr of [
+        "aria-label",
+        "aria-labelledby",
+        "aria-describedby",
+        "role",
+        "title",
+      ]) {
+        expect(svg).not.toHaveAttribute(attr);
+      }
+      expect(svg?.querySelector("title")).toBeNull();
+      expect(svg?.querySelector("desc")).toBeNull();
+    },
+  );
+
+  test("paints every shape with currentColor so the theme drives the icon", () => {
+    const { container } = render(<Feature {...mockProps} />);
+    const svg = container.querySelector("svg.feature-icon__svg");
+    expect(svg).toHaveAttribute("fill", "currentColor");
+  });
+
+  // Duplicate ids across two icons on the same page would be an HTML
+  // validity error (RGAA 8.2 [A]) and would make the second icon resolve
+  // its url(#...) mask against the first one's.
+  test("generates unique mask ids per instance", () => {
+    const { container } = render(
+      <>
+        <Feature {...mockProps} />
+        <Feature {...mockProps} />
+      </>,
+    );
+    const ids = Array.from(container.querySelectorAll("mask")).map((m) => m.id);
+
+    expect(ids.length).toBeGreaterThan(0);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) {
+      expect(id).toMatch(/^[a-zA-Z0-9-]+$/);
     }
   });
 
-  test("meets accessibility requirements", () => {
-    render(<Feature {...mockProps} />);
-    const img = document.querySelector(".feature-icon__img");
-    expect(img).toHaveAttribute("aria-hidden", "true");
-    // The icon label text should be present in the DOM
-    expect(screen.getByText(mockProps.iconLabel)).toBeInTheDocument();
-  });
-
-  test("handles image load event", () => {
-    render(<Feature {...mockProps} />);
-    const img = document.querySelector(
-      ".feature-icon__img",
-    ) as HTMLImageElement;
-    expect(img).toBeInTheDocument();
-
-    // Initially, image is not loaded, so description should be visible
-    const iconDescription = document.querySelector(
-      ".feature-icon__description",
-    );
-    expect(iconDescription).toHaveStyle({ opacity: "1", zIndex: "1" });
-
-    // Simulate image load
-    fireEvent.load(img);
-
-    // After load, description should be hidden
-    expect(iconDescription).toHaveStyle({ opacity: "0", zIndex: "-1" });
-  });
-
-  test("handles image error", () => {
-    render(<Feature {...mockProps} />);
-    const img = document.querySelector(
-      ".feature-icon__img",
-    ) as HTMLImageElement;
-    expect(img).toBeInTheDocument();
-
-    // Initially, image is not loaded, so description should be visible
-    const iconDescription = document.querySelector(
-      ".feature-icon__description",
-    );
-    expect(iconDescription).toHaveStyle({ opacity: "1", zIndex: "1" });
-
-    // Simulate image error
-    fireEvent.error(img);
-
-    // After error, description should remain visible
-    expect(iconDescription).toHaveStyle({ opacity: "1", zIndex: "1" });
-  });
-
   test("handles invalid iconClass", () => {
-    const invalidProps = {
-      iconClass: "",
-      iconLabel: "Default icon",
-      title: "Test title",
-      description: "Test description",
-    };
-
-    render(<Feature {...invalidProps} />);
-    const img = document.querySelector(".feature-icon__img");
-    expect(img).toHaveAttribute("src", "/img/icon-default_light-mode.png");
+    const { container } = render(
+      <Feature
+        iconClass=""
+        title="Test title"
+        description="Test description"
+      />,
+    );
+    expect(container.querySelector("svg.feature-icon__svg")).toBeNull();
+    expect(screen.getByText("Test title")).toBeInTheDocument();
   });
 
   test("handles non-string iconClass", () => {
-    const invalidProps = {
-      iconClass: null as unknown as string,
-      iconLabel: "Default icon",
-      title: "Test title",
-      description: "Test description",
-    };
-
-    render(<Feature {...invalidProps} />);
-    const img = document.querySelector(".feature-icon__img");
-    expect(img).toHaveAttribute("src", "/img/icon-default_light-mode.png");
+    const { container } = render(
+      <Feature
+        iconClass={null as unknown as string}
+        title="Test title"
+        description="Test description"
+      />,
+    );
+    expect(container.querySelector("svg.feature-icon__svg")).toBeNull();
+    expect(container.querySelector(".feature-icon")).toHaveClass(
+      "feature-icon",
+    );
+    expect(screen.getByText("Test title")).toBeInTheDocument();
   });
 });

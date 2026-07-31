@@ -58,26 +58,27 @@
     height: 100%;
   }
 
+  // No opacity:0 + .loaded fade-in here, on purpose. This image is Home's
+  // LCP element, and an element at opacity:0 is not paintable, so the LCP
+  // timestamp could not be awarded when the bytes arrived — it waited on
+  // the load event, a React state update, a re-render, and then a 0.3s
+  // transition. Measured on the CI-equivalent mobile profile, that showed
+  // up as 1733ms of "element render delay" inside a 3708ms LCP, and it is
+  // the variance-prone part: identical commits scored 94% and 99% forty
+  // seconds apart. Letting the browser paint the image as soon as it
+  // decodes removes the whole chain. Nothing flashes in its place — the
+  // .hero::before layer above already paints #efefef underneath.
   &__image {
     width: 100% !important;
     min-height: 100% !important;
     max-width: 100% !important;
     object-fit: cover !important;
     object-position: 0 func.rem(-50);
-    // transition: opacity 0.3s ease;
 
     transform: translateZ(0);
-    will-change: opacity;
 
     @media (min-width: 58rem) {
       object-position: 0% 33%;
-    }
-
-    opacity: 0;
-    transition: opacity 0.3s ease;
-
-    &.loaded {
-      opacity: 1;
     }
   }
 
@@ -210,32 +211,21 @@
   border-radius: 50%;
   padding: clamp(0.5rem, 2vw, 1rem);
 
-  &__img {
+  // Inline SVG (see components/Feature/FeatureIcon.tsx). Every shape in it
+  // paints with currentColor, so this single declaration themes the whole
+  // icon and follows --fg-base through dark, high-contrast, CVD and
+  // anti-glare alike — the ring above already followed --accent. The
+  // former white areas are masked out rather than filled, so the theme's
+  // own background shows through them.
+  //
+  // --fg-base is the site's body text color, which the theme generator
+  // guarantees against --bg-base: the icons keep the near-black-on-light
+  // reading of the PNGs they replace, and flip with the theme instead of
+  // staying an opaque black-on-white disc.
+  &__svg {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    border-radius: 50%;
     display: block;
-    position: absolute;
-    inset: 0;
-    padding: clamp(0.5rem, 2vw, 1rem);
-    box-sizing: border-box;
-  }
-
-  &__description {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    font-size: clamp(0.5rem, 3vw, 0.75rem);
-    padding: clamp(0.15rem, 5%, 0.75rem);
-    color: var(--fg-muted);
-    background: none;
-    pointer-events: none;
-    margin: 0;
-    @include mix.text-wrap;
+    color: var(--fg-base);
   }
 }

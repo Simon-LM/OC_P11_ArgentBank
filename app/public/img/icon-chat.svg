@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Le masque qui crée la vraie transparence entre les deux bulles -->
+    <mask id="chat-cutout">
+      <!-- Tout le masque en blanc (visible) -->
+      <rect width="100" height="100" fill="#ffffff" />
+      
+      <!-- La contour de la bulle avant tracé en noir très épais pour PERCER la bulle arrière -->
+      <path d="M 20 20 H 66 C 72.6 20 78 25.4 78 32 V 54 C 78 60.6 72.6 66 66 66 H 38 L 28 76 L 31 66 H 20 C 13.4 66 8 60.6 8 54 V 32 C 8 25.4 13.4 20 20 20 Z" 
+            fill="#000000" 
+            stroke="#000000" 
+            stroke-width="7" 
+            stroke-linejoin="round" 
+            stroke-linecap="round" />
+    </mask>
+  </defs>
+
+  <!-- 1. Bulle arrière (découpée grâce au masque) -->
+  <path mask="url(#chat-cutout)" 
+        d="M 50 38 H 76 C 81.5 38 86 42.5 86 48 V 66 C 86 71.5 81.5 76 76 76 H 70 L 75 88 L 63 76 H 50 C 44.5 76 40 71.5 40 66 V 64" 
+        fill="#000000" />
+
+  <!-- 2. Bulle principale au premier plan -->
+  <path d="M 20 20 H 66 C 72.6 20 78 25.4 78 32 V 54 C 78 60.6 72.6 66 66 66 H 38 L 28 76 L 31 66 H 20 C 13.4 66 8 60.6 8 54 V 32 C 8 25.4 13.4 20 20 20 Z" 
+        fill="#000000" />
+
+  <!-- 3. Les 3 points de discussion (transparents / découpés sur la bulle principale) -->
+  <circle cx="31" cy="43" r="3.8" fill="#ffffff" />
+  <circle cx="43" cy="43" r="3.8" fill="#ffffff" />
+  <circle cx="55" cy="43" r="3.8" fill="#ffffff" />
+</svg>
