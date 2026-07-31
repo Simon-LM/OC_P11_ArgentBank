@@ -86,6 +86,12 @@ export default defineConfig({
           if (id.includes("/src/components/Features")) {
             return "features";
           }
+          // Deliberately NO manual chunk for react-select / Emotion. Naming
+          // a chunk here promotes it into the entry's modulepreload graph,
+          // so index.html gets a <link rel="modulepreload"> for it and the
+          // browser downloads it eagerly — which defeats the point of
+          // importing AccessibilityMenu lazily. Left unnamed, Rollup emits
+          // it as a true dynamic chunk, fetched only when the menu opens.
         },
       },
     },

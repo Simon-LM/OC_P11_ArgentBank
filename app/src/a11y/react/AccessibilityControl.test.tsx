@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, test, expect, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AccessibilityControl from "./AccessibilityControl";
 
@@ -48,6 +48,47 @@ describe("AccessibilityControl", () => {
 
     expect(button).toHaveAttribute("aria-expanded", "true");
     expect(document.querySelector(".accessibility-panel")).toHaveClass("open");
+  });
+
+  // The menu is lazily imported and mounted only from the first open, to
+  // keep react-select and Emotion (~31KB gzipped) out of the initial
+  // download. These two tests are what makes that safe to keep: the first
+  // proves the deferred chunk actually resolves and renders, the second
+  // proves the mount latches, so preferences are not remounted — and reset
+  // — every time the panel is closed and reopened.
+  test("the menu is absent until the panel is first opened", () => {
+    render(<AccessibilityControl language="en" />);
+    expect(document.querySelector(".accessibility-menu")).toBeNull();
+  });
+
+  test("opening the panel loads and renders the deferred menu", async () => {
+    const user = userEvent.setup();
+    render(<AccessibilityControl language="en" />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Accessibility options" }),
+    );
+
+    await waitFor(() =>
+      expect(document.querySelector(".accessibility-menu")).not.toBeNull(),
+    );
+  });
+
+  test("the menu stays mounted once the panel has been closed again", async () => {
+    const user = userEvent.setup();
+    render(<AccessibilityControl language="en" />);
+    const button = screen.getByRole("button", {
+      name: "Accessibility options",
+    });
+
+    await user.click(button);
+    await waitFor(() =>
+      expect(document.querySelector(".accessibility-menu")).not.toBeNull(),
+    );
+    await user.click(button);
+
+    expect(button).toHaveAttribute("aria-expanded", "false");
+    expect(document.querySelector(".accessibility-menu")).not.toBeNull();
   });
 
   test("clicking the trigger again closes the panel", async () => {

@@ -10,8 +10,28 @@
 // floating button overlaps content at high zoom (an accessibility defect).
 // Render it wherever you want: <AccessibilityControl … />.
 
-import { useState, useRef, useEffect, type ReactNode } from "react";
-import AccessibilityMenu from "./AccessibilityMenu";
+import {
+  useState,
+  useRef,
+  useEffect,
+  lazy,
+  Suspense,
+  type ReactNode,
+} from "react";
+
+// Lazy, and mounted only from the first open onward. The menu pulls in
+// react-select and Emotion, measured at 31KB gzipped — over a third of the
+// main bundle — for a panel most visitors never open. Same reasoning that
+// took the menu's webfonts off every page load in 0.7.0: `display: none`
+// stops the browser fetching fonts for a subtree, but a static import is
+// resolved at build time and ships regardless. Only a dynamic import moves
+// those bytes out of the initial download.
+//
+// `hasOpened` latches instead of tracking `menuOpen`, so the menu unmounts
+// never — it mounts once, on first open, and stays. Preferences therefore
+// keep their state across open/close exactly as before, and the chunk is
+// fetched once.
+const AccessibilityMenu = lazy(() => import("./AccessibilityMenu"));
 
 // Default trigger icon — the package's own pictogram (half-dark/half-light
 // eye + adjustment gauge: visual contrast settings), inlined so the
@@ -78,6 +98,8 @@ export default function AccessibilityControl({
   complianceUrl,
 }: AccessibilityControlProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  // Latches on the first open and never resets — see the lazy import above.
+  const [hasOpened, setHasOpened] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -119,7 +141,10 @@ export default function AccessibilityControl({
     >
       <button
         className="accessibility-control__button"
-        onClick={() => setMenuOpen((open) => !open)}
+        onClick={() => {
+          setHasOpened(true);
+          setMenuOpen((open) => !open);
+        }}
         aria-expanded={menuOpen}
         aria-label={accessibilityText}
         data-tooltip={accessibilityText}
@@ -131,11 +156,21 @@ export default function AccessibilityControl({
       </button>
 
       <div className={`accessibility-panel ${menuOpen ? "open" : ""}`}>
-        <AccessibilityMenu
-          language={language}
-          onClose={handleCloseMenu}
-          complianceUrl={complianceUrl}
-        />
+        {hasOpened && (
+          <Suspense
+            fallback={
+              <p className="accessibility-panel__loading" role="status">
+                {language === "fr" ? "Chargement…" : "Loading…"}
+              </p>
+            }
+          >
+            <AccessibilityMenu
+              language={language}
+              onClose={handleCloseMenu}
+              complianceUrl={complianceUrl}
+            />
+          </Suspense>
+        )}
       </div>
     </div>
   );
