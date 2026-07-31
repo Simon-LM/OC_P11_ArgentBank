@@ -202,5 +202,75 @@ match; confirmed `init --diff` tracks it correctly again.
 
 ---
 
-All 13 items above are now resolved (0.2.0 through 0.4.0) — nothing open
+All 16 items above are now resolved (0.2.0 through 0.7.0) — nothing open
 at the moment. New entries go below as they turn up.
+
+## 14. ~~Dyslexia mode is lost on page reload~~ — **fixed in 0.7.0**
+
+Unlike everything above, this is a bug rather than a docs gap, and it
+affects the users the feature exists for.
+
+- **Cause:** `templates/react/AccessibilityMenu.tsx:76` initialises
+  `isDyslexicMode` to `false` with no read from storage, and
+  `toggleDyslexicMode()` (`:101-111`) writes the `dyslexia-optimized`
+  class to `<html>` but never to `localStorage`.
+  `react/themeInitScript.ts` restores `theme` only.
+- **Consequence:** a user who enables dyslexia mode loses it on every hard
+  reload and in every new tab. Client-side navigation inside an SPA keeps
+  it, which is probably why it went unnoticed.
+- **Fix:** persist on toggle, lazy-init from the stored value, restore the
+  class in `themeInitScript` before first paint, and clear the key in
+  `resetAllAccessibilitySettings()` (`:293-296`).
+
+The two preferences declared immediately after it in the same file,
+`reduceMotion` (`:79`) and `hcVariant` (`:93`), already do exactly this.
+The pattern is present, it's just missing on this one.
+
+## 15. ~~The menu is always in the DOM, so its fonts load on every page~~ — **fixed in 0.7.0**
+
+- **Cause:** `templates/react/AccessibilityControl.tsx:130-136` renders
+  `<AccessibilityMenu>` unconditionally; only the wrapper gets the `open`
+  class. `templates/scss/accessibility-trigger.scss:89-91` hides the closed
+  panel with `opacity: 0; visibility: hidden`, which — unlike
+  `display: none` — still lays the subtree out, so the browser downloads
+  every font its styling references.
+- **Consequence:** every page load pays for fonts belonging to a panel
+  nobody has opened. Measured on ArgentBank production (Chromium
+  Lighthouse, default mobile profile, menu never opened): Atkinson
+  Hyperlegible 77.14 KiB at 1321 ms, plus our italic body face
+  (Nunito Italic) 276.38 KiB at 1314 ms — the two longest legs of a
+  1321 ms critical path, on a page whose LCP is 3.2 s.
+- **Fix:** `{menuOpen && <AccessibilityMenu … />}`. The wrapper keeps its
+  transition; only the contents become conditional.
+
+Guaranteed cost to any consumer: Atkinson at 78 444 bytes, because
+`templates/scss/accessibility-menu.scss:455` and `:480` style the
+high-contrast buttons with it; plus one italic face of the host's body
+font, because `:179` sets `font-style: italic` on `__help-description`.
+
+Two notes for whoever picks this up:
+
+- It depends on #14 being fixed first. With `isDyslexicMode` unpersisted,
+  unmounting the menu makes the effect at `:115-121` re-run with `false`
+  on the next open and strip the class.
+- **The typography is not the bug.** The italic carries real hierarchy in
+  the panel, and Atkinson puts the most legible face exactly where
+  low-vision users need it. Both are correct. They cost bytes only because
+  of the mounting behaviour; once the subtree is conditional they are free.
+
+## 16. ~~The eager font cost isn't documented anywhere~~ — **fixed in 0.7.0**
+
+- **Cause:** neither `README.md` nor `AGENTS.md` states that mounting
+  `AccessibilityControl` adds font downloads to the host page's critical
+  path, or which bundled faces load eagerly versus on demand.
+- **Consequence:** an integrator can't size the cost without measuring it
+  themselves, which is how we found it.
+- **Fix:** a short "Performance" section listing which faces load eagerly
+  and their byte cost, noting the extra italic face pulled from the host's
+  own body font, and giving the recommended integration for a
+  performance-budgeted host.
+
+Credit where it's due: the on-demand mechanism already works for the fonts
+that are the actual feature. OpenDyslexic, Andika and Lexend stay out of
+the network trace until selected. The eager cost is confined to Atkinson,
+and only because the menu's own chrome uses it.

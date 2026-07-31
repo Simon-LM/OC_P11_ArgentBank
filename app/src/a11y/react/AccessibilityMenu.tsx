@@ -27,7 +27,12 @@ import {
   type ThemeOption,
 } from "darkmode-plus-a11y/react";
 import { applyReduceMotion } from "darkmode-plus-a11y/react/appliers";
-import { useFontSize, useAccessibilityFont } from "./accessibilityPreferences";
+import {
+  useFontSize,
+  useAccessibilityFont,
+  A11Y_DYSLEXIA_KEY,
+  A11Y_DYSLEXIA_CLASS,
+} from "./accessibilityPreferences";
 
 // false on the server, true after hydration — without violating
 // react-hooks/set-state-in-effect.
@@ -74,7 +79,14 @@ export default function AccessibilityMenu({
   const { theme, setTheme } = useTheme();
   const [fontSize, setFontSize] = useFontSize();
   const [fontType, setFontType] = useAccessibilityFont();
-  const [isDyslexicMode, setIsDyslexicMode] = useState(false);
+  // isDyslexicMode: lazy init from localStorage, same as reduceMotion and
+  // hcVariant below. Without it the mode is lost on every reload — the one
+  // setting a user had to switch back on at each visit.
+  const [isDyslexicMode, setIsDyslexicMode] = useState<boolean>(() => {
+    /* v8 ignore next -- SSR guard, window always exists in a browser/jsdom test */
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(A11Y_DYSLEXIA_KEY) === "true";
+  });
   // reduceMotion: lazy init (localStorage / prefers-reduced-motion)
   const [reduceMotion, setReduceMotion] = useState<boolean>(() => {
     /* v8 ignore next -- SSR guard, window always exists in a browser/jsdom test */
@@ -105,18 +117,19 @@ export default function AccessibilityMenu({
   const toggleDyslexicMode = () => {
     const newMode = !isDyslexicMode;
     setIsDyslexicMode(newMode);
+    localStorage.setItem(A11Y_DYSLEXIA_KEY, String(newMode));
     if (newMode) {
-      document.documentElement.classList.add("dyslexia-optimized");
+      document.documentElement.classList.add(A11Y_DYSLEXIA_CLASS);
       if (fontType !== "none") setFontType("none");
     } else {
-      document.documentElement.classList.remove("dyslexia-optimized");
+      document.documentElement.classList.remove(A11Y_DYSLEXIA_CLASS);
     }
   };
 
   useEffect(() => {
     if (mounted && typeof document !== "undefined") {
       document.documentElement.classList.toggle(
-        "dyslexia-optimized",
+        A11Y_DYSLEXIA_CLASS,
         isDyslexicMode,
       );
     }
@@ -296,8 +309,9 @@ export default function AccessibilityMenu({
     setFontType("none");
     setHcVariant("high-contrast");
     localStorage.removeItem("hc-variant");
+    localStorage.removeItem(A11Y_DYSLEXIA_KEY);
     if (isDyslexicMode) {
-      document.documentElement.classList.remove("dyslexia-optimized");
+      document.documentElement.classList.remove(A11Y_DYSLEXIA_CLASS);
       setIsDyslexicMode(false);
     }
   };
