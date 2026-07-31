@@ -7,6 +7,7 @@ import { RootState, AppDispatch } from "../../store/Store";
 import { logoutUser } from "../../store/slices/usersSlice";
 import { FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 import AccessibilityControl from "../../a11y/react/AccessibilityControl";
+import ArgentBankLogo from "./ArgentBankLogo";
 
 // Site has no i18n yet — single seam to update once it does, instead of a
 // literal repeated at every AccessibilityControl call site.
@@ -65,18 +66,7 @@ const Header: React.FC = () => {
           aria-current={isHomePage ? "page" : undefined}
           onClick={isHomePage ? (e) => e.preventDefault() : undefined}
         >
-          <picture>
-            <source srcSet="/img/argentBankLogo.avif" type="image/avif" />
-            <source srcSet="/img/argentBankLogo.webp" type="image/webp" />
-            <img
-              className="header__logo-image"
-              src="/img/argentBankLogo.png"
-              alt=""
-              width="200"
-              height="38"
-              loading="eager"
-            />
-          </picture>
+          <ArgentBankLogo />
         </a>
       </div>
 

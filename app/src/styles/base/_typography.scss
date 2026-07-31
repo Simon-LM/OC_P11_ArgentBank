@@ -40,3 +40,33 @@
     url("/fonts/Nunito-Italic-VariableFont_wght.woff2")
       format("woff2-variations");
 }
+
+// Header wordmark only (ArgentBankLogo inline SVG) — matches the original
+// raster logo's typeface. Named "Ubuntu Bold" rather than "Ubuntu" on
+// purpose: the site's own :root font stack already lists the bare
+// "Ubuntu" name as an OS-fallback (matches a Linux/GNOME user's system
+// font). Reusing that exact name here would make this single embedded
+// weight compete with the visitor's own system Ubuntu font for any
+// unrelated bold text that falls through to that stack entry — a
+// different, distinctly-named family avoids that collision entirely.
+//
+// Loads the *-logo-subset files (pyftsubset --text="ARGENTBK"), not the
+// full Ubuntu-Bold.ttf/.woff2 also sitting in public/fonts/ — those stay
+// as the untouched, complete weight (all glyphs) in case the font is
+// ever needed for something other than this exact logo text. The subset
+// cut ~100KB to ~1KB and closed a real, measured mobile Lighthouse
+// regression (a site-wide font hit every page's critical path: -3 to -4
+// points across Home/Sitemap/404/SignIn in a local before/after
+// comparison, enough to fail Home's already-razor-thin 95% mobile CI
+// threshold). Any character outside A/R/G/E/N/T/B/K will silently fail
+// to render in this family — re-subset from the full file (wider --text
+// or --unicodes) before reusing it anywhere else.
+@font-face {
+  font-display: swap;
+  font-family: "Ubuntu Bold";
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url("/fonts/Ubuntu-Bold-logo-subset.woff2") format("woff2"),
+    url("/fonts/Ubuntu-Bold-logo-subset.ttf") format("truetype");
+}
