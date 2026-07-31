@@ -72,8 +72,21 @@
       max-width: 100%;
       width: func.rem(200);
       height: auto;
-      aspect-ratio: 200 / 38;
-      object-fit: contain;
+      // Matches the inline SVG's own viewBox (0 5 450 90); the SVG's
+      // default preserveAspectRatio ("xMidYMid meet") does the same job
+      // object-fit: contain did for the old <img>.
+      aspect-ratio: 450 / 90;
+    }
+
+    // Wordmark text inside ArgentBankLogo.tsx (inline SVG) — sized/spaced
+    // to match the standalone public/img/ArgentBankLogo.svg backup.
+    &-wordmark {
+      font-family:
+        "Ubuntu Bold", "Segoe UI", "Noto Sans", "Helvetica Neue", Arial,
+        sans-serif;
+      font-weight: 700;
+      font-size: func.rem(62);
+      letter-spacing: func.rem(0.5);
     }
   }
 
