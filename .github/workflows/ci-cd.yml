@@ -11,12 +11,26 @@ permissions:
   pull-requests: write
   issues: write
 
+# push was on "**", which meant every push to a branch with an open PR fired
+# this workflow twice — once for push, once for pull_request. Two full runs of
+# a pipeline that ends in Lighthouse, so twice the CI minutes and twice the
+# chance a flaky run blocks the PR. That is not hypothetical: PR #36 went red
+# on home mobile at 94% in the pull_request run while the push run scored 99%
+# on the same commit, 40 seconds apart. Branch work reaches CI through its PR
+# now; pushes straight to main and develop still run on their own.
 on:
   push:
-    branches: ["**"]
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
+
+# Supersede a still-running pipeline when new commits land on the same PR —
+# the older run is testing code nobody will merge. Runs on main/develop are
+# left to finish: they are the record of what the branch actually scored.
+concurrency:
+  group: ci-cd-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 defaults:
   run:
