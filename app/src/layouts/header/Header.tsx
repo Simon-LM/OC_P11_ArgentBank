@@ -62,7 +62,14 @@ const Header: React.FC = () => {
         <a
           className="header__logo"
           href={isHomePage ? "/" : "./"}
-          aria-label="Go to home page"
+          // WCAG 2.5.3 "Label in Name" [A]: the wordmark inside this link
+          // renders the literal text "ARGENTBANK", so the accessible name
+          // must contain it — otherwise a speech-input user reads the logo
+          // and says "click ArgentBank" while the name is something else
+          // entirely, and nothing happens. Leading with the visible word
+          // (rather than just containing it somewhere) is the recommended
+          // form. Case may differ; the criterion compares case-insensitively.
+          aria-label="ArgentBank - Go to home page"
           aria-current={isHomePage ? "page" : undefined}
           onClick={isHomePage ? (e) => e.preventDefault() : undefined}
         >

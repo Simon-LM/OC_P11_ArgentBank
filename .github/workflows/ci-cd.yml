@@ -847,7 +847,13 @@ jobs:
       preview-url: ${{ needs.cypress-tests.outputs.preview-url }}
     strategy:
       matrix:
-        device: [desktop, mobile] # ← KEEP THE DEVICE MATRIX
+        # ← KEEP THE DEVICE MATRIX.
+        # `desktop` and `mobile` must keep these exact names: the job name plus
+        # the matrix value forms the status check name, and both are required
+        # checks on the protected `main` branch. Renaming one silently stops it
+        # reporting, which blocks every pull request — including the one doing
+        # the rename. Adding a value is safe; renaming one is not.
+        device: [desktop, mobile, mobile-slow-4g]
       fail-fast: false
 
     steps:
@@ -1060,6 +1066,27 @@ jobs:
               accessibility: 1.0,  // 100% (current scores: 100%)
               'best-practices': 1.0, // 96% → 100% (the "temporary" 96% no longer applies)
               seo: 1.0           // 90% → 100% (current scores: 100%, deterministic audits)
+            },
+            // Added 2026-08-01. The `mobile` profile above models the site's
+            // intended audience — someone reading their bank statement at home
+            // on a decent connection — and is deliberately gentler than the
+            // Lighthouse default. This second profile is the pessimistic case:
+            // the unmodified Lighthouse mobile throttling, which is what a
+            // recruiter running Lighthouse from their own browser will see.
+            //
+            // Performance starts at 85% while we learn what the profile
+            // actually yields; locally it sits at 89%. The intent is to raise
+            // it to 90% — the boundary where Lighthouse turns green — once a
+            // few runs confirm the real spread on GitHub runners.
+            //
+            // The other three stay at 100%: throttling changes how *fast* the
+            // page arrives, not whether the markup is accessible, secure or
+            // indexable. A drop there would be a genuine regression, not noise.
+            'mobile-slow-4g': {
+              performance: 0.85,
+              accessibility: 1.0,
+              'best-practices': 1.0,
+              seo: 1.0
             }
           };
 
@@ -1072,27 +1099,54 @@ jobs:
           // than lowering the threshold itself.
           const CI_SKIPPED_AUDITS = ['is-crawlable'];
 
-          // Device configuration - Mobile moins strict pour portfolio
+          // Both mobile profiles render on the exact same emulated screen and
+          // user agent, so the only thing that differs between them is the
+          // network and CPU throttling below. Any score gap between the two is
+          // therefore attributable to connection speed alone — nothing else
+          // moves.
+          const MOBILE_SCREEN_EMULATION = {
+            mobile: true,
+            width: 412,
+            height: 823,
+            deviceScaleFactor: 2.625,
+            disabled: false
+          };
+          const MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.101 Mobile Safari/537.36';
+
+          // Network and CPU conditions, one entry per mobile profile.
+          //
+          //   mobile          good connection at home on Wi-Fi — the audience
+          //                   this site is actually built for. Deliberately
+          //                   gentler than the Lighthouse default.
+          //   mobile-slow-4g  Lighthouse's own untouched mobile defaults, the
+          //                   preset Chrome DevTools labels "Slow 4G" on a
+          //                   mid-range phone. The pessimistic case, and what
+          //                   anyone auditing the site from their own browser
+          //                   will measure.
+          const MOBILE_THROTTLING = {
+            mobile: {
+              rttMs: 70,
+              throughputKbps: 3000,
+              cpuSlowdownMultiplier: 2
+            },
+            'mobile-slow-4g': {
+              rttMs: 150,
+              throughputKbps: 1638.4,
+              cpuSlowdownMultiplier: 4
+            }
+          };
+
+          // Device configuration
           const getDeviceConfig = (device) => {
-            if (device === 'mobile') {
+            if (MOBILE_THROTTLING[device]) {
               return {
                 extends: 'lighthouse:default',
                 settings: {
                   formFactor: 'mobile',
                   skipAudits: CI_SKIPPED_AUDITS,
-                  throttling: {
-                    rttMs: 70,                    // 150 → 70 (plus réaliste)
-                    throughputKbps: 3000,         // 1638 → 3000 (4G standard)
-                    cpuSlowdownMultiplier: 2      // 4 → 2 (moins sévère)
-                  },
-                  screenEmulation: {
-                    mobile: true,
-                    width: 412,
-                    height: 823,
-                    deviceScaleFactor: 2.625,
-                    disabled: false
-                  },
-                  emulatedUserAgent: 'Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.101 Mobile Safari/537.36'
+                  throttling: MOBILE_THROTTLING[device],
+                  screenEmulation: MOBILE_SCREEN_EMULATION,
+                  emulatedUserAgent: MOBILE_USER_AGENT
                 }
               };
             } else {

@@ -165,6 +165,35 @@ describe("Header", () => {
     expect(logoLink).toHaveAttribute("aria-current", "page");
   });
 
+  // WCAG 2.5.3 "Label in Name" [A]. The wordmark is an inline <svg> whose
+  // <text> renders the literal string "ARGENTBANK", which makes it the
+  // link's visible label — aria-hidden hides it from screen readers but
+  // does not hide it from someone driving the browser by voice. If the
+  // accessible name stopped containing that word, "click ArgentBank" would
+  // silently do nothing. Lighthouse reports this one at weight 0, so the
+  // accessibility score stays at 100% while the defect is live: this test
+  // is the only thing that actually catches it.
+  test("the logo link's accessible name contains its visible wordmark", () => {
+    mockLocation.pathname = "/";
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Header />
+        </BrowserRouter>
+      </Provider>,
+    );
+
+    const logoLink = screen.getByRole("link", { name: /go to home page/i });
+    const visibleText = logoLink.textContent?.replace(/\s+/g, "") ?? "";
+    const accessibleName = logoLink.getAttribute("aria-label") ?? "";
+
+    expect(visibleText).not.toBe("");
+    expect(accessibleName.replace(/\s+/g, "").toLowerCase()).toContain(
+      visibleText.toLowerCase(),
+    );
+  });
+
   test("prevents logo navigation when already on home page", () => {
     mockLocation.pathname = "/";
 

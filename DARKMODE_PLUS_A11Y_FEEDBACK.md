@@ -202,8 +202,8 @@ match; confirmed `init --diff` tracks it correctly again.
 
 ---
 
-All 16 items above are now resolved (0.2.0 through 0.7.0) — nothing open
-at the moment. New entries go below as they turn up.
+Items 1-16 are all resolved (0.2.0 through 0.7.0). Items 17 and 18 below
+are open against 0.7.0. New entries go below as they turn up.
 
 ## 14. ~~Dyslexia mode is lost on page reload~~ — **fixed in 0.7.0**
 
@@ -274,3 +274,143 @@ Credit where it's due: the on-demand mechanism already works for the fonts
 that are the actual feature. OpenDyslexic, Andika and Lexend stay out of
 the network trace until selected. The eager cost is confined to Atkinson,
 and only because the menu's own chrome uses it.
+
+## 17. react-select ships to every visitor on every page — **open, 0.7.0**
+
+Found while measuring the result of #15. Same shape, one layer down: #15
+was the menu's fonts, this is the menu's JavaScript. Sent as a second
+message to the maintainer — see
+`EMAIL_TO_DARKMODE_PLUS_A11Y_MAINTAINER_02.md`.
+
+- **Cause:** `templates/react/AccessibilityMenu.tsx:21` imports
+  react-select statically. A static import is resolved at build time, so
+  the library lands in the host's entry bundle whether or not the menu is
+  ever shown. The 0.7.0 `display: none` fix cannot help here: it stops
+  the browser resolving *fonts* for a hidden subtree, because font
+  matching happens at layout, but the JavaScript was already bundled.
+- **Consequence:** every visitor downloads react-select and Emotion on
+  every page. Measured on ArgentBank by isolating them into their own
+  chunk: **31 KB gzipped**, against an 87 KB entry bundle — over a third
+  of it, for a panel most visitors never open.
+- **Fix, two candidates.** A: import the menu lazily. B: drop
+  react-select for native `<select>`. We recommend B.
+
+**Fix A, measured.** Implemented locally to get real numbers. Lighthouse
+default mobile profile (150 ms RTT / 1638 kbps / CPU x4), same build,
+three runs each: 87/87/87 -> 89/89/89, LCP 3902 ms -> 3678 ms, FCP
+1952 ms -> 1653 ms, JS on page load 146 KB -> 114 KB.
+
+One trap for whoever implements A: naming react-select and Emotion in
+Vite's `manualChunks` looks like the obvious first step and silently
+defeats it. A named chunk is promoted into the entry's modulepreload
+graph, so `index.html` gains a `<link rel="modulepreload">` and the
+browser fetches it eagerly anyway. Left unnamed, Rollup emits a true
+dynamic chunk. The failure is invisible — the build output looks
+correctly split and the bytes still arrive.
+
+**Why B is worth more than the bytes.** The menu has exactly two selects,
+colour vision (`:546`) and accessibility font (`:669`). Their options are
+plain text, and the second one's three groups map onto `<optgroup>`.
+Nothing there needs a custom listbox.
+
+Meanwhile the package already had to repair react-select's keyboard
+handling: `handleSelectKeyDown` at `:368-384` reopens the listbox on
+Enter/Space and converts Tab into arrows, under a comment stating that
+this behaviour "isn't reliably triggerable through jsdom + user-event;
+covered by manual/E2E testing instead". So an accessibility component
+depends on a library whose keyboard behaviour needed patching and whose
+behaviour its own automated tests cannot reach.
+
+A native `<select>` is driven by the platform: keyboard and screen reader
+support come for free, and mobile opens the OS picker. B removes 31 KB,
+the keyboard workaround, and a testing blind spot at once — with no
+Suspense boundary, no loading state and no new string to translate. The
+cost is styling freedom on those two dropdowns, which is the maintainer's
+call.
+
+**Our position:** Fix A works on our side but is deliberately held
+unmerged. Patching a scaffolded template only helps us and leaves us
+re-merging our own divergence at every upgrade — the same reasoning that
+sent #14-16 upstream instead of fixing the fonts locally.
+
+**Outcome (2026-08-01):** neither A nor B. Simon and the maintainer settled
+on a third option — replace both selects with the same appearing-button
+pattern the high-contrast variants already use. That drops react-select at
+the source, so it beats Fix A (no lazy-loading machinery to maintain) and
+Fix B (no native-select styling compromise), while removing the keyboard
+workaround and the testing blind spot just the same. Our Fix A branch was
+closed unmerged (PR #39) — with react-select gone it would have deferred
+roughly 5 KB. Waiting on the release to adapt on our side.
+
+## 18. Sylexiad is recommended but effectively undiscoverable — **open, 0.7.0**
+
+Three separate defects, found together. Simon asked why we had never once
+proposed Sylexiad despite the package recommending it; the answer turned
+out to be that nothing an integrator reads ever mentions it.
+
+### 18a. The recommendation lives where nobody looks
+
+- **Cause:** "Sylexiad" appears **0 times** in `README.md`, **0 times** in
+  the package's `AGENTS.md`, and **0 times** in the `AGENTS.md` scaffolded
+  into the consumer's `src/a11y/`. The only prose describing it is in
+  `fonts/LICENSES/README.md` — a licensing appendix — plus three source
+  comments in `_a11y-fonts.scss` and `_dyslexia.scss`.
+- **Consequence:** the font the package calls "the **recommended** body
+  font for this package's dyslexia mode" is invisible to every integrator
+  who reads the documentation, and to every coding agent that reads
+  `AGENTS.md`. We integrated this package across a dozen PRs and never saw
+  it. Consumers silently ship the fallback (Andika) believing it is the
+  intended choice.
+- **Fix:** name it in `README.md` and in `AGENTS.md`, in the section about
+  dyslexia mode, with the one-line reason it is not bundled and a pointer
+  to the licensing appendix for detail.
+
+### 18b. The documented extension points do not exist
+
+`fonts/LICENSES/README.md:31-33` tells the consumer to wire Sylexiad
+"through the font module's extension point (`$dyslexia-fonts` on the SCSS
+side + `extraClasses` on the runtime side)".
+
+- **Cause:** neither identifier exists. `$dyslexia-fonts` appears nowhere
+  in `scss/`. `extraClasses` appears exactly once in the whole package —
+  in that same sentence. The real SCSS lever is the `dyslexia-typography`
+  mixin's `$body-font` parameter, correctly documented in
+  `_dyslexia.scss:23` (`@include dyslexia-typography($body-font:
+  "SylexiadSans")`), and there is no runtime lever at all.
+- **Consequence:** anyone following the only instructions the package
+  gives will search for two names that return nothing, and conclude the
+  feature is unfinished. The correct instruction already exists a few
+  files away, which makes the wrong one purely a cost.
+- **Fix:** replace that sentence with the `dyslexia-typography($body-font:)`
+  call, and say plainly that the consumer declares the `@font-face` rules
+  on their own side.
+
+### 18c. A font cannot be added to the menu without forking the template
+
+- **Cause:** `templates/react/AccessibilityMenu.tsx:67` hardcodes
+  `type FontType = "none" | "opendyslexic" | "atkinson" | "andika"`, and
+  the labels are hardcoded alongside it. There is no prop, no config
+  object, no registry.
+- **Consequence:** the two uses of Sylexiad are not equivalent. Making it
+  the **body font of dyslexia mode** works today through the SCSS mixin,
+  with no template change. Offering it as a **fourth entry in the font
+  dropdown** requires editing the scaffolded file — which means carrying a
+  local divergence and re-merging it at every `init --diff`, the exact
+  cost that sent items #14-16 upstream in the first place. The package
+  recommends a font it gives consumers no supported way to expose.
+- **Fix:** accept extra font entries as data — e.g. an optional prop on
+  `AccessibilityControl`/`AccessibilityMenu` taking `{ value, label,
+  className }`, appended to the built-in list. That also covers brand
+  fonts and Lexend, which the SCSS module already treats as
+  consumer-declared for the same reason.
+
+**Context on our side:** we investigated this to add Sylexiad to
+ArgentBank and stopped for an unrelated reason — the site deploys through
+Vercel's GitHub integration, so every asset must be committed, and
+Sylexiad's EULA (Feb. 2022) forbids public redistribution while permitting
+website use. Worth flagging in the docs as well: the EULA also forbids
+editing the original files, so unlike an OFL font it **must not be
+subset**, and it asks that Robert Hillier be credited. Consumers building
+on Vercel/Netlify git integrations will hit the same wall, so the
+licensing note would be more useful phrased as "how to ship it" than as
+"download it and wire it up".

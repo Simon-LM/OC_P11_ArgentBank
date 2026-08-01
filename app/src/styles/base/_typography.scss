@@ -18,15 +18,44 @@
   line-height: 1.5;
 }
 
+// Loads the *-latin-subset files, not the full Nunito-*VariableFont_wght
+// ones also sitting in public/fonts/ — same font, same shapes, same
+// 200-1000 weight axis, minus the alphabets this site never renders.
+// The full files ship 938 characters, of which 236 are Cyrillic and 164
+// Vietnamese; the subset keeps 539 (Latin + Latin Extended, so every
+// Western/Central European language including French, ready for the
+// planned i18n work).
+//
+// Regenerate with, from public/fonts/:
+//   pyftsubset Nunito-VariableFont_wght.woff2 \
+//     --unicodes="U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,\
+//       U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,\
+//       U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD,U+0100-02AF,\
+//       U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,\
+//       U+2C60-2C7F,U+A720-A7FF" \
+//     --layout-features='*' --flavor=woff2 \
+//     --output-file=Nunito-latin-subset.woff2
+//
+// Why it matters here specifically: Nunito is the :root family, so it sits
+// on every page's critical path. At 271KB it was larger than all the other
+// render-blocking resources put together (JS 145KB + hero image 72KB + CSS
+// 11KB), i.e. more than half of what a visitor must download before the
+// page can paint. Measured on the CI's mobile-slow-4g profile before this
+// change: LCP 3790ms, scoring 0.55 out of a 25% weight — that single metric
+// accounted for the entire gap between the observed 88% and 100%.
+//
+// A character outside Latin/Latin-Extended (Cyrillic, Vietnamese, Greek)
+// falls back to the next family in the :root stack for that character only.
+// The full files are kept alongside as the source for re-subsetting if the
+// site ever needs a wider range — same convention as Ubuntu-Bold below.
 @font-face {
   font-display: swap;
   font-family: "Nunito";
   font-style: normal;
   font-weight: 200 1000;
   src:
-    url("/fonts/Nunito-VariableFont_wght.woff2")
-      format("woff2 supports variations"),
-    url("/fonts/Nunito-VariableFont_wght.woff2") format("woff2-variations");
+    url("/fonts/Nunito-latin-subset.woff2") format("woff2 supports variations"),
+    url("/fonts/Nunito-latin-subset.woff2") format("woff2-variations");
 }
 
 @font-face {
@@ -35,10 +64,9 @@
   font-style: italic;
   font-weight: 200 1000;
   src:
-    url("/fonts/Nunito-Italic-VariableFont_wght.woff2")
+    url("/fonts/Nunito-Italic-latin-subset.woff2")
       format("woff2 supports variations"),
-    url("/fonts/Nunito-Italic-VariableFont_wght.woff2")
-      format("woff2-variations");
+    url("/fonts/Nunito-Italic-latin-subset.woff2") format("woff2-variations");
 }
 
 // Header wordmark only (ArgentBankLogo inline SVG) — matches the original

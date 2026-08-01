@@ -31,9 +31,14 @@
 			type="font/woff2"
 			crossorigin /> -->
 
+    <!-- Must point at the same file @font-face requests (see
+         src/styles/base/_typography.scss). A preload for a font the
+         stylesheet never asks for is worse than no preload at all: the
+         browser downloads it at highest priority, on the critical path,
+         and then still fetches the real one. -->
     <link
       rel="preload"
-      href="/fonts/Nunito-VariableFont_wght.woff2"
+      href="/fonts/Nunito-latin-subset.woff2"
       as="font"
       type="font/woff2"
       crossorigin
