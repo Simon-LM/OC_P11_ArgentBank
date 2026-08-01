@@ -202,8 +202,8 @@ match; confirmed `init --diff` tracks it correctly again.
 
 ---
 
-All 16 items above are now resolved (0.2.0 through 0.7.0) — nothing open
-at the moment. New entries go below as they turn up.
+Items 1-16 are all resolved (0.2.0 through 0.7.0). Item 17 below is open
+against 0.7.0. New entries go below as they turn up.
 
 ## 14. ~~Dyslexia mode is lost on page reload~~ — **fixed in 0.7.0**
 
@@ -274,3 +274,70 @@ Credit where it's due: the on-demand mechanism already works for the fonts
 that are the actual feature. OpenDyslexic, Andika and Lexend stay out of
 the network trace until selected. The eager cost is confined to Atkinson,
 and only because the menu's own chrome uses it.
+
+## 17. react-select ships to every visitor on every page — **open, 0.7.0**
+
+Found while measuring the result of #15. Same shape, one layer down: #15
+was the menu's fonts, this is the menu's JavaScript. Sent as a second
+message to the maintainer — see
+`EMAIL_TO_DARKMODE_PLUS_A11Y_MAINTAINER_02.md`.
+
+- **Cause:** `templates/react/AccessibilityMenu.tsx:21` imports
+  react-select statically. A static import is resolved at build time, so
+  the library lands in the host's entry bundle whether or not the menu is
+  ever shown. The 0.7.0 `display: none` fix cannot help here: it stops
+  the browser resolving *fonts* for a hidden subtree, because font
+  matching happens at layout, but the JavaScript was already bundled.
+- **Consequence:** every visitor downloads react-select and Emotion on
+  every page. Measured on ArgentBank by isolating them into their own
+  chunk: **31 KB gzipped**, against an 87 KB entry bundle — over a third
+  of it, for a panel most visitors never open.
+- **Fix, two candidates.** A: import the menu lazily. B: drop
+  react-select for native `<select>`. We recommend B.
+
+**Fix A, measured.** Implemented locally to get real numbers. Lighthouse
+default mobile profile (150 ms RTT / 1638 kbps / CPU x4), same build,
+three runs each: 87/87/87 -> 89/89/89, LCP 3902 ms -> 3678 ms, FCP
+1952 ms -> 1653 ms, JS on page load 146 KB -> 114 KB.
+
+One trap for whoever implements A: naming react-select and Emotion in
+Vite's `manualChunks` looks like the obvious first step and silently
+defeats it. A named chunk is promoted into the entry's modulepreload
+graph, so `index.html` gains a `<link rel="modulepreload">` and the
+browser fetches it eagerly anyway. Left unnamed, Rollup emits a true
+dynamic chunk. The failure is invisible — the build output looks
+correctly split and the bytes still arrive.
+
+**Why B is worth more than the bytes.** The menu has exactly two selects,
+colour vision (`:546`) and accessibility font (`:669`). Their options are
+plain text, and the second one's three groups map onto `<optgroup>`.
+Nothing there needs a custom listbox.
+
+Meanwhile the package already had to repair react-select's keyboard
+handling: `handleSelectKeyDown` at `:368-384` reopens the listbox on
+Enter/Space and converts Tab into arrows, under a comment stating that
+this behaviour "isn't reliably triggerable through jsdom + user-event;
+covered by manual/E2E testing instead". So an accessibility component
+depends on a library whose keyboard behaviour needed patching and whose
+behaviour its own automated tests cannot reach.
+
+A native `<select>` is driven by the platform: keyboard and screen reader
+support come for free, and mobile opens the OS picker. B removes 31 KB,
+the keyboard workaround, and a testing blind spot at once — with no
+Suspense boundary, no loading state and no new string to translate. The
+cost is styling freedom on those two dropdowns, which is the maintainer's
+call.
+
+**Our position:** Fix A works on our side but is deliberately held
+unmerged. Patching a scaffolded template only helps us and leaves us
+re-merging our own divergence at every upgrade — the same reasoning that
+sent #14-16 upstream instead of fixing the fonts locally.
+
+**Outcome (2026-08-01):** neither A nor B. Simon and the maintainer settled
+on a third option — replace both selects with the same appearing-button
+pattern the high-contrast variants already use. That drops react-select at
+the source, so it beats Fix A (no lazy-loading machinery to maintain) and
+Fix B (no native-select styling compromise), while removing the keyboard
+workaround and the testing blind spot just the same. Our Fix A branch was
+closed unmerged (PR #39) — with react-select gone it would have deferred
+roughly 5 KB. Waiting on the release to adapt on our side.
