@@ -202,8 +202,8 @@ match; confirmed `init --diff` tracks it correctly again.
 
 ---
 
-Items 1-16 are all resolved (0.2.0 through 0.7.0). Item 17 below is open
-against 0.7.0. New entries go below as they turn up.
+Items 1-16 are all resolved (0.2.0 through 0.7.0). Items 17 and 18 below
+are open against 0.7.0. New entries go below as they turn up.
 
 ## 14. ~~Dyslexia mode is lost on page reload~~ — **fixed in 0.7.0**
 
@@ -341,3 +341,76 @@ Fix B (no native-select styling compromise), while removing the keyboard
 workaround and the testing blind spot just the same. Our Fix A branch was
 closed unmerged (PR #39) — with react-select gone it would have deferred
 roughly 5 KB. Waiting on the release to adapt on our side.
+
+## 18. Sylexiad is recommended but effectively undiscoverable — **open, 0.7.0**
+
+Three separate defects, found together. Simon asked why we had never once
+proposed Sylexiad despite the package recommending it; the answer turned
+out to be that nothing an integrator reads ever mentions it.
+
+### 18a. The recommendation lives where nobody looks
+
+- **Cause:** "Sylexiad" appears **0 times** in `README.md`, **0 times** in
+  the package's `AGENTS.md`, and **0 times** in the `AGENTS.md` scaffolded
+  into the consumer's `src/a11y/`. The only prose describing it is in
+  `fonts/LICENSES/README.md` — a licensing appendix — plus three source
+  comments in `_a11y-fonts.scss` and `_dyslexia.scss`.
+- **Consequence:** the font the package calls "the **recommended** body
+  font for this package's dyslexia mode" is invisible to every integrator
+  who reads the documentation, and to every coding agent that reads
+  `AGENTS.md`. We integrated this package across a dozen PRs and never saw
+  it. Consumers silently ship the fallback (Andika) believing it is the
+  intended choice.
+- **Fix:** name it in `README.md` and in `AGENTS.md`, in the section about
+  dyslexia mode, with the one-line reason it is not bundled and a pointer
+  to the licensing appendix for detail.
+
+### 18b. The documented extension points do not exist
+
+`fonts/LICENSES/README.md:31-33` tells the consumer to wire Sylexiad
+"through the font module's extension point (`$dyslexia-fonts` on the SCSS
+side + `extraClasses` on the runtime side)".
+
+- **Cause:** neither identifier exists. `$dyslexia-fonts` appears nowhere
+  in `scss/`. `extraClasses` appears exactly once in the whole package —
+  in that same sentence. The real SCSS lever is the `dyslexia-typography`
+  mixin's `$body-font` parameter, correctly documented in
+  `_dyslexia.scss:23` (`@include dyslexia-typography($body-font:
+  "SylexiadSans")`), and there is no runtime lever at all.
+- **Consequence:** anyone following the only instructions the package
+  gives will search for two names that return nothing, and conclude the
+  feature is unfinished. The correct instruction already exists a few
+  files away, which makes the wrong one purely a cost.
+- **Fix:** replace that sentence with the `dyslexia-typography($body-font:)`
+  call, and say plainly that the consumer declares the `@font-face` rules
+  on their own side.
+
+### 18c. A font cannot be added to the menu without forking the template
+
+- **Cause:** `templates/react/AccessibilityMenu.tsx:67` hardcodes
+  `type FontType = "none" | "opendyslexic" | "atkinson" | "andika"`, and
+  the labels are hardcoded alongside it. There is no prop, no config
+  object, no registry.
+- **Consequence:** the two uses of Sylexiad are not equivalent. Making it
+  the **body font of dyslexia mode** works today through the SCSS mixin,
+  with no template change. Offering it as a **fourth entry in the font
+  dropdown** requires editing the scaffolded file — which means carrying a
+  local divergence and re-merging it at every `init --diff`, the exact
+  cost that sent items #14-16 upstream in the first place. The package
+  recommends a font it gives consumers no supported way to expose.
+- **Fix:** accept extra font entries as data — e.g. an optional prop on
+  `AccessibilityControl`/`AccessibilityMenu` taking `{ value, label,
+  className }`, appended to the built-in list. That also covers brand
+  fonts and Lexend, which the SCSS module already treats as
+  consumer-declared for the same reason.
+
+**Context on our side:** we investigated this to add Sylexiad to
+ArgentBank and stopped for an unrelated reason — the site deploys through
+Vercel's GitHub integration, so every asset must be committed, and
+Sylexiad's EULA (Feb. 2022) forbids public redistribution while permitting
+website use. Worth flagging in the docs as well: the EULA also forbids
+editing the original files, so unlike an OFL font it **must not be
+subset**, and it asks that Robert Hillier be credited. Consumers building
+on Vercel/Netlify git integrations will hit the same wall, so the
+licensing note would be more useful phrased as "how to ship it" than as
+"download it and wire it up".

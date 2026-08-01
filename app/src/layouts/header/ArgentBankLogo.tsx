@@ -22,8 +22,15 @@ import React from "react";
 // aria-hidden="true" and for *none* of aria-label / aria-labelledby /
 // aria-describedby / role="img" / title to be present, so role="img" is
 // deliberately absent here (it would contradict aria-hidden). The link
-// wrapping this logo carries its own aria-label ("Go to home page"), so
-// nothing is lost by hiding the wordmark from assistive technologies.
+// wrapping this logo carries its own aria-label, so nothing is lost by
+// hiding the wordmark from assistive technologies.
+//
+// That label must keep starting with "ArgentBank" — see Header.tsx. The
+// <text> below is real text in the DOM, not a path, so it counts as the
+// link's *visible* label under WCAG 2.5.3 "Label in Name" [A] even though
+// aria-hidden keeps it out of the accessibility tree. aria-hidden and
+// 2.5.3 answer two different questions: what a screen reader announces,
+// and what a speech-input user can say out loud to activate the control.
 const ArgentBankLogo: React.FC = () => (
   <svg className="header__logo-image" viewBox="0 5 450 90" aria-hidden="true">
     <text x="10" y="72" className="header__logo-wordmark">
