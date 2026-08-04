@@ -202,8 +202,8 @@ match; confirmed `init --diff` tracks it correctly again.
 
 ---
 
-Items 1-16 are all resolved (0.2.0 through 0.7.0). Items 17 and 18 below
-are open against 0.7.0. New entries go below as they turn up.
+Items 1-17 are all resolved (0.2.0 through 0.8.0). Item 18 below is still
+open against 0.8.0. New entries go below as they turn up.
 
 ## 14. ~~Dyslexia mode is lost on page reload~~ — **fixed in 0.7.0**
 
@@ -275,7 +275,7 @@ that are the actual feature. OpenDyslexic, Andika and Lexend stay out of
 the network trace until selected. The eager cost is confined to Atkinson,
 and only because the menu's own chrome uses it.
 
-## 17. react-select ships to every visitor on every page — **open, 0.7.0**
+## 17. react-select ships to every visitor on every page — **fixed in 0.8.0**
 
 Found while measuring the result of #15. Same shape, one layer down: #15
 was the menu's fonts, this is the menu's JavaScript. Sent as a second
@@ -342,7 +342,24 @@ workaround and the testing blind spot just the same. Our Fix A branch was
 closed unmerged (PR #39) — with react-select gone it would have deferred
 roughly 5 KB. Waiting on the release to adapt on our side.
 
-## 18. Sylexiad is recommended but effectively undiscoverable — **open, 0.7.0**
+**Shipped in 0.8.0, measured on our side (2026-08-04).** Both dropdowns
+are now button groups revealed by a parent toggle, so react-select is
+imported by nothing and we removed the dependency outright. Our entry
+bundle went **87.35 KB → 58.19 KB gzipped** (274.77 KB → 189.66 KB raw),
+a 29 KB saving against the 31 KB we had measured for the chunk — the
+small difference is code the buttons still need. No lazy-loading
+machinery, no Suspense boundary, no loading string, and the keyboard
+workaround and its testing blind spot are gone with the library.
+
+Two things worth knowing for anyone taking this upgrade: the colour-vision
+list is now read from the loaded CSS at runtime, and the fallback when
+detection finds nothing is to offer everything — which is the right
+direction, and means a jsdom test suite (no stylesheet loaded) sees all
+seven modes rather than none. And five of our tests drove the dropdowns;
+rewriting them against the buttons was straightforward and left the suite
+one test larger.
+
+## 18. Sylexiad is recommended but effectively undiscoverable — **still open in 0.8.0**
 
 Three separate defects, found together. Simon asked why we had never once
 proposed Sylexiad despite the package recommending it; the answer turned
@@ -414,3 +431,18 @@ subset**, and it asks that Robert Hillier be credited. Consumers building
 on Vercel/Netlify git integrations will hit the same wall, so the
 licensing note would be more useful phrased as "how to ship it" than as
 "download it and wire it up".
+
+**Re-checked against 0.8.0 (2026-08-04) — all three still stand.**
+"Sylexiad" is still absent from `README.md` and `AGENTS.md` (0 mentions in
+both), `$dyslexia-fonts` and `extraClasses` are still named only in the
+sentence recommending them, and `templates/react/AccessibilityMenu.tsx:65`
+still hardcodes `type FontType = "none" | "opendyslexic" | "atkinson" |
+"andika"`.
+
+0.8.0 does move one piece in the right direction: `ACCESSIBILITY_FONT_GROUPS`
+now lives in the consumer's own `accessibilityPreferences.ts`, so the
+grouping and ordering of the offered fonts are ours to change without
+touching the template. But it only arranges the three built-ins — adding a
+fourth still needs `FontType` widened and `getFontTypeLabel` extended in
+the scaffolded file. Half the extension point exists; the half that would
+let Sylexiad in does not.

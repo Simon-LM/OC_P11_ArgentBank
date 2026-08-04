@@ -1,7 +1,7 @@
 /** @format */
 
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AccessibilityMenu from "./AccessibilityMenu";
 
@@ -201,20 +201,20 @@ describe("AccessibilityMenu", () => {
     expect(screen.getByText("Andika")).toBeInTheDocument();
   });
 
-  test("switching the color-vision select back to Normal restores the last base theme", async () => {
+  test("turning color blindness back off restores the last base theme", async () => {
     const user = userEvent.setup();
     render(<AccessibilityMenu language="en" />);
+    const parent = screen.getByRole("button", { name: "Color blindness" });
 
-    const select = screen.getByLabelText("Vision type");
-    await user.click(select);
-    await user.click(await screen.findByText("Deutéranopie"));
+    await user.click(parent);
+    await user.click(screen.getByRole("button", { name: /Deutéranopie/ }));
     expect(document.documentElement).toHaveAttribute(
       "data-theme",
       "deuteranopia",
     );
 
-    await user.click(select);
-    await user.click(await screen.findByText("Normal"));
+    // "Normal" is the parent's off state, not a button in the row.
+    await user.click(parent);
     expect(document.documentElement).toHaveAttribute("data-theme", "light");
   });
 
@@ -330,9 +330,8 @@ describe("AccessibilityMenu", () => {
     render(<AccessibilityMenu language="en" />);
     expect(document.documentElement).not.toHaveClass("dyslexia-optimized");
 
-    const select = screen.getByLabelText("Font type");
-    await user.click(select);
-    await user.click(await screen.findByText("Andika"));
+    await user.click(screen.getByRole("button", { name: "Font type" }));
+    await user.click(screen.getByRole("button", { name: /Andika/ }));
 
     expect(localStorage.getItem("a11y-font")).toBe("andika");
     expect(document.documentElement).not.toHaveClass("dyslexia-optimized");
@@ -394,40 +393,80 @@ describe("AccessibilityMenu", () => {
     ).not.toBeInTheDocument();
   });
 
-  test("the color-vision select defaults to Normal and the font-type select to Standard", () => {
+  // Both pickers are collapsed parent toggles, not dropdowns: their off
+  // state ("Normal", "Standard") is the parent button itself, so neither
+  // word appears anywhere until something is turned on.
+  test("both pickers start off, with no option buttons rendered", () => {
     render(<AccessibilityMenu language="en" />);
-    expect(screen.getByText("Normal")).toBeInTheDocument();
-    expect(screen.getByText("Standard")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", { name: "Color blindness" }),
+    ).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: "Font type" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    expect(
+      screen.queryByRole("button", { name: /Deutéranopie/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Andika/ }),
+    ).not.toBeInTheDocument();
   });
 
-  test("switching to a color-vision theme via the select updates the theme", async () => {
+  // The list is read from the loaded CSS. jsdom loads no stylesheet, so
+  // detection finds nothing and the package falls back to offering every
+  // mode it knows — deliberately, since hiding a mode the site does have
+  // would remove a feature from the person who needs it.
+  test("the color-vision parent reveals one button per mode, marked with aria-pressed", async () => {
     const user = userEvent.setup();
     render(<AccessibilityMenu language="en" />);
 
-    const select = screen.getByLabelText("Vision type");
-    await user.click(select);
-    const option = await screen.findByText("Deutéranopie");
-    await user.click(option);
+    await user.click(screen.getByRole("button", { name: "Color blindness" }));
+
+    const group = screen.getByRole("group", { name: "Vision type" });
+    expect(within(group).getAllByRole("button")).toHaveLength(7);
+
+    const deuteranopia = screen.getByRole("button", { name: /Deutéranopie/ });
+    await user.click(deuteranopia);
 
     expect(document.documentElement).toHaveAttribute(
       "data-theme",
       "deuteranopia",
     );
+    expect(deuteranopia).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("switching to a font type via the select updates localStorage and clears dyslexia mode", async () => {
+  test("choosing a font applies it and leaves dyslexia mode", async () => {
     const user = userEvent.setup();
     render(<AccessibilityMenu language="en" />);
 
     await user.click(screen.getByRole("button", { name: /Dyslexia mode/ }));
     expect(document.documentElement).toHaveClass("dyslexia-optimized");
 
-    const select = screen.getByLabelText("Font type");
-    await user.click(select);
-    const option = await screen.findByText("Atkinson Hyperlegible");
-    await user.click(option);
+    await user.click(screen.getByRole("button", { name: "Font type" }));
+    const atkinson = screen.getByRole("button", {
+      name: /Atkinson Hyperlegible/,
+    });
+    await user.click(atkinson);
 
     expect(localStorage.getItem("a11y-font")).toBe("atkinson");
+    expect(atkinson).toHaveAttribute("aria-pressed", "true");
     expect(document.documentElement).not.toHaveClass("dyslexia-optimized");
+  });
+
+  // The fonts are grouped by what they are FOR, because the names mean
+  // nothing on their own: "Andika" tells you something only if you already
+  // know it. The group heading is what makes the choice possible, so it
+  // has to be the accessible name of the group, not just visible text.
+  test("the font choices are grouped by purpose, each group named", async () => {
+    const user = userEvent.setup();
+    render(<AccessibilityMenu language="en" />);
+
+    await user.click(screen.getByRole("button", { name: "Font type" }));
+
+    for (const name of ["For dyslexia", "High legibility", "Easy reading"]) {
+      expect(screen.getByRole("group", { name })).toBeInTheDocument();
+    }
   });
 });

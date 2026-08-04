@@ -13,6 +13,19 @@ file into your project so it stays available next to the code you own.
 > ⚠️ Snippets use the published package name (`darkmode-plus-a11y`).
 > Installed it under a different name? `init --pkg <name>` rewrites the
 > copied files accordingly; align hand-copied snippets yourself.
+>
+> ⚠️ **Every `0.x` release is a beta release** — the whole line, not just
+> early ones. A breaking change can land in a **minor** release until
+> `1.0.0`, where strict semver takes over. So when you bump a minor on a
+> project you maintain, read the README's "Upgrading" section instead of
+> assuming the build result is unchanged: the 0.5.0 adjustment-sign
+> change, for one, alters colors **without failing the build**.
+>
+> Beta also means the API can still move for a good reason. If you hit a
+> missing role, a theme that comes out wrong on this palette, or a step
+> here that does not survive the codebase you are working in — **surface
+> it to your human** and point them at the README's "Feedback wanted"
+> section. A report now is worth more than a workaround.
 
 ## Why this package exists
 
@@ -66,10 +79,21 @@ by `init` (shadcn model) — you own it, it never auto-updates, and
     `purple`, `fuchsia`, `pink`, `rose`.
   - Neutral grays (5): `slate`, `gray`, `zinc`, `neutral`, `stone`.
   - Tinted neutrals (4): `taupe`, `mauve`, `mist`, `olive`.
-- Path A UI dependencies: `react`, `react-select`, `react-icons`.
+- Path A UI dependencies: `react`, `react-icons`. **`react-select` is no
+  longer one of them** (0.8.0): the menu's two pickers are button groups,
+  which cost nothing to install, need no keyboard workaround, and do not
+  render their list through a `position: fixed` portal that covers the
+  page at high zoom. If the consumer installed it for this template only,
+  say so — it was 31 KB gzipped for a panel most visitors never open.
 - A Sass compiler for the theme build (`sass` as a devDependency, or
   any bundler with SCSS support). It compiles separately from the rest
   of your pipeline and does not constrain it.
+  **Declare it in the consuming project even though this package lists
+  `sass` among its own dependencies** — that copy serves the `audit` CLI
+  and the contrast suite, not the consumer's build. Under npm's flat
+  `node_modules` the transitive copy is reachable, so omitting it seems
+  to work; under pnpm it is not reachable and the build fails. Do not
+  "optimize" this line away.
 
 ## THE GOLDEN RULE (layer 3)
 
@@ -102,11 +126,21 @@ and the [Tailwind mapping](#tailwind-projects) consume.
 
 ## Migrating an existing codebase
 
-Greenfield is easy: pick roles as you build. Retrofitting a site that
-already has **hundreds of hardcoded colors** is where the real
-decisions are — and the verification suite only checks the _result_,
-not the mapping choices that get you there. This section is that
-missing methodology.
+**This package is best adopted at the start of a project.** Greenfield is
+easy: you pick a role as you write each rule, and the themes follow.
+Retrofitting a site that already has **hundreds of hardcoded colors**
+works — that is what this section is for — but it is the harder and
+riskier path.
+
+> ⚠️ **Surface this to your human before you start.** "Add dark mode to
+> this site" sounds like an install and is a **refactor** of every
+> stylesheet that names a color. Say so, and say why the cost is real:
+> the mapping decisions below need judgement a tool cannot supply, the
+> change touches a large number of files at
+> once, and a wrong role choice is invisible in the light theme while
+> breaking only some of the other fourteen. The verification suite checks
+> the _result_, not the mapping choices that got you there. Let them
+> decide whether to spend that, rather than discovering it mid-diff.
 
 **No codemod ships, on purpose.** Mapping colors to roles needs
 judgment (see below), so a blind find-and-replace would produce wrong
@@ -160,16 +194,30 @@ the mechanical step is finding each color's nearest family and weight. But
 that nearest match is a **starting point, not the verdict**. When you
 guide a client, your job is to find it, surface what it will do across the
 15 themes, offer alternatives, and let the client choose — not to pick for
-them. Contrast holds whatever they choose, so this is a question of the
-**look** they want, never right vs. wrong. And you don't know their colors
-up front — you read them off the site — so keep every suggestion
-conditional on what you actually find.
+them. And you don't know their colors up front — you read them off the
+site — so keep every suggestion conditional on what you actually find.
 
-This holds for any color, but it matters most for the **background**,
-because the background's family becomes the whole neutral rail
-(`$gray-family`), and the dark themes are built by shifting that rail to
-its dark end, which keeps the family's hue. So the family behind the
-background **tints the entire dark mode**, far beyond that one surface.
+For the **neutral rail** (the background's `$gray-family`), contrast holds
+whatever they choose — the engine derives every text/surface pair from it
+— so that family is a **look** choice, never right vs. wrong. **That is
+not true for a color that will itself carry a contrast requirement** — a
+status color, text set in a brand color, or the trigger icon that recolors
+to a brand color on hover (UI placement). There the
+_weight_ IS the contrast: the declared light value is used as-is (only the
+dark themes shift it), so a shade picked only for "closest to the brand
+hex" can land below 4.5:1. For those roles, **fold the ratio into the
+pick**: among the nearest family's weights, choose the nearest one that
+already **meets 4.5:1** — not the nearest outright, checked after. If the
+closest passing weight visibly departs from the brand color, that's a real
+trade-off (accept the shift, or adjust the background it sits on) —
+**surface it to your human**. Use the
+[contrast suite](#verifying-your-wiring) _while_ choosing, not only after.
+
+The family choice matters most for the **background**, because the
+background's family becomes the whole neutral rail (`$gray-family`), and
+the dark themes are built by shifting that rail to its dark end, which
+keeps the family's hue. So the family behind the background **tints the
+entire dark mode**, far beyond that one surface.
 
 The trade-off to lay out for the client, from a plain-gray dark to a
 boldly colored one:
@@ -206,6 +254,23 @@ npx darkmode-plus-a11y init          # copies UI into ./a11y + fonts into ./publ
 npx darkmode-plus-a11y init --diff   # later: compare your copy against the reference
 # Options: --dir <path> --pkg <import-name> --fonts <path> --force
 ```
+
+### Never offer a theme the stylesheet does not define
+
+The scaffolded menu derives its colour-vision buttons from the loaded CSS
+(`resolveColorVisionModes`, default `"auto"`). Do not replace that with a
+hardcoded list, and do not "helpfully" add the seven modes back if the
+consumer's SCSS only emits three.
+
+A button for a theme whose `[data-theme]` block does not exist is not a
+missing option. The user presses it, nothing visible happens, and for
+someone with a colour vision deficiency that is a broken promise rather
+than a gap. Offering less than the package can do is correct here;
+offering more than the site does is not.
+
+The escape hatches are `COLOR_VISION_MODES = "all"` (force the full list)
+and an explicit array. Both are the consumer's call, in their own config
+file — never something to set on their behalf.
 
 **Re-running `init` is safe.** A file that already exists at the target
 path is **skipped** (logged `skip (exists …)`), never overwritten —
@@ -281,13 +346,16 @@ Wiring steps:
    ```tsx
    // Next.js App Router — app/layout.tsx
    import { themeInitScript, THEMES } from "darkmode-plus-a11y/react";
+   import { A11Y_INIT_OPTIONS } from "./a11y/react/accessibilityPreferences";
 
    export default function RootLayout({ children }) {
      return (
        <html suppressHydrationWarning>
          <head>
            <script
-             dangerouslySetInnerHTML={{ __html: themeInitScript(THEMES) }}
+             dangerouslySetInnerHTML={{
+               __html: themeInitScript(THEMES, A11Y_INIT_OPTIONS),
+             }}
            />
          </head>
          <body>{children}</body>
@@ -296,10 +364,20 @@ Wiring steps:
    }
    ```
 
-   `themeInitScript(themes)` returns a plain string: on any other
-   stack, inline it in a `<script>` in `<head>`. It reads
+   `themeInitScript(themes, options?)` returns a plain string: on any
+   other stack, inline it in a `<script>` in `<head>`. It reads
    `localStorage.theme` (validated against your list), falls back to
    `prefers-color-scheme`, and sets the attribute.
+
+   ⚠️ **Pass the second argument.** It restores the typography
+   preferences — text size, chosen font, dyslexia mode — in the same
+   pass. They are persisted either way, but without this they are
+   applied _after_ hydration: a visitor reading at 200 % gets a frame of
+   text they cannot read, on every page load. That is a real defect for
+   the exact person the setting exists for, and it is invisible to you
+   unless you set a preference and reload. `A11Y_INIT_OPTIONS` is
+   scaffolded next to the storage keys it names, so the script and the
+   menu cannot drift apart.
 
    **Static HTML / Vite / any non-SSR SPA** — there's no server render
    to call the function per request, so pick one:
@@ -378,27 +456,31 @@ Wiring steps:
      Being in the flow (not `fixed`) is the whole point: at high zoom it
      reflows and pushes the page down instead of covering it.
 
-   - **Hover — surface this to your human** (don't silently keep the bare
-     default). The trigger ships with a neutral,
-     contrast-safe hover (a pure inversion of `--fg-base` ⇄ `--bg-base`,
-     correct on all 15 themes). It's safe as-is, but step out of
-     auto-implementation and **advise your human**: ideally the site
-     should define **one shared hover for links and buttons across the
-     whole site** — a general, out-of-component rule such as
-     `button:hover, a:hover { background: var(--link-hover); … }` — and let
-     this trigger share it, so the icon's hover matches the rest of the
-     page. State the condition and let THEM decide: it's more consistent
-     and can be _better_ for accessibility, **but only if that pair keeps
-     enough contrast** — a link-hover surface isn't the
-     mechanically-guaranteed `--fg-base`/`--bg-base` pair, so it must be
-     checked on the themes they ship (dark and anti-glare especially). If
-     they opt in, the reference portfolio shows the pattern: delete only
-     the trigger's own hover/focus background & icon-color swap (`&:hover,
-&:focus-visible { background; color }` — keep the focus outline) so
-     the site-wide rule takes over, and keep the shipped
-     `…svg g { fill: var(--bg-base) }` line (the inline SVG's
-     `fill=currentColor` doesn't follow the hover by itself). High-contrast
-     keeps its own inversion regardless.
+   - **Hover / focus — surface this to your human** (don't silently keep
+     the bare default). At its interactive states the trigger has one
+     rule: **the icon and its background stay a contrast-safe pair**. What
+     _moves_ to signal the state is a design choice — raise it with your
+     human. Three shapes:
+     - **invert both** (the shipped default): background and icon swap
+       (`--fg-base` ⇄ `--bg-base`) — safe on all 15 themes, no checks.
+     - **move the background**: let a site-wide `button:hover, a:hover`
+       fill the button with the interaction color (e.g. `--link-hover`);
+       the icon follows to stay readable. To do this, delete the trigger's
+       own hover/focus background & color (keep the focus outline) so the
+       global rule takes over.
+     - **move the icon**: keep the background, recolor the icon on hover
+       (e.g. a light header where the surface must not change). The icon
+       color is then a foreground on the button, so its **weight must pass
+       4.5:1** on that background — the
+       same rule as [§ Guiding the family choice](#3-guiding-the-family-choice-a-conversation-not-a-lookup).
+
+     Whichever shape, the icon is recolored **explicitly**: the inline
+     SVG's `fill=currentColor` doesn't follow the hover on its own, so the
+     shipped `…button:hover svg g { fill: … }` line drives it — set it to
+     whatever keeps the pair readable. High-contrast keeps its own
+     inversion. Verify the hover pair on the themes you ship (dark and
+     anti-glare especially).
+
    - Props:
      - `language` — `"fr" | "en"` (required). Labels are FR/EN today;
        for another language, edit the copied component (you own it).
@@ -476,7 +558,8 @@ default table instead of replacing it:
             ),
           )
         ),
-      // Push dark-mode links one weight further:
+      // Nudge the dark-mode link one weight toward the dark end
+      // (-1 would move it toward the light end — see below):
       "dark": (
           "adjustments": (
             "link": 1,
@@ -495,7 +578,95 @@ only cover the default primitives' families. Whether YOUR families
 stay distinguishable under a given deficiency is a property of your
 palette's role pairs, not of a family in isolation: run the
 distinguishability suite (§ Verifying your wiring) and add a remap
-entry only if a pair fails there. Runtime side:
+entry only if a pair fails there.
+
+⚠️ **`family-remap` cannot fix `$success` or `$danger` on the red-green
+themes.** Those roles are resolved by a different, higher-priority
+mechanism, and the remap is never consulted for them:
+
+```text
+special-colors  >  status-anchors  >  family-remap / remap-for-cvd
+```
+
+Add a `family-remap` entry for a status role there and it will be
+silently ignored. The levers that do work are `special-colors` (pin an
+exact color) and `status-anchors` (change the family the role is pulled
+toward). See below for which one to reach for.
+
+#### Status roles on the red-green themes
+
+Under protanopia and deuteranopia the hue wheel collapses to roughly
+**two poles: blue and yellow/orange.** Three roles usually want to be
+told apart — `$link`, `$success`, `$danger` — and there are two poles.
+The engine puts `$danger` on orange and anchors `$success` to violet,
+which reads as blue there. `$link` is normally blue too, so **`$success`
+and `$link` end up in the same pole**, and the only thing left to
+separate them is **lightness**.
+
+That matters because both are usually chosen the same way — the lightest
+weight that still clears 4.5:1 — so they tend to land at the _same_
+lightness and become one color. The engine reports the suspicion:
+
+```text
+success: under protanopia this status color may be indistinguishable
+from --link (they differ by 1.1:1 …)
+```
+
+It is a **warning, never a correction** — the engine does not move your
+colors over it. Sass cannot compute the ΔE that would settle the
+question (CIEDE2000 needs `atan2`), so this is a lightness-and-hue
+heuristic pointing you at the suite, which does simulate perception
+properly. Silence it with `$status-link-separation-warn: 0` if you have
+already checked.
+
+If the suite confirms the collision, **darken the status role** — via
+`special-colors` for that theme, or by anchoring it to a family whose
+usable weights sit further from your link. **Changing the hue alone does
+not help**: every hue lands in one of the two poles. And if your `$link`
+is itself violet or purple, no weight of the violet anchor will be far
+enough — pick a different anchor family for those themes.
+
+#### Dark `adjustments`: what the sign means
+
+The dark engine moves every weight **away from its own end** of the
+11-step rail: a light weight darkens, a dark weight lightens, and `500`
+— the pivot — stays put. Those two directions are what makes the theme
+flip (a foreground declared dark for a light surface has to come back
+light over a dark one), so they are structural, not a setting.
+
+`adjustments` is the per-role knob on top of that shift, and its sign is
+**absolute** — it does not follow the shift's direction:
+
+- `+N` → **toward the dark end** (`950`)
+- `-N` → **toward the light end** (`50`)
+
+This reads the same on both sides of the pivot, so a config can be
+understood without knowing which side a role's light value sits on.
+
+Two behaviors to know before reaching for it:
+
+- **The rail ends saturate; they do not wrap.** A role pushed past `50`
+  or `950` stops there. That is deliberate: it parks the color on the end
+  it was traveling toward, which is the readable one for that theme.
+  Wrapping would drop a foreground back onto a dark weight over a dark
+  surface — unreadable, and with nothing to signal it. So if an
+  adjustment appears to do nothing, the role is already parked on that
+  end: move it the other way, or change the light-theme weight it starts
+  from.
+- **`link` and `link-hover` are shifted as a pair.** Two neighboring
+  weights of one family can both overshoot the same end; clamped
+  separately they would collapse into one color, leaving a hover state
+  identical to the link. The pair is slid back onto the rail together
+  instead, so the gap the light theme declared survives. You should not
+  need an adjustment to keep a hover distinct from its link — and roles
+  from different families are left alone, since the hue already
+  separates them.
+
+A collapsed pair is worth understanding because **the contrast suite
+cannot catch it**: both values are perfectly readable, and only the
+difference between them is gone. Distinguishability is what covers it.
+
+Runtime side:
 
 ```tsx
 import { useTheme, THEMES, type ThemeOption } from "darkmode-plus-a11y/react";
@@ -791,21 +962,119 @@ variables (best effort — `--focus-ring` may be wired to the link
 color); pass `slotsFor` with the exact values of your HC color map for
 precision.
 
+### Reading a distinguishability failure (do NOT treat it as a defect)
+
+**A contrast failure and a distinguishability failure are not the same
+kind of result, and must not be reported the same way.**
+
+- **Contrast** is about **superimposition**. Text that does not reach
+  its ratio on the background it is actually painted on is unreadable,
+  full stop — no judgement call there. What does need checking is
+  whether that pairing exists in the interface at all: the suite
+  measures **declared** role pairs, not rendered ones.
+- **Distinguishability** needs one question more. Even where the two
+  roles do appear together, it only matters if the user must tell them
+  apart to understand something. Two colors that never co-occur cannot
+  mislead anyone — WCAG 1.4.1 is about information carried by color, and
+  where there is no shared context there is no information at stake.
+
+So a failing pair is a **candidate risk to triage**, not a bug to
+announce. Ask one question:
+
+> Can these two roles appear in the same view — adjacent, or in a shared
+> legend or list — such that the user must distinguish them to
+> understand something?
+
+- **No** → not a defect. Record a waiver via `withWaivers`, with the
+  reason written out in full, and move on. A green `$accent` used only
+  on buttons and a green `$success` used only in messages is the
+  textbook case: the suite flags the pair, the interface never shows it.
+- **Yes** → fix it: take the role from a **different family**, and/or
+  **darken it**. On the red-green themes darkening is usually what
+  works, for the reason given in
+  [Status roles on the red-green themes](#status-roles-on-the-red-green-themes).
+
+⚠️ **Agents: do not present a failing pair as something broken.** Run
+the triage first, then report it in the required format below.
+Reporting a non-issue as a defect costs your human real time and
+teaches them to distrust the suite.
+
+One thing to carry into the waiver's wording: it is a judgement about
+**today's** interface. The day a success state appears _on_ an accent
+button, the pair becomes real and the waiver quietly becomes wrong — so
+write the reason ("accent buttons and success messages never share a
+view"), not just "false positive", so it can be re-read when the UI
+changes.
+
+### Reporting a contrast or CVD result to your human (required format)
+
+This section is a **format you fill in**, not advice to be careful.
+It applies to every failing pair you surface, contrast and
+distinguishability alike.
+
+Never surface a failing pair as a bare measurement. A raw "contrast
+failure" reads as a live defect, and most of the time it is not one.
+Your human then has to go and check the interface themselves — which is
+the work you were supposed to do.
+
+Every report MUST carry four things, in this order:
+
+1. **The measurement**: the pair, the value, the threshold.
+2. **Presence**: does each role actually appear in the view concerned,
+   and where.
+3. **Collision**: is one rendered **on top of** the other — text on
+   that background, an icon on that button. **Presence is not
+   collision.** Two colors placed in different regions of the same page
+   are not superimposed, and the ratio between them describes nothing a
+   user ever sees.
+4. **The conclusion that follows**, stated outright: no impact today,
+   or a defect to fix.
+
+Fill this in every time:
+
+```text
+<role A> on <role B>: <ratio>, threshold <n>.
+Present: <where each role is actually used in this view>.
+Superimposed: <yes/no — what renders on what>.
+=> <no impact today | defect to fix>, because <one line>.
+```
+
+Worked example:
+
+```text
+--success on --bg-base: 3.2:1, threshold 4.5:1.
+Present: --success only on the confirmation toast; --bg-base is the
+page background.
+Superimposed: no — the toast paints its own --bg-surface under its text.
+=> No impact today. The pair is flagged because it is declared, not
+because it is rendered. Revisit if a success message is ever drawn
+directly on the page background.
+```
+
+Never suppress the report. A pair that does not collide today can
+collide after any layout change — that is exactly why the conclusion is
+a sentence you write, not a silence.
+
 ### Failure modes (what each error means)
 
-| Symptom                                        | Meaning                                                                            | Fix                                                                                         |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Sass build: `Undefined variable $…`            | Layer 3 references a role that doesn't exist (typo, or removed at a major version) | Check the [role list](#the-golden-rule-layer-3); read the package changelog on majors       |
-| `extract-themes: theme "x" was not found`      | Your `themes` list and your generated themes disagree                              | Align the list passed to `configureThemeExtraction` with `generate-all-themes`              |
-| `getVar: custom property "--x" is not defined` | A pair references a token you never emit                                           | Fix the pair id/name, or emit the token                                                     |
-| Ratio below threshold                          | Real contrast defect in that theme                                                 | Rewire the token to a stronger role; only if justified, document a waiver via `withWaivers` |
-| A color survives high-contrast unchanged       | Raw value in layer 3 (golden rule violation)                                       | Derive the token from a role                                                                |
-| `audit` warns "named X but emits Y"            | The token's name contradicts its emitted color — usually wired to the wrong role   | Fix the wiring; if the contradiction is deliberate (inverted block), add a justified waiver |
+| Symptom                                           | Meaning                                                                                                                       | Fix                                                                                                                                                                                                                                          |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sass build: `Undefined variable $…`               | Layer 3 references a role that doesn't exist (typo, or removed at a major version)                                            | Check the [role list](#the-golden-rule-layer-3); read the package changelog on majors                                                                                                                                                        |
+| `extract-themes: theme "x" was not found`         | Your `themes` list and your generated themes disagree                                                                         | Align the list passed to `configureThemeExtraction` with `generate-all-themes`                                                                                                                                                               |
+| `getVar: custom property "--x" is not defined`    | A pair references a token you never emit                                                                                      | Fix the pair id/name, or emit the token                                                                                                                                                                                                      |
+| Ratio below threshold                             | A real contrast defect **wherever that pair is actually superimposed** — the suite measures declared pairs, not rendered ones | Check presence and collision, then rewire the token to a stronger role; only if justified, document a waiver via `withWaivers`. Report it in the [required format](#reporting-a-contrast-or-cvd-result-to-your-human-required-format)        |
+| ΔE below threshold (distinguishability)           | **Not automatically a defect** — depends on whether the two roles ever meet on screen                                         | [Triage it first](#reading-a-distinguishability-failure-do-not-treat-it-as-a-defect); then waive with a written reason, or darken / change family. Same [required format](#reporting-a-contrast-or-cvd-result-to-your-human-required-format) |
+| Sass warns "may be indistinguishable from --link" | Heuristic heads-up on a red-green theme, raised before any measurement                                                        | Confirm with the distinguishability suite; see [Status roles on the red-green themes](#status-roles-on-the-red-green-themes)                                                                                                                 |
+| A color survives high-contrast unchanged          | Raw value in layer 3 (golden rule violation)                                                                                  | Derive the token from a role                                                                                                                                                                                                                 |
+| `audit` warns "named X but emits Y"               | The token's name contradicts its emitted color — usually wired to the wrong role                                              | Fix the wiring; if the contradiction is deliberate (inverted block), add a justified waiver                                                                                                                                                  |
 
 ## Updating
 
-- **Engine** (npm): strict semver. Adding a role/option = minor;
-  removing/renaming = major, always with a deprecation path (`@warn`)
-  first. A removed role fails your build **loudly** — never silently.
+- **Engine** (npm): strict semver **from `1.0.0`** — adding a
+  role/option = minor; removing/renaming = major, always with a
+  deprecation path (`@warn`) first. **The package is currently in `0.x`,
+  where a breaking change can land in a minor release**; check the
+  README's "Upgrading" section when you bump a minor. Either way, a
+  removed role fails your build **loudly** — never silently.
 - **Copied UI**: never auto-updates. `npx darkmode-plus-a11y init --diff`
   lists what changed in the reference; port what you want by hand.
