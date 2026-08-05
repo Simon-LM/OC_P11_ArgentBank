@@ -29,79 +29,11 @@ defaults:
   run:
     working-directory: app
 
+# 📊 Coverage Report used to live here and re-ran the whole test suite to
+# produce numbers 🔍 CI Tests had already produced. It now sits in ci-cd.yml,
+# next to the job whose artifact it reads — an artifact cannot cross workflow
+# runs, so staying here would have meant the cross-run API and a wait loop.
 jobs:
-  coverage:
-    name: 📊 Coverage Report
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.20.0
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: "pnpm"
-          cache-dependency-path: app/pnpm-lock.yaml
-
-      - name: 📦 Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: 📊 Run tests with coverage
-        run: pnpm run test:coverage
-
-      - name: 📤 Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          directory: app/coverage
-          files: ./coverage/clover.xml
-          fail_ci_if_error: false
-          verbose: true
-
-      - name: 💬 Comment PR with coverage
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-
-            try {
-              const coveragePath = path.join('app', 'coverage', 'coverage-summary.json');
-              const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
-              
-              const total = coverage.total;
-              const coveragePercent = total.lines.pct;
-              
-              const comment = `## 📊 Coverage Report
-              
-              | Metric | Coverage |
-              |--------|----------|
-              | Lines | ${total.lines.pct}% (${total.lines.covered}/${total.lines.total}) |
-              | Functions | ${total.functions.pct}% (${total.functions.covered}/${total.functions.total}) |
-              | Branches | ${total.branches.pct}% (${total.branches.covered}/${total.branches.total}) |
-              | Statements | ${total.statements.pct}% (${total.statements.covered}/${total.statements.total}) |
-              
-              ${coveragePercent >= 80 ? '✅' : coveragePercent >= 60 ? '⚠️' : '❌'} **Overall Coverage: ${coveragePercent}%**
-              `;
-              
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: comment
-              });
-            } catch (error) {
-              console.log('Coverage file not found or invalid:', error.message);
-            }
-
   bundle-analysis:
     name: 📦 Bundle Analysis
     runs-on: ubuntu-latest
@@ -270,9 +202,9 @@ jobs:
       # Blocking since 2026-08-04. It used to end every command with `|| true`,
       # so the job was green whatever the audit found — and it was finding 81
       # issues, 3 of them critical. The tree is now clean: every advisory with
-      # a published fix is pinned through pnpm.overrides in app/package.json,
-      # and the single exception is listed, with its reason, in
-      # pnpm.auditConfig.ignoreGhsas.
+      # a published fix is pinned through `overrides` in
+      # app/pnpm-workspace.yaml, and the single exception is listed, with its
+      # reason, in `auditConfig.ignoreGhsas` in the same file.
       #
       # The gate is `moderate` and above, not `high`: with nothing left to
       # ignore, a stricter level costs nothing and catches more. `pnpm audit`
@@ -325,8 +257,8 @@ jobs:
       - name: 🚨 Fail on moderate+ vulnerabilities
         run: |
           echo "Auditing production and dev dependencies at moderate and above."
-          echo "Pins live in app/package.json → pnpm.overrides"
-          echo "Accepted exceptions in app/package.json → pnpm.auditConfig.ignoreGhsas"
+          echo "Pins live in app/pnpm-workspace.yaml → overrides"
+          echo "Accepted exceptions in app/pnpm-workspace.yaml → auditConfig.ignoreGhsas"
           pnpm audit --audit-level=moderate
 
       - name: 💬 Comment PR with security summary
