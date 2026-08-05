@@ -446,3 +446,18 @@ touching the template. But it only arranges the three built-ins — adding a
 fourth still needs `FontType` widened and `getFontTypeLabel` extended in
 the scaffolded file. Half the extension point exists; the half that would
 let Sylexiad in does not.
+
+**Sent 2026-08-05** as `EMAIL_TO_DARKMODE_PLUS_A11Y_MAINTAINER_03.md`, with
+two additions found while writing it up. First, the EULA forbids editing
+the original files, so Sylexiad **must not be subset** — worth stating next
+to a recommendation, since subsetting is the standard advice for a webfont
+and we cut Nunito 271 KB → 57 KB the same week. Second, it asks that Robert
+Hillier be credited, an attribution duty a consumer currently has no way to
+learn about from the docs.
+
+The message also reports the wall that parked this on our side: the EULA
+permits website use while requiring the files not be publicly downloadable,
+and ArgentBank deploys through Vercel's GitHub integration, so every asset
+must be committed to a public repository. Netlify and Cloudflare Pages
+git-connected deploys have the same shape, so the licensing note would be
+more useful phrased as "how to ship it" than "download it and wire it up".
