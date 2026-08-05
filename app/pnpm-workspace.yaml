@@ -1,0 +1,106 @@
+# pnpm settings.
+#
+# They live here, not in package.json's "pnpm" field: pnpm 11 no longer
+# reads that field. It warns and carries on, which would silently
+# deactivate every pin below — the audit would quietly go back to 81
+# findings with nothing turning red. That is the whole reason this file
+# exists, and why the version pins in .github/workflows/ must stay in step
+# with `packageManager` above.
+#
+# `packages` is required before pnpm reads anything else here, even though
+# this is a single-package project.
+
+packages:
+  - "."
+
+# ── supply-chain: publication age ──
+# pnpm 11 refuses any package published less than 24h ago — the window in
+# which a compromised publish is usually caught and unpublished. Worth
+# keeping.
+#
+# The exception is Simon's own package: this project integrates his
+# releases the day he ships them, and the delay buys nothing for a
+# dependency whose contents he wrote himself. Excluded by name only.
+minimumReleaseAgeExclude:
+  - darkmode-plus-a11y
+
+# ── supply-chain: install scripts ──
+# pnpm 11 runs no postinstall script unless it is allowed here, since that
+# is where a malicious publish executes. These six need theirs: each
+# downloads or compiles a native binary (browser, bundler, native watcher,
+# service-worker shim) and is inert without it. Cypress and Puppeteer in
+# particular are what the Cypress, Pa11y and Lighthouse jobs drive.
+#
+# Set a dependency true only when you know what its script does.
+allowBuilds:
+  "@parcel/watcher": true
+  "@swc/core": true
+  cypress: true
+  esbuild: true
+  msw: true
+  puppeteer: true
+
+# ── overrides ──
+# Forced versions for INDIRECT dependencies carrying a published security
+# advisory. None is a direct dependency: each is pulled in by a dev tool
+# (vercel, cypress, vitest, eslint, pa11y...) that has not bumped it yet.
+# Pinning here fixes the advisory without waiting for the parent's release
+# and without dropping the tool. This is what takes `pnpm audit` from 81
+# findings to 1.
+#
+# ⚠️ ALWAYS BOUND THE TARGET (^X.Y.Z), never an open ">=X".
+# `pnpm audit --fix` writes the open form. It once resolved ">=6.28.0" to
+# undici 8.10; jsdom reaches into undici's internal file layout, and 37 of
+# 39 test files stopped starting. One selector per major line, bounded
+# target.
+#
+# To refresh after an update: run `pnpm audit --fix`, move what it wrote
+# into package.json back here, bound every target, collapse duplicates,
+# then re-run the suite. Check `grep -A3 "^overrides:" pnpm-lock.yaml` —
+# if that section is missing, nothing is being applied.
+
+overrides:
+  "@opentelemetry/core@<2.8.0": "^2.8.0"
+  "@tootallnate/once@<2.0.1": "^2.0.1"
+  "ajv@>=7.0.0-alpha.0 <8.18.0": "^8.18.0"
+  "basic-ftp@<=5.3.0": "^5.3.1"
+  "brace-expansion@<1.1.18": "^1.1.18"
+  "brace-expansion@>=2.0.0 <2.1.4": "^2.1.4"
+  "brace-expansion@>=4.0.0 <5.0.9": "^5.0.9"
+  "diff@>=6.0.0 <8.0.3": "^8.0.3"
+  "ip-address@<=10.3.0": "^10.3.1"
+  "js-yaml@>=4.0.0 <4.3.0": "^4.3.0"
+  "js-yaml@>=5.0.0 <=5.2.1": "^5.2.2"
+  "minimatch@>=10.0.0 <10.2.3": "^10.2.3"
+  "path-to-regexp@>=4.0.0 <6.3.0": "^6.3.0"
+  "path-to-regexp@>=8.0.0 <8.4.0": "^8.4.0"
+  "postcss@<=8.5.22": "^8.5.23"
+  "rollup@>=4.0.0 <4.59.0": "^4.59.0"
+  "serialize-javascript@>=5.0.0 <7.0.5": "^7.0.5"
+  "smol-toml@<1.6.1": "^1.6.1"
+  "tar@<=7.5.20": "^7.5.21"
+  "undici@>=6.0.0 <6.28.0": "^6.28.0"
+  "undici@>=7.0.0 <7.29.0": "^7.29.0"
+  "uuid@<11.1.1": "^11.1.1"
+  "undici@>=5.0.0 <6.0.0": "^7.29.0"
+
+# ── auditConfig ──
+# Advisories deliberately not acted on. One entry, its reason, and the
+# condition that lifts it. Never a blanket suppression.
+auditConfig:
+  ignoreGhsas:
+    # react-router, high — CSRF bypass in RSC mode.
+    # https://github.com/advisories/GHSA-qwww-vcr4-c8h2
+    #
+    # The advisory says it outright: "This only affects your application if
+    # you are using the unstable RSC APIs". ArgentBank is a client-side
+    # Vite SPA — we import BrowserRouter/Link/useLocation/useNavigate only,
+    # there is no `unstable_` call anywhere in src/, and the RSC functions
+    # are absent from every built chunk. The vulnerable code is not shipped.
+    #
+    # The fix exists only in react-router 8.3.0 against our 7.18, so
+    # clearing it means a major migration.
+    #
+    # LIFT THIS when that migration lands. Not before, and not by widening
+    # the rule.
+    - GHSA-qwww-vcr4-c8h2

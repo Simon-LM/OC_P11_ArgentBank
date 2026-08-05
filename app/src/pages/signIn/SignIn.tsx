@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import signin from "./signin.module.scss";
@@ -20,6 +20,35 @@ const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const { trackEvent } = useMatomo();
   const [ariaMessage, setAriaMessage] = useState<string | null>(null);
+
+  // handleSubmit awaits two network calls, so everything after the first
+  // `await` — including the `finally` — can run long after the component has
+  // gone: the user navigates away, or a test finishes. React ignores a
+  // setState on an unmounted component in a real browser, but in jsdom the
+  // environment is torn down with it, and the same update throws
+  // "ReferenceError: window is not defined" from React's own scheduler.
+  //
+  // That is the intermittent failure fixed twice before in this codebase
+  // (Footer.tsx, then five timers in User.tsx). Same defect, different
+  // trigger: those were uncleared setTimeout callbacks, this is an awaited
+  // promise, so the guard is a mounted flag rather than a timer registry.
+  //
+  // ⚠️ NOT COVERED BY A TEST, deliberately. A test that unmounts and then
+  // resolves the promise passes with or without this guard — verified by
+  // removing the guard and watching it still pass. The throw needs jsdom to
+  // be torn down, which only happens when the whole test FILE ends, so it
+  // cannot be provoked from inside one. Judge any future test of this by the
+  // same standard: delete the guard first and check the test actually fails.
+  //
+  // The evidence this fixes it is the stack trace, which named
+  // `setIsLoading(false)` in the `finally` below, at this file's line 82.
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const getErrorMessage = (errorMessage: string): string => {
     if (errorMessage.includes("401")) {
@@ -62,25 +91,37 @@ const SignIn: React.FC = () => {
 
       dispatch(setAuthState(userProfile));
 
-      setAriaMessage("Authentication successful. Redirecting to your account.");
+      if (isMountedRef.current) {
+        setAriaMessage(
+          "Authentication successful. Redirecting to your account.",
+        );
+      }
 
       navigate("/user");
     } catch (err) {
-      setAriaMessage("Authentication failed. Please check your credentials.");
+      if (isMountedRef.current) {
+        setAriaMessage("Authentication failed. Please check your credentials.");
+      }
       trackEvent({
         category: "User",
         action: "Login",
         name: `Failed login: ${err instanceof Error ? err.message : "Unknown error"}`,
       });
 
-      if (err instanceof Error) {
-        setError(getErrorMessage(err.message));
-      } else {
-        setError("An unexpected error occurred");
+      if (isMountedRef.current) {
+        if (err instanceof Error) {
+          setError(getErrorMessage(err.message));
+        } else {
+          setError("An unexpected error occurred");
+        }
       }
     } finally {
-      setIsLoading(false);
-      // setTimeout(() => setAriaMessage(null), 3000); // Removed or adjusted if error is displayed
+      // The one that actually threw: `finally` runs on the success path too,
+      // after `navigate("/user")` has already started tearing this component
+      // down.
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
   };
 
