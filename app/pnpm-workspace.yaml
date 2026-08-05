@@ -17,9 +17,13 @@
 # `lockfileVersion: 9.0` file, written identically by pnpm 9, 10 and 11, it
 # guesses from the PROJECT CREATION DATE and lands on 9.x. pnpm 9 does not
 # read this file, sees no overrides where the lockfile records 23, and the
-# frozen install dies on ERR_PNPM_LOCKFILE_CONFIG_MISMATCH. `corepack
-# enable` in the install command is what makes Vercel honour (1) instead of
-# guessing, so no version number is repeated there.
+# frozen install dies on ERR_PNPM_LOCKFILE_CONFIG_MISMATCH.
+#
+# The install command must be `corepack pnpm install`, NOT
+# `corepack enable && pnpm install`. Enabling corepack installs shims, but
+# Vercel's own pnpm 9 sits ahead of them on PATH, so the bare `pnpm` that
+# follows is still 9 and fails exactly as before — verified. The proxy form
+# bypasses PATH entirely and reads (1), so no version is repeated there.
 #
 # `packages` is required before pnpm reads anything else here, even though
 # this is a single-package project.
