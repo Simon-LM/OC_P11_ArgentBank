@@ -190,6 +190,156 @@ jobs:
               console.log('Coverage file not found or invalid:', error.message);
             }
 
+  # Moved out of the 📊 Analysis workflow on 2026-08-06. It was running its
+  # own `pnpm build` to measure a bundle 🔍 CI Tests had already built one job
+  # earlier — a second full compile per PR, and worse, a DIFFERENT binary from
+  # the one the rest of the pipeline tests. It now measures the exact artifact
+  # 🔍 CI Tests produced.
+  #
+  # Like 📊 Coverage Report, it had to move rather than just download:
+  # artifacts do not cross workflow runs.
+  #
+  # ⚠️ This is a REQUIRED check. Its name must stay byte-identical to
+  # "📦 Bundle Analysis" — the ruleset matches on the name alone, with no
+  # workflow pinning, so a rename would silently stop it reporting and block
+  # every PR, including the one doing the renaming.
+  bundle-analysis:
+    name: 📦 Bundle Analysis
+    needs: ci-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # No pnpm and no build: the measurement is pure node against dist/.
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: 📥 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: app/dist/
+
+      # Rewritten 2026-08-05. The previous version listed `.js`/`.css` at the
+      # ROOT of dist/ — Vite emits them into dist/assets/, so the filter
+      # matched nothing and every PR was told "Total Bundle Size: 0.00 KB ✅".
+      # It had never measured anything, which is why neither the 271KB font
+      # nor the 31KB of react-select was ever flagged.
+      #
+      # What it measures now: everything index.html makes the browser fetch
+      # before the page can paint — scripts, modulepreloads, stylesheets, and
+      # the preloaded font and hero image. That last part matters: the font
+      # lives in dist/fonts/, so anything scoped to dist/assets/ would still
+      # have missed the single largest regression this project has had.
+      #
+      # Sizes are gzipped, because that is what crosses the network. Formats
+      # that are already compressed (woff2, webp, avif, png) are counted raw —
+      # gzipping them again gains nothing and would understate them.
+      - name: 📦 Measure the critical path
+        id: bundle
+        run: |
+          cat > measure-bundle.mjs << 'EOF'
+          import fs from 'fs';
+          import path from 'path';
+          import { gzipSync } from 'zlib';
+
+          // Budget for the critical path, gzipped.
+          //
+          // Measured at 266 KB when this was written, down from roughly 480 KB
+          // before the Nunito subset (-214 KB) and the react-select removal
+          // (-29 KB). The ceiling leaves ~9% headroom: enough for ordinary
+          // work, tight enough that a library-sized addition fails. Both
+          // regressions above would have been caught by it.
+          //
+          // Raise it only with a reason, the way a Lighthouse threshold is
+          // raised — never to make a red build go green.
+          const BUDGET_KB = 290;
+
+          const PRECOMPRESSED = /\.(woff2?|webp|avif|png|jpe?g|ico|gif)$/i;
+          const dist = 'dist';
+          const html = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+
+          // Every local asset index.html points at, in any folder.
+          const refs = [...new Set(
+            [...html.matchAll(/(?:src|href)="(\/[^"]+)"/g)].map((m) => m[1]),
+          )].sort();
+
+          let total = 0;
+          const rows = [];
+          for (const ref of refs) {
+            const file = path.join(dist, ref);
+            if (!fs.existsSync(file)) continue;
+            const buf = fs.readFileSync(file);
+            const size = PRECOMPRESSED.test(ref) ? buf.length : gzipSync(buf, { level: 9 }).length;
+            total += size;
+            rows.push({ ref, kb: size / 1024 });
+          }
+
+          if (rows.length === 0) {
+            console.error('No asset resolved from index.html — the build layout changed.');
+            console.error('This job is worthless if it silently measures nothing, so it fails here.');
+            process.exit(1);
+          }
+
+          rows.sort((a, b) => b.kb - a.kb);
+          const totalKb = total / 1024;
+          const over = totalKb > BUDGET_KB;
+
+          // Everything else, for context: lazy chunks are not on the critical
+          // path, but a sharp rise still deserves a look.
+          const lazy = fs.readdirSync(path.join(dist, 'assets'))
+            .filter((f) => /\.(js|css)$/.test(f) && !refs.includes(`/assets/${f}`))
+            .map((f) => {
+              const buf = fs.readFileSync(path.join(dist, 'assets', f));
+              return { f, kb: gzipSync(buf, { level: 9 }).length / 1024 };
+            })
+            .sort((a, b) => b.kb - a.kb);
+
+          const fmt = (n) => n.toFixed(1);
+          let md = `## 📦 Bundle Analysis\n\n`;
+          md += `**Critical path: ${fmt(totalKb)} KB gzipped** — budget ${BUDGET_KB} KB ${over ? '❌' : '✅'}\n\n`;
+          md += `What the browser downloads before the page can paint.\n\n`;
+          md += `| Asset | Gzipped |\n| --- | ---: |\n`;
+          for (const r of rows) md += `| \`${r.ref}\` | ${fmt(r.kb)} KB |\n`;
+          md += `| **Total** | **${fmt(totalKb)} KB** |\n`;
+          if (lazy.length) {
+            md += `\n<details><summary>Lazy chunks (not on the critical path)</summary>\n\n`;
+            md += `| Chunk | Gzipped |\n| --- | ---: |\n`;
+            for (const l of lazy) md += `| \`${l.f}\` | ${fmt(l.kb)} KB |\n`;
+            md += `\n</details>\n`;
+          }
+          if (over) {
+            md += `\n⚠️ **${fmt(totalKb - BUDGET_KB)} KB over budget.** Something now ships on every page that did not before — find it in the table above rather than raising the ceiling.\n`;
+          }
+
+          fs.writeFileSync('bundle-report.md', md);
+          console.log(md);
+          if (over) process.exit(1);
+          EOF
+          node measure-bundle.mjs
+
+      - name: 💬 Comment PR with bundle report
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            try {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: fs.readFileSync('app/bundle-report.md', 'utf8'),
+              });
+            } catch (error) {
+              console.log('No bundle report to post:', error.message);
+            }
+
   deploy-preview:
     name: 📦 Deploy Preview
     needs: ci-tests
@@ -212,29 +362,18 @@ jobs:
         with:
           version: 11.20.0
 
-      - name: 📦 Get pnpm store directory
-        id: pnpm-store-dir
-        shell: bash
-        run: |
-          echo "store_path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-
-      - name: 📦 Setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-store-dir.outputs.store_path }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('app/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: 📦 Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: 📤 Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-files
-          path: app/dist/
-
+      # This job used to install the whole dependency tree and download the
+      # build artifact. Both were dead weight:
+      #
+      #   - `vercel` (no --prebuilt) uploads the SOURCES and rebuilds remotely,
+      #     so the downloaded dist/ was never deployed. It could not even be
+      #     uploaded: dist is in app/.gitignore and there is no .vercelignore,
+      #     so the CLI excludes it.
+      #   - the only thing left to run is `vercel:config`, a pure bash script.
+      #     `pnpm run` needs no node_modules to execute it — verified.
+      #
+      # That is ~20s of install plus an artifact download, per PR, for nothing.
+      # The remote rebuild itself stays until this deploys `--prebuilt`.
       - name: 📦 Install Vercel CLI
         run: npm install -g vercel@latest
 
