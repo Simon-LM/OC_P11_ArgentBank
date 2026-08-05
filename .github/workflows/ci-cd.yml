@@ -1056,7 +1056,10 @@ jobs:
           // GitHub runner load.
           const thresholds = {
             desktop: {
-              performance: 0.97,  // 95% → 97% (current scores: 99-100%)
+              // 95% → 97% → 98% (2026-08-04). All 5 pages have scored a flat
+              // 100% on the two most recent runs, so 98% keeps a 2-point
+              // margin for runner noise rather than the 3 it had.
+              performance: 0.98,
               accessibility: 1.0,  // 100% (current scores: 100%)
               'best-practices': 1.0, // 96% → 100% (the "temporary" 96% no longer applies)
               seo: 1.0           // 90% → 100% (current scores: 100%, deterministic audits)
@@ -1074,16 +1077,24 @@ jobs:
             // the unmodified Lighthouse mobile throttling, which is what a
             // recruiter running Lighthouse from their own browser will see.
             //
-            // Performance starts at 85% while we learn what the profile
-            // actually yields; locally it sits at 89%. The intent is to raise
-            // it to 90% — the boundary where Lighthouse turns green — once a
-            // few runs confirm the real spread on GitHub runners.
+            // Performance raised 85% → 90% on 2026-08-04, Simon's call: 90 is
+            // the boundary where Lighthouse turns green, and the profile has
+            // now cleared it twice in a row across all 5 pages — 94-97%, then
+            // 96-98% after react-select left the bundle.
+            //
+            // Known risk, accepted: a GitHub runner occasionally stalls mid-
+            // measurement and costs about 7 points (measured once, home fell
+            // 88 → 81 on 1539ms of "Unattributable" main-thread time carrying
+            // 9ms of our own scripting). Against the current 96% floor that
+            // lands at ~89% and fails this gate. If it happens, re-run the job
+            // before touching the number: a stall shows up as one page far
+            // below the others in the same run, and the fix is not here.
             //
             // The other three stay at 100%: throttling changes how *fast* the
             // page arrives, not whether the markup is accessible, secure or
             // indexable. A drop there would be a genuine regression, not noise.
             'mobile-slow-4g': {
-              performance: 0.85,
+              performance: 0.9,
               accessibility: 1.0,
               'best-practices': 1.0,
               seo: 1.0
