@@ -74,8 +74,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      # --frozen-lockfile, not --no-frozen-lockfile: the install must fail if
+      # package.json and the lockfile disagree, rather than quietly resolving
+      # something the lockfile never recorded. That resolution is the only
+      # place a freshly published package could enter the tree — the shape of
+      # the npm supply-chain attack of 2026-08-04 (keyv, flat-cache,
+      # file-entry-cache and others). Vercel already installs this way.
       - name: 📦 Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🔧 Setup Vercel config for CI
         run: pnpm run vercel:clean
@@ -472,8 +478,14 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: app/pnpm-lock.yaml
 
+      # --frozen-lockfile, not --no-frozen-lockfile: the install must fail if
+      # package.json and the lockfile disagree, rather than quietly resolving
+      # something the lockfile never recorded. That resolution is the only
+      # place a freshly published package could enter the tree — the shape of
+      # the npm supply-chain attack of 2026-08-04 (keyv, flat-cache,
+      # file-entry-cache and others). Vercel already installs this way.
       - name: 📦 Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -1052,8 +1064,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cypress-
 
+      # --frozen-lockfile, not --no-frozen-lockfile: the install must fail if
+      # package.json and the lockfile disagree, rather than quietly resolving
+      # something the lockfile never recorded. That resolution is the only
+      # place a freshly published package could enter the tree — the shape of
+      # the npm supply-chain attack of 2026-08-04 (keyv, flat-cache,
+      # file-entry-cache and others). Vercel already installs this way.
       - name: 📦 Install dependencies # ← MISSING !
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🔧 Install Cypress binary # ← MISSING !
         run: pnpm exec cypress install
@@ -1141,8 +1159,14 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: app/pnpm-lock.yaml
 
+      # --frozen-lockfile, not --no-frozen-lockfile: the install must fail if
+      # package.json and the lockfile disagree, rather than quietly resolving
+      # something the lockfile never recorded. That resolution is the only
+      # place a freshly published package could enter the tree — the shape of
+      # the npm supply-chain attack of 2026-08-04 (keyv, flat-cache,
+      # file-entry-cache and others). Vercel already installs this way.
       - name: 📦 Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: ⚡ Run Lighthouse tests (${{ matrix.device }})
 
