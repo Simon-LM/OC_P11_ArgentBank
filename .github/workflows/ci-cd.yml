@@ -10,6 +10,9 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
+  # Read-only, and only so 🔗 Resolve Vercel Preview can ask the deployments
+  # API which URL Vercel published for this commit.
+  deployments: read
 
 # push was on "**", which meant every push to a branch with an open PR fired
 # this workflow twice — once for push, once for pull_request. Two full runs of
@@ -340,66 +343,100 @@ jobs:
               console.log('No bundle report to post:', error.message);
             }
 
-  deploy-preview:
-    name: 📦 Deploy Preview
+  # This job used to DEPLOY. It no longer does — it waits for the deployment
+  # Vercel's own GitHub integration already makes, and reports its URL.
+  #
+  # Why: every PR was deployed TWICE. Vercel's integration deploys each push on
+  # its own (that is what deploys production, and what posts the preview link
+  # on the PR), and this job deployed the same commit a second time through the
+  # CLI. Two remote builds, two URLs — and the tests ran against the CLI one
+  # while the link a human clicks was the other. Verified on PR #46 by the
+  # aliases: `…-git-<branch>-…` for the integration, `…-simon-lm-…` for ours.
+  #
+  # Keeping the integration's deployment rather than ours is the professional
+  # side of the trade: production is built by that same integration, from the
+  # same vercel.json, so previews are now produced exactly the way the live
+  # site will be. The old setup tested previews built by a different path than
+  # production.
+  #
+  # Dropped with it: VERCEL_TOKEN / VERCEL_ORG_ID / VERCEL_PROJECT_ID are no
+  # longer used anywhere in CI (the repo secrets can stay, unused), the Vercel
+  # CLI install, and the vercel.json copy step — the integration reads the
+  # committed app/vercel.json directly. VITE_API_URL is no longer passed at
+  # deploy time either; it is set in the Vercel project for Production and
+  # Preview, and the live bundle was checked to contain the right value before
+  # this switch.
+  #
+  # NOT done with `on: deployment_status`, the usual recipe. If Vercel never
+  # deploys — outage, quota, failed build — that event never fires, the
+  # required checks downstream never report at all, and the PR is blocked with
+  # nothing red to explain it. Polling from inside the pipeline fails loudly
+  # instead.
+  resolve-preview:
+    name: 🔗 Resolve Vercel Preview
     needs: ci-tests
     if: success()
     runs-on: ubuntu-latest
     outputs:
-      preview-url: ${{ steps.deploy.outputs.url }}
+      preview-url: ${{ steps.resolve.outputs.url }}
 
     steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
-      - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.20.0
-
-      # This job used to install the whole dependency tree and download the
-      # build artifact. Both were dead weight:
-      #
-      #   - `vercel` (no --prebuilt) uploads the SOURCES and rebuilds remotely,
-      #     so the downloaded dist/ was never deployed. It could not even be
-      #     uploaded: dist is in app/.gitignore and there is no .vercelignore,
-      #     so the CLI excludes it.
-      #   - the only thing left to run is `vercel:config`, a pure bash script.
-      #     `pnpm run` needs no node_modules to execute it — verified.
-      #
-      # That is ~20s of install plus an artifact download, per PR, for nothing.
-      # The remote rebuild itself stays until this deploys `--prebuilt`.
-      - name: 📦 Install Vercel CLI
-        run: npm install -g vercel@latest
-
-      - name: 🔧 Setup vercel.json for deployment
-        run: pnpm run vercel:config prod
-
-      - name: 🚀 Deploy to Vercel Preview
-        id: deploy
+      # No checkout: nothing here reads the repo. That also means the workflow
+      # default `working-directory: app` would point at a directory that does
+      # not exist, hence the override.
+      - name: 🔗 Wait for the Vercel deployment of this commit
+        id: resolve
+        working-directory: ${{ github.workspace }}
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VITE_API_URL: https://db.lostintab.com/api
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # On a pull_request event github.sha is the MERGE commit, which
+          # Vercel never deploys. It deploys the branch head.
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          echo "=== Deploying Preview ==="
-          echo "Current directory: $(pwd)"
-          echo "Root Directory configured: app"
-          echo "🔧 VITE_API_URL configured: $VITE_API_URL"
+          echo "Commit under test: $SHA"
 
-          # Deploy to preview (without --prod) from repo root with environment variables
-          cd ..
-          echo "Changed to repo root: $(pwd)"
-          PREVIEW_URL=$(vercel --yes --token $VERCEL_TOKEN --env VITE_API_URL="$VITE_API_URL")
-          echo "Preview deployed: $PREVIEW_URL"
-          echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
-          echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          deadline=$(( SECONDS + 600 ))
+          attempt=0
+
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            attempt=$(( attempt + 1 ))
+
+            # Newest first, so the first success we find is the current one.
+            ids=$(gh api "repos/$GITHUB_REPOSITORY/deployments?sha=$SHA&per_page=100" --jq '.[].id')
+
+            for id in $ids; do
+              statuses=$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=100")
+
+              url=$(echo "$statuses" | jq -r '
+                map(select(.state == "success" and (.environment_url // "") != ""))
+                | .[0].environment_url // empty')
+
+              if [ -n "$url" ]; then
+                environment=$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" --jq '.environment')
+                echo "✅ $environment deployment ready after ${SECONDS}s: $url"
+                echo "url=$url" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+
+              broken=$(echo "$statuses" | jq -r '
+                map(select(.state == "failure" or .state == "error")) | length')
+
+              if [ "$broken" -gt 0 ]; then
+                echo "❌ Vercel reports a FAILED deployment for $SHA."
+                echo "   There is nothing to test until that build succeeds —"
+                echo "   fix it on the Vercel side rather than re-running this."
+                exit 1
+              fi
+            done
+
+            echo "attempt $attempt (${SECONDS}s): no deployment ready yet, waiting 10s…"
+            sleep 10
+          done
+
+          echo "❌ No Vercel deployment for $SHA became ready within 10 minutes."
+          echo "   Check that the Vercel GitHub integration is still connected"
+          echo "   to this repository and is deploying this branch."
+          exit 1
 
   # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -411,11 +448,11 @@ jobs:
 
   pa11y-tests:
     name: ♿ Pa11y Accessibility Tests
-    needs: deploy-preview
+    needs: resolve-preview
     if: success()
     runs-on: ubuntu-latest
     outputs:
-      preview-url: ${{ needs.deploy-preview.outputs.preview-url }}
+      preview-url: ${{ needs.resolve-preview.outputs.preview-url }}
 
     # # # # # # # # # #
 
@@ -443,7 +480,7 @@ jobs:
       - name: ♿ Run Pa11y accessibility tests
 
         env:
-          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview-url }}
+          PREVIEW_URL: ${{ needs.resolve-preview.outputs.preview-url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
           echo "Running Pa11y accessibility tests on Preview: $PREVIEW_URL"
